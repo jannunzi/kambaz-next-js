@@ -87,11 +87,14 @@ export default function KambazStyling() {
         language="tsx"
         name="KambazLayout"
         file="app/(kambaz)/layout.tsx"
-      >{`import "@/app/labs/lab2/tailwind/utilities.css";
+      >{`import { ReactNode } from "react";
+import "@/app/labs/lab2/tailwind/utilities.css";
 import "./kambaz.css";
 import KambazNavigation from "./Navigation";
 
-export default function KambazLayout({ children }) {
+export default function KambazLayout({
+  children,
+}: Readonly<{ children: ReactNode }>) {
   return (
     <div id="wd-kambaz" className="font-sans">
       <KambazNavigation />
@@ -1250,7 +1253,9 @@ export default async function Assignments({
         language="tsx"
         name="AssignmentEditor"
         file="app/(kambaz)/courses/[cid]/assignments/[aid]/page.tsx"
-      >{`export default function AssignmentEditor() {
+      >{`import Link from "next/link";
+
+export default function AssignmentEditor() {
   return (
     <div id="wd-assignments-editor">
       <label htmlFor="wd-name">Assignment Name</label>

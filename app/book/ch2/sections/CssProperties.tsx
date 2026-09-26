@@ -42,11 +42,29 @@ export default function CssProperties() {
           <code>#7070ff</code>{" "}(red, green, and blue intensity, two digits
           each); or the functional <code>rgb(12, 34, 56)</code>{" "}form. From
           this exercise on, move each new demo into its own file under{" "}
-          <code>app/labs/lab2/</code>{" "}and import it into{" "}
-          <code>page.tsx</code>{" "}— the file is getting long enough that one
-          exercise per component keeps it manageable, the same organization
-          used for Lab 1&apos;s HTML exercises. Start with{" "}
-          <code>ForegroundColors.tsx</code>:
+          <code>app/labs/lab2/</code>. One exercise per component keeps{" "}
+          <code>page.tsx</code>{" "}manageable, the same organization used for
+          Lab 1&apos;s HTML exercises. Import each demo into{" "}
+          <code>page.tsx</code>:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab2"
+          file="app/labs/lab2/page.tsx"
+        >{`import "./index.css";
+import ForegroundColors from "./ForegroundColors";
+
+export default function Lab2() {
+  return (
+    <div id="wd-lab2">
+      <h2>Lab 2 - Cascading Style Sheets</h2>
+      {/* ...earlier exercises... */}
+      <ForegroundColors />
+    </div>
+  );
+}`}</CodeBlock>
+        <p>
+          Start with <code>ForegroundColors.tsx</code>:
         </p>
         <CodeBlock
           language="css"
@@ -735,6 +753,11 @@ export default function CssProperties() {
 .wd-pos-relative {
   position: relative;
 }`}</CodeBlock>
+        <p>
+          The relative, absolute, and fixed snippets in this section and the
+          next two all go inside one wrapper <code>&lt;div&gt;</code>{" "}in{" "}
+          <code>Positions.tsx</code>.
+        </p>
         <CodeBlock
           language="tsx"
           name="Positions"
@@ -813,6 +836,9 @@ export default function CssProperties() {
   top: 20px;
   left: 120px;
 }`}</CodeBlock>
+        <p>
+          Add this snippet inside that same wrapper <code>&lt;div&gt;</code>.
+        </p>
         <CodeBlock
           language="tsx"
           name="Positions"
@@ -876,6 +902,10 @@ export default function CssProperties() {
   right: 0px;
   bottom: 50%;
 }`}</CodeBlock>
+        <p>
+          Add this snippet inside the same wrapper <code>&lt;div&gt;</code>{" "}
+          as the other two.
+        </p>
         <CodeBlock
           language="tsx"
           name="Positions"
@@ -1218,6 +1248,28 @@ img.wd-float-right {
   flex-grow: 1;
 }`}</CodeBlock>
         <p>
+          Apply <code>wd-flex-grow-1</code>{" "}to Column 3 in{" "}
+          <code>Flex.tsx</code>:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Flex"
+          file="app/labs/lab2/Flex.tsx"
+        >{`export default function Flex() {
+  return (
+    <div id="wd-css-flex">
+      <h2>Flex</h2>
+      <div className="wd-flex-row-container">
+        <div className="wd-bg-color-yellow">Column 1</div>
+        <div className="wd-bg-color-blue wd-fg-color-white">Column 2</div>
+        <div className="wd-bg-color-red wd-fg-color-white wd-flex-grow-1">
+          Column 3
+        </div>
+      </div>
+    </div>
+  );
+}`}</CodeBlock>
+        <p>
           The third column now expands to consume all the remaining width in
           the row, while the first two stay exactly as wide as their text:
         </p>
@@ -1238,6 +1290,28 @@ img.wd-float-right {
   /* Room for "Column 1" + 10px padding under border-box */
   width: 110px;
   flex-shrink: 0;
+}`}</CodeBlock>
+        <p>
+          Apply <code>wd-width-75px</code>{" "}to Column 1 and keep{" "}
+          <code>wd-flex-grow-1</code>{" "}on Column 3:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Flex"
+          file="app/labs/lab2/Flex.tsx"
+        >{`export default function Flex() {
+  return (
+    <div id="wd-css-flex">
+      <h2>Flex</h2>
+      <div className="wd-flex-row-container">
+        <div className="wd-bg-color-yellow wd-width-75px">Column 1</div>
+        <div className="wd-bg-color-blue wd-fg-color-white">Column 2</div>
+        <div className="wd-bg-color-red wd-fg-color-white wd-flex-grow-1">
+          Column 3
+        </div>
+      </div>
+    </div>
+  );
 }`}</CodeBlock>
         <LiveDemo mode="styled" name="Flex" file="app/labs/lab2/Flex.tsx">
           <FlexWidth />
