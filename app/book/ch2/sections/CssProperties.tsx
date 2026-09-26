@@ -367,36 +367,99 @@ export default function Lab2() {
           <em>inside</em>{" "}the 200px, so the box you see on screen stays 200px
           wide. Layout math is much easier with{" "}
           <code>border-box</code>, which is why many style resets (and Tailwind
-          later) set it globally. Add the box-model classes and a{" "}
-          <code>BoxModel.tsx</code>{" "}that shows the layers, then two boxes that
-          share the same <code>width</code>, <code>padding</code>, and{" "}
-          <code>border</code>{" "}but differ only in{" "}
-          <code>box-sizing</code>:
+          later) set it globally. Draw those four layers the way the browser
+          does in the Computed pane, then two boxes that share the same{" "}
+          <code>width</code>, <code>padding</code>, and <code>border</code>{" "}
+          but differ only in <code>box-sizing</code>:
         </p>
         <CodeBlock
           language="css"
           name="Lab2 styles"
           file="app/labs/lab2/index.css"
-        >{`.wd-box-model-margin {
-  background-color: #f8d7da;
-  padding: 20px;
-  margin: 10px 0;
+        >{`.wd-devtools-box {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 34rem;
+  color: #1a1a1a;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  font-size: clamp(12px, 2.5vw, 14px);
+  line-height: 1.2;
 }
-.wd-box-model-border-label {
-  color: #c41e3a;
-  font-weight: 600;
-  margin: 4px 0 2px;
+.wd-devtools-box *,
+.wd-devtools-box *::before,
+.wd-devtools-box *::after {
+  box-sizing: border-box;
 }
-.wd-box-model-border {
-  border: 10px solid #c41e3a;
+.wd-devtools-box .wd-bm-margin,
+.wd-devtools-box .wd-bm-border,
+.wd-devtools-box .wd-bm-padding {
+  display: grid;
+  grid-template-columns: minmax(2.75rem, auto) minmax(0, 1fr) minmax(2.75rem, auto);
+  grid-template-rows: auto minmax(2.25rem, 1fr) auto;
 }
-.wd-box-model-padding {
-  background-color: #cfe2ff;
-  padding: 20px;
+.wd-devtools-box .wd-bm-margin {
+  background-color: #f9cc9d;
+  border: 1px dashed #333;
 }
-.wd-box-model-content {
-  background-color: #d1e7dd;
-  padding: 10px;
+.wd-devtools-box .wd-bm-border,
+.wd-devtools-box .wd-bm-padding,
+.wd-devtools-box .wd-bm-content {
+  grid-column: 2;
+  grid-row: 2;
+  min-width: 0;
+  background-color: #fff;
+}
+.wd-devtools-box .wd-bm-border {
+  border: 1px solid #000;
+}
+.wd-devtools-box .wd-bm-padding {
+  border: 1px dashed #000;
+}
+.wd-devtools-box .wd-bm-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid #000;
+  text-align: center;
+  white-space: nowrap;
+}
+.wd-devtools-box .wd-bm-label {
+  z-index: 1;
+  grid-column: 1;
+  grid-row: 1;
+  align-self: start;
+  justify-self: start;
+  padding: 3px 5px 0;
+  font-size: 0.85em;
+}
+.wd-devtools-box .wd-bm-top,
+.wd-devtools-box .wd-bm-bottom {
+  grid-column: 1 / -1;
+  padding: 0.35rem 0.25rem;
+  text-align: center;
+}
+.wd-devtools-box .wd-bm-top {
+  grid-row: 1;
+}
+.wd-devtools-box .wd-bm-bottom {
+  grid-row: 3;
+}
+.wd-devtools-box .wd-bm-left,
+.wd-devtools-box .wd-bm-right {
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+}
+.wd-devtools-box .wd-bm-left {
+  grid-column: 1;
+}
+.wd-devtools-box .wd-bm-right {
+  grid-column: 3;
 }
 .wd-box-sizing-demo {
   background-color: lightgray;
@@ -420,20 +483,44 @@ export default function Lab2() {
           language="tsx"
           name="BoxModel"
           file="app/labs/lab2/BoxModel.tsx"
-        >{`export default function BoxModel() {
+        >{`export function BoxModelWidget() {
   return (
-    <div id="wd-css-box-model">
-      <h2>Box model</h2>
-      <div className="wd-box-model-margin">
-        margin
-        <div className="wd-box-model-border-label">border ↓</div>
-        <div className="wd-box-model-border">
-          <div className="wd-box-model-padding">
-            padding
-            <div className="wd-box-model-content">content</div>
+    <div
+      className="wd-devtools-box"
+      role="img"
+      aria-label="Box model: margin 0, 0, 10, 0; border 10; padding 20; content 200 by 50"
+    >
+      <div className="wd-bm-margin">
+        <span className="wd-bm-label">margin</span>
+        <span className="wd-bm-top">0</span>
+        <span className="wd-bm-left">0</span>
+        <span className="wd-bm-right">0</span>
+        <span className="wd-bm-bottom">10</span>
+        <div className="wd-bm-border">
+          <span className="wd-bm-label">border</span>
+          <span className="wd-bm-top">10</span>
+          <span className="wd-bm-left">10</span>
+          <span className="wd-bm-right">10</span>
+          <span className="wd-bm-bottom">10</span>
+          <div className="wd-bm-padding">
+            <span className="wd-bm-label">padding</span>
+            <span className="wd-bm-top">20</span>
+            <span className="wd-bm-left">20</span>
+            <span className="wd-bm-right">20</span>
+            <span className="wd-bm-bottom">20</span>
+            <div className="wd-bm-content">200×50</div>
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+export default function BoxModel() {
+  return (
+    <div id="wd-css-box-model">
+      <h2>Box model</h2>
+      <BoxModelWidget />
       <h3>box-sizing</h3>
       <div className="wd-box-sizing-demo">
         <div className="wd-box-sizing-content">
@@ -447,10 +534,13 @@ export default function Lab2() {
   );
 }`}</CodeBlock>
         <p>
-          The nested labels walk outward through the four layers. The label{" "}
-          <code>border</code>{" "}sits in the pink margin, in the same red as the
-          line, with an arrow pointing at that line. Below them,
-          both yellow boxes declare <code>width: 200px</code>,{" "}
+          The figure is the box model the way DevTools draws it: a tan margin,
+          then border, padding, and the content size in the center. Its numbers
+          match the sample below — margin 0 on the top, left, and right and 10
+          on the bottom (<code>margin-bottom: 10px</code>), a 10px border, 20px
+          of padding, and a 200px content width. The center reads{" "}
+          <code>200×50</code> so both width and height are on the diagram.
+          Below it, both yellow boxes declare <code>width: 200px</code>,{" "}
           <code>padding: 20px</code>, and a 10px border — but the{" "}
           <code>content-box</code>{" "}box is visibly wider (200 + 40 padding +
           20 border = 260px on screen) while the <code>border-box</code>{" "}
