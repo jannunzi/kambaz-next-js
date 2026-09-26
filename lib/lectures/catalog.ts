@@ -499,7 +499,7 @@ const LECTURE_SUMMARIES: Record<
     bookSectionId: "sec-2-3-3",
     slides: TAILWIND_COLORS_SLIDES,
   },
-  "tailwind-flex-and-grid": {
+  "tailwind-filters-and-grid": {
     title: "Tailwind Filters and Grid",
     summary:
       "blur utilities, then grid-cols / col-span — §2.3.5 and §2.3.6. A flex-class map follows.",

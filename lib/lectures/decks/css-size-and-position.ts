@@ -197,27 +197,30 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
     title: "Positions.tsx — relative",
     kind: "content",
     bullets: [
-      "This step’s root is `wd-css-position-relative`",
+      "The file’s root is `#wd-css-positions`. The relative section sits inside it",
       "Portrait nudges down-right. Landscape nudges up-right. Square stays put",
     ],
     code: `export default function Positions() {
   return (
-    <div id="wd-css-position-relative">
-      <h2>Relative</h2>
-      <div className="wd-bg-color-gray">
-        <div className="wd-bg-color-yellow wd-dimension-portrait">
-          <div className="wd-pos-relative-nudge-down-right">Portrait</div>
+    <div id="wd-css-positions">
+      <div id="wd-css-position-relative">
+        <h2>Relative</h2>
+        <div className="wd-bg-color-gray">
+          <div className="wd-bg-color-yellow wd-dimension-portrait">
+            <div className="wd-pos-relative-nudge-down-right">Portrait</div>
+          </div>
+          <div className="wd-pos-relative-nudge-up-right wd-bg-color-blue wd-fg-color-white wd-dimension-landscape">
+            Landscape
+          </div>
+          <div className="wd-bg-color-red wd-dimension-square">Square</div>
         </div>
-        <div className="wd-pos-relative-nudge-up-right wd-bg-color-blue wd-fg-color-white wd-dimension-landscape">
-          Landscape
-        </div>
-        <div className="wd-bg-color-red wd-dimension-square">Square</div>
       </div>
     </div>
   );
 }`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/Positions.tsx",
+    codeHighlightLines: [3, 16],
   },
   {
     id: "relative-live",
@@ -262,7 +265,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
     title: "Positions.tsx — absolute",
     kind: "content",
     bullets: [
-      "Add this sibling under the relative block. Do not return it as a second root",
+      "Paste this block inside #wd-css-positions, after the previous section.",
       "`wd-pos-relative` plus `height: 150` is the containing block",
     ],
     code: `<div id="wd-css-position-absolute">
@@ -314,7 +317,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
     title: "Positions.tsx — fixed",
     kind: "content",
     bullets: [
-      "Third sibling in the same file",
+      "Paste this block inside #wd-css-positions, after the previous section.",
       "This embed contains the square so it does not escape the slide",
     ],
     code: `<div id="wd-css-position-fixed">

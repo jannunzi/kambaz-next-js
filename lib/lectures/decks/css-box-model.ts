@@ -197,27 +197,96 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
     title: "content-box vs border-box",
     kind: "content",
     bullets: [
+      "DevTools colors: tan margin `#f9cc9d`, yellow border `#fddd9b`, green padding `#c3d08b`, blue content `#8cb6c0`",
       "Default `content-box`: `width: 200px` sizes **only** the content. Padding and border add extra pixels",
-      "`border-box`: 200px **includes** padding and border. The painted box stays 200px",
-      "The layer classes paint margin, border, padding, and content as nested boxes",
+      "`border-box`: 200×180 **includes** padding and border. The painted box stays that size",
     ],
-    code: `.wd-box-model-margin {
-  background-color: #f8d7da;
-  padding: 20px;
-  margin: 10px 0;
+    code: `.wd-devtools-box {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 34rem;
+  color: #222;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  font-size: clamp(12px, 2.5vw, 14px);
+  line-height: 1.2;
 }
-.wd-box-model-border {
-  background-color: #fff3cd;
-  border: 10px solid #c41e3a;
-  padding: 20px;
+.wd-devtools-box *,
+.wd-devtools-box *::before,
+.wd-devtools-box *::after {
+  box-sizing: border-box;
 }
-.wd-box-model-padding {
-  background-color: #cfe2ff;
-  padding: 20px;
+.wd-devtools-box .wd-bm-margin,
+.wd-devtools-box .wd-bm-border,
+.wd-devtools-box .wd-bm-padding {
+  display: grid;
+  grid-template-columns: minmax(2.75rem, auto) minmax(0, 1fr) minmax(2.75rem, auto);
+  grid-template-rows: auto minmax(2.25rem, 1fr) auto;
 }
-.wd-box-model-content {
-  background-color: #d1e7dd;
-  padding: 10px;
+.wd-devtools-box .wd-bm-margin {
+  background-color: #f9cc9d;
+  border: 1px dashed #222;
+}
+.wd-devtools-box .wd-bm-border,
+.wd-devtools-box .wd-bm-padding,
+.wd-devtools-box .wd-bm-content {
+  grid-column: 2;
+  grid-row: 2;
+  min-width: 0;
+}
+.wd-devtools-box .wd-bm-border {
+  background-color: #fddd9b;
+  border: 1px solid #222;
+}
+.wd-devtools-box .wd-bm-padding {
+  background-color: #c3d08b;
+  border: 1px dashed #222;
+}
+.wd-devtools-box .wd-bm-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.45rem 0.6rem;
+  background-color: #8cb6c0;
+  border: 1px solid #222;
+  text-align: center;
+  white-space: nowrap;
+}
+.wd-devtools-box .wd-bm-label {
+  z-index: 1;
+  grid-column: 1;
+  grid-row: 1;
+  align-self: start;
+  justify-self: start;
+  padding: 3px 5px 0;
+  font-size: 0.85em;
+}
+.wd-devtools-box .wd-bm-top,
+.wd-devtools-box .wd-bm-bottom {
+  grid-column: 1 / -1;
+  padding: 0.35rem 0.25rem;
+  text-align: center;
+}
+.wd-devtools-box .wd-bm-top {
+  grid-row: 1;
+}
+.wd-devtools-box .wd-bm-bottom {
+  grid-row: 3;
+}
+.wd-devtools-box .wd-bm-left,
+.wd-devtools-box .wd-bm-right {
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+}
+.wd-devtools-box .wd-bm-left {
+  grid-column: 1;
+}
+.wd-devtools-box .wd-bm-right {
+  grid-column: 3;
 }
 .wd-box-sizing-demo {
   background-color: lightgray;
@@ -226,6 +295,7 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
 .wd-box-sizing-content,
 .wd-box-sizing-border {
   width: 200px;
+  height: 180px;
   padding: 20px;
   border: 10px solid #c41e3a;
   background-color: #ffff07;
@@ -239,31 +309,55 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
 }`,
     codeLanguage: "css",
     codeFile: "app/labs/lab2/index.css",
-    codeHighlightLines: [[1, 22], 29],
+    codeHighlightLines: [24, 35, 39, 48, 102, 105],
   },
   {
     id: "box-model-tsx",
     title: "BoxModel.tsx",
     kind: "content",
     bullets: [
-      "Nested labels walk outward: content → padding → border → margin",
-      "Both yellow boxes declare 200px + 20px padding + 10px border",
-      "`content-box` paints wider. `border-box` stays 200px",
+      "`BoxModelWidget` draws the DevTools rings: tan margin, yellow border, green padding, blue content",
+      "It shows the content-box sample: margin 0, 0, 10, 0; border 10; padding 20; content `200×180`",
+      "Both yellow boxes share width 200, height 180, padding 20, and a 10px border",
     ],
-    code: `export default function BoxModel() {
+    code: `export function BoxModelWidget() {
   return (
-    <div id="wd-css-box-model">
-      <h2>Box model</h2>
-      <div className="wd-box-model-margin">
-        margin
-        <div className="wd-box-model-border">
-          border
-          <div className="wd-box-model-padding">
-            padding
-            <div className="wd-box-model-content">content</div>
+    <div
+      className="wd-devtools-box"
+      role="img"
+      aria-label="Box model of the content-box sample: margin 0, 0, 10, 0; border 10; padding 20; content 200 by 180"
+    >
+      <div className="wd-bm-margin">
+        <span className="wd-bm-label">margin</span>
+        <span className="wd-bm-top">0</span>
+        <span className="wd-bm-left">0</span>
+        <span className="wd-bm-right">0</span>
+        <span className="wd-bm-bottom">10</span>
+        <div className="wd-bm-border">
+          <span className="wd-bm-label">border</span>
+          <span className="wd-bm-top">10</span>
+          <span className="wd-bm-left">10</span>
+          <span className="wd-bm-right">10</span>
+          <span className="wd-bm-bottom">10</span>
+          <div className="wd-bm-padding">
+            <span className="wd-bm-label">padding</span>
+            <span className="wd-bm-top">20</span>
+            <span className="wd-bm-left">20</span>
+            <span className="wd-bm-right">20</span>
+            <span className="wd-bm-bottom">20</span>
+            <div className="wd-bm-content">200×180</div>
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+export default function BoxModel() {
+  return (
+    <div id="wd-css-box-model">
+      <h2>Box model</h2>
+      <BoxModelWidget />
       <h3>box-sizing</h3>
       <div className="wd-box-sizing-demo">
         <div className="wd-box-sizing-content">
@@ -278,15 +372,15 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
 }`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/BoxModel.tsx",
-    codeHighlightLines: [[3, 16], 23],
+    codeHighlightLines: [[1, 32], 38],
   },
   {
     id: "box-model-demo",
     title: "Live BoxModel.tsx",
     kind: "demo",
     bullets: [
-      "Pink margin, gold border, blue padding, green content",
-      "The second yellow box is shorter because `border-box` counts the chrome",
+      "Tan margin, yellow border, green padding, blue content — the DevTools rings",
+      "`border-box` stays 200×180. `content-box` measures 260×240",
     ],
     embed: "css-box-model",
   },

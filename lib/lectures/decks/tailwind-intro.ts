@@ -87,11 +87,14 @@ export default function TailwindLab() {
       "Both routes stay in the Labs TOC — CSS first, then utilities",
       "Work through spacing, type, color, responsive, filters, and grid one component at a time",
     ],
-    code: `<p>
+    code: `import Link from "next/link";
+
+<p>
   <Link href="/labs/lab2/tailwind">Open Tailwind CSS lab →</Link>
 </p>`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/page.tsx",
+    codeAddedLines: [1],
   },
   {
     id: "not-bootstrap",

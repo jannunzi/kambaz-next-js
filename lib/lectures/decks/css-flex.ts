@@ -46,8 +46,8 @@ export const CSS_FLEX_SLIDES: LectureSlide[] = [
     title: "Flex.tsx",
     kind: "content",
     bullets: [
-      "The book’s `Flex.tsx` is this row — yellow, blue, red, no extra classes yet",
-      "Grow and the pinned width are the next two CSS rules. The live rows apply them",
+      "The book’s first `Flex.tsx` is this row — yellow, blue, red, no extra classes",
+      "The next steps add `wd-flex-grow-1`, then `wd-width-75px`, and reprint the file",
     ],
     code: `export default function Flex() {
   return (
@@ -81,7 +81,7 @@ export const CSS_FLEX_SLIDES: LectureSlide[] = [
     bullets: [
       "Default grow is 0 — a child stays as wide as its content",
       "`flex-grow: 1` on column 3 stretches it across the leftover width",
-      "The book adds this class in CSS and does not reprint `Flex.tsx`",
+      "Next slide: paste `Flex.tsx` with `wd-flex-grow-1` on Column 3",
     ],
     code: `.wd-flex-grow-1 {
   flex-grow: 1;
@@ -91,12 +91,38 @@ export const CSS_FLEX_SLIDES: LectureSlide[] = [
     codeAddedLines: [[1, 3]],
   },
   {
+    id: "grow-tsx",
+    title: "Flex.tsx — grow",
+    kind: "content",
+    bullets: [
+      "Same file. Column 3’s `className` gains `wd-flex-grow-1`",
+      "Columns 1 and 2 stay as wide as their text",
+    ],
+    code: `export default function Flex() {
+  return (
+    <div id="wd-css-flex">
+      <h2>Flex</h2>
+      <div className="wd-flex-row-container">
+        <div className="wd-bg-color-yellow">Column 1</div>
+        <div className="wd-bg-color-blue wd-fg-color-white">Column 2</div>
+        <div className="wd-bg-color-red wd-fg-color-white wd-flex-grow-1">
+          Column 3
+        </div>
+      </div>
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/Flex.tsx",
+    codeHighlightLines: [8],
+  },
+  {
     id: "grow-live",
     title: "Live flex-grow",
     kind: "demo",
     bullets: [
       "Columns 1 and 2 stay text-sized",
-      "Column 3 carries `wd-flex-grow-1` in the running demo",
+      "The `Flex.tsx` you just pasted: Column 3 carries `wd-flex-grow-1`",
     ],
     embed: "css-flex-grow",
   },
@@ -117,6 +143,32 @@ export const CSS_FLEX_SLIDES: LectureSlide[] = [
     codeLanguage: "css",
     codeFile: "app/labs/lab2/index.css",
     codeHighlightLines: [3],
+  },
+  {
+    id: "pin-tsx",
+    title: "Flex.tsx — pin",
+    kind: "content",
+    bullets: [
+      "Column 1 gains `wd-width-75px`. Column 3 keeps `wd-flex-grow-1`",
+      "This is the book’s final `Flex.tsx`",
+    ],
+    code: `export default function Flex() {
+  return (
+    <div id="wd-css-flex">
+      <h2>Flex</h2>
+      <div className="wd-flex-row-container">
+        <div className="wd-bg-color-yellow wd-width-75px">Column 1</div>
+        <div className="wd-bg-color-blue wd-fg-color-white">Column 2</div>
+        <div className="wd-bg-color-red wd-fg-color-white wd-flex-grow-1">
+          Column 3
+        </div>
+      </div>
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/Flex.tsx",
+    codeHighlightLines: [6],
   },
   {
     id: "pin-live",

@@ -42,7 +42,7 @@ export const CSS_INTRO_SLIDES: LectureSlide[] = [
     ],
     code: "mkdir app/labs/lab2",
     codeLanguage: "bash",
-    codeFile: "app/labs/lab2",
+    codeFile: "terminal",
   },
   {
     id: "lab2-page",

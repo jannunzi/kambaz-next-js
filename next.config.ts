@@ -24,6 +24,11 @@ const nextConfig: NextConfig = {
         destination: "/project/pazza",
         permanent: false,
       },
+      {
+        source: "/slides/tailwind-flex-and-grid",
+        destination: "/slides/tailwind-filters-and-grid",
+        permanent: false,
+      },
     ];
   },
 };

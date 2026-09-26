@@ -61,10 +61,11 @@ img.wd-float-right {
     title: "Float.tsx",
     kind: "content",
     bullets: [
-      "`STARSHIP` is an image URL. `LOREM` is placeholder text — swap in your own",
+      "Slide-only: `STARSHIP` and `LOREM` constants so this file pastes and runs. The book leaves those names for you to fill in",
       "Right image, then left image, then `wd-float-done`",
     ],
-    code: `const STARSHIP =
+    code: `// Slide-only. The book leaves STARSHIP and LOREM for you to define.
+const STARSHIP =
   "https://www.staradvertiser.com/wp-content/uploads/2021/08/web1_Starship-gap2.jpg";
 const LOREM =
   "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eius hic reprehenderit doloremque adipisci iste deserunt. Inventore, hic. Esse nihil unde aut, dignissimos eos consequatur veniam distinctio?";
@@ -85,7 +86,7 @@ export default function Float() {
 }`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/Float.tsx",
-    codeHighlightLines: [[1, 4], [11, 14]],
+    codeHighlightLines: [[1, 5], [12, 15]],
   },
   {
     id: "float-demo",

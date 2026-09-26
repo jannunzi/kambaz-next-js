@@ -1145,7 +1145,7 @@ describe("lecture catalog", () => {
     const lastLecture4 = adjacentLectureSlugs("css-rotation");
     assert.equal(lastLecture4.next?.slug, "react-icons");
     assert.equal(lastLecture4.prev?.slug, "css-media-queries");
-    const lastLecture6 = adjacentLectureSlugs("tailwind-flex-and-grid");
+    const lastLecture6 = adjacentLectureSlugs("tailwind-filters-and-grid");
     assert.equal(lastLecture6.next?.slug, "kambaz-styling");
     const lastCh2 = adjacentLectureSlugs("kambaz-account-styling");
     assert.equal(lastCh2.next?.slug, "intro-to-javascript");
@@ -1210,14 +1210,14 @@ describe("lecture decks", () => {
     assert.equal(counts["css-size-and-position"], 22);
     assert.equal(counts["css-media-queries"], 8);
     assert.equal(counts["css-float"], 9);
-    assert.equal(counts["css-flex"], 10);
+    assert.equal(counts["css-flex"], 12);
     assert.equal(counts["css-rotation"], 6);
     assert.equal(counts["react-icons"], 9);
     assert.equal(counts["tailwind-intro"], 9);
     assert.equal(counts["tailwind-spacing"], 7);
     assert.equal(counts["tailwind-typography"], 6);
     assert.equal(counts["tailwind-colors"], 5);
-    assert.equal(counts["tailwind-flex-and-grid"], 11);
+    assert.equal(counts["tailwind-filters-and-grid"], 11);
     assert.equal(counts["tailwind-responsive"], 7);
     assert.equal(counts["kambaz-styling"], 8);
     assert.equal(counts["kambaz-nav-styling"], 7);
@@ -1592,7 +1592,7 @@ describe("lecture decks", () => {
       "tailwind-colors": {
         demo: "tw-backgrounds",
       },
-      "tailwind-flex-and-grid": {
+      "tailwind-filters-and-grid": {
         "filters-demo": "tw-filters",
         "flex-demo": "tw-flex",
         "grid-demo": "tw-grids",
@@ -2217,7 +2217,7 @@ describe("lecture decks", () => {
     assert.match(colors, /yellow-500/);
     assert.doesNotMatch(colors, /TailwindFilters/);
 
-    const flexGrid = slideText("tailwind-flex-and-grid");
+    const flexGrid = slideText("tailwind-filters-and-grid");
     assert.match(flexGrid, /shrink-0/);
     assert.match(flexGrid, /blur-lg/);
     assert.match(flexGrid, /TailwindFilters/);

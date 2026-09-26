@@ -47,7 +47,7 @@ export const LECTURE_6_SLUGS = [
   "tailwind-typography",
   "tailwind-colors",
   "tailwind-responsive",
-  "tailwind-flex-and-grid",
+  "tailwind-filters-and-grid",
 ] as const;
 
 export const LECTURE_7_SLUGS = [
