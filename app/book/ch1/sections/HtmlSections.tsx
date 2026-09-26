@@ -2423,9 +2423,9 @@ export default function LabsLayout({
         >
           Ask the assistant to add a Chapter 1 link in the TOC — leave your
           name or motto as the personal bit. This link is expected to 404 in
-          your own app (your app does not have the course-book routes), and
-          the A1 check only looks for the id <code>wd-toc-book-link</code> with
-          the label &quot;Chapter 1&quot;, not for a working destination:
+          your own app (your app does not have the course-book routes). A1
+          only checks that an element with id <code>wd-toc-book-link</code>{" "}
+          exists:
         </WithAI>
       </Section>
 

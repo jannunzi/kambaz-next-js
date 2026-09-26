@@ -3,7 +3,7 @@ export function BoxModelWidget() {
     <div
       className="wd-devtools-box"
       role="img"
-      aria-label="Box model: margin 0, 0, 10, 0; border 10; padding 20; content 200 by 50"
+      aria-label="Box model of the content-box sample: margin 0, 0, 10, 0; border 10; padding 20; content 200 by 130"
     >
       <div className="wd-bm-margin">
         <span className="wd-bm-label">margin</span>
@@ -23,7 +23,7 @@ export function BoxModelWidget() {
             <span className="wd-bm-left">20</span>
             <span className="wd-bm-right">20</span>
             <span className="wd-bm-bottom">20</span>
-            <div className="wd-bm-content">200×50</div>
+            <div className="wd-bm-content">200×130</div>
           </div>
         </div>
       </div>

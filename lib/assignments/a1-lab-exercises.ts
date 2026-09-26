@@ -530,7 +530,7 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
         id: "a1-lab-toc-ai",
         kind: "ai",
         description:
-          "Chapter 1 link in the labs TOC (id wd-toc-book-link) labeled Chapter 1. This link is expected to 404 in your own app (your app does not have the course-book routes), and the A1 check only looks for the id wd-toc-book-link with the label \"Chapter 1\", not for a working destination.",
+          "Chapter 1 link in the labs TOC (id wd-toc-book-link). This link is expected to 404 in your own app (your app does not have the course-book routes). A1 only checks that an element with id wd-toc-book-link exists.",
         points: 2,
         auto: {
           kind: "ids",
