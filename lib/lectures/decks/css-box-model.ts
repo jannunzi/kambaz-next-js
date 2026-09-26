@@ -42,9 +42,9 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
     codeFile: "app/labs/lab2/index.css",
   },
   {
-    id: "borders-demo",
+    id: "borders-tsx",
     title: "Borders.tsx",
-    kind: "demo",
+    kind: "content",
     bullets: [
       "First paragraph: fat, red, solid. Second: thin, blue, dashed",
       "No combined “fat-red-solid” rule — composition is the point",
@@ -64,12 +64,21 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
 }`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/Borders.tsx",
+  },
+  {
+    id: "borders-demo",
+    title: "Live Borders.tsx",
+    kind: "demo",
+    bullets: [
+      "Fat red solid, then thin blue dashed",
+      "Classes stack. Each rule contributes one property",
+    ],
     embed: "css-borders",
   },
   {
     id: "padding",
     title: "Padding is inside the border",
-    kind: "demo",
+    kind: "content",
     bullets: [
       "`padding-top` / `-right` / `-bottom` / `-left`, or one `padding` for all sides",
       "Keep a fat border and a yellow fill so you can *see* the gap",
@@ -87,12 +96,48 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
 }`,
     codeLanguage: "css",
     codeFile: "app/labs/lab2/index.css",
+  },
+  {
+    id: "padding-tsx",
+    title: "Padding.tsx",
+    kind: "content",
+    bullets: [
+      "Wrapper id `wd-css-paddings`",
+      "Three boxes: top-left, bottom-right, and a fat pad on every side",
+    ],
+    code: `export default function Padding() {
+  return (
+    <div id="wd-css-paddings">
+      <h2>Padding</h2>
+      <div className="wd-padded-top-left wd-border-fat wd-border-red wd-border-solid wd-bg-color-yellow">
+        Padded top left
+      </div>
+      <div className="wd-padded-bottom-right wd-border-fat wd-border-blue wd-border-solid wd-bg-color-yellow">
+        Padded bottom right
+      </div>
+      <div className="wd-padding-fat wd-border-fat wd-border-yellow wd-border-solid wd-bg-color-blue wd-fg-color-white">
+        Padded all around
+      </div>
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/Padding.tsx",
+  },
+  {
+    id: "padding-live",
+    title: "Live Padding.tsx",
+    kind: "demo",
+    bullets: [
+      "Yellow fill runs through the padding, up to the border",
+      "The gap is inside the edge, not between boxes",
+    ],
     embed: "css-padding",
   },
   {
     id: "margins",
     title: "Margin is outside the border",
-    kind: "demo",
+    kind: "content",
     bullets: [
       "Same pattern as padding — but the gap sits **between** boxes",
       "Margin is transparent. You see whatever is behind the hole",
@@ -109,6 +154,42 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
 }`,
     codeLanguage: "css",
     codeFile: "app/labs/lab2/index.css",
+  },
+  {
+    id: "margins-tsx",
+    title: "Margins.tsx",
+    kind: "content",
+    bullets: [
+      "Wrapper id `wd-css-margins`",
+      "The padding classes stay so you can still see the inside gap",
+    ],
+    code: `export default function Margins() {
+  return (
+    <div id="wd-css-margins">
+      <h2>Margins</h2>
+      <div className="wd-margin-bottom wd-padded-top-left wd-border-fat wd-border-red wd-border-solid wd-bg-color-yellow">
+        Margin bottom
+      </div>
+      <div className="wd-margin-right-left wd-padded-bottom-right wd-border-fat wd-border-blue wd-border-solid wd-bg-color-yellow">
+        Margin left right
+      </div>
+      <div className="wd-margin-all-around wd-padding-fat wd-border-fat wd-border-yellow wd-border-solid wd-bg-color-blue wd-fg-color-white">
+        Margin all around
+      </div>
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/Margins.tsx",
+  },
+  {
+    id: "margins-live",
+    title: "Live Margins.tsx",
+    kind: "demo",
+    bullets: [
+      "The space between boxes is empty — margin does not paint",
+      "Padding is still the yellow (or blue) band inside the border",
+    ],
     embed: "css-margins",
   },
   {
@@ -118,50 +199,112 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
     bullets: [
       "Default `content-box`: `width: 200px` sizes **only** the content. Padding and border add extra pixels",
       "`border-box`: 200px **includes** padding and border. The painted box stays 200px",
-      "Layout math is easier with `border-box`. Tailwind later sets it globally",
+      "The layer classes paint margin, border, padding, and content as nested boxes",
     ],
-    code: `.wd-box-sizing-content,
+    code: `.wd-box-model-margin {
+  background-color: #f8d7da;
+  padding: 20px;
+  margin: 10px 0;
+}
+.wd-box-model-border {
+  background-color: #fff3cd;
+  border: 10px solid #c41e3a;
+  padding: 20px;
+}
+.wd-box-model-padding {
+  background-color: #cfe2ff;
+  padding: 20px;
+}
+.wd-box-model-content {
+  background-color: #d1e7dd;
+  padding: 10px;
+}
+.wd-box-sizing-demo {
+  background-color: lightgray;
+  padding: 10px;
+}
+.wd-box-sizing-content,
 .wd-box-sizing-border {
   width: 200px;
   padding: 20px;
   border: 10px solid #c41e3a;
   background-color: #ffff07;
+  margin-bottom: 10px;
 }
-.wd-box-sizing-content { box-sizing: content-box; }
-.wd-box-sizing-border { box-sizing: border-box; }`,
+.wd-box-sizing-content {
+  box-sizing: content-box;
+}
+.wd-box-sizing-border {
+  box-sizing: border-box;
+}`,
     codeLanguage: "css",
     codeFile: "app/labs/lab2/index.css",
+    codeHighlightLines: [[1, 22], 29],
   },
   {
-    id: "box-model-demo",
-    title: "BoxModel.tsx — layers and width",
-    kind: "demo",
+    id: "box-model-tsx",
+    title: "BoxModel.tsx",
+    kind: "content",
     bullets: [
       "Nested labels walk outward: content → padding → border → margin",
       "Both yellow boxes declare 200px + 20px padding + 10px border",
-      "`content-box` paints 260px wide. `border-box` stays 200px",
+      "`content-box` paints wider. `border-box` stays 200px",
     ],
-    code: `<div className="wd-box-sizing-content">
-  content-box: width 200px plus padding and border
-</div>
-<div className="wd-box-sizing-border">
-  border-box: width 200px includes padding and border
-</div>`,
+    code: `export default function BoxModel() {
+  return (
+    <div id="wd-css-box-model">
+      <h2>Box model</h2>
+      <div className="wd-box-model-margin">
+        margin
+        <div className="wd-box-model-border">
+          border
+          <div className="wd-box-model-padding">
+            padding
+            <div className="wd-box-model-content">content</div>
+          </div>
+        </div>
+      </div>
+      <h3>box-sizing</h3>
+      <div className="wd-box-sizing-demo">
+        <div className="wd-box-sizing-content">
+          content-box: width 200px plus padding and border
+        </div>
+        <div className="wd-box-sizing-border">
+          border-box: width 200px includes padding and border
+        </div>
+      </div>
+    </div>
+  );
+}`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/BoxModel.tsx",
+    codeHighlightLines: [[3, 16], 23],
+  },
+  {
+    id: "box-model-demo",
+    title: "Live BoxModel.tsx",
+    kind: "demo",
+    bullets: [
+      "Pink margin, gold border, blue padding, green content",
+      "The second yellow box is shorter because `border-box` counts the chrome",
+    ],
     embed: "css-box-model",
   },
   {
     id: "corners",
     title: "border-radius rounds corners",
-    kind: "demo",
+    kind: "content",
     bullets: [
       "One value rounds all four. Four values go TL, TR, BR, BL",
-      "Or target one corner: `border-top-left-radius`",
+      "Or target one edge: top pair, then the bottom pair",
     ],
     code: `.wd-rounded-corners-top {
   border-top-left-radius: 40px;
   border-top-right-radius: 40px;
+}
+.wd-rounded-corners-bottom {
+  border-bottom-left-radius: 40px;
+  border-bottom-right-radius: 40px;
 }
 .wd-rounded-corners-all-around {
   border-radius: 50px;
@@ -171,6 +314,46 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
 }`,
     codeLanguage: "css",
     codeFile: "app/labs/lab2/index.css",
+    codeAddedLines: [[5, 8]],
+  },
+  {
+    id: "corners-tsx",
+    title: "Corners.tsx",
+    kind: "content",
+    bullets: [
+      "Wrapper id `wd-css-corners`. Four paragraphs, four radius classes",
+      "A thin blue border and fat padding make the curve visible",
+    ],
+    code: `export default function Corners() {
+  return (
+    <div id="wd-css-corners">
+      <h3>Rounded corners</h3>
+      <p className="wd-rounded-corners-top wd-border-thin wd-border-blue wd-border-solid wd-padding-fat">
+        Rounded corners on the top
+      </p>
+      <p className="wd-rounded-corners-bottom wd-border-thin wd-border-blue wd-border-solid wd-padding-fat">
+        Rounded corners at the bottom
+      </p>
+      <p className="wd-rounded-corners-all-around wd-border-thin wd-border-blue wd-border-solid wd-padding-fat">
+        Rounded corners all around
+      </p>
+      <p className="wd-rounded-corners-inline wd-border-thin wd-border-blue wd-border-solid wd-padding-fat">
+        Different rounded corners
+      </p>
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/Corners.tsx",
+  },
+  {
+    id: "corners-live",
+    title: "Live Corners.tsx",
+    kind: "demo",
+    bullets: [
+      "Top only, bottom only, all four, then four different radii",
+      "`.wd-rounded-corners-bottom` is the second paragraph",
+    ],
     embed: "css-corners",
   },
   {
@@ -179,7 +362,7 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
     kind: "title",
     bullets: [
       "You can pad, space, border, and choose how width is measured",
-      "Deck 4: `width` / `height`, `display`, then relative / absolute / fixed / z-index",
+      "Next: `width` / `height`, `display`, then relative / absolute / fixed / z-index",
     ],
   },
 ];

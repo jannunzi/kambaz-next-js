@@ -23,35 +23,63 @@ export const CSS_MEDIA_QUERIES_SLIDES: LectureSlide[] = [
   },
   {
     id: "syntax",
-    title: "@media wraps a rule block",
+    title: "MediaQueriesDemo.css",
     kind: "content",
     bullets: [
       "`@media (min-width: 750px) and (max-width: 1000px) { … }`",
       "Rules inside only apply while the viewport stays in that range",
-      "Give this demo its own CSS file — the rules only make sense as a set",
+      "Each breakpoint resets the previous `li` highlight, then bolds the matching one",
     ],
     code: `.wd-media-queries-demo {
   background-color: green;
   color: white;
   padding: 1rem;
-}`,
-    codeLanguage: "css",
-    codeFile: "app/labs/lab2/MediaQueriesDemo.css",
-  },
-  {
-    id: "ranges",
-    title: "Green, yellow, blue, then red",
-    kind: "content",
-    bullets: [
-      "Default (narrow): white text on green",
-      "750–1000: black on yellow",
-      "1000–1250: white on blue",
-      "1250 and up: white on red — that last block has **no** `max-width`",
-    ],
-    code: `@media (min-width: 750px) and (max-width: 1000px) {
+}
+
+.wd-media-queries-demo li {
+  opacity: 0.55;
+  font-weight: normal;
+  text-decoration: none;
+}
+
+.wd-media-queries-demo li.wd-mq-rule-default {
+  opacity: 1;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+@media (min-width: 750px) and (max-width: 1000px) {
   .wd-media-queries-demo {
     background-color: yellow;
     color: black;
+  }
+  /* Same specificity as the default highlight — must clear it here */
+  .wd-media-queries-demo li.wd-mq-rule-default {
+    opacity: 0.55;
+    font-weight: normal;
+    text-decoration: none;
+  }
+  .wd-media-queries-demo li.wd-mq-rule-750 {
+    opacity: 1;
+    font-weight: bold;
+    text-decoration: underline;
+  }
+}
+
+@media (min-width: 1000px) and (max-width: 1250px) {
+  .wd-media-queries-demo {
+    background-color: blue;
+    color: white;
+  }
+  .wd-media-queries-demo li.wd-mq-rule-default {
+    opacity: 0.55;
+    font-weight: normal;
+    text-decoration: none;
+  }
+  .wd-media-queries-demo li.wd-mq-rule-1000 {
+    opacity: 1;
+    font-weight: bold;
+    text-decoration: underline;
   }
 }
 
@@ -60,9 +88,36 @@ export const CSS_MEDIA_QUERIES_SLIDES: LectureSlide[] = [
     background-color: red;
     color: white;
   }
+  .wd-media-queries-demo li.wd-mq-rule-default {
+    opacity: 0.55;
+    font-weight: normal;
+    text-decoration: none;
+  }
+  .wd-media-queries-demo li.wd-mq-rule-1250 {
+    opacity: 1;
+    font-weight: bold;
+    text-decoration: underline;
+  }
 }`,
     codeLanguage: "css",
     codeFile: "app/labs/lab2/MediaQueriesDemo.css",
+    codeHighlightLines: [
+      [7, 17],
+      [24, 34],
+      [37, 52],
+      [59, 68],
+    ],
+  },
+  {
+    id: "ranges",
+    title: "Green, yellow, blue, then red",
+    kind: "content",
+    bullets: [
+      "Default (narrow): white text on green. `li.wd-mq-rule-default` is bold and underlined",
+      "750–1000: black on yellow. The default `li` is dimmed; `wd-mq-rule-750` is bold",
+      "1000–1250: white on blue, and `wd-mq-rule-1000` is the bold line",
+      "1250 and up: white on red — that last block has **no** `max-width`",
+    ],
   },
   {
     id: "tsx",
@@ -125,11 +180,11 @@ export default function MediaQueriesDemo() {
   },
   {
     id: "next-up",
-    title: "Next: float",
+    title: "Next: rotation",
     kind: "title",
     bullets: [
       "You can restyle a page when the viewport crosses a width",
-      "Deck 6: `float` to wrap text, then percentage columns — historical layout before flex",
+      "Optional: `transform: rotate` and CSS gradients — extras, not Lab 2 required",
     ],
   },
 ];

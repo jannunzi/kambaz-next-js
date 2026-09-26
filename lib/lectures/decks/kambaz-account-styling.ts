@@ -88,11 +88,27 @@ export const KAMBAZ_ACCOUNT_STYLING_SLIDES: LectureSlide[] = [
     ],
   },
   {
+    id: "delivery",
+    title: "Deliver on branch a2",
+    kind: "content",
+    bullets: [
+      "Same `webdev-client` repo from Chapter 1. Graders compare `main` with this branch",
+      "Vercel: Settings → Git, or Build & Deployment → Branches — deploy every branch",
+      "Submit the GitHub URL pointed at `a2` and that branch’s preview URL",
+      "Turn off Deployment Protection so graders can open it without signing in",
+    ],
+    code: `git checkout -b a2
+git add .
+git commit -am "a2 CSS and Tailwind"
+git push -u origin a2`,
+    codeLanguage: "bash",
+  },
+  {
     id: "next-up",
     title: "Lab 2, then Chapter 3",
     kind: "title",
     bullets: [
-      "Finish the Lab 2 and Kambaz checklists in the book",
+      "Push `a2` and confirm the branch preview before you submit",
       "Chapter 3 adds JavaScript and data-driven UI on these same screens",
     ],
   },

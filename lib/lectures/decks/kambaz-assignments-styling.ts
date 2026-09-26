@@ -57,7 +57,7 @@ export default function PeopleTable() {
             <td className="p-2">2020-10-01</td>
             <td className="p-2">10:21:32</td>
           </tr>
-          {/* ...at least 3 more rows... */}
+          {/* ...at least 3 more rows, e.g. Bruce Wayne, Steve Rogers, Natasha Romanoff... */}
         </tbody>
       </table>
     </div>
@@ -123,26 +123,68 @@ export default function AssignmentItem({
       "Magnifying-glass icon is `absolute` inside a `relative` wrapper",
       "Gray group header reuses the module-title treatment",
     ],
-    code: `<div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-  <div className="relative">
-    <FaSearch className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-neutral-500" />
-    <input
-      placeholder="Search for Assignments"
-      id="wd-search-assignment"
-      className="rounded border py-1.5 pr-3 pl-9 text-sm"
-    />
-  </div>
-  <div className="flex gap-2">
-    <button id="wd-add-assignment-group" type="button" className="inline-flex items-center gap-1 rounded border px-3 py-1.5 text-sm">
-      <FaPlus /> Group
-    </button>
-    <button id="wd-add-assignment" type="button" className="inline-flex items-center gap-1 rounded bg-red-600 px-3 py-1.5 text-sm font-medium text-white">
-      <FaPlus /> Assignment
-    </button>
-  </div>
-</div>`,
+    code: `import "@/app/labs/lab2/tailwind/utilities.css";
+import { FaPlus, FaSearch } from "react-icons/fa";
+import AssignmentItem from "./AssignmentItem";
+
+export default async function Assignments({
+  params,
+}: {
+  params: Promise<{ cid: string }>;
+}) {
+  const { cid } = await params;
+  return (
+    <div id="wd-assignments">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+        <div className="relative">
+          <FaSearch className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-neutral-500" />
+          <input
+            placeholder="Search for Assignments"
+            id="wd-search-assignment"
+            className="rounded border py-1.5 pr-3 pl-9 text-sm"
+          />
+        </div>
+        <div className="flex gap-2">
+          <button
+            id="wd-add-assignment-group"
+            type="button"
+            className="inline-flex items-center gap-1 rounded border px-3 py-1.5 text-sm"
+          >
+            <FaPlus /> Group
+          </button>
+          <button
+            id="wd-add-assignment"
+            type="button"
+            className="inline-flex items-center gap-1 rounded bg-red-600 px-3 py-1.5 text-sm font-medium text-white"
+          >
+            <FaPlus /> Assignment
+          </button>
+        </div>
+      </div>
+      <h3
+        id="wd-assignments-title"
+        className="mb-3 flex items-center justify-between rounded bg-neutral-200 p-3 text-lg"
+      >
+        <span>ASSIGNMENTS 40% of Total</span>
+        <button type="button" className="rounded border bg-white px-2 py-0.5 text-sm">
+          <FaPlus />
+        </button>
+      </h3>
+      <ul id="wd-assignment-list" className="m-0 list-none p-0">
+        <AssignmentItem
+          cid={cid}
+          aid="123"
+          title="A1 - ENV + HTML"
+          details="Multiple Modules | Not available until May 6 at 12:00am | Due May 13 at 11:59pm | 100 pts"
+        />
+        {/* ...remaining AssignmentItems... */}
+      </ul>
+    </div>
+  );
+}`,
     codeLanguage: "tsx",
     codeFile: "app/(kambaz)/courses/[cid]/assignments/page.tsx",
+    codeAddedLines: [[1, 3], [5, 12], [39, 56]],
   },
   {
     id: "assignments-demo",
@@ -163,16 +205,20 @@ export default function AssignmentItem({
       "Replace the table with Tailwind form utilities: labels above, full-width inputs",
       "Cancel / Save still return to the assignments list (`wd-cancel`, `wd-save`)",
     ],
-    code: `export default function AssignmentEditor() {
+    code: `import Link from "next/link";
+
+export default function AssignmentEditor() {
   return (
     <div id="wd-assignments-editor">
       <label htmlFor="wd-name">Assignment Name</label>
       <input id="wd-name" defaultValue="A1 - ENV + HTML" />
       <br />
+      <br />
       <textarea id="wd-description">
         The assignment is available online Submit a link to the landing page of
         your Web application running on Vercel.
       </textarea>
+      <br />
       <table>
         <tbody>
           <tr>
@@ -183,8 +229,10 @@ export default function AssignmentItem({
               <input id="wd-points" defaultValue={100} />
             </td>
           </tr>
+          {/* ...remaining fields from Chapter 1... */}
         </tbody>
       </table>
+      <br />
       <Link href="/courses/1234/assignments" id="wd-cancel">Cancel</Link>{" "}
       <Link href="/courses/1234/assignments" id="wd-save">Save</Link>
     </div>
@@ -192,6 +240,7 @@ export default function AssignmentItem({
 }`,
     codeLanguage: "tsx",
     codeFile: "app/(kambaz)/courses/[cid]/assignments/[aid]/page.tsx",
+    codeAddedLines: [1, 9, 14, 25, 29],
   },
   {
     id: "next-up",

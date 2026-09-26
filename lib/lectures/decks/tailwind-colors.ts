@@ -7,7 +7,7 @@ export const TAILWIND_COLORS_SLIDES: LectureSlide[] = [
     kind: "title",
     bullets: [
       "Chapter 2 · Tailwind Colors",
-      "§2.3.3–2.3.5 · backgrounds, contrast, then filters",
+      "§2.3.3 · backgrounds and contrast",
     ],
   },
   {
@@ -54,57 +54,12 @@ export const TAILWIND_COLORS_SLIDES: LectureSlide[] = [
     embed: "tw-backgrounds",
   },
   {
-    id: "filters-purpose",
-    title: "Filters are utilities too",
-    kind: "content",
-    bullets: [
-      "§2.3.5: `blur-*`, `grayscale`, `brightness-*`, `contrast-*`",
-      "Apply the effect on the element — usually an image",
-      "Swap one class to change the strength. No extra CSS file",
-    ],
-  },
-  {
-    id: "filters-tsx",
-    title: "TailwindFilters.tsx",
-    kind: "content",
-    bullets: [
-      "Four copies of the same image, blur growing from none to `2xl`",
-      "The book’s PDF used Angel Falls; `reactjs.jpg` is enough to see the effect",
-    ],
-    code: `export default function TailwindFilters() {
-  const src = "/images/reactjs.jpg";
-  return (
-    <div>
-      <h3>Blurs</h3>
-      <div className="flex">
-        <img className="blur-none w-1/4" src={src} alt="blur none" />
-        <img className="blur-sm w-1/4" src={src} alt="blur sm" />
-        <img className="blur-lg w-1/4" src={src} alt="blur lg" />
-        <img className="blur-2xl w-1/4" src={src} alt="blur 2xl" />
-      </div>
-    </div>
-  );
-}`,
-    codeLanguage: "tsx",
-    codeFile: "app/labs/lab2/tailwind/TailwindFilters.tsx",
-  },
-  {
-    id: "filters-demo",
-    title: "Live blur row",
-    kind: "demo",
-    bullets: [
-      "`w-1/4` plus `flex` puts four images in one row",
-      "On your own: a second row with `grayscale` or `brightness-*`",
-    ],
-    embed: "tw-filters",
-  },
-  {
     id: "next-up",
-    title: "Next: flex and grid",
+    title: "Next: responsive prefixes",
     kind: "title",
     bullets: [
-      "You can paint a band and blur an image with one class each",
-      "§2.3.6: `flex` / `grow` the Tailwind way, then `grid` + `col-span-*`",
+      "You can paint a band with `bg-{color}-{shade}` and a contrasting `text-*`",
+      "§2.3.4: mobile-first `md:` / `lg:` — then filters, then grid",
     ],
   },
 ];

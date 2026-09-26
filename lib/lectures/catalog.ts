@@ -492,7 +492,7 @@ const LECTURE_SUMMARIES: Record<
   "tailwind-colors": {
     title: "Tailwind Colors",
     summary:
-      "bg-{color}-{shade} bands plus blur filter utilities from Lab 2 — §2.3.3 and §2.3.5.",
+      "bg-{color}-{shade} bands from TailwindBackgroundColors — §2.3.3.",
     chapter: 2,
     canvasLecture: 6,
     topicId: "tailwind",
@@ -500,9 +500,9 @@ const LECTURE_SUMMARIES: Record<
     slides: TAILWIND_COLORS_SLIDES,
   },
   "tailwind-flex-and-grid": {
-    title: "Tailwind Flex and Grid",
+    title: "Tailwind Filters and Grid",
     summary:
-      "flex / grow / shrink-0 and grid-cols / col-span — the Tailwind spelling of Lecture 4 layout.",
+      "blur utilities, then grid-cols / col-span — §2.3.5 and §2.3.6. A flex-class map follows.",
     chapter: 2,
     canvasLecture: 6,
     topicId: "tailwind",

@@ -83,10 +83,15 @@ export default function TailwindLab() {
     title: "Link it from Lab 2",
     kind: "content",
     bullets: [
-      "Add a link to `/labs/lab2/tailwind` on the main Lab 2 page",
+      "The book says this in prose: link `/labs/lab2/tailwind` from the Lab 2 page",
       "Both routes stay in the Labs TOC — CSS first, then utilities",
       "Work through spacing, type, color, responsive, filters, and grid one component at a time",
     ],
+    code: `<p>
+  <Link href="/labs/lab2/tailwind">Open Tailwind CSS lab →</Link>
+</p>`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/page.tsx",
   },
   {
     id: "not-bootstrap",

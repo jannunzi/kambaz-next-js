@@ -30,7 +30,10 @@ export const KAMBAZ_DASHBOARD_STYLING_SLIDES: LectureSlide[] = [
       "`truncate` + `whitespace-nowrap` keeps long titles on one line",
       "`h-40 w-full object-cover` crops the `next/image` photo",
     ],
-    code: `export default function CourseCard({
+    code: `import Link from "next/link";
+import Image from "next/image";
+
+export default function CourseCard({
   id, title, subtitle, image,
 }: {
   id: string;
@@ -71,6 +74,7 @@ export const KAMBAZ_DASHBOARD_STYLING_SLIDES: LectureSlide[] = [
 }`,
     codeLanguage: "tsx",
     codeFile: "app/(kambaz)/dashboard/CourseCard.tsx",
+    codeAddedLines: [[1, 2]],
   },
   {
     id: "grid",
