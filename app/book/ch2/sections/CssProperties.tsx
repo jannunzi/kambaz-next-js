@@ -851,27 +851,24 @@ export default function BoxModel() {
 .wd-pos-relative {
   position: relative;
 }`}</CodeBlock>
-        <p>
-          The relative, absolute, and fixed snippets in this section and the
-          next two all go inside one wrapper <code>&lt;div&gt;</code>{" "}in{" "}
-          <code>Positions.tsx</code>.
-        </p>
         <CodeBlock
           language="tsx"
           name="Positions"
           file="app/labs/lab2/Positions.tsx"
         >{`export default function Positions() {
   return (
-    <div id="wd-css-position-relative">
-      <h2>Relative</h2>
-      <div className="wd-bg-color-gray">
-        <div className="wd-bg-color-yellow wd-dimension-portrait">
-          <div className="wd-pos-relative-nudge-down-right">Portrait</div>
+    <div id="wd-css-positions">
+      <div id="wd-css-position-relative">
+        <h2>Relative</h2>
+        <div className="wd-bg-color-gray">
+          <div className="wd-bg-color-yellow wd-dimension-portrait">
+            <div className="wd-pos-relative-nudge-down-right">Portrait</div>
+          </div>
+          <div className="wd-pos-relative-nudge-up-right wd-bg-color-blue wd-fg-color-white wd-dimension-landscape">
+            Landscape
+          </div>
+          <div className="wd-bg-color-red wd-dimension-square">Square</div>
         </div>
-        <div className="wd-pos-relative-nudge-up-right wd-bg-color-blue wd-fg-color-white wd-dimension-landscape">
-          Landscape
-        </div>
-        <div className="wd-bg-color-red wd-dimension-square">Square</div>
       </div>
     </div>
   );
@@ -935,7 +932,8 @@ export default function BoxModel() {
   left: 120px;
 }`}</CodeBlock>
         <p>
-          Add this snippet inside that same wrapper <code>&lt;div&gt;</code>.
+          Paste this block inside <code>#wd-css-positions</code>, after the
+          previous section.
         </p>
         <CodeBlock
           language="tsx"
@@ -1001,8 +999,8 @@ export default function BoxModel() {
   bottom: 50%;
 }`}</CodeBlock>
         <p>
-          Add this snippet inside the same wrapper <code>&lt;div&gt;</code>{" "}
-          as the other two.
+          Paste this block inside <code>#wd-css-positions</code>, after the
+          previous section.
         </p>
         <CodeBlock
           language="tsx"
