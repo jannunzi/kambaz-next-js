@@ -2422,7 +2422,10 @@ export default function LabsLayout({
           prompt={`In app/labs/TOC.tsx, keep any personal name or motto I added. Add a Next.js Link to /book/ch1 labeled "Chapter 1" (id wd-toc-book-link) with the other lab links. Do not change the layout table in layout.tsx.`}
         >
           Ask the assistant to add a Chapter 1 link in the TOC — leave your
-          name or motto as the personal bit:
+          name or motto as the personal bit. This link is expected to 404 in
+          your own app (your app does not have the course-book routes), and
+          the A1 check only looks for the id <code>wd-toc-book-link</code> with
+          the label &quot;Chapter 1&quot;, not for a working destination:
         </WithAI>
       </Section>
 
