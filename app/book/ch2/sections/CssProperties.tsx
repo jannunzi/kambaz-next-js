@@ -470,7 +470,7 @@ export default function Lab2() {
 .wd-box-sizing-content,
 .wd-box-sizing-border {
   width: 200px;
-  height: 130px;
+  height: 180px;
   padding: 20px;
   border: 10px solid #c41e3a;
   background-color: #ffff07;
@@ -491,7 +491,7 @@ export default function Lab2() {
     <div
       className="wd-devtools-box"
       role="img"
-      aria-label="Box model of the content-box sample: margin 0, 0, 10, 0; border 10; padding 20; content 200 by 130"
+      aria-label="Box model of the content-box sample: margin 0, 0, 10, 0; border 10; padding 20; content 200 by 180"
     >
       <div className="wd-bm-margin">
         <span className="wd-bm-label">margin</span>
@@ -511,7 +511,7 @@ export default function Lab2() {
             <span className="wd-bm-left">20</span>
             <span className="wd-bm-right">20</span>
             <span className="wd-bm-bottom">20</span>
-            <div className="wd-bm-content">200×130</div>
+            <div className="wd-bm-content">200×180</div>
           </div>
         </div>
       </div>
@@ -543,13 +543,13 @@ export default function BoxModel() {
           boxes set <code>margin-bottom: 10px</code> (the other margins stay
           0), a 10px border, and 20px of padding, so those rings read 0, 10,
           10, and 20. The shared rule also sets <code>width: 200px</code> and{" "}
-          <code>height: 130px</code>. Under <code>content-box</code> those
-          lengths are the content box, so the center reads <code>200×130</code>.
+          <code>height: 180px</code>. Under <code>content-box</code> those
+          lengths are the content box, so the center reads <code>200×180</code>.
           The <code>border-box</code> box uses the same width, height, padding,
-          and border, so its content box is <code>140×70</code> (200 − 40
-          padding − 20 border wide, and 130 − 40 − 20 tall). On screen the
-          content-box box measures 260×190 (200 + 40 + 20 by 130 + 40 + 20)
-          and the border-box box stays 200×130:
+          and border, so its content box is <code>140×120</code> (200 − 40
+          padding − 20 border wide, and 180 − 40 − 20 tall). On screen the
+          content-box box measures 260×240 (200 + 40 + 20 by 180 + 40 + 20)
+          and the border-box box stays 200×180:
         </p>
         <LiveDemo mode="styled" name="BoxModel" file="app/labs/lab2/BoxModel.tsx">
           <BoxModel />
