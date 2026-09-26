@@ -380,7 +380,7 @@ export default function Lab2() {
   box-sizing: border-box;
   width: 100%;
   max-width: 34rem;
-  color: #1a1a1a;
+  color: #222;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
     Arial, sans-serif;
   font-size: clamp(12px, 2.5vw, 14px);
@@ -400,7 +400,7 @@ export default function Lab2() {
 }
 .wd-devtools-box .wd-bm-margin {
   background-color: #f9cc9d;
-  border: 1px dashed #333;
+  border: 1px dashed #222;
 }
 .wd-devtools-box .wd-bm-border,
 .wd-devtools-box .wd-bm-padding,
@@ -408,13 +408,14 @@ export default function Lab2() {
   grid-column: 2;
   grid-row: 2;
   min-width: 0;
-  background-color: #fff;
 }
 .wd-devtools-box .wd-bm-border {
-  border: 1px solid #000;
+  background-color: #fddd9b;
+  border: 1px solid #222;
 }
 .wd-devtools-box .wd-bm-padding {
-  border: 1px dashed #000;
+  background-color: #c3d08b;
+  border: 1px dashed #222;
 }
 .wd-devtools-box .wd-bm-content {
   display: flex;
@@ -422,7 +423,8 @@ export default function Lab2() {
   justify-content: center;
   min-height: 2.75rem;
   padding: 0.45rem 0.6rem;
-  border: 1px solid #000;
+  background-color: #8cb6c0;
+  border: 1px solid #222;
   text-align: center;
   white-space: nowrap;
 }
@@ -535,7 +537,8 @@ export default function BoxModel() {
 }`}</CodeBlock>
         <p>
           The figure is the box model the way DevTools draws it: a tan margin,
-          then border, padding, and the content size in the center. Its numbers
+          a yellow border, a green padding ring, and a blue content box in the
+          center. Its numbers
           match the sample below — margin 0 on the top, left, and right and 10
           on the bottom (<code>margin-bottom: 10px</code>), a 10px border, 20px
           of padding, and a 200px content width. The center reads{" "}
