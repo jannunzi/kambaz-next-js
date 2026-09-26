@@ -382,10 +382,13 @@ export default function Lab2() {
   padding: 20px;
   margin: 10px 0;
 }
+.wd-box-model-border-label {
+  color: #c41e3a;
+  font-weight: 600;
+  margin: 4px 0 2px;
+}
 .wd-box-model-border {
-  background-color: #fff3cd;
   border: 10px solid #c41e3a;
-  padding: 20px;
 }
 .wd-box-model-padding {
   background-color: #cfe2ff;
@@ -423,8 +426,8 @@ export default function Lab2() {
       <h2>Box model</h2>
       <div className="wd-box-model-margin">
         margin
+        <div className="wd-box-model-border-label">border ↓</div>
         <div className="wd-box-model-border">
-          border
           <div className="wd-box-model-padding">
             padding
             <div className="wd-box-model-content">content</div>
@@ -444,7 +447,9 @@ export default function Lab2() {
   );
 }`}</CodeBlock>
         <p>
-          The nested labels walk outward through the four layers. Below them,
+          The nested labels walk outward through the four layers. The label{" "}
+          <code>border</code>{" "}sits in the pink margin, in the same red as the
+          line, with an arrow pointing at that line. Below them,
           both yellow boxes declare <code>width: 200px</code>,{" "}
           <code>padding: 20px</code>, and a 10px border — but the{" "}
           <code>content-box</code>{" "}box is visibly wider (200 + 40 padding +

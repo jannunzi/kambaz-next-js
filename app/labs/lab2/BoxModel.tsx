@@ -4,8 +4,8 @@ export default function BoxModel() {
       <h2>Box model</h2>
       <div className="wd-box-model-margin">
         margin
+        <div className="wd-box-model-border-label">border ↓</div>
         <div className="wd-box-model-border">
-          border
           <div className="wd-box-model-padding">
             padding
             <div className="wd-box-model-content">content</div>
