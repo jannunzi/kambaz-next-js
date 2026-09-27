@@ -306,7 +306,7 @@ export default function TailwindLab() {
 }`}</CodeBlock>
         <p>
           Four bands of color render top to bottom — the same{" "}
-          <code>-500</code>{" "}shade across red, green, and blue, but
+          <code>-500</code>{" "}shade across red, green, and blue, but{" "}
           <code>yellow-500</code>{" "}is light enough that it needs black text
           instead of white to stay legible:
         </p>
@@ -338,7 +338,7 @@ export default function TailwindLab() {
           applies at every width, while a class prefixed with a breakpoint
           like <code>md:</code>{" "}only takes effect once the viewport reaches
           that breakpoint and up. Save an image of the React logo to{" "}
-          <code>public/images/reactjs.jpg</code>{" "}(already available from
+          <code>public/images/reactjs.jpg</code>{" "}(already available from{" "}
           <ChapterLink to={1} />&apos;s Kambaz Dashboard exercise) and build a card that
           stacks vertically on narrow screens but switches to a side-by-side
           layout at the <code>md</code>{" "}breakpoint:
