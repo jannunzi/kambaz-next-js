@@ -49,7 +49,8 @@ describe("book responsive previews", () => {
     assert.match(book, /defaultWidth=\{768\}/);
     assert.match(student, /md:flex/);
     assert.match(student, /md:shrink-0/);
-    assert.match(student, /md:h-full md:w-48/);
+    assert.match(student, /h-56 w-full object-cover/);
+    assert.match(student, /md:h-full md:min-h-56 md:w-48/);
     assert.match(student, /An in-depth study of the fundamentals of rocket propulsion/);
     assert.match(student, /\/images\/reactjs\.jpg/);
     const source = student.trim();
