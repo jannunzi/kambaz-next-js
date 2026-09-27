@@ -106,12 +106,14 @@ export async function runChecker(
       if (probe.ok && probe.status === 200) {
         passed = true;
         message = branch.passMessage;
-      } else if (probe.status === 404) {
+      } else if (!probe.ok && probe.status === 404) {
         passed = false;
         message = branch.notFoundMessage;
       } else {
         passed = false;
-        message = probe.message || branch.notFoundMessage;
+        message = probe.ok
+          ? `GitHub /tree/a2 responded HTTP ${probe.status}, not 200.`
+          : probe.message || branch.notFoundMessage;
       }
     }
     results.push(
