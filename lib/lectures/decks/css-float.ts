@@ -52,15 +52,29 @@ export const CSS_FLOAT_SLIDES: LectureSlide[] = [
       "A gray card floats right so text can wrap the other way",
       "The empty `wd-float-done` div ends the wrap",
     ],
-    code: `<div className="wd-float-left wd-dimension-portrait wd-bg-color-yellow">
-  Yellow
-</div>
-<div className="wd-float-left wd-dimension-portrait wd-bg-color-blue wd-fg-color-white">
-  Blue
-</div>
-<div className="wd-float-done" />`,
+    code: `<div id="wd-float-divs">
+  <h2>Float</h2>
+  <div>
+    <div className="wd-float-left wd-dimension-portrait wd-bg-color-yellow">
+      Yellow
+    </div>
+    <div className="wd-float-left wd-dimension-portrait wd-bg-color-blue wd-fg-color-white">
+      Blue
+    </div>
+    <div className="wd-float-left wd-dimension-portrait wd-bg-color-red">
+      Red
+    </div>
+    <div className="wd-float-right wd-dimension-square wd-bg-color-gray">
+      Wrap
+    </div>
+    <p>
+      Floated boxes leave the normal stack so this paragraph can sit
+      beside them. Lab 2 uses the same <code>wd-float-left</code> and <code>wd-float-right</code> classes.
+    </p>
+    <div className="wd-float-done" />
+  </div>
+</div>`,
     codeLanguage: "tsx",
-    codeFile: "app/labs/lab2/Float.tsx",
     embed: "css-float",
   },
   {
@@ -92,14 +106,32 @@ export const CSS_FLOAT_SLIDES: LectureSlide[] = [
       "Row 1: `wd-grid-col-half-page` twice",
       "Row 2: 20% / 60% / 20% — sidebar, main, sidebar",
     ],
-    code: `<div className="wd-grid-row">
-  <div className="wd-grid-col-half-page wd-bg-color-yellow">
-    <h3>Left half</h3>
-  </div>
-  <div className="wd-grid-col-half-page wd-bg-color-blue wd-fg-color-white">
-    <h3>Right half</h3>
-  </div>
-</div>`,
+    code: `export default function GridLayout() {
+  return (
+    <div id="wd-css-grid-layout">
+      <h2>Grid layout</h2>
+      <div className="wd-grid-row">
+        <div className="wd-grid-col-half-page wd-bg-color-yellow">
+          <h3>Left half</h3>
+        </div>
+        <div className="wd-grid-col-half-page wd-bg-color-blue wd-fg-color-white">
+          <h3>Right half</h3>
+        </div>
+      </div>
+      <div className="wd-grid-row">
+        <div className="wd-grid-col-left-sidebar wd-bg-color-yellow">
+          <h3>Side bar</h3>
+        </div>
+        <div className="wd-grid-col-main-content wd-bg-color-blue wd-fg-color-white">
+          <h3>Main content</h3>
+        </div>
+        <div className="wd-grid-col-right-sidebar wd-bg-color-green wd-fg-color-white">
+          <h3>Side bar</h3>
+        </div>
+      </div>
+    </div>
+  );
+}`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/GridLayout.tsx",
   },

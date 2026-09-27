@@ -57,14 +57,23 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
             <div className="text-sm font-semibold tracking-wide text-indigo-500 uppercase">
               Professional Courses
             </div>
-            <a href="#" className="mt-1 block text-lg leading-tight font-medium text-black hover:underline">
+            <a
+              href="#"
+              className="mt-1 block text-lg leading-tight font-medium text-black hover:underline"
+            >
               Rocket Propulsion Fundamentals
             </a>
             <p className="mt-2 text-gray-500">
-              An in-depth study of the fundamentals of rocket propulsion...
+              This course provides an in-depth study of the fundamentals of rocket
+              propulsion, covering topics such as propulsion theory, engine types,
+              fuel chemistry, and the practical applications of rocket technology.
+              Designed for students with a strong background in physics and
+              engineering, the course includes both theoretical instruction and
+              hands-on laboratory work
             </p>
           </div>
         </div>
+        <br />
       </div>
     </div>
   );

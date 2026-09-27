@@ -964,11 +964,61 @@ export default function Lab2() {
   </div>
 </div>`}</CodeBlock>
         <p>
-          Combined into one <code>Positions.tsx</code>{" "}component, the relative,
-          absolute, and fixed demos all render together — scroll this figure
-          and the blue &quot;Fixed position&quot; square stays glued to the
-          right edge instead of scrolling away with the rest of the content:
+          Finished <code>Positions.tsx</code> puts the relative, absolute, and
+          fixed sections in one component. That file is what the figure
+          renders — scroll it and the blue &quot;Fixed position&quot; square
+          stays glued to the right edge instead of scrolling away with the rest
+          of the content:
         </p>
+        <CodeBlock
+          language="tsx"
+          name="Positions"
+          file="app/labs/lab2/Positions.tsx"
+        >{`export default function Positions() {
+  return (
+    <div id="wd-css-positions">
+      <h2>Positions</h2>
+      <div id="wd-css-position-relative">
+        <h2>Relative</h2>
+        <div className="wd-bg-color-gray">
+          <div className="wd-bg-color-yellow wd-dimension-portrait">
+            <div className="wd-pos-relative-nudge-down-right">Portrait</div>
+          </div>
+          <div className="wd-pos-relative-nudge-up-right wd-bg-color-blue wd-fg-color-white wd-dimension-landscape">
+            Landscape
+          </div>
+          <div className="wd-bg-color-red wd-dimension-square">Square</div>
+        </div>
+      </div>
+
+      <div id="wd-css-position-absolute">
+        <h2>Absolute position</h2>
+        <div className="wd-pos-relative" style={{ height: 150 }}>
+          <div className="wd-pos-absolute-10-10 wd-bg-color-yellow wd-dimension-portrait">
+            Portrait
+          </div>
+          <div className="wd-pos-absolute-50-50 wd-bg-color-blue wd-fg-color-white wd-dimension-landscape">
+            Landscape
+          </div>
+          <div className="wd-pos-absolute-120-20 wd-bg-color-red wd-dimension-square">
+            Square
+          </div>
+        </div>
+        <br /><br /><br /><br /><br /><br /><br />
+      </div>
+
+      <div id="wd-css-position-fixed">
+        <h2>Fixed position</h2>
+        Checkout the blue square that says &quot;Fixed position&quot; stuck all the way
+        on the right and half way down the page. It doesn&apos;t scroll with the
+        rest of the page. Its position is &quot;Fixed&quot;.
+        <div className="wd-pos-fixed wd-dimension-square wd-bg-color-blue wd-fg-color-white">
+          Fixed position
+        </div>
+      </div>
+    </div>
+  );
+}`}</CodeBlock>
         <LiveDemo mode="styled" name="Positions" file="app/labs/lab2/Positions.tsx">
           <ContainFixed height={200}>
             <PositionFixed />
@@ -1034,6 +1084,7 @@ export default function Lab2() {
           Square
         </div>
       </div>
+      <br /><br /><br /><br /><br /><br /><br />
     </div>
   );
 }`}</CodeBlock>
@@ -1103,7 +1154,14 @@ img.wd-float-right {
           language="tsx"
           name="Float"
           file="app/labs/lab2/Float.tsx"
-        >{`export default function Float() {
+        >{`import "./index.css";
+
+const STARSHIP =
+  "https://www.staradvertiser.com/wp-content/uploads/2021/08/web1_Starship-gap2.jpg";
+const LOREM =
+  "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eius hic reprehenderit doloremque adipisci iste deserunt. Inventore, hic. Esse nihil unde aut, dignissimos eos consequatur veniam distinctio?";
+
+export default function Float() {
   return (
     <div id="wd-float-divs">
       <h2>Float</h2>
@@ -1112,6 +1170,23 @@ img.wd-float-right {
         {LOREM} {LOREM}
         <img className="wd-float-left" src={STARSHIP} alt="Starship" />
         {LOREM} {LOREM}
+        <img className="wd-float-right" src={STARSHIP} alt="Starship" />
+        {LOREM} {LOREM}
+        <img className="wd-float-left" src={STARSHIP} alt="Starship" />
+        {LOREM} {LOREM}
+        <div className="wd-float-done" />
+      </div>
+      <div>
+        <div className="wd-float-left wd-dimension-portrait wd-bg-color-yellow">
+          Yellow
+        </div>
+        <div className="wd-float-left wd-dimension-portrait wd-bg-color-blue wd-fg-color-white">
+          Blue
+        </div>
+        <div className="wd-float-left wd-dimension-portrait wd-bg-color-red">
+          Red
+        </div>
+        <img className="wd-float-right" src={STARSHIP} alt="Starship" />
         <div className="wd-float-done" />
       </div>
     </div>
@@ -1344,7 +1419,9 @@ img.wd-float-right {
           language="tsx"
           name="Flex"
           file="app/labs/lab2/Flex.tsx"
-        >{`export default function Flex() {
+        >{`import "./index.css";
+
+export default function Flex() {
   return (
     <div id="wd-css-flex">
       <h2>Flex</h2>

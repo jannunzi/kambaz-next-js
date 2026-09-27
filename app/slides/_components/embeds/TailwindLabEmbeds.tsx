@@ -69,7 +69,7 @@ export function TailwindFiltersEmbed() {
 export function TailwindFlexEmbed() {
   return (
     <TailwindDemo label="flex / grow / shrink-0">
-      <div id="wd-tw-flex" className="flex flex-row gap-0">
+      <div className="flex flex-row">
         <div className="w-[110px] shrink-0 bg-yellow-300 p-2.5">Column 1</div>
         <div className="bg-blue-400 p-2.5 text-white">Column 2</div>
         <div className="grow bg-red-400 p-2.5 text-white">Column 3</div>

@@ -50,7 +50,8 @@ export default function IconsAndTailwind() {
           language="tsx"
           name="ReactIconsSampler"
           file="app/labs/lab2/ReactIconsSampler.tsx"
-        >{`import { FaCalendar, FaEnvelopeOpenText, FaRegClock } from "react-icons/fa";
+        >{`import "@/app/labs/lab2/tailwind/utilities.css";
+import { FaCalendar, FaEnvelopeOpenText, FaRegClock } from "react-icons/fa";
 import { AiOutlineDashboard } from "react-icons/ai";
 import { FaBookBible } from "react-icons/fa6";
 import { VscAccount } from "react-icons/vsc";
@@ -234,9 +235,19 @@ export default function TailwindLab() {
     <div>
       <h2 className="text-3xl">Font Size</h2>
       <p className="text-sm">This is small text.</p>
+      <p className="text-base">This is base text.</p>
+      <p className="text-lg">This is large text.</p>
+      <p className="text-xl">This is extra large text.</p>
+      <p className="text-2xl">This is 2x extra large text.</p>
       <p className="text-3xl">This is 3x extra large text.</p>
       <h2 className="text-3xl font-bold mt-4">Font Weight</h2>
       <p className="font-thin">This is thin font weight.</p>
+      <p className="font-light">This is light font weight.</p>
+      <p className="font-normal">This is normal font weight.</p>
+      <p className="font-medium">This is medium font weight.</p>
+      <p className="font-semibold">This is semi-bold font weight.</p>
+      <p className="font-bold">This is bold font weight.</p>
+      <p className="font-extrabold">This is extra-bold font weight.</p>
       <p className="font-black">This is black font weight.</p>
     </div>
   );
@@ -353,14 +364,23 @@ export default function TailwindLab() {
             <div className="text-sm font-semibold tracking-wide text-indigo-500 uppercase">
               Professional Courses
             </div>
-            <a href="#" className="mt-1 block text-lg leading-tight font-medium text-black hover:underline">
+            <a
+              href="#"
+              className="mt-1 block text-lg leading-tight font-medium text-black hover:underline"
+            >
               Rocket Propulsion Fundamentals
             </a>
             <p className="mt-2 text-gray-500">
-              An in-depth study of the fundamentals of rocket propulsion...
+              This course provides an in-depth study of the fundamentals of rocket
+              propulsion, covering topics such as propulsion theory, engine types,
+              fuel chemistry, and the practical applications of rocket technology.
+              Designed for students with a strong background in physics and
+              engineering, the course includes both theoretical instruction and
+              hands-on laboratory work
             </p>
           </div>
         </div>
+        <br />
       </div>
     </div>
   );
@@ -409,6 +429,8 @@ export default function TailwindLab() {
           name="TailwindFilters"
           file="app/labs/lab2/tailwind/TailwindFilters.tsx"
         >{`export default function TailwindFilters() {
+  // Download angel-falls.jpg into public/images for the PDF exercise;
+  // reactjs.jpg is used here so the lab runs out of the box.
   const src = "/images/reactjs.jpg";
   return (
     <div>
@@ -454,7 +476,34 @@ export default function TailwindLab() {
           Tailwind also wraps CSS Grid in utility classes:{" "}
           <code>grid grid-cols-4 gap-4</code>{" "}turns a container into a
           four-column grid with consistent gutters, and children automatically
-          wrap onto new rows once a row fills up:
+          wrap onto new rows once a row fills up. The four-column section of{" "}
+          <code>TailwindGrids.tsx</code> is:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="TailwindGrids"
+          file="app/labs/lab2/tailwind/TailwindGrids.tsx"
+        >{`<h2>Tailwind Grids</h2>
+<div>
+  <h3 className="mt-6 text-3xl font-bold">4 Columns Grid</h3>
+  <div className="grid grid-cols-4 gap-4">
+    {Array.from({ length: 9 }, (_, i) => (
+      <div key={i} className="text-center bg-blue-300 p-3">
+        {String(i + 1).padStart(2, "0")}
+      </div>
+    ))}
+  </div>
+</div>`}</CodeBlock>
+        <p>
+          Nine numbered cells flow across four columns and wrap onto a third
+          row for the last one — no manual row-breaking required. The same
+          file continues with a three-column grid, where{" "}
+          <code>col-span-2</code> stretches two cells across two tracks, then
+          a Grid system section that mixes an even two-column split with a
+          twelve-column split for a one-third/two-thirds layout and a
+          sidebar/content/sidebar layout — the same page layouts{" "}
+          <SectionLink to="2.1.18" /> built with float, this time with Grid.
+          The finished component is what the figure renders:
         </p>
         <CodeBlock
           language="tsx"
@@ -463,48 +512,62 @@ export default function TailwindLab() {
         >{`export default function TailwindGrids() {
   return (
     <div>
-      <h3 className="mt-6 text-3xl font-bold">4 Columns Grid</h3>
-      <div className="grid grid-cols-4 gap-4">
-        {Array.from({ length: 9 }, (_, i) => (
-          <div key={i} className="text-center bg-blue-300 p-3">
-            {String(i + 1).padStart(2, "0")}
+      <h2>Tailwind Grids</h2>
+      <div>
+        <h3 className="mt-6 text-3xl font-bold">4 Columns Grid</h3>
+        <div className="grid grid-cols-4 gap-4">
+          {Array.from({ length: 9 }, (_, i) => (
+            <div key={i} className="text-center bg-blue-300 p-3">
+              {String(i + 1).padStart(2, "0")}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div>
+        <h3 className="mt-6 text-3xl font-bold">3 Columns Grid</h3>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="text-center bg-blue-300 p-3">01</div>
+          <div className="text-center bg-blue-300 p-3">02</div>
+          <div className="text-center bg-blue-300 p-3">03</div>
+          <div className="col-span-2 text-center bg-blue-300 p-3">04</div>
+          <div className="text-center bg-blue-300 p-3">05</div>
+          <div className="text-center bg-blue-300 p-3">06</div>
+          <div className="col-span-2 text-center bg-blue-300 p-3">07</div>
+        </div>
+      </div>
+      <div id="wd-tailwind-grid-system" className="mt-6">
+        <h2>Grid system</h2>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="bg-red-500 text-white">
+            <h3>Left half</h3>
           </div>
-        ))}
+          <div className="bg-blue-500 text-white">
+            <h3>Right half</h3>
+          </div>
+        </div>
+        <div className="grid grid-cols-12 gap-2 mt-2">
+          <div className="col-span-4 bg-yellow-500">
+            <h3>One third</h3>
+          </div>
+          <div className="col-span-8 bg-green-500 text-white">
+            <h3>Two thirds</h3>
+          </div>
+        </div>
+        <div className="grid grid-cols-12 gap-2 mt-2">
+          <div className="col-span-2 bg-black text-white">
+            <h3>Sidebar</h3>
+          </div>
+          <div className="col-span-8 bg-gray-500 text-white">
+            <h3>Main content</h3>
+          </div>
+          <div className="col-span-2 bg-blue-400">
+            <h3>Sidebar</h3>
+          </div>
+        </div>
       </div>
     </div>
   );
 }`}</CodeBlock>
-        <p>
-          Nine numbered cells flow across four columns and wrap onto a third
-          row for the last one — no manual row-breaking required:
-        </p>
-        <p>
-          A single class can also span multiple grid columns with{" "}
-          <code>col-span-{"{n}"}</code>. Append a &quot;Grid system&quot;
-          demo to the same file that mixes an even two-column split with a
-          twelve-column split for a one-third/two-thirds layout and a
-          sidebar/content/sidebar layout — the same page layouts <SectionLink to="2.1.18" />{" "}built with float, this time with Grid:
-        </p>
-        <CodeBlock
-          language="tsx"
-          name="TailwindGrids"
-          file="app/labs/lab2/tailwind/TailwindGrids.tsx"
-        >{`<div id="wd-tailwind-grid-system" className="mt-6">
-  <h2>Grid system</h2>
-  <div className="grid grid-cols-2 gap-2">
-    <div className="bg-red-500 text-white"><h3>Left half</h3></div>
-    <div className="bg-blue-500 text-white"><h3>Right half</h3></div>
-  </div>
-  <div className="grid grid-cols-12 gap-2 mt-2">
-    <div className="col-span-4 bg-yellow-500"><h3>One third</h3></div>
-    <div className="col-span-8 bg-green-500 text-white"><h3>Two thirds</h3></div>
-  </div>
-  <div className="grid grid-cols-12 gap-2 mt-2">
-    <div className="col-span-2 bg-black text-white"><h3>Sidebar</h3></div>
-    <div className="col-span-8 bg-gray-500 text-white"><h3>Main content</h3></div>
-    <div className="col-span-2 bg-blue-400"><h3>Sidebar</h3></div>
-  </div>
-</div>`}</CodeBlock>
         <p>
           A twelve-column grid is the sweet spot for page layout because
           twelve divides evenly by two, three, four, and six — which is why{" "}

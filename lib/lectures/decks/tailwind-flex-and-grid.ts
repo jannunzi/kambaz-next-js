@@ -55,20 +55,17 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
       "`grid grid-cols-4 gap-4` — four columns, consistent gutters",
       "Nine cells wrap onto a third row. No manual row break",
     ],
-    code: `export default function TailwindGrids() {
-  return (
-    <div>
-      <h3 className="mt-6 text-3xl font-bold">4 Columns Grid</h3>
-      <div className="grid grid-cols-4 gap-4">
-        {Array.from({ length: 9 }, (_, i) => (
-          <div key={i} className="text-center bg-blue-300 p-3">
-            {String(i + 1).padStart(2, "0")}
-          </div>
-        ))}
+    code: `<h2>Tailwind Grids</h2>
+<div>
+  <h3 className="mt-6 text-3xl font-bold">4 Columns Grid</h3>
+  <div className="grid grid-cols-4 gap-4">
+    {Array.from({ length: 9 }, (_, i) => (
+      <div key={i} className="text-center bg-blue-300 p-3">
+        {String(i + 1).padStart(2, "0")}
       </div>
-    </div>
-  );
-}`,
+    ))}
+  </div>
+</div>`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/tailwind/TailwindGrids.tsx",
   },
@@ -77,26 +74,69 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
     title: "col-span on a 12-column grid",
     kind: "content",
     bullets: [
-      "Twelve divides by 2, 3, 4, and 6 — that is why page layouts use 12",
-      "`col-span-4` + `col-span-8` = one third / two thirds",
-      "Sidebar / content / sidebar = `2 / 8 / 2`",
+      "The listing is the whole `TailwindGrids.tsx` the next figure renders",
+      "A 3-column grid uses `col-span-2` on two of the cells",
+      "Twelve divides by 2, 3, 4, and 6 — `col-span-4` + `col-span-8`, then `2 / 8 / 2`",
     ],
-    code: `<div id="wd-tailwind-grid-system" className="mt-6">
-  <h2>Grid system</h2>
-  <div className="grid grid-cols-2 gap-2">
-    <div className="bg-red-500 text-white"><h3>Left half</h3></div>
-    <div className="bg-blue-500 text-white"><h3>Right half</h3></div>
-  </div>
-  <div className="grid grid-cols-12 gap-2 mt-2">
-    <div className="col-span-4 bg-yellow-500"><h3>One third</h3></div>
-    <div className="col-span-8 bg-green-500 text-white"><h3>Two thirds</h3></div>
-  </div>
-  <div className="grid grid-cols-12 gap-2 mt-2">
-    <div className="col-span-2 bg-black text-white"><h3>Sidebar</h3></div>
-    <div className="col-span-8 bg-gray-500 text-white"><h3>Main content</h3></div>
-    <div className="col-span-2 bg-blue-400"><h3>Sidebar</h3></div>
-  </div>
-</div>`,
+    code: `export default function TailwindGrids() {
+  return (
+    <div>
+      <h2>Tailwind Grids</h2>
+      <div>
+        <h3 className="mt-6 text-3xl font-bold">4 Columns Grid</h3>
+        <div className="grid grid-cols-4 gap-4">
+          {Array.from({ length: 9 }, (_, i) => (
+            <div key={i} className="text-center bg-blue-300 p-3">
+              {String(i + 1).padStart(2, "0")}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div>
+        <h3 className="mt-6 text-3xl font-bold">3 Columns Grid</h3>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="text-center bg-blue-300 p-3">01</div>
+          <div className="text-center bg-blue-300 p-3">02</div>
+          <div className="text-center bg-blue-300 p-3">03</div>
+          <div className="col-span-2 text-center bg-blue-300 p-3">04</div>
+          <div className="text-center bg-blue-300 p-3">05</div>
+          <div className="text-center bg-blue-300 p-3">06</div>
+          <div className="col-span-2 text-center bg-blue-300 p-3">07</div>
+        </div>
+      </div>
+      <div id="wd-tailwind-grid-system" className="mt-6">
+        <h2>Grid system</h2>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="bg-red-500 text-white">
+            <h3>Left half</h3>
+          </div>
+          <div className="bg-blue-500 text-white">
+            <h3>Right half</h3>
+          </div>
+        </div>
+        <div className="grid grid-cols-12 gap-2 mt-2">
+          <div className="col-span-4 bg-yellow-500">
+            <h3>One third</h3>
+          </div>
+          <div className="col-span-8 bg-green-500 text-white">
+            <h3>Two thirds</h3>
+          </div>
+        </div>
+        <div className="grid grid-cols-12 gap-2 mt-2">
+          <div className="col-span-2 bg-black text-white">
+            <h3>Sidebar</h3>
+          </div>
+          <div className="col-span-8 bg-gray-500 text-white">
+            <h3>Main content</h3>
+          </div>
+          <div className="col-span-2 bg-blue-400">
+            <h3>Sidebar</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/tailwind/TailwindGrids.tsx",
   },
@@ -105,7 +145,7 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
     title: "Live Tailwind grids",
     kind: "demo",
     bullets: [
-      "Four-column wrap, then the 12-column page splits",
+      "Four-column wrap, a 3-column grid with `col-span-2`, then the 12-column splits",
       "§2.1’s float “grid” was percentages. This is CSS Grid",
     ],
     embed: "tw-grids",
