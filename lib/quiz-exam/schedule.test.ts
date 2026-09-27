@@ -444,16 +444,40 @@ describe("getAnswerRevealPhase boundaries", () => {
       false,
     );
     assert.equal(getAnswerRevealPhase("q3", et(2026, 11, 1, 23, 59), true), "submitted_waiting");
-    assert.equal(getAnswerRevealPhase("q3", et(2026, 11, 2), true), "answers_reopen");
+    assert.equal(getAnswerRevealPhase("q3", et(2026, 11, 2), true), "submitted_waiting");
+    assert.equal(canRevealAnswers(getAnswerRevealPhase("q3", et(2026, 11, 2), true)), false);
     assert.equal(getAnswerRevealPhase("q3", et(2026, 11, 5), true), "submitted_waiting");
     assert.equal(getAnswerRevealPhase("q3", et(2026, 11, 9), true), "answers_open");
     assert.equal(getAnswerRevealPhase("q3", et(2026, 11, 16), true), "answers_closed");
+    const q3 = getQuizSchedule("q3");
+    assert.ok(q3);
+    assert.equal(q3.examPrepOpenAt.toISOString(), q3.examPrepCloseAt.toISOString());
+  });
+
+  it("does not reveal a quiz key before its own first answer window", () => {
+    for (const schedule of listQuizSchedules()) {
+      const justBefore = new Date(schedule.answersOpenAt.getTime() - 1);
+      const phase = getAnswerRevealPhase(schedule, justBefore, true);
+      assert.equal(canRevealAnswers(phase), false, schedule.quizId);
+      assert.notEqual(phase, "answers_open", schedule.quizId);
+      assert.notEqual(phase, "answers_reopen", schedule.quizId);
+      if (schedule.examPrepOpenAt.getTime() < schedule.examPrepCloseAt.getTime()) {
+        assert.ok(
+          schedule.examPrepOpenAt.getTime() >= schedule.answersOpenAt.getTime(),
+          `${schedule.quizId} review opens before its first answer window`,
+        );
+      }
+    }
   });
 
   it("prefers the first answer window when it overlaps exam prep", () => {
-    const q3 = getQuizSchedule("q3");
-    assert.ok(q3);
-    const overlapping = { ...q3, answersOpenAt: q3.examPrepOpenAt };
+    const q1 = getQuizSchedule("q1");
+    assert.ok(q1);
+    const overlapping = {
+      ...q1,
+      answersOpenAt: q1.examPrepOpenAt,
+      answersCloseAt: q1.examPrepCloseAt,
+    };
     assert.equal(
       getAnswerRevealPhase(overlapping, et(2026, 11, 2), true),
       "answers_open",
@@ -491,13 +515,14 @@ describe("answer-window copy", () => {
   const q1 = getQuizSchedule("q1");
   assert.ok(q1);
 
-  it("mentions the one-week-after-close window and the Q1–Q3 review while waiting", () => {
+  it("mentions the one-week-after-close window and the Q1–Q2 review while waiting", () => {
     const copy = answerWindowCopy(q1, "submitted_waiting", et(2026, 10, 4, 12));
     const text = copy.paragraphs.join(" ");
     assert.match(copy.title, /not open yet/i);
     assert.match(text, /one week after this quiz closes/);
     assert.match(text, /for one week/);
-    assert.match(text, /Q1–Q3 answers reopen for review/);
+    assert.match(text, /Q1–Q2 answers reopen for review/);
+    assert.doesNotMatch(text, /Q1–Q3/);
     assert.doesNotMatch(text, /before the midterm/i);
     assert.ok(text.includes(formatEasternDateTime(q1.answersOpenAt)));
     assert.ok(text.includes(formatEasternDateTime(q1.answersCloseAt)));
@@ -510,26 +535,47 @@ describe("answer-window copy", () => {
     const text = copy.paragraphs.join(" ");
     assert.match(text, /for one week/);
     assert.match(text, /one week after the quiz closed/);
-    assert.match(text, /Q1–Q3 answers reopen for review/);
+    assert.match(text, /Q1–Q2 answers reopen for review/);
     assert.doesNotMatch(text, /before the midterm/i);
     assert.ok(text.includes(formatEasternDateTime(q1.answersCloseAt)));
   });
 
-  it("points at the Q1–Q3 review after the first week closes", () => {
+  it("points at the Q1–Q2 review after the first week closes", () => {
     const copy = answerWindowCopy(q1, "answers_closed", et(2026, 10, 20));
     const text = copy.paragraphs.join(" ");
     assert.match(copy.title, /ended/i);
-    assert.match(text, /Q1–Q3 answers reopen for review/);
+    assert.match(text, /Q1–Q2 answers reopen for review/);
     assert.doesNotMatch(text, /before the midterm/i);
     assert.doesNotMatch(text, /midterm prep/i);
   });
 
-  it("describes the Q1–Q3 review without calling it before the midterm", () => {
+  it("hides the Q1–Q2 review sentence once Nov 5 has passed", () => {
+    const copy = answerWindowCopy(q1, "answers_closed", et(2026, 11, 5));
+    const text = copy.paragraphs.join(" ");
+    assert.match(copy.title, /ended/i);
+    assert.doesNotMatch(text, /reopen for review/);
+    assert.doesNotMatch(text, /November 2/);
+  });
+
+  it("describes the Q1–Q2 review without calling it before the midterm", () => {
     const copy = answerWindowCopy(q1, "answers_reopen", et(2026, 11, 3));
     const text = `${copy.title} ${copy.paragraphs.join(" ")}`;
-    assert.match(text, /Q1–Q3 answers reopen for review/);
+    assert.match(text, /Q1–Q2 answers reopen for review/);
     assert.doesNotMatch(text, /before the midterm/i);
     assert.doesNotMatch(text, /prep window/i);
+  });
+
+  it("tells Q3 its answers open Nov 9 and does not mention a Nov 2 reopen", () => {
+    const q3 = getQuizSchedule("q3");
+    assert.ok(q3);
+    const waiting = answerWindowCopy(q3, "submitted_waiting", et(2026, 11, 2));
+    assert.match(waiting.paragraphs.join(" "), /November 9/);
+    for (const phase of ["submitted_waiting", "answers_open", "answers_closed", "answers_reopen"] as const) {
+      const copy = answerWindowCopy(q3, phase, et(2026, 11, 2));
+      const text = `${copy.title} ${copy.paragraphs.join(" ")}`;
+      assert.doesNotMatch(text, /November 2/);
+      assert.doesNotMatch(text, /reopen for review/);
+    }
   });
 
   it("does not promise a review before the final for Q4–Q6", () => {

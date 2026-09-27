@@ -9,9 +9,10 @@
  * Monday following its Sunday lock, and stays open 7 civil days. Q1 locks
  * Sunday Oct 4, so answers open Monday Oct 12. Q6 locks Sunday Dec 13, so
  * answers open Monday Dec 21 (after X2). There is no separate “wait out
- * the exam week” shift. Q1–Q3 also reopen for review Monday Nov 2 00:00 ET
- * through Thursday Nov 5 00:00 ET, after X1 (week of Oct 26). That window’s
- * placement is unchanged. Q4–Q6 have no exam-prep reopen before X2.
+ * the exam week” shift. Q1–Q2 answers reopen for review Monday Nov 2 00:00 ET
+ * through Thursday Nov 5 00:00 ET, after X1 (week of Oct 26). Q3 is not in
+ * that review; its answers open Nov 9. The window’s placement is unchanged.
+ * Q4–Q6 have no exam-prep reopen before X2.
  *
  * Take windows are the class-wide website window for the quiz week:
  * Monday 00:00 ET unlock through Sunday 23:59 ET lock. That is the
@@ -113,15 +114,15 @@ export function scheduleFromIso(iso: QuizScheduleIso): QuizSchedule {
  * `app/syllabus/data/deadlines.ts`, plus a university final-exam period of
  * 2026-12-14–2026-12-20 (`app/syllabus/data/course.ts`).
  *
- * - `midtermAt` — close of the Q1–Q3 review window: Thursday 2026-11-05
+ * - `midtermAt` — close of the Q1–Q2 review window: Thursday 2026-11-05
  *   00:00 ET. X1 is taken the week of October 26, before this review.
  * - `finalAt` — syllabus X2 unlock / finals week Monday: 2026-12-14 00:00 ET.
  *
  * Edit these two strings if Jose moves those instants. X1 and X2 take dates
  * stay in QUIZ_WINDOW_ISO. A reopen would be `[examAt − 7d, examAt)`, but it
- * is clamped so it cannot start until the last covered quiz has locked
- * (Q3 for the Q1–Q3 review, Q6 for the final). The Q1–Q3 review is not a
- * window before the midterm.
+ * is clamped so it cannot start until the last gating quiz has locked
+ * (Q3’s lock keeps the Q1–Q2 review at Nov 2, Q6 for the final). The Q1–Q2
+ * review is not a window before the midterm, and it does not reveal Q3.
  */
 export const COURSE_EXAMS = {
   midtermAt: "2026-11-05T05:00:00.000Z",
@@ -130,8 +131,16 @@ export const COURSE_EXAMS = {
 
 const PRE_MIDTERM_QUIZZES = new Set(["q1", "q2", "q3", "x1"]);
 
-/** Chapter quizzes whose keys a midterm / final prep window would reveal. */
-const MIDTERM_PREP_QUIZZES = ["q1", "q2", "q3"] as const;
+/**
+ * Keys the post-X1 review reveals. Q3 is omitted: its answers open Nov 9,
+ * one week after it closes, not on Nov 2.
+ */
+const MIDTERM_PREP_QUIZZES = ["q1", "q2"] as const;
+/**
+ * Locks that delay that review. Q3 stays here so the window cannot open
+ * during Q3’s take week; it remains Mon Nov 2–Thu Nov 5.
+ */
+const MIDTERM_PREP_DELAY_UNTIL = ["q1", "q2", "q3"] as const;
 const FINAL_PREP_QUIZZES = ["q4", "q5", "q6"] as const;
 
 /** Q1–Q6 and X1/X2 take + first answer windows (ISO UTC). */
@@ -334,7 +343,7 @@ export function clampedExamPrepWindow(
     : new Date(COURSE_EXAMS.finalAt),
 ): { open: Date; close: Date } {
   const covered =
-    examName === "midterm" ? MIDTERM_PREP_QUIZZES : FINAL_PREP_QUIZZES;
+    examName === "midterm" ? MIDTERM_PREP_DELAY_UNTIL : FINAL_PREP_QUIZZES;
   const earliest = firstMinuteAfter(latestTakeLockAt(covered));
   if (earliest.getTime() >= examAt.getTime()) {
     return { open: examAt, close: examAt };
@@ -349,9 +358,12 @@ export function getQuizSchedule(quizId: string): QuizSchedule | undefined {
   if (!windows) return undefined;
   const examName = examNameForQuiz(quizId);
   const examPrepCloseAt = examAtForQuiz(quizId);
-  const examPrep = windows.skipExamPrep
-    ? { open: examPrepCloseAt, close: examPrepCloseAt }
-    : clampedExamPrepWindow(examName, examPrepCloseAt);
+  const prepQuizzes: readonly string[] =
+    examName === "midterm" ? MIDTERM_PREP_QUIZZES : FINAL_PREP_QUIZZES;
+  const examPrep =
+    windows.skipExamPrep || !prepQuizzes.includes(quizId)
+      ? { open: examPrepCloseAt, close: examPrepCloseAt }
+      : clampedExamPrepWindow(examName, examPrepCloseAt);
   return {
     quizId,
     takeUnlockAt: new Date(windows.takeUnlockAt),
@@ -579,9 +591,9 @@ function isChapterQuiz(quizId: string): boolean {
   return quizId === "q1" || quizId === "q2" || quizId === "q3" || quizId === "q4" || quizId === "q5" || quizId === "q6";
 }
 
-/** Neutral description of the post-X1 Q1–Q3 review. Not a pre-midterm window. */
-function q1q3ReviewSentence(prepOpen: string, prepClose: string): string {
-  return `Q1–Q3 answers reopen for review ${prepOpen} through ${prepClose}.`;
+/** Neutral description of the post-X1 Q1–Q2 review. Not a pre-midterm window. */
+function q1q2ReviewSentence(prepOpen: string, prepClose: string): string {
+  return `Q1–Q2 answers reopen for review ${prepOpen} through ${prepClose}.`;
 }
 
 export type AnswerWindowCopy = {
@@ -604,10 +616,12 @@ export function answerWindowCopy(
   const hasExamPrep =
     schedule.examPrepOpenAt.getTime() < schedule.examPrepCloseAt.getTime();
   const midtermPrep = schedule.examName === "midterm" && hasExamPrep;
+  const reviewStillAhead = now.getTime() < schedule.examPrepCloseAt.getTime();
   const reviewAgain =
     midtermPrep &&
-    (schedule.quizId === "q1" || schedule.quizId === "q2" || schedule.quizId === "q3")
-      ? q1q3ReviewSentence(prepOpen, prepClose)
+    reviewStillAhead &&
+    (schedule.quizId === "q1" || schedule.quizId === "q2")
+      ? q1q2ReviewSentence(prepOpen, prepClose)
       : undefined;
   const finalAnswerNote = finalChapterAnswerNote(schedule);
   const firstWindowLead = isChapterQuiz(schedule.quizId)
@@ -675,28 +689,26 @@ export function answerWindowCopy(
         tone: "warn",
       };
     }
+    if (schedule.quizId !== "q1" && schedule.quizId !== "q2") {
+      return {
+        title: "Answers are not open yet",
+        paragraphs: [firstWindowLead],
+        tone: "warn",
+      };
+    }
     return {
-      title: "Q1–Q3 answers are open for review",
-      paragraphs: [q1q3ReviewSentence(prepOpen, prepClose)],
+      title: "Q1–Q2 answers are open for review",
+      paragraphs: reviewStillAhead ? [q1q2ReviewSentence(prepOpen, prepClose)] : [],
       tone: "ok",
     };
   }
 
   if (phase === "answers_closed") {
-    const prepStillAhead =
-      midtermPrep && now.getTime() < schedule.examPrepOpenAt.getTime();
-    const prepEnded =
-      midtermPrep && now.getTime() >= schedule.examPrepCloseAt.getTime();
     return {
       title: "The answer review window has ended",
       paragraphs: [
         `The class review window ended on ${close}.`,
-        ...(prepStillAhead && reviewAgain ? [reviewAgain] : []),
-        ...(prepEnded
-          ? [
-              `The Q1–Q3 review window (${prepOpen} through ${prepClose}) has ended.`,
-            ]
-          : []),
+        ...(reviewAgain ? [reviewAgain] : []),
         ...(finalAnswerNote ? [finalAnswerNote] : []),
       ],
       tone: "warn",
