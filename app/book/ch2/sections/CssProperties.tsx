@@ -389,8 +389,9 @@ export default function Lab2() {
           name="Lab2 styles"
           file="app/labs/lab2/index.css"
         >{`.wd-box-model-parent {
+  display: flow-root;
   background-color: lightgray;
-  padding: 8px 12px 12px;
+  padding-top: 8px;
 }
 .wd-box-model-margin-label,
 .wd-box-model-border-label,
@@ -410,6 +411,11 @@ export default function Lab2() {
   top: -24px;
   left: 0;
   color: #c41e3a;
+}
+.wd-box-model-margin-label {
+  position: absolute;
+  bottom: -26px;
+  left: -20px;
 }
 .wd-box-model-padding-label {
   position: absolute;
@@ -449,13 +455,13 @@ export default function Lab2() {
       <h2>Box model</h2>
       <div className="wd-box-model-parent">
         <div>parent background (shows through the margin)</div>
-        <div className="wd-box-model-margin-label">
-          margin (transparent: the parent's gray shows through)
-        </div>
         <div className="wd-box-model-box">
           <span className="wd-box-model-border-label">border (the red ring)</span>
           <span className="wd-box-model-padding-label">padding</span>
           <div className="wd-box-model-content">content</div>
+          <span className="wd-box-model-margin-label">
+            margin: the 20px gray gap (transparent)
+          </span>
         </div>
       </div>
       <h3>box-sizing</h3>
@@ -471,11 +477,12 @@ export default function Lab2() {
   );
 }`}</CodeBlock>
         <p>
-          The gray around the blue box is that box&apos;s 20px margin: it is
-          transparent, so the parent&apos;s background shows through. The red
-          words sit in that margin, just outside the red ring, which is the
-          border. The light blue area is the padding, and the green child is
-          the content. Below that, both yellow boxes set{" "}
+          On the left, right, and bottom, the gray around the blue box is
+          exactly that box&apos;s 20px margin. It is transparent, so the parent
+          background shows through. The margin label sits in the bottom gap.
+          The red words sit in the top margin, just outside the red ring,
+          which is the border. The light blue area is the padding, and the
+          green child is the content. Below that, both yellow boxes set{" "}
           <code>margin-bottom: 10px</code> (the other
           margins stay 0), a 10px border, 20px of padding,{" "}
           <code>width: 200px</code>, and <code>height: 180px</code>. Under{" "}

@@ -85,8 +85,9 @@ p#wd-id-selector-2 {
    content-box content is 200×180 (on screen 260×240).
    border-box content is 140×120 (on screen 200×180). */
 .wd-box-model-parent {
+  display: flow-root;
   background-color: lightgray;
-  padding: 8px 12px 12px;
+  padding-top: 8px;
 }
 .wd-box-model-margin-label,
 .wd-box-model-border-label,
@@ -106,6 +107,11 @@ p#wd-id-selector-2 {
   top: -24px;
   left: 0;
   color: #c41e3a;
+}
+.wd-box-model-margin-label {
+  position: absolute;
+  bottom: -26px;
+  left: -20px;
 }
 .wd-box-model-padding-label {
   position: absolute;
