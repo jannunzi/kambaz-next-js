@@ -103,17 +103,24 @@ export function submissionMatchesRosterStudent(
 
 /**
  * Newest submission for one canvas_roster student across every linked
- * Clerk account. Staff grading and the student Submitted banner both
- * call this so they show the same record.
+ * Clerk account. A document matches the roster email (or Canvas id), and
+ * when `clerkUserId` is set, the signed-in account's own document matches
+ * too. Staff grading omits `clerkUserId` and still collapses every roster
+ * match to this same newest record. The student Submitted banner passes
+ * both keys so a development Clerk id and a production Clerk id agree.
  */
 export function selectRosterSubmission(
   entry: { email?: string | null; canvasUserId?: string | null },
   submissions: readonly AssignmentSubmissionDoc[],
+  options?: { clerkUserId?: string | null },
 ): AssignmentSubmissionDoc | undefined {
+  const clerkUserId = options?.clerkUserId?.trim() ?? "";
   let newest: AssignmentSubmissionDoc | undefined;
   let newestTime = Number.NEGATIVE_INFINITY;
   for (const doc of submissions) {
-    if (!submissionMatchesRosterStudent(entry, doc)) continue;
+    const matchesRoster = submissionMatchesRosterStudent(entry, doc);
+    const matchesClerk = clerkUserId !== "" && doc.clerkUserId === clerkUserId;
+    if (!matchesRoster && !matchesClerk) continue;
     const time = submissionUpdatedAt(doc);
     if (!newest || time > newestTime) {
       newest = doc;
@@ -124,19 +131,21 @@ export function selectRosterSubmission(
 }
 
 /**
- * Submission the signed-in student should see. A roster match uses
- * `selectRosterSubmission` (the staff grader's record). Otherwise the
- * caller's own account document.
+ * Submission the signed-in student should see. Candidates are documents
+ * whose roster email matches the signed-in roster entry, plus the document
+ * stored under the current `clerkUserId`. The newest `updatedAt` wins, the
+ * same rule the staff queue uses for that roster student.
  */
 export function studentVisibleSubmission(input: {
   clerkUserId: string;
   rosterEntry?: { email?: string | null; canvasUserId?: string | null } | null;
   submissions: readonly AssignmentSubmissionDoc[];
 }): AssignmentSubmissionDoc | null {
-  if (input.rosterEntry) {
-    return selectRosterSubmission(input.rosterEntry, input.submissions) ?? null;
-  }
-  return input.submissions.find((doc) => doc.clerkUserId === input.clerkUserId) ?? null;
+  return (
+    selectRosterSubmission(input.rosterEntry ?? {}, input.submissions, {
+      clerkUserId: input.clerkUserId,
+    }) ?? null
+  );
 }
 
 function rowFromSubmission(

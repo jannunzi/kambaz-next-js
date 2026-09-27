@@ -19,8 +19,16 @@ import {
   studentVisibleSubmission,
   UNSECTIONED_LABEL,
 } from "./staff";
-import { statusForAssignment } from "./submission-status";
-import type { AssignmentSubmissionDoc } from "./submissions-store";
+import {
+  statusForAssignment,
+  storedSubmissionLinks,
+  submittedBannerHeading,
+} from "./submission-status";
+import {
+  upsertAssignmentSubmission,
+  type AssignmentSubmissionDoc,
+  type SubmissionStore,
+} from "./submissions-store";
 
 function submission(
   partial: Partial<AssignmentSubmissionDoc> & { clerkUserId: string },
@@ -185,6 +193,124 @@ describe("staff student queue", () => {
     assert.equal(queue[0].vercelUrl, "https://jane-new.vercel.app");
     assert.equal(queue[0].hasSubmission, true);
     assert.equal(queue[0].staffGrade?.earnedPoints, 95);
+  });
+
+  it("finds a development Clerk submission when only rosterEmail matches", async () => {
+    const devSubmission = submission({
+      clerkUserId: "user_dev",
+      rosterEmail: "Jane.Doe@northeastern.edu",
+      email: "jane.doe@northeastern.edu",
+      githubUrl: "https://github.com/jane-doe/webdev-client",
+      vercelUrl: "https://jane-dev.vercel.app",
+      updatedAt: new Date("2026-09-22T16:00:00.000Z"),
+    });
+    const someoneElse = submission({
+      clerkUserId: "user_other",
+      rosterEmail: "pat@northeastern.edu",
+      email: "pat@northeastern.edu",
+      githubUrl: "https://github.com/pat/webdev-client",
+      vercelUrl: "https://pat.vercel.app",
+      updatedAt: new Date("2026-09-27T16:00:00.000Z"),
+    });
+    const rosterEntry = {
+      email: "jane.doe@northeastern.edu",
+      name: "Doe, Jane",
+    };
+
+    const visible = studentVisibleSubmission({
+      clerkUserId: "user_prod",
+      rosterEntry,
+      submissions: [someoneElse, devSubmission],
+    });
+    assert.equal(visible?.clerkUserId, "user_dev");
+    assert.notEqual(visible?.clerkUserId, "user_prod");
+    assert.equal(visible?.githubUrl, "https://github.com/jane-doe/webdev-client");
+    assert.equal(visible?.vercelUrl, "https://jane-dev.vercel.app");
+    assert.equal(
+      statusForAssignment({
+        assignmentId: "a1",
+        hasSubmission: Boolean(visible),
+        staffGrade: visible?.staffGrade,
+      }),
+      "submitted",
+    );
+    assert.equal(
+      submittedBannerHeading(visible?.updatedAt),
+      "Submitted Tue, Sep 22, 12:00 PM ET",
+    );
+    assert.deepEqual(
+      storedSubmissionLinks({
+        githubUrl: visible?.githubUrl,
+        vercelUrl: visible?.vercelUrl,
+      }).map((link) => link.url),
+      [
+        "https://github.com/jane-doe/webdev-client",
+        "https://jane-dev.vercel.app",
+      ],
+    );
+    assert.equal(
+      selectRosterSubmission(rosterEntry, [devSubmission, someoneElse])?.clerkUserId,
+      "user_dev",
+    );
+
+    const store: SubmissionStore = (() => {
+      const docs: AssignmentSubmissionDoc[] = [];
+      return {
+        async find(clerkUserId, assignmentId) {
+          return (
+            docs.find(
+              (doc) =>
+                doc.clerkUserId === clerkUserId &&
+                doc.assignmentId === assignmentId,
+            ) ?? null
+          );
+        },
+        async upsert(doc) {
+          const index = docs.findIndex(
+            (row) =>
+              row.clerkUserId === doc.clerkUserId &&
+              row.assignmentId === doc.assignmentId,
+          );
+          if (index === -1) docs.push(doc);
+          else docs[index] = doc;
+        },
+      };
+    })();
+    const resubmitted = await upsertAssignmentSubmission(
+      store,
+      {
+        clerkUserId: "user_prod",
+        assignmentId: "a1",
+        githubUrl: "https://github.com/jane-doe/webdev-client",
+        vercelUrl: "https://jane-prod.vercel.app",
+        identity: {
+          email: "jane.doe@northeastern.edu",
+          rosterEmail: "jane.doe@northeastern.edu",
+        },
+      },
+      new Date("2026-09-28T00:52:00.000Z"),
+    );
+    assert.equal(resubmitted.clerkUserId, "user_prod");
+    assert.equal(resubmitted.rosterEmail, "jane.doe@northeastern.edu");
+    assert.equal(
+      (await store.find("user_prod", "a1"))?.rosterEmail,
+      "jane.doe@northeastern.edu",
+    );
+
+    const afterResubmit = [devSubmission, resubmitted];
+    const queue = buildStaffStudentQueue([rosterEntry], afterResubmit);
+    assert.equal(queue.length, 1);
+    assert.equal(queue[0].clerkUserId, "user_prod");
+    assert.equal(queue[0].email, "jane.doe@northeastern.edu");
+    assert.equal(queue[0].vercelUrl, "https://jane-prod.vercel.app");
+    const visibleAfter = studentVisibleSubmission({
+      clerkUserId: "user_prod",
+      rosterEntry,
+      submissions: afterResubmit,
+    });
+    assert.equal(visibleAfter?.clerkUserId, "user_prod");
+    assert.equal(visibleAfter?.rosterEmail, "jane.doe@northeastern.edu");
+    assert.equal(visibleAfter?.vercelUrl, "https://jane-prod.vercel.app");
   });
 
   it("appends unmatched submissions after the roster", () => {
