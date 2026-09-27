@@ -1067,6 +1067,83 @@ describe("duplicate submissions, staff, and demo students", () => {
     );
     assert.equal(
       priorSubmissionLabel(queue[0].priorSubmissions),
+      "also submitted: https://jane-old.vercel.app, 2026-09-01; previously graded: 0 / 1 (0.0%) for https://jane-old.vercel.app",
+    );
+  });
+
+  it("sums per-criterion points on an old grade note and dashes only when there are none", () => {
+    const roster = [
+      {
+        email: "jane@northeastern.edu",
+        name: "Jane Doe",
+        section: "CS4550 CRN 11464",
+      },
+    ];
+    const newer = submission({
+      clerkUserId: "user_new",
+      email: "jane@northeastern.edu",
+      vercelUrl: "https://jane-new.vercel.app",
+      createdAt: new Date("2026-09-03T00:00:00.000Z"),
+      updatedAt: new Date("2026-09-10T00:00:00.000Z"),
+    });
+    const summed = buildStaffStudentQueue(
+      roster,
+      [
+        submission({
+          clerkUserId: "user_old",
+          email: "jane@northeastern.edu",
+          vercelUrl: "https://jane-old.vercel.app",
+          createdAt: new Date("2026-09-01T00:00:00.000Z"),
+          updatedAt: new Date("2026-09-01T00:00:00.000Z"),
+          staffGrade: {
+            acceptedProposed: false,
+            rows: [
+              {
+                criterionId: "a",
+                maxPoints: 50,
+                autoPassed: true,
+                overridePassed: true,
+                points: 80,
+              },
+              {
+                criterionId: "b",
+                maxPoints: 63,
+                autoPassed: true,
+                overridePassed: true,
+                points: 30,
+              },
+            ],
+          } as AssignmentSubmissionDoc["staffGrade"],
+        }),
+        newer,
+      ],
+      options,
+    );
+    assert.equal(
+      priorSubmissionLabel(summed[0].priorSubmissions),
+      "also submitted: https://jane-old.vercel.app, 2026-09-01; previously graded: 110 / 113 (97.3%) for https://jane-old.vercel.app",
+    );
+
+    const empty = buildStaffStudentQueue(
+      roster,
+      [
+        submission({
+          clerkUserId: "user_old",
+          email: "jane@northeastern.edu",
+          vercelUrl: "https://jane-old.vercel.app",
+          createdAt: new Date("2026-09-01T00:00:00.000Z"),
+          updatedAt: new Date("2026-09-01T00:00:00.000Z"),
+          staffGrade: {
+            acceptedProposed: false,
+            criterionOverrides: { "a1-delivery-vercel": true },
+          } as AssignmentSubmissionDoc["staffGrade"],
+        }),
+        newer,
+      ],
+      options,
+    );
+    assert.equal(
+      priorSubmissionLabel(empty[0].priorSubmissions),
       "also submitted: https://jane-old.vercel.app, 2026-09-01; previously graded: — for https://jane-old.vercel.app",
     );
   });

@@ -302,6 +302,7 @@ export const ROSTER_DOCUMENT_EMAIL_FIELDS = [
   "sis_login_id",
   "loginId",
   "login_id",
+  "emails",
 ] as const;
 
 /**

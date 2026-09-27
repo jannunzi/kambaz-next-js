@@ -233,15 +233,48 @@ function gradedAtIso(value: Date | string | undefined): string {
   return Number.isFinite(ms) ? new Date(ms).toISOString() : "";
 }
 
+/**
+ * Saved totals win when they are present. An older grade that only stored
+ * per-criterion points is summed. No numeric points at all stays unset so
+ * the note shows an em dash.
+ */
+export function staffGradePointTotal(
+  grade: AssignmentStaffGrade,
+): { earnedPoints: number; totalPoints: number } | null {
+  if (
+    typeof grade.earnedPoints === "number" &&
+    typeof grade.totalPoints === "number" &&
+    grade.totalPoints > 0
+  ) {
+    return { earnedPoints: grade.earnedPoints, totalPoints: grade.totalPoints };
+  }
+  const rows = grade.rows ?? [];
+  const hasRowPoints = rows.some(
+    (row) => typeof row.points === "number" || typeof row.maxPoints === "number",
+  );
+  if (!hasRowPoints) return null;
+  const earnedPoints = rows.reduce(
+    (sum, row) => sum + (typeof row.points === "number" ? row.points : 0),
+    0,
+  );
+  const totalPoints = rows.reduce(
+    (sum, row) => sum + (typeof row.maxPoints === "number" ? row.maxPoints : 0),
+    0,
+  );
+  if (totalPoints <= 0) return null;
+  return { earnedPoints, totalPoints };
+}
+
 function priorNote(doc: AssignmentSubmissionDoc): PriorSubmissionNote {
   const url = doc.vercelUrl?.trim() || doc.githubUrl?.trim() || "(no url)";
   const note: PriorSubmissionNote = { url, at: submissionStamp(doc) };
   const grade = doc.staffGrade;
   if (grade && hasStaffGradeSave(grade)) {
     const gradedAt = gradedAtIso(grade.gradedAt);
+    const points = staffGradePointTotal(grade);
     note.graded = {
-      earnedPoints: grade.earnedPoints,
-      totalPoints: grade.totalPoints,
+      earnedPoints: points?.earnedPoints ?? Number.NaN,
+      totalPoints: points?.totalPoints ?? 0,
       ...(gradedAt ? { gradedAt } : {}),
     };
   }
