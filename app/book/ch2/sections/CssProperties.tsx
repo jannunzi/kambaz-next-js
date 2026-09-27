@@ -22,7 +22,12 @@ import GridLayout from "@/app/labs/lab2/intermediates/2-1-18-GridLayout";
 import FlexRow from "@/app/labs/lab2/intermediates/2-1-19a-FlexRow";
 import FlexGrow from "@/app/labs/lab2/intermediates/2-1-19b-FlexGrow";
 import FlexWidth from "@/app/labs/lab2/intermediates/2-1-19c-FlexWidth";
-import MediaQueriesDemo from "@/app/labs/lab2/intermediates/2-1-20-MediaQueries";
+import ResponsivePreview from "../../components/ResponsivePreview";
+import {
+  MEDIA_QUERY_BREAKPOINTS,
+  MEDIA_QUERY_WIDTH_PRESETS,
+  MEDIA_QUERIES_PREVIEW_SRC,
+} from "../../components/responsive-preview-model";
 import PracticeCard from "../../components/PracticeCard";
 import SectionLink from "../../components/SectionLink";
 import { OnYourOwn, WithAI } from "../../components/Practice";
@@ -1568,12 +1573,18 @@ export default function MediaQueriesDemo() {
           Notice that only the last <code>@media</code>{" "}block has no{" "}
           <code>max-width</code>, so it matches every width from 1250px
           upward. The matching bullet is bold and underlined so you can see
-          which rule is active. Resize the browser window to watch the
-          background — and the highlighted bullet — cycle through green,
-          yellow, blue, and red:
+          which rule is active. Drag this figure&apos;s panel, or pick a
+          width, to watch the background — and the highlighted bullet — cycle
+          through green, yellow, blue, and red. The preview is its own page, so
+          the queries follow that frame:
         </p>
         <LiveDemo mode="styled" name="MediaQueriesDemo" file="app/labs/lab2/MediaQueriesDemo.tsx">
-          <MediaQueriesDemo />
+          <ResponsivePreview
+            src={MEDIA_QUERIES_PREVIEW_SRC}
+            title="MediaQueriesDemo"
+            presets={MEDIA_QUERY_WIDTH_PRESETS}
+            breakpoints={MEDIA_QUERY_BREAKPOINTS}
+          />
         </LiveDemo>
       
         <OnYourOwn>

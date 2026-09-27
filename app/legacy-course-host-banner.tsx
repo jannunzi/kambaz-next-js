@@ -35,6 +35,7 @@ export default function LegacyCourseHostBanner() {
     clientLocationSnapshot,
     () => "",
   );
+  if (pathname.startsWith("/preview")) return null;
   if (!snapshot) return null;
 
   const [hostname, search = "", hash = ""] = snapshot.split("\n");

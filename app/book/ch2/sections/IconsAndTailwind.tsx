@@ -18,7 +18,8 @@ import ReactIconsSampler from "@/app/labs/lab2/intermediates/2-2-ReactIconsSampl
 import TailwindSpacing from "@/app/labs/lab2/tailwind/TailwindSpacing";
 import TailwindTypography from "@/app/labs/lab2/tailwind/TailwindTypography";
 import TailwindBackgroundColors from "@/app/labs/lab2/tailwind/TailwindBackgroundColors";
-import TailwindResponsiveDesign from "@/app/labs/lab2/tailwind/TailwindResponsiveDesign";
+import ResponsivePreview from "../../components/ResponsivePreview";
+import { TAILWIND_RESPONSIVE_PREVIEW_SRC } from "../../components/responsive-preview-model";
 import TailwindFilters from "@/app/labs/lab2/tailwind/TailwindFilters";
 import TailwindGrids from "@/app/labs/lab2/tailwind/TailwindGrids";
 
@@ -386,14 +387,18 @@ export default function TailwindLab() {
   );
 }`}</CodeBlock>
         <p>
-          Drag this figure&apos;s panel narrower and wider — below the{" "}
-          <code>md</code>{" "}breakpoint the image sits above the text in a
-          single column; at <code>md</code>{" "}and above the{" "}
-          <code>md:flex</code>{" "}class kicks in and the image moves beside the
-          text:
+          Drag this figure&apos;s panel narrower and wider, or pick a width.
+          The preview is its own page, so <code>sm:</code>, <code>md:</code>,
+          and the rest follow that frame — below{" "}
+          <code>md</code>{" "}the image sits above the text in a single column;
+          at <code>md</code>{" "}and above, <code>md:flex</code>{" "}moves the
+          image beside the text:
         </p>
         <LiveDemo mode="styled" name="TailwindResponsiveDesign" file="app/labs/lab2/tailwind/TailwindResponsiveDesign.tsx">
-          <TailwindResponsiveDesign />
+          <ResponsivePreview
+            src={TAILWIND_RESPONSIVE_PREVIEW_SRC}
+            title="TailwindResponsiveDesign"
+          />
         </LiveDemo>
         <OnYourOwn>
           In{" "}
