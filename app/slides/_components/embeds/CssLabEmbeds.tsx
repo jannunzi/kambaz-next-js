@@ -121,7 +121,10 @@ export function CssMarginsEmbed() {
   );
 }
 
-/** Copied from the book exercise at 0987da2. Lab files on this branch still draw the DevTools figure. */
+// TODO: Switch to the lab import once #168 is on main:
+// import BoxModel from "@/app/labs/lab2/BoxModel"
+// The book's BoxModel.tsx and .wd-box-model-* CSS are not on main yet, so this
+// slide-side copy renders the same exercise without importing those lab files.
 const BOX_MODEL_EXERCISE_CSS = `.wd-box-model-parent {
   background-color: lightgray;
   padding: 8px 12px 12px;
@@ -153,6 +156,25 @@ const BOX_MODEL_EXERCISE_CSS = `.wd-box-model-parent {
 .wd-box-model-content {
   background-color: #d1e7dd;
   padding: 8px;
+}
+.wd-box-sizing-demo {
+  background-color: lightgray;
+  padding: 10px;
+}
+.wd-box-sizing-content,
+.wd-box-sizing-border {
+  width: 200px;
+  height: 180px;
+  padding: 20px;
+  border: 10px solid #c41e3a;
+  background-color: #ffff07;
+  margin-bottom: 10px;
+}
+.wd-box-sizing-content {
+  box-sizing: content-box;
+}
+.wd-box-sizing-border {
+  box-sizing: border-box;
 }`;
 
 function BoxModel() {
