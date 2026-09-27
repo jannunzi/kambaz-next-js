@@ -1,5 +1,5 @@
 import { supportsUrlSubmission } from "./access";
-import { formatGradeSummary, type GradeBreakdown } from "./grade";
+import { formatPointsPercent, pointsPercent } from "./grade";
 
 /**
  * Student-facing submission status. Staff grades live on
@@ -190,17 +190,9 @@ export function submitActionLabel(input: {
 export function formatGradedConfirmation(input: {
   earnedPoints: number;
   totalPoints: number;
-  percent: number;
+  percent?: number;
 }): string {
-  const summary = formatGradeSummary({
-    earnedPoints: input.earnedPoints,
-    totalPoints: input.totalPoints,
-    percent: input.percent,
-    passedCount: 0,
-    totalCount: 0,
-    passedIds: [],
-  } satisfies GradeBreakdown);
-  return `Graded: ${summary.replace(" pts", "")}`;
+  return `Graded: ${formatPointsPercent(input.earnedPoints, input.totalPoints)}`;
 }
 
 function numericStaffGrade(
@@ -208,7 +200,6 @@ function numericStaffGrade(
 ): { earnedPoints: number; totalPoints: number; percent: number } | null {
   let earned = staffGrade.earnedPoints;
   let total = staffGrade.totalPoints;
-  let percent = staffGrade.percent;
   if (
     (typeof earned !== "number" || typeof total !== "number") &&
     staffGrade.rows &&
@@ -218,13 +209,14 @@ function numericStaffGrade(
     total = staffGrade.rows.reduce((sum, row) => sum + row.maxPoints, 0);
   }
   if (typeof earned !== "number" || typeof total !== "number") return null;
-  if (typeof percent !== "number") {
-    percent = total === 0 ? 0 : Math.round((earned / total) * 100);
-  }
-  return { earnedPoints: earned, totalPoints: total, percent };
+  return {
+    earnedPoints: earned,
+    totalPoints: total,
+    percent: pointsPercent(earned, total),
+  };
 }
 
-/** "Graded: 95 / 100 (95%)", or "Not graded yet" when staff have not saved a grade. */
+/** "Graded: 95 / 100 (95.0%)", or "Not graded yet" when staff have not saved a grade. */
 export function submissionGradeLine(
   staffGrade: StaffGradeSnapshot | null | undefined,
 ): string {

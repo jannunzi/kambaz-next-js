@@ -11,7 +11,7 @@ import {
 } from "@/lib/assignments/grade-rows";
 import type { AssignmentGradeView } from "@/lib/assignments/grade-rows";
 import { ASSIGNMENT_STUDENT_COPY } from "@/lib/assignments/student-copy";
-import type { StaffStudentRow } from "@/lib/assignments/staff";
+import { type StaffStudentRow } from "@/lib/assignments/staff";
 import type { AssignmentHubItem } from "@/lib/assignments/types";
 import type { AssignmentSubmissionView } from "@/lib/assignments/submissions-store";
 import { saveAssignmentGrade } from "../staff-actions";
@@ -37,6 +37,7 @@ export default function A1WorkArea({
   staffQueue?: StaffStudentRow[];
   selectedStudent?: StaffStudentRow | null;
   selectedSection?: string;
+  selectedFilter?: string;
 }) {
   return (
     <AssignmentViewer serverUserId={serverUserId} authEnabled={authEnabled}>
@@ -65,6 +66,7 @@ function A1WorkSession({
   staffQueue,
   selectedStudent,
   selectedSection,
+  selectedFilter,
 }: {
   assignment: AssignmentHubItem;
   initialSubmission: AssignmentSubmissionView | null;
@@ -76,6 +78,7 @@ function A1WorkSession({
   staffQueue?: StaffStudentRow[];
   selectedStudent?: StaffStudentRow | null;
   selectedSection?: string;
+  selectedFilter?: string;
 }) {
   const staffMode = Boolean(selectedStudent);
   const [submission, setSubmission] = useState(initialSubmission);
@@ -162,6 +165,7 @@ function A1WorkSession({
           queue={staffQueue}
           selectedKey={selectedStudent?.key}
           selectedSection={selectedSection}
+          selectedFilter={selectedFilter}
         />
       ) : null}
 

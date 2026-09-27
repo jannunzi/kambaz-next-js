@@ -4,6 +4,8 @@ export type CanvasRosterEntry = {
   sisUserId?: string;
   sisLoginId?: string;
   loginId?: string;
+  /** Extra mailboxes stored on the roster document, besides the primary email. */
+  emails?: string[];
   name?: string;
   section?: string;
   source?: "mongo" | "env" | "csv" | "json" | "impersonation" | "demo";

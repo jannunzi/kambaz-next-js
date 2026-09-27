@@ -45,7 +45,8 @@ export const ASSIGNMENT_STUDENT_COPY = {
   staffGradeLabel: "Staff grade",
   acceptProposed: "Accept proposed grade",
   overrideGrade: "Save override grade",
-  noSubmission: "This student has not submitted a Vercel URL yet.",
+  noSubmission:
+    "Not submitted. This student has no GitHub or Vercel URL yet.",
   staffCommentsHint: "Comments are visible to the student.",
   studentFeedbackHint: "Staff comments on each item, if any, appear below.",
   bothUrlsRequired: "Enter both a GitHub repository URL and a Vercel deployment URL.",

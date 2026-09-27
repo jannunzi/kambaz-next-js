@@ -388,7 +388,7 @@ describe("assignment progress helpers", () => {
     ];
     assert.deepEqual(
       studentAutoPoints(rows, new Set(A1_MANUAL_CRITERION_IDS)),
-      { earnedPoints: 3, totalPoints: 3 },
+      { earnedPoints: 3, totalPoints: 3, percent: 100 },
     );
     const summary = summarizeProgress(assignment, ["a1-delivery-vercel"]);
     assert.equal(summary.earnedPoints, 3);
