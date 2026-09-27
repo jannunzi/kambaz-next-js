@@ -201,6 +201,110 @@ describe("answer keys stay closed through every section’s take window", () => 
   });
 });
 
+describe("reveal windows vs every quiz and exam take window", () => {
+  function overlapsTake(
+    revealOpen: Date,
+    revealClose: Date,
+    takeUnlock: Date,
+    takeLock: Date,
+  ): boolean {
+    if (revealOpen.getTime() >= revealClose.getTime()) return false;
+    return (
+      revealOpen.getTime() <= takeLock.getTime() &&
+      revealClose.getTime() > takeUnlock.getTime()
+    );
+  }
+
+  type Overlap = {
+    sectionId: string;
+    revealQuiz: string;
+    kind: "first-answer" | "exam-prep";
+    takeQuiz: string;
+    reveal: string;
+    take: string;
+  };
+
+  function collectOverlaps(): Overlap[] {
+    const schedules = listQuizSchedules();
+    const hits: Overlap[] = [];
+    for (const section of sections) {
+      for (const reveal of schedules) {
+        const windows: Array<{
+          kind: Overlap["kind"];
+          open: Date;
+          close: Date;
+        }> = [
+          {
+            kind: "first-answer",
+            open: reveal.answersOpenAt,
+            close: reveal.answersCloseAt,
+          },
+          {
+            kind: "exam-prep",
+            open: reveal.examPrepOpenAt,
+            close: reveal.examPrepCloseAt,
+          },
+        ];
+        for (const window of windows) {
+          for (const take of schedules) {
+            if (
+              !overlapsTake(
+                window.open,
+                window.close,
+                take.takeUnlockAt,
+                take.takeLockAt,
+              )
+            ) {
+              continue;
+            }
+            hits.push({
+              sectionId: section.id,
+              revealQuiz: reveal.quizId,
+              kind: window.kind,
+              takeQuiz: take.quizId,
+              reveal: `${formatEasternCivilTimestamp(window.open)} – ${formatEasternCivilTimestamp(window.close)}`,
+              take: `${formatEasternCivilTimestamp(take.takeUnlockAt)} – ${formatEasternCivilTimestamp(take.takeLockAt)}`,
+            });
+          }
+        }
+      }
+    }
+    return hits;
+  }
+
+  /** Q3 answers Mon Nov 9–Mon Nov 16 overlap Q4’s take week. Jose has not moved that window. */
+  function isPendingQ3AnswerTiming(hit: Overlap): boolean {
+    return (
+      hit.revealQuiz === "q3" &&
+      hit.kind === "first-answer" &&
+      hit.takeQuiz === "q4"
+    );
+  }
+
+  it("does not overlap any take window except the pending Q3 answer case", () => {
+    const hits = collectOverlaps();
+    const known = hits.filter(isPendingQ3AnswerTiming);
+    const unexpected = hits.filter((hit) => !isPendingQ3AnswerTiming(hit));
+    assert.equal(
+      known.length,
+      sections.length,
+      "Q3’s first-answer window should overlap Q4’s take once per section until Jose decides",
+    );
+    assert.deepEqual(
+      unexpected,
+      [],
+      unexpected
+        .map(
+          (hit) =>
+            `${hit.sectionId}: ${hit.revealQuiz} ${hit.kind} (${hit.reveal}) overlaps ${hit.takeQuiz} take (${hit.take})`,
+        )
+        .join("\n"),
+    );
+  });
+
+  it.todo("pending Jose decision on Q3 answer timing");
+});
+
 describe("getAnswerRevealPhase boundaries", () => {
   const q1 = getQuizSchedule("q1");
   assert.ok(q1);
