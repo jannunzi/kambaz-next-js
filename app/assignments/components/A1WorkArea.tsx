@@ -31,6 +31,7 @@ export default function A1WorkArea({
   serverUserId: string | null;
   authEnabled: boolean;
   canSubmit: boolean;
+  showSubmissionStatus?: boolean;
   impersonating: boolean;
   gateReason: SubmissionGateReason;
   staffQueue?: StaffStudentRow[];
@@ -58,6 +59,7 @@ function A1WorkSession({
   initialSubmission,
   initialGrade,
   canSubmit,
+  showSubmissionStatus = false,
   impersonating,
   gateReason,
   staffQueue,
@@ -68,6 +70,7 @@ function A1WorkSession({
   initialSubmission: AssignmentSubmissionView | null;
   initialGrade: AssignmentGradeView | null;
   canSubmit: boolean;
+  showSubmissionStatus?: boolean;
   impersonating: boolean;
   gateReason: SubmissionGateReason;
   staffQueue?: StaffStudentRow[];
@@ -172,6 +175,7 @@ function A1WorkSession({
           assignmentId={assignment.id}
           initialSubmission={submission}
           canSubmit={canSubmit || staffMode}
+          showSubmissionStatus={showSubmissionStatus && !staffMode}
           impersonating={impersonating}
           gateReason={canSubmit || staffMode ? null : gateReason}
           staffStudentKey={selectedStudent?.key}

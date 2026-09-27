@@ -5,7 +5,7 @@
  * Creating a course-website account is not Canvas. Students Sign up
  * with the same Northeastern email they use on Canvas/FACT so progress
  * can be mapped to the roster. Run checks does not require an account.
- * Saving URLs still requires sign-in and a roster match. Save is not
+ * Submitting URLs still requires sign-in and a roster match. Submit is not
  * unlocked by a calendar date. Do not name demo students in this file.
  *
  * Jose (2026-09-17): do not tell students to hard-refresh as a fix for
@@ -23,22 +23,22 @@ export const ASSIGNMENT_STUDENT_COPY = {
   syncProgress:
     "Sign up if you don’t have a course-website account yet, then Sign in with the same Northeastern email you use on Canvas to sync progress.",
   checksNotSaved:
-    "Run checks updates this page only. Checkmarks are not saved. Sign up if you don’t have a course-website account yet, then Sign in with the same Northeastern email you use on Canvas to save your GitHub and Vercel URLs.",
+    "Run checks updates this page only. Checkmarks stay on this page only. Sign up if you don’t have a course-website account yet, then Sign in with the same Northeastern email you use on Canvas to submit your GitHub and Vercel URLs.",
   urlSubmitWhen:
-    "Run checks on a public Vercel URL works without an account. Saving URLs is not unlocked by a calendar date. Save stays closed until you are signed in with the same Northeastern email as your Canvas/FACT roster, and that email is on the course site roster.",
+    "Run checks on a public Vercel URL works without an account. Submitting URLs is not unlocked by a calendar date. Submit stays closed until you are signed in with the same Northeastern email as your Canvas/FACT roster, and that email is on the course site roster. After a submission is stored, the button says Update submission.",
   notOnRosterTitle: "This email isn’t on the course roster",
   notOnRoster:
-    "This email isn’t on the Canvas/FACT course roster. You can still run checks on a public Vercel URL. Checkmarks are not saved. URL submit stays closed until you Sign in with the same Northeastern email you use on Canvas. Creating a site account does not enroll you on the roster; use your Canvas email so we can map progress. If you already did that and are still blocked, ask staff on Piazza to refresh the roster or contact the instructor.",
+    "This email isn’t on the Canvas/FACT course roster. You can still run checks on a public Vercel URL. Checkmarks stay on this page only. URL submit stays closed until you Sign in with the same Northeastern email you use on Canvas. Creating a site account does not enroll you on the roster; use your Canvas email so we can map progress. If you already did that and are still blocked, ask staff on Piazza to refresh the roster or contact the instructor.",
   rosterEmpty:
     "The course roster has not been loaded yet. This is not a date lock — URL submit stays closed until the instructor imports the roster.",
   notConfiguredTitle: "URL submit is not available yet",
   notConfigured:
-    "This is not a date lock. The course site could not read the imported Canvas/FACT roster, so saving URLs stays closed. You can still run checks on a public Vercel URL. Sign in with the same Northeastern email you use on Canvas. If you are still blocked, ask staff on Piazza to refresh the roster or contact the instructor — this is a site roster connection problem, not a missing Sign-in.",
+    "This is not a date lock. The course site could not read the imported Canvas/FACT roster, so submitting URLs stays closed. You can still run checks on a public Vercel URL. Sign in with the same Northeastern email you use on Canvas. If you are still blocked, ask staff on Piazza to refresh the roster or contact the instructor — this is a site roster connection problem, not a missing Sign-in.",
   unknownAssignment: "URL submit is only available for A1 and A2 right now.",
   impersonationBanner:
-    "Impersonation — you can run checks to smoke-test the form. The submission is not saved.",
-    saved: "Saved. You can run checks again after you update your Vercel URL.",
-  savedButNotPersisted: "Checks finished. This preview was not saved.",
+    "Impersonation — you can run checks to smoke-test the form. This does not submit.",
+  saved: "Submitted. You can run checks again after you update your Vercel URL.",
+  savedButNotPersisted: "Checks finished. This preview was not submitted.",
   checkInstructions:
     "Paste a public Vercel URL. Checks normalize the deploy origin, fetch Labs and Lab pages, crawl Kambaz screens, and look for wd-* ids and required content markers. A GitHub URL is optional for Run checks.",
   proposedGradeLabel: "Proposed grade",

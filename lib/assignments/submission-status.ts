@@ -15,6 +15,10 @@ export type StudentSubmissionStatus = keyof typeof SUBMISSION_STATUS_LABEL;
 
 export const NOT_GRADED_YET = "Not graded yet";
 
+/** Shown instead of a submission badge when nobody is signed in. */
+export const SIGN_IN_FOR_SUBMISSION_STATUS =
+  "Sign in to see your submission status";
+
 export type StaffGradeSnapshot = {
   earnedPoints?: number;
   totalPoints?: number;
@@ -67,6 +71,25 @@ export function statusForAssignment(input: {
 }): StudentSubmissionStatus | null {
   if (!supportsUrlSubmission(input.assignmentId)) return null;
   return studentSubmissionStatus(input);
+}
+
+/**
+ * Not submitted / Submitted / Graded only for a signed-in student who
+ * matched the roster. Signed-out visitors and other accounts get no status.
+ */
+export function statusForViewer(input: {
+  signedIn: boolean;
+  rosterMatched: boolean;
+  assignmentId: string;
+  hasSubmission: boolean;
+  staffGrade?: StaffGradeSnapshot | null;
+}): StudentSubmissionStatus | null {
+  if (!input.signedIn || !input.rosterMatched) return null;
+  return statusForAssignment(input);
+}
+
+export function signedOutStatusNote(signedIn: boolean): string | null {
+  return signedIn ? null : SIGN_IN_FOR_SUBMISSION_STATUS;
 }
 
 /**
@@ -217,4 +240,34 @@ export function notSubmittedMessage(detail?: string): string {
   if (!extra) return lead;
   if (/not submitted/i.test(extra)) return extra;
   return `${lead} ${extra}`;
+}
+
+export type SubmitFailureCopy = {
+  title: string;
+  body: string;
+};
+
+/**
+ * A failed first submit says the assignment was not submitted.
+ * A failed update names the previous Eastern Time submission and does not
+ * say "not submitted".
+ */
+export function submitFailureCopy(input: {
+  hasSubmission: boolean;
+  submittedAt?: string | Date | null;
+  detail?: string;
+}): SubmitFailureCopy {
+  if (input.hasSubmission) {
+    const when = formatSubmittedTimestamp(input.submittedAt);
+    return {
+      title: "Update failed",
+      body: when
+        ? `Update failed. Your previous submission from ${when} is still on file.`
+        : "Update failed. Your previous submission is still on file.",
+    };
+  }
+  return {
+    title: "Not submitted",
+    body: notSubmittedMessage(input.detail),
+  };
 }

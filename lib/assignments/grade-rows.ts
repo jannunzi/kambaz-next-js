@@ -365,8 +365,25 @@ const FILL_CLASS: Record<RowFill, string> = {
 };
 
 /**
+ * Checker text under a row. A skipped Name on Labs row keeps its sign-in
+ * hint. Manual rows already show their own hint, so that skipped message
+ * is not repeated.
+ */
+export function visibleCheckMessage(input: {
+  message?: string | null;
+  skipped?: boolean;
+  manual: boolean;
+}): string | null {
+  const message = input.message?.trim() ?? "";
+  if (!message) return null;
+  if (input.manual && input.skipped) return null;
+  return message;
+}
+
+/**
  * Blue is an edge and a badge, not a fill, so it can sit on green, red, or
  * yellow. Yellow replaces green and red when the row is overridden.
+ * A skipped auto row stays neutral so "No credit" does not replace its hint.
  */
 export function rowPresentation(input: {
   row: CriterionGradeRow;
@@ -374,6 +391,7 @@ export function rowPresentation(input: {
   changed: boolean;
   audience: GradeAudience;
   manual: boolean;
+  skipped?: boolean;
 }): RowPresentation {
   const changed = input.scored && input.changed;
   if (!input.scored || (input.audience === "student" && input.manual)) {
@@ -400,6 +418,16 @@ export function rowPresentation(input: {
         : GRADE_ROW_COPY.override,
       mark: "override",
       className: className("yellow", changed),
+    };
+  }
+
+  if (input.skipped) {
+    return {
+      fill: "neutral",
+      changed,
+      label: "",
+      mark: "",
+      className: className("neutral", changed),
     };
   }
 

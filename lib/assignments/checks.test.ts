@@ -10,6 +10,7 @@ import {
   latestResultByCriterion,
   runA1Checks,
 } from "./checks";
+import { rowPresentation, visibleCheckMessage } from "./grade-rows";
 import { htmlHasStudentName, resolveNameQuery } from "./names";
 import { ASSIGNMENT_STUDENT_COPY } from "./student-copy";
 import {
@@ -274,6 +275,31 @@ describe("runA1Checks", () => {
       "Sign in with your roster (Northeastern) account to check your name on Labs",
     );
     assert.equal(name.message, ASSIGNMENT_STUDENT_COPY.nameCheckNeedsRoster);
+    assert.equal(
+      visibleCheckMessage({
+        message: name.message,
+        skipped: name.skipped,
+        manual: false,
+      }),
+      ASSIGNMENT_STUDENT_COPY.nameCheckNeedsRoster,
+    );
+    const presentation = rowPresentation({
+      row: {
+        criterionId: "a1-delivery-name-section",
+        maxPoints: 3,
+        autoPassed: false,
+        overridePassed: false,
+        points: 0,
+      },
+      scored: true,
+      changed: false,
+      audience: "student",
+      manual: false,
+      skipped: true,
+    });
+    assert.equal(presentation.fill, "neutral");
+    assert.equal(presentation.label, "");
+    assert.doesNotMatch(presentation.label, /No credit|Skipped/i);
   });
 
   it("does not treat a sign-in page as Labs when /labs is available", async () => {
@@ -567,7 +593,11 @@ describe("student-facing copy", () => {
     );
     assert.match(ASSIGNMENT_STUDENT_COPY.urlSubmitWhen, /Run checks/i);
     assert.match(ASSIGNMENT_STUDENT_COPY.urlSubmitWhen, /without an account/i);
-    assert.match(ASSIGNMENT_STUDENT_COPY.notConfigured, /saving URLs stays closed/i);
+    assert.match(ASSIGNMENT_STUDENT_COPY.notConfigured, /submitting URLs stays closed/i);
+    assert.match(ASSIGNMENT_STUDENT_COPY.urlSubmitWhen, /\bSubmit\b/);
+    assert.match(ASSIGNMENT_STUDENT_COPY.urlSubmitWhen, /Update submission/);
+    assert.doesNotMatch(ASSIGNMENT_STUDENT_COPY.urlSubmitWhen, /\bSave\b|\bSaving\b/);
+    assert.doesNotMatch(ASSIGNMENT_STUDENT_COPY.checksNotSaved, /to save your/i);
     assert.match(ASSIGNMENT_STUDENT_COPY.notConfigured, /still run checks/i);
     assert.doesNotMatch(ASSIGNMENT_STUDENT_COPY.notConfigured, /test fields stay closed/i);
     assert.match(ASSIGNMENT_STUDENT_COPY.notConfigured, /not a date lock/i);
@@ -678,7 +708,7 @@ describe("student-facing copy", () => {
     for (const value of Object.values(ASSIGNMENT_STUDENT_COPY)) {
       assert.doesNotMatch(value, /stay in this browser/i);
     }
-    assert.match(ASSIGNMENT_STUDENT_COPY.checksNotSaved, /not saved/i);
+    assert.match(ASSIGNMENT_STUDENT_COPY.checksNotSaved, /stay on this page only/i);
     assert.match(ASSIGNMENT_STUDENT_COPY.manualCheckHint, /Checked by staff at grading/i);
   });
 });

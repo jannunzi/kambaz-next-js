@@ -11,9 +11,10 @@ import {
   type SubmissionGateReason,
 } from "@/lib/assignments/submission-form";
 import {
-  notSubmittedMessage,
   showSubmittedConfirmation,
   submitActionLabel,
+  submitFailureCopy,
+  type SubmitFailureCopy,
 } from "@/lib/assignments/submission-status";
 import {
   runAssignmentChecks,
@@ -36,6 +37,7 @@ export default function A1SubmissionForm({
   assignmentId,
   initialSubmission,
   canSubmit,
+  showSubmissionStatus = false,
   impersonating = false,
   gateReason = null,
   staffStudentKey,
@@ -51,6 +53,8 @@ export default function A1SubmissionForm({
   assignmentId: string;
   initialSubmission: AssignmentSubmissionView | null;
   canSubmit: boolean;
+  /** Roster-matched students see Submitted / Graded. Everyone else does not. */
+  showSubmissionStatus?: boolean;
   impersonating?: boolean;
   gateReason?: SubmissionGateReason;
   staffStudentKey?: string;
@@ -71,7 +75,7 @@ export default function A1SubmissionForm({
   );
   const [note, setNote] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<SubmitFailureCopy | null>(null);
   const [pendingAction, setPendingAction] = useState<"save" | "check" | null>(
     null,
   );
@@ -85,16 +89,24 @@ export default function A1SubmissionForm({
   const savedAt = savedToAccount ? formatSavedAt(submission?.updatedAt) : null;
   const checkedAt = formatSavedAt(submission?.lastCheckedAt);
   const hasStoredSubmission = Boolean(savedToAccount && submission);
-  const showSubmitted = showSubmittedConfirmation({
-    hasSubmission: hasStoredSubmission,
-    submitFailed: Boolean(submitError),
-  });
+  const showSubmitted =
+    showSubmissionStatus &&
+    showSubmittedConfirmation({
+      hasSubmission: hasStoredSubmission,
+      submitFailed: Boolean(submitError),
+    });
 
   function applySave(
     result: Awaited<ReturnType<typeof saveAssignmentSubmission>>,
   ) {
     if (!result.ok) {
-      setSubmitError(notSubmittedMessage(result.message));
+      setSubmitError(
+        submitFailureCopy({
+          hasSubmission: hasStoredSubmission,
+          submittedAt: submission?.updatedAt,
+          detail: result.message,
+        }),
+      );
       setError(null);
       setNote(null);
       return;
@@ -125,7 +137,7 @@ export default function A1SubmissionForm({
     setNote(
       staffReview
         ? "Checks finished. Save records the grade. Running checks again does not change a saved grade."
-        : "Checks finished. These results stay on this page until you Clear or leave. They are not saved.",
+        : "Checks finished. These results stay on this page until you Clear or leave. They are not submitted.",
     );
   }
 
@@ -198,8 +210,8 @@ export default function A1SubmissionForm({
           role="alert"
           className="mb-3 rounded-lg border-2 border-red-600 bg-red-50 px-4 py-3 font-sans text-sm text-red-950"
         >
-          <p className="m-0 font-semibold">Not submitted</p>
-          <p className="mb-0 mt-1">{submitError}</p>
+          <p className="m-0 font-semibold">{submitError.title}</p>
+          <p className="mb-0 mt-1">{submitError.body}</p>
         </div>
       ) : null}
       {!staffReview && showSubmitted && submission ? (

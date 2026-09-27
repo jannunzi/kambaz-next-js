@@ -6,13 +6,10 @@ import { assignmentsIntro } from "@/app/syllabus/data/assignments";
 import { supportsUrlSubmission } from "@/lib/assignments/access";
 import { listAssignmentIds, listAssignments, rubricPointTotal } from "@/lib/assignments/catalog";
 import { studentVisibleSubmission } from "@/lib/assignments/staff";
+import { listSubmissionsForAssignment } from "@/lib/assignments/submissions";
 import {
-  listSubmissionsForAssignment,
-  readAssignmentSubmission,
-} from "@/lib/assignments/submissions";
-import type { AssignmentSubmissionDoc } from "@/lib/assignments/submissions-store";
-import {
-  statusForAssignment,
+  SIGN_IN_FOR_SUBMISSION_STATUS,
+  statusForViewer,
   type StudentSubmissionStatus,
 } from "@/lib/assignments/submission-status";
 import type { AssignmentId } from "@/lib/assignments/types";
@@ -30,19 +27,21 @@ import AssignmentStatusBadge from "./components/AssignmentStatusBadge";
 
 export const dynamic = "force-dynamic";
 
-async function loadSubmissionStatuses(): Promise<
-  Map<AssignmentId, StudentSubmissionStatus>
-> {
+async function loadSubmissionStatuses(): Promise<{
+  note: string | null;
+  statuses: Map<AssignmentId, StudentSubmissionStatus>;
+}> {
   const urlIds = listAssignmentIds().filter((id) => supportsUrlSubmission(id));
-  const notSubmitted = new Map<AssignmentId, StudentSubmissionStatus>(
-    urlIds.map((id) => [id, "not_submitted"]),
-  );
+  const signedOut = {
+    note: SIGN_IN_FOR_SUBMISSION_STATUS,
+    statuses: new Map<AssignmentId, StudentSubmissionStatus>(),
+  };
   if (!isClerkConfigured() || !isAssignmentProgressConfigured()) {
-    return notSubmitted;
+    return signedOut;
   }
   try {
     const { userId, sessionClaims } = await auth();
-    if (!userId) return notSubmitted;
+    if (!userId) return signedOut;
     let rosterEntry: CanvasRosterEntry | null = null;
     try {
       const user = await currentUser();
@@ -60,31 +59,34 @@ async function loadSubmissionStatuses(): Promise<
     } catch (error) {
       console.error("assignment list roster lookup failed", error);
     }
-    const chosen: Array<AssignmentSubmissionDoc | null> = rosterEntry
-      ? (
-          await Promise.all(urlIds.map((id) => listSubmissionsForAssignment(id)))
-        ).map((submissions) =>
-          studentVisibleSubmission({
-            clerkUserId: userId,
-            rosterEntry,
-            submissions,
-          }),
-        )
-      : await Promise.all(urlIds.map((id) => readAssignmentSubmission(userId, id)));
+    if (!rosterEntry) {
+      return { note: null, statuses: new Map() };
+    }
+    const chosen = (
+      await Promise.all(urlIds.map((id) => listSubmissionsForAssignment(id)))
+    ).map((submissions) =>
+      studentVisibleSubmission({
+        clerkUserId: userId,
+        rosterEntry,
+        submissions,
+      }),
+    );
     const statuses = new Map<AssignmentId, StudentSubmissionStatus>();
     urlIds.forEach((id, index) => {
       const doc = chosen[index] ?? null;
-      const status = statusForAssignment({
+      const status = statusForViewer({
+        signedIn: true,
+        rosterMatched: true,
         assignmentId: id,
         hasSubmission: Boolean(doc),
         staffGrade: doc?.staffGrade,
       });
       if (status) statuses.set(id, status);
     });
-    return statuses;
+    return { note: null, statuses };
   } catch (error) {
     console.error("assignment list submission status failed", error);
-    return new Map();
+    return { note: null, statuses: new Map() };
   }
 }
 
@@ -94,7 +96,7 @@ export const metadata: Metadata = {
 
 export default async function AssignmentsIndexPage() {
   const items = listAssignments();
-  const statuses = await loadSubmissionStatuses();
+  const { note: statusNote, statuses } = await loadSubmissionStatuses();
 
   return (
     <article className="page-content">
@@ -117,6 +119,11 @@ export default async function AssignmentsIndexPage() {
         </span>
         {COURSE_WEBSITE_ACCOUNT_COPY.assignmentAuthHint}
       </p>
+      {statusNote ? (
+        <p className="rounded-lg border border-neutral-300 bg-neutral-50 px-4 py-3 font-sans text-sm text-neutral-800">
+          {statusNote}
+        </p>
+      ) : null}
       <ul className="mt-6 list-none space-y-3 p-0">
         {items.map((item) => {
           const points = item.rubric ? rubricPointTotal(item.rubric) : null;

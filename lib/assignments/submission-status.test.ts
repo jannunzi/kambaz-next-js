@@ -1,19 +1,24 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { formatGradeSummary } from "./grade";
+import { ASSIGNMENT_STUDENT_COPY } from "./student-copy";
 import {
   NOT_GRADED_YET,
+  SIGN_IN_FOR_SUBMISSION_STATUS,
   formatGradedConfirmation,
   formatSubmittedTimestamp,
   hasSavedStaffGrade,
   notSubmittedMessage,
   showSubmittedConfirmation,
+  signedOutStatusNote,
   statusForAssignment,
+  statusForViewer,
   storedSubmissionLinks,
   studentSubmissionStatus,
   submissionGradeLine,
   submissionStatusLabel,
   submitActionLabel,
+  submitFailureCopy,
   submittedBannerHeading,
 } from "./submission-status";
 
@@ -95,6 +100,68 @@ describe("student submission status", () => {
       statusForAssignment({ assignmentId: "a6", hasSubmission: true }),
       null,
     );
+  });
+
+  it("hides submission status unless the viewer is a signed-in roster match", () => {
+    assert.equal(
+      statusForViewer({
+        signedIn: false,
+        rosterMatched: false,
+        assignmentId: "a1",
+        hasSubmission: false,
+      }),
+      null,
+    );
+    assert.equal(
+      statusForViewer({
+        signedIn: false,
+        rosterMatched: false,
+        assignmentId: "a1",
+        hasSubmission: true,
+        staffGrade: GRADE_95,
+      }),
+      null,
+    );
+    assert.equal(
+      statusForViewer({
+        signedIn: true,
+        rosterMatched: false,
+        assignmentId: "a1",
+        hasSubmission: true,
+      }),
+      null,
+    );
+    assert.equal(
+      statusForViewer({
+        signedIn: true,
+        rosterMatched: true,
+        assignmentId: "a1",
+        hasSubmission: false,
+      }),
+      "not_submitted",
+    );
+    assert.equal(
+      statusForViewer({
+        signedIn: true,
+        rosterMatched: true,
+        assignmentId: "a1",
+        hasSubmission: true,
+      }),
+      "submitted",
+    );
+    assert.equal(
+      statusForViewer({
+        signedIn: true,
+        rosterMatched: true,
+        assignmentId: "a2",
+        hasSubmission: true,
+        staffGrade: GRADE_95,
+      }),
+      "graded",
+    );
+    assert.equal(signedOutStatusNote(false), SIGN_IN_FOR_SUBMISSION_STATUS);
+    assert.equal(signedOutStatusNote(true), null);
+    assert.doesNotMatch(SIGN_IN_FOR_SUBMISSION_STATUS, /Not submitted|Submitted|Graded/);
   });
 });
 
@@ -229,16 +296,60 @@ describe("submit confirmation copy", () => {
     );
   });
 
-  it("says the assignment was not submitted when save fails", () => {
+  it("says the assignment was not submitted when the first submit fails", () => {
     assert.equal(
       notSubmittedMessage(),
       "Not submitted. This assignment was not submitted.",
     );
-    assert.match(notSubmittedMessage("Could not save the submission."), /not submitted/i);
-    assert.match(notSubmittedMessage("Could not save the submission."), /Could not save the submission/);
+    const first = submitFailureCopy({
+      hasSubmission: false,
+      detail: "Could not submit.",
+    });
+    assert.equal(first.title, "Not submitted");
+    assert.match(first.body, /not submitted/i);
+    assert.match(first.body, /Could not submit/);
+  });
+
+  it("says a failed update kept the previous submission", () => {
+    const failed = submitFailureCopy({
+      hasSubmission: true,
+      submittedAt: "2026-09-28T00:52:00.000Z",
+      detail: "Could not submit.",
+    });
+    assert.equal(failed.title, "Update failed");
     assert.equal(
-      notSubmittedMessage("Not submitted. Try again."),
-      "Not submitted. Try again.",
+      failed.body,
+      "Update failed. Your previous submission from Sun, Sep 27, 8:52 PM ET is still on file.",
     );
+    assert.doesNotMatch(`${failed.title} ${failed.body}`, /not submitted/i);
+    assert.equal(
+      submitFailureCopy({ hasSubmission: true, submittedAt: null }).body,
+      "Update failed. Your previous submission is still on file.",
+    );
+  });
+
+  it("uses Submit and Update submission in the student helper copy", () => {
+    assert.equal(
+      submitActionLabel({ hasSubmission: false, pending: false }),
+      "Submit",
+    );
+    assert.equal(
+      submitActionLabel({ hasSubmission: true, pending: false }),
+      "Update submission",
+    );
+    assert.equal(
+      submitActionLabel({ hasSubmission: false, pending: true }),
+      "Submitting…",
+    );
+    assert.equal(
+      submitActionLabel({ hasSubmission: true, pending: true }),
+      "Updating…",
+    );
+    assert.match(ASSIGNMENT_STUDENT_COPY.urlSubmitWhen, /Update submission/);
+    assert.doesNotMatch(ASSIGNMENT_STUDENT_COPY.urlSubmitWhen, /\bSave\b|\bSaving\b/);
+    assert.doesNotMatch(ASSIGNMENT_STUDENT_COPY.checksNotSaved, /\bSave\b|\bSaving\b/);
+    assert.doesNotMatch(ASSIGNMENT_STUDENT_COPY.signInHint, /\bSave\b|\bSaving\b/);
+    assert.doesNotMatch(ASSIGNMENT_STUDENT_COPY.saved, /\bSave\b|\bSaving\b/);
+    assert.match(submittedBannerHeading("2026-09-28T00:52:00.000Z"), /^Submitted /);
   });
 });

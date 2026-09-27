@@ -61,6 +61,7 @@ import {
   isImpersonatingStudent,
 } from "@/lib/roster/staff-access";
 import { COURSE_WEBSITE_ACCOUNT_COPY } from "@/lib/course-site/account-copy";
+import { SIGN_IN_FOR_SUBMISSION_STATUS } from "@/lib/assignments/submission-status";
 import A1SubmitDiagnostics from "../components/A1SubmitDiagnostics";
 import A1WorkArea from "../components/A1WorkArea";
 import AssignmentChapterLink from "../components/AssignmentChapterLink";
@@ -113,6 +114,7 @@ export default async function AssignmentDetailPage({
   if (!assignment) notFound();
 
   let signedIn = false;
+  let rosterMatched = false;
   let serverUserId: string | null = null;
   const mongoReady = isAssignmentProgressConfigured();
   let initialGrade: AssignmentGradeView | null = null;
@@ -196,6 +198,7 @@ export default async function AssignmentDetailPage({
       });
       canSubmit = visibility.canSubmit;
       gateReason = visibility.gateReason;
+      rosterMatched = roster.status === "matched";
 
       if (staff) {
         let rosterCount: number | null = null;
@@ -354,6 +357,12 @@ export default async function AssignmentDetailPage({
       </p>
       <AssignmentChapterLink assignment={assignment} />
 
+      {supportsUrlSubmission(assignment.id) && !signedIn ? (
+        <p className="rounded-lg border border-neutral-300 bg-neutral-50 px-4 py-3 font-sans text-sm text-neutral-800">
+          {SIGN_IN_FOR_SUBMISSION_STATUS}
+        </p>
+      ) : null}
+
       {staffDiagnostics ? (
         <A1SubmitDiagnostics data={staffDiagnostics} />
       ) : null}
@@ -376,6 +385,7 @@ export default async function AssignmentDetailPage({
           serverUserId={serverUserId}
           authEnabled={isClerkPublishableKeySet()}
           canSubmit={canSubmit}
+          showSubmissionStatus={rosterMatched}
           impersonating={impersonating}
           gateReason={canSubmit ? null : gateReason}
           staffQueue={staffQueue}
