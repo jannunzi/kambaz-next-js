@@ -1,0 +1,34 @@
+import "./box-model-widget.css";
+
+export function BoxModelWidget() {
+  return (
+    <div
+      className="wd-devtools-box"
+      role="img"
+      aria-label="Box model of the content-box sample: margin 0, 0, 10, 0; border 10; padding 20; content 200 by 180"
+    >
+      <div className="wd-bm-margin">
+        <span className="wd-bm-label">margin</span>
+        <span className="wd-bm-top">0</span>
+        <span className="wd-bm-left">0</span>
+        <span className="wd-bm-right">0</span>
+        <span className="wd-bm-bottom">10</span>
+        <div className="wd-bm-border">
+          <span className="wd-bm-label">border</span>
+          <span className="wd-bm-top">10</span>
+          <span className="wd-bm-left">10</span>
+          <span className="wd-bm-right">10</span>
+          <span className="wd-bm-bottom">10</span>
+          <div className="wd-bm-padding">
+            <span className="wd-bm-label">padding</span>
+            <span className="wd-bm-top">20</span>
+            <span className="wd-bm-left">20</span>
+            <span className="wd-bm-right">20</span>
+            <span className="wd-bm-bottom">20</span>
+            <div className="wd-bm-content">200×180</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

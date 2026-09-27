@@ -1,0 +1,91 @@
+/* DevTools Computed-pane figure. Book and slides only — not part of Lab 2.
+   Numbers match the content-box sample in app/labs/lab2/index.css:
+   margin-bottom 10px (other sides 0), border 10px, padding 20px,
+   width 200px, height 180px → content 200×180. */
+.wd-devtools-box {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 34rem;
+  color: #222;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  font-size: clamp(12px, 2.5vw, 14px);
+  line-height: 1.2;
+}
+.wd-devtools-box *,
+.wd-devtools-box *::before,
+.wd-devtools-box *::after {
+  box-sizing: border-box;
+}
+.wd-devtools-box .wd-bm-margin,
+.wd-devtools-box .wd-bm-border,
+.wd-devtools-box .wd-bm-padding {
+  display: grid;
+  grid-template-columns: minmax(2.75rem, auto) minmax(0, 1fr) minmax(2.75rem, auto);
+  grid-template-rows: auto minmax(2.25rem, 1fr) auto;
+}
+.wd-devtools-box .wd-bm-margin {
+  background-color: #f9cc9d;
+  border: 1px dashed #222;
+}
+.wd-devtools-box .wd-bm-border,
+.wd-devtools-box .wd-bm-padding,
+.wd-devtools-box .wd-bm-content {
+  grid-column: 2;
+  grid-row: 2;
+  min-width: 0;
+}
+.wd-devtools-box .wd-bm-border {
+  background-color: #fddd9b;
+  border: 1px solid #222;
+}
+.wd-devtools-box .wd-bm-padding {
+  background-color: #c3d08b;
+  border: 1px dashed #222;
+}
+.wd-devtools-box .wd-bm-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.45rem 0.6rem;
+  background-color: #8cb6c0;
+  border: 1px solid #222;
+  text-align: center;
+  white-space: nowrap;
+}
+.wd-devtools-box .wd-bm-label {
+  z-index: 1;
+  grid-column: 1;
+  grid-row: 1;
+  align-self: start;
+  justify-self: start;
+  padding: 3px 5px 0;
+  font-size: 0.85em;
+}
+.wd-devtools-box .wd-bm-top,
+.wd-devtools-box .wd-bm-bottom {
+  grid-column: 1 / -1;
+  padding: 0.35rem 0.25rem;
+  text-align: center;
+}
+.wd-devtools-box .wd-bm-top {
+  grid-row: 1;
+}
+.wd-devtools-box .wd-bm-bottom {
+  grid-row: 3;
+}
+.wd-devtools-box .wd-bm-left,
+.wd-devtools-box .wd-bm-right {
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+}
+.wd-devtools-box .wd-bm-left {
+  grid-column: 1;
+}
+.wd-devtools-box .wd-bm-right {
+  grid-column: 3;
+}
