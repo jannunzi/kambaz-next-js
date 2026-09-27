@@ -265,7 +265,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
     title: "Positions.tsx — absolute",
     kind: "content",
     bullets: [
-      "Paste this block inside #wd-css-positions, after the previous section.",
+      "Paste the TSX below inside `#wd-css-positions`, after the previous section.",
       "`wd-pos-relative` plus `height: 150` is the containing block",
     ],
     code: `<div id="wd-css-position-absolute">
@@ -317,7 +317,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
     title: "Positions.tsx — fixed",
     kind: "content",
     bullets: [
-      "Paste this block inside #wd-css-positions, after the previous section.",
+      "Paste the TSX below inside `#wd-css-positions`, after the previous section.",
       "This embed contains the square so it does not escape the slide",
     ],
     code: `<div id="wd-css-position-fixed">
