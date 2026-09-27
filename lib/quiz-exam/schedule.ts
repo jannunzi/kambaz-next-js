@@ -9,7 +9,10 @@
  * 00:00 ET after the due-week Sunday, and close +7d, except Q3 and Q6,
  * which already waited out the exam week. Piazza Post 33 moved Q1–Q6 one
  * week later; take unlock/lock and those answer windows shifted +7 civil
- * ET days with them. Exam-prep reopen still uses COURSE_EXAMS.
+ * ET days with them. Exam-prep reopen still ends at COURSE_EXAMS, but it
+ * starts only after the last quiz in that group has locked for every
+ * section. A full 7 days is kept when it fits before the exam; otherwise
+ * the window is shortened so it does not overlap a take week.
  *
  * Take windows are the class-wide website window for the quiz week:
  * Monday 00:00 ET unlock through Sunday 23:59 ET lock. That is the
@@ -116,8 +119,9 @@ export function scheduleFromIso(iso: QuizScheduleIso): QuizSchedule {
  * - `finalAt` — syllabus X2 unlock / finals week Monday: 2026-12-14 00:00 ET.
  *
  * Edit these two strings if Jose moves the exam instants used for Q1–Q6
- * answer reopen. Q1–Q3 reopen `[midtermAt − 7d, midtermAt)`. Q4–Q6 reopen
- * `[finalAt − 7d, finalAt)`.
+ * answer reopen. X1 and X2 take dates stay in QUIZ_WINDOW_ISO. The reopen
+ * would be `[exam − 7d, exam)`, but it is clamped so it cannot start until
+ * the last covered quiz has locked (Q3 for the midterm, Q6 for the final).
  */
 export const COURSE_EXAMS = {
   midtermAt: "2026-11-05T05:00:00.000Z",
@@ -125,6 +129,10 @@ export const COURSE_EXAMS = {
 } as const;
 
 const PRE_MIDTERM_QUIZZES = new Set(["q1", "q2", "q3", "x1"]);
+
+/** Chapter quizzes whose keys a midterm / final prep window would reveal. */
+const MIDTERM_PREP_QUIZZES = ["q1", "q2", "q3"] as const;
+const FINAL_PREP_QUIZZES = ["q4", "q5", "q6"] as const;
 
 /** Q1–Q6 and X1/X2 take + first answer windows (ISO UTC). */
 const QUIZ_WINDOW_ISO: Record<
@@ -298,22 +306,60 @@ function easternCivilParts(date: Date): {
   };
 }
 
+function latestTakeLockAt(quizIds: readonly string[]): Date {
+  return quizIds.reduce((latest, quizId) => {
+    const lock = new Date(QUIZ_WINDOW_ISO[quizId].takeLockAt);
+    return lock.getTime() > latest.getTime() ? lock : latest;
+  }, new Date(0));
+}
+
+/**
+ * Take locks are inclusive through 23:59:00 ET. The next minute is outside
+ * every section’s take window, including CS 5610-09’s Sunday lock.
+ */
+function firstMinuteAfter(date: Date): Date {
+  return new Date(date.getTime() + 60_000);
+}
+
+/**
+ * Exam-prep reopen ending at `examAt`. Prefers a 7-day window. If that
+ * would start while any covered quiz is still open, start at the first
+ * minute after the latest take lock. If nothing fits before the exam,
+ * return a zero-length window at `examAt` (no reopen, no overlap).
+ */
+export function clampedExamPrepWindow(
+  examName: ExamName,
+  examAt: Date = examName === "midterm"
+    ? new Date(COURSE_EXAMS.midtermAt)
+    : new Date(COURSE_EXAMS.finalAt),
+): { open: Date; close: Date } {
+  const covered =
+    examName === "midterm" ? MIDTERM_PREP_QUIZZES : FINAL_PREP_QUIZZES;
+  const earliest = firstMinuteAfter(latestTakeLockAt(covered));
+  if (earliest.getTime() >= examAt.getTime()) {
+    return { open: examAt, close: examAt };
+  }
+  const desired = examPrepOpenAt(examAt);
+  const open = desired.getTime() >= earliest.getTime() ? desired : earliest;
+  return { open, close: examAt };
+}
+
 export function getQuizSchedule(quizId: string): QuizSchedule | undefined {
   const windows = QUIZ_WINDOW_ISO[quizId];
   if (!windows) return undefined;
   const examName = examNameForQuiz(quizId);
   const examPrepCloseAt = examAtForQuiz(quizId);
-  const examPrepOpen = windows.skipExamPrep
-    ? examPrepCloseAt
-    : examPrepOpenAt(examPrepCloseAt);
+  const examPrep = windows.skipExamPrep
+    ? { open: examPrepCloseAt, close: examPrepCloseAt }
+    : clampedExamPrepWindow(examName, examPrepCloseAt);
   return {
     quizId,
     takeUnlockAt: new Date(windows.takeUnlockAt),
     takeLockAt: new Date(windows.takeLockAt),
     answersOpenAt: new Date(windows.answersOpenAt),
     answersCloseAt: new Date(windows.answersCloseAt),
-    examPrepOpenAt: examPrepOpen,
-    examPrepCloseAt,
+    examPrepOpenAt: examPrep.open,
+    examPrepCloseAt: examPrep.close,
     examName,
   };
 }
@@ -432,6 +478,63 @@ export function toAnswerWindowInfo(
   };
 }
 
+/** `YYYY-MM-DD` in America/New_York. */
+export function easternIsoDate(date: Date | string): string {
+  const value = typeof date === "string" ? new Date(date) : date;
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(value);
+}
+
+/** Short month and day in ET, e.g. "Sep 28". */
+export function formatEasternMonthDay(date: Date | string): string {
+  const value = typeof date === "string" ? new Date(date) : date;
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    month: "short",
+    day: "numeric",
+  }).format(value);
+}
+
+/** Short weekday plus month and day in ET, e.g. "Mon Sep 28". */
+export function formatEasternWeekdayMonthDay(date: Date | string): string {
+  const value = typeof date === "string" ? new Date(date) : date;
+  return new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+  })
+    .format(value)
+    .replace(/,/g, "");
+}
+
+/** Same clock time, shifted by civil ET days (DST-safe). */
+export function addEasternDays(date: Date, days: number): Date {
+  const parts = easternCivilParts(date);
+  const shifted = new Date(Date.UTC(parts.year, parts.month - 1, parts.day + days));
+  return etWallTimeToUtc(
+    shifted.getUTCFullYear(),
+    shifted.getUTCMonth() + 1,
+    shifted.getUTCDate(),
+    parts.hour,
+    parts.minute,
+    parts.second,
+  );
+}
+
+/** "Sep 28" for the Monday a quiz’s take window opens. */
+export function quizWeekOfLabel(quizId: string): string {
+  const schedule = getQuizSchedule(quizId);
+  if (!schedule) {
+    throw new Error(`No quiz schedule for ${quizId}`);
+  }
+  return formatEasternMonthDay(schedule.takeUnlockAt);
+}
+
 export function formatEasternDateTime(date: Date | string): string {
   const value = typeof date === "string" ? new Date(date) : date;
   return new Intl.DateTimeFormat("en-US", {
@@ -486,7 +589,11 @@ export function answerWindowCopy(
   const prepOpen = formatEasternDateTime(schedule.examPrepOpenAt);
   const prepClose = formatEasternDateTime(schedule.examPrepCloseAt);
   const exam = examLabel(schedule.examName);
-  const prepAgain = `They will be available again one week before the ${exam}, from ${prepOpen} until ${prepClose}.`;
+  const hasExamPrep =
+    schedule.examPrepOpenAt.getTime() < schedule.examPrepCloseAt.getTime();
+  const prepAgain = hasExamPrep
+    ? `They will be available again before the ${exam}, from ${prepOpen} until ${prepClose}.`
+    : undefined;
   const answersOverride = activeAnswersVisibleOverride(answersVisible);
 
   if (answersOverride === "on" && phase !== "take_open" && phase !== "take_closed") {
@@ -516,7 +623,7 @@ export function answerWindowCopy(
       title: "Answers are not open yet",
       paragraphs: [
         `Correct answers will be available starting ${open}, only for one week, until ${close}.`,
-        prepAgain,
+        ...(prepAgain ? [prepAgain] : []),
       ],
       tone: "warn",
     };
@@ -527,7 +634,7 @@ export function answerWindowCopy(
       title: "Answers are available this week",
       paragraphs: [
         `Answers are available only for one week, until ${close}.`,
-        prepAgain,
+        ...(prepAgain ? [prepAgain] : []),
       ],
       tone: "ok",
     };
@@ -537,25 +644,32 @@ export function answerWindowCopy(
     return {
       title: `Answers are available for ${exam} prep`,
       paragraphs: [
-        `This is the one-week prep window before the ${exam}. Answers stay visible until ${prepClose}.`,
+        `This is the prep window before the ${exam}. Answers stay visible until ${prepClose}.`,
       ],
       tone: "ok",
     };
   }
 
   if (phase === "answers_closed") {
-    const prepStillAhead = now.getTime() < schedule.examPrepOpenAt.getTime();
+    const prepStillAhead =
+      hasExamPrep && now.getTime() < schedule.examPrepOpenAt.getTime();
+    const prepEnded =
+      hasExamPrep && now.getTime() >= schedule.examPrepCloseAt.getTime();
     return {
       title: "The answer review window has ended",
-      paragraphs: prepStillAhead
-        ? [
-            `The class review window ended on ${close}.`,
-            `Answers will be available again one week before the ${exam}, from ${prepOpen} until ${prepClose}.`,
-          ]
-        : [
-            `The class review window ended on ${close}.`,
-            `The ${exam} prep window (${prepOpen} until ${prepClose}) has also ended.`,
-          ],
+      paragraphs: [
+        `The class review window ended on ${close}.`,
+        ...(prepStillAhead
+          ? [
+              `Answers will be available again before the ${exam}, from ${prepOpen} until ${prepClose}.`,
+            ]
+          : []),
+        ...(prepEnded
+          ? [
+              `The ${exam} prep window (${prepOpen} until ${prepClose}) has also ended.`,
+            ]
+          : []),
+      ],
       tone: "warn",
     };
   }

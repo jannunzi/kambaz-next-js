@@ -6,6 +6,8 @@ The course homepage (`/`) redirects to `/syllabus`. Kambaz stays on its existing
 
 This project was bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+`npm test` needs Node.js 22 or newer (`package.json` `"engines": { "node": ">=22" }`).
+
 ## Getting Started
 
 First, run the development server:
@@ -387,9 +389,14 @@ blurb) is generated with `npm run canvas:export-qti`. See
 `scripts/canvas-fallback/README.md`. Students still take the website
 unless staff unlock Canvas.
 
-Q1–Q3 reopen `[midtermAt − 7d, midtermAt)` and are labeled “midterm”. Q4–Q6
-reopen `[finalAt − 7d, finalAt)` and are labeled “final”. Edit those two ISO
-strings if the answer-reopen exam instants move.
+Q1–Q3 exam-prep reopen is labeled “midterm” and Q4–Q6 “final”. Each window
+would be `[exam − 7d, exam)`, but it starts only after the last quiz in that
+group has locked for every section (Q3’s Sunday lock, then Q6’s). X1 and X2
+dates are unchanged. Q1–Q3 therefore reopen Monday 2026-11-02 00:00 ET through
+Thursday 2026-11-05 00:00 ET (3 days; a full week would overlap Q3). Q4–Q6 have
+no prep reopen: Q6 locks Sunday 2026-12-13 23:59 ET and `finalAt` is Monday
+2026-12-14 00:00 ET, so a non-overlapping window cannot fit. Edit the two
+`COURSE_EXAMS` strings if those exam instants move.
 
 Staff **View as student** still does not persist an attempt. Impersonation can
 exercise the form even outside the take window; answers still follow the

@@ -1,3 +1,10 @@
+import {
+  addEasternDays,
+  easternIsoDate,
+  formatEasternMonthDay,
+  formatEasternWeekdayMonthDay,
+  getQuizSchedule,
+} from "@/lib/quiz-exam/schedule";
 import { formatWeekOf } from "./dates";
 import type { Deadline, IsoDate, SectionModality } from "./types";
 
@@ -16,7 +23,9 @@ import type { Deadline, IsoDate, SectionModality } from "./types";
  * 23:59 ET; attendance is not required. Website take windows in
  * `lib/quiz-exam/schedule.ts` are that Monday–Sunday window for every section.
  *
- * Q1 is the week of Sep 28, the Monday after A1 due Sun Sep 27. Q3 shares
+ * Q1’s week label comes from `quizWeekOfLabel("q1")` / the Q1 take
+ * unlock in `lib/quiz-exam/schedule.ts` (the Monday after A1 due Sun Sep 27).
+ * Q3 shares
  * the week of Oct 26 with X1; X1’s date is unchanged. X1 is the second half
  * of lecture that week. X2 is finals week (week of Dec 14) and locks Sunday
  * Dec 20. Project due is 2026-12-06; grading begins the week of Dec 7.
@@ -81,13 +90,38 @@ export const deadlines: Deadline[] = [
   },
 ];
 
+function q1TakeWeek(): { monday: Date; wednesday: Date; sunday: Date } {
+  const q1 = getQuizSchedule("q1");
+  if (!q1) {
+    throw new Error("Q1 schedule is missing");
+  }
+  return {
+    monday: q1.takeUnlockAt,
+    wednesday: addEasternDays(q1.takeUnlockAt, 2),
+    sunday: q1.takeLockAt,
+  };
+}
+
+/** "Sep 28", from Q1’s take unlock in schedule.ts. */
+export function q1WeekOfLabel(): string {
+  return formatEasternMonthDay(q1TakeWeek().monday);
+}
+
 /**
  * Student-facing quiz timing (Piazza Post 33, clarified in the course chat).
  * In-person: end of lecture on that section’s meeting day. Online: the quiz
- * is open Monday through Sunday; attendance is not required.
+ * is open Monday through Sunday; attendance is not required. Q1’s week and
+ * online span come from schedule.ts.
  */
-export const quizLectureMeetingDayNote =
-  "In-person sections take each quiz at the end of lecture on your section’s own meeting that week — CS 5610-02 Mondays 6:00–9:00pm ET and CS 4550-01 Wednesdays 6:00–9:00pm ET — not a calendar day labeled “today,” and not any weekday that week. CS 5610-09 (online): attendance is not required. Each quiz is open the whole week, Monday 12:00am ET through Sunday 11:59pm ET. Q1 in the week of Sep 28 is Mon Sep 28 at the end of lecture for CS 5610-02, Wed Sep 30 at the end of lecture for CS 4550, and open Mon Sep 28 through Sun Oct 4 (2026-09-28 through 2026-10-04 ET) for CS 5610-09.";
+export const quizLectureMeetingDayNote = (() => {
+  const { monday, wednesday, sunday } = q1TakeWeek();
+  const weekOf = formatEasternMonthDay(monday);
+  const mon = formatEasternWeekdayMonthDay(monday);
+  const wed = formatEasternWeekdayMonthDay(wednesday);
+  const sun = formatEasternWeekdayMonthDay(sunday);
+  const span = `${easternIsoDate(monday)} through ${easternIsoDate(sunday)}`;
+  return `In-person sections take each quiz at the end of lecture on your section’s own meeting that week — CS 5610-02 Mondays 6:00–9:00pm ET and CS 4550-01 Wednesdays 6:00–9:00pm ET — not a calendar day labeled “today,” and not any weekday that week. CS 5610-09 (online): attendance is not required. Each quiz is open the whole week, Monday 12:00am ET through Sunday 11:59pm ET. Q1 in the week of ${weekOf} is ${mon} at the end of lecture for CS 5610-02, ${wed} at the end of lecture for CS 4550, and open ${mon} through ${sun} (${span} ET) for CS 5610-09.`;
+})();
 
 /**
  * Shared deadlines Date label when no section is selected. Agenda rows pass

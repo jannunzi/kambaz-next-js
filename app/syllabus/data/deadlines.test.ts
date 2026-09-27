@@ -104,10 +104,12 @@ describe("quiz lecture meeting-day copy", () => {
     assert.match(agendaTable, /quizLectureMeetingDayNote/);
     assert.match(agendaTable, /deadline\.kind === "quiz"/);
     assert.match(calendarPage, /quizLectureMeetingDayNote/);
-    assert.match(calendarPage, /week of\s+Sep 28/);
+    assert.match(calendarPage, /quizWeekOfLabel\("q1"\)/);
     assert.doesNotMatch(calendarPage, /week of Sep 21/);
+    assert.doesNotMatch(calendarPage, /week of Sep 28/);
     assert.match(academicCalendar, /quizLectureMeetingDayNote/);
-    assert.match(academicCalendar, /week of\s+Sep 28/);
+    assert.match(academicCalendar, /quizWeekOfLabel\("q1"\)/);
     assert.doesNotMatch(academicCalendar, /week of Sep 21/);
+    assert.doesNotMatch(academicCalendar, /week of Sep 28/);
   });
 });

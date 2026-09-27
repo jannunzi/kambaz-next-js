@@ -5,6 +5,7 @@ import CourseInfoSection from "@/app/course-info/CourseInfoSection";
 import AcademicCalendarTable from "@/app/syllabus/components/AcademicCalendarTable";
 import { academicCalendarIntro } from "@/app/syllabus/data/academicCalendar";
 import { quizLectureMeetingDayNote } from "@/app/syllabus/data/deadlines";
+import { quizWeekOfLabel } from "@/lib/quiz-exam/schedule";
 import { holidayMeetingNote } from "@/app/syllabus/data/holidays";
 
 export default function AcademicCalendarPage() {
@@ -28,7 +29,7 @@ export default function AcademicCalendarPage() {
           <Link href="/syllabus#agenda">syllabus agenda</Link>. Quiz weeks are
           on{" "}
           <Link href="/syllabus#deadlines">shared deadlines</Link>. Q1 is the
-          week of Sep 28. {quizLectureMeetingDayNote}{" "}
+          week of {quizWeekOfLabel("q1")}. {quizLectureMeetingDayNote}{" "}
           This table is the university calendar, not a replacement for section
           meetings.
         </p>
