@@ -42,11 +42,29 @@ export default function CssProperties() {
           <code>#7070ff</code>{" "}(red, green, and blue intensity, two digits
           each); or the functional <code>rgb(12, 34, 56)</code>{" "}form. From
           this exercise on, move each new demo into its own file under{" "}
-          <code>app/labs/lab2/</code>{" "}and import it into{" "}
-          <code>page.tsx</code>{" "}— the file is getting long enough that one
-          exercise per component keeps it manageable, the same organization
-          used for Lab 1&apos;s HTML exercises. Start with{" "}
-          <code>ForegroundColors.tsx</code>:
+          <code>app/labs/lab2/</code>. One exercise per component keeps{" "}
+          <code>page.tsx</code>{" "}manageable, the same organization used for
+          Lab 1&apos;s HTML exercises. Import each demo into{" "}
+          <code>page.tsx</code>:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab2"
+          file="app/labs/lab2/page.tsx"
+        >{`import "./index.css";
+import ForegroundColors from "./ForegroundColors";
+
+export default function Lab2() {
+  return (
+    <div id="wd-lab2">
+      <h2>Lab 2 - Cascading Style Sheets</h2>
+      {/* ...earlier exercises... */}
+      <ForegroundColors />
+    </div>
+  );
+}`}</CodeBlock>
+        <p>
+          Start with <code>ForegroundColors.tsx</code>:
         </p>
         <CodeBlock
           language="css"
@@ -349,33 +367,101 @@ export default function CssProperties() {
           <em>inside</em>{" "}the 200px, so the box you see on screen stays 200px
           wide. Layout math is much easier with{" "}
           <code>border-box</code>, which is why many style resets (and Tailwind
-          later) set it globally. Add the box-model classes and a{" "}
-          <code>BoxModel.tsx</code>{" "}that shows the layers, then two boxes that
-          share the same <code>width</code>, <code>padding</code>, and{" "}
-          <code>border</code>{" "}but differ only in{" "}
-          <code>box-sizing</code>:
+          later) set it globally. Draw those four layers the way the browser
+          does in the Computed pane, then two boxes that share the same{" "}
+          <code>width</code>, <code>padding</code>, and <code>border</code>{" "}
+          but differ only in <code>box-sizing</code>:
         </p>
         <CodeBlock
           language="css"
           name="Lab2 styles"
           file="app/labs/lab2/index.css"
-        >{`.wd-box-model-margin {
-  background-color: #f8d7da;
-  padding: 20px;
-  margin: 10px 0;
+        >{`.wd-devtools-box {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 34rem;
+  color: #222;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  font-size: clamp(12px, 2.5vw, 14px);
+  line-height: 1.2;
 }
-.wd-box-model-border {
-  background-color: #fff3cd;
-  border: 10px solid #c41e3a;
-  padding: 20px;
+.wd-devtools-box *,
+.wd-devtools-box *::before,
+.wd-devtools-box *::after {
+  box-sizing: border-box;
 }
-.wd-box-model-padding {
-  background-color: #cfe2ff;
-  padding: 20px;
+.wd-devtools-box .wd-bm-margin,
+.wd-devtools-box .wd-bm-border,
+.wd-devtools-box .wd-bm-padding {
+  display: grid;
+  grid-template-columns: minmax(2.75rem, auto) minmax(0, 1fr) minmax(2.75rem, auto);
+  grid-template-rows: auto minmax(2.25rem, 1fr) auto;
 }
-.wd-box-model-content {
-  background-color: #d1e7dd;
-  padding: 10px;
+.wd-devtools-box .wd-bm-margin {
+  background-color: #f9cc9d;
+  border: 1px dashed #222;
+}
+.wd-devtools-box .wd-bm-border,
+.wd-devtools-box .wd-bm-padding,
+.wd-devtools-box .wd-bm-content {
+  grid-column: 2;
+  grid-row: 2;
+  min-width: 0;
+}
+.wd-devtools-box .wd-bm-border {
+  background-color: #fddd9b;
+  border: 1px solid #222;
+}
+.wd-devtools-box .wd-bm-padding {
+  background-color: #c3d08b;
+  border: 1px dashed #222;
+}
+.wd-devtools-box .wd-bm-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.45rem 0.6rem;
+  background-color: #8cb6c0;
+  border: 1px solid #222;
+  text-align: center;
+  white-space: nowrap;
+}
+.wd-devtools-box .wd-bm-label {
+  z-index: 1;
+  grid-column: 1;
+  grid-row: 1;
+  align-self: start;
+  justify-self: start;
+  padding: 3px 5px 0;
+  font-size: 0.85em;
+}
+.wd-devtools-box .wd-bm-top,
+.wd-devtools-box .wd-bm-bottom {
+  grid-column: 1 / -1;
+  padding: 0.35rem 0.25rem;
+  text-align: center;
+}
+.wd-devtools-box .wd-bm-top {
+  grid-row: 1;
+}
+.wd-devtools-box .wd-bm-bottom {
+  grid-row: 3;
+}
+.wd-devtools-box .wd-bm-left,
+.wd-devtools-box .wd-bm-right {
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+}
+.wd-devtools-box .wd-bm-left {
+  grid-column: 1;
+}
+.wd-devtools-box .wd-bm-right {
+  grid-column: 3;
 }
 .wd-box-sizing-demo {
   background-color: lightgray;
@@ -384,6 +470,7 @@ export default function CssProperties() {
 .wd-box-sizing-content,
 .wd-box-sizing-border {
   width: 200px;
+  height: 180px;
   padding: 20px;
   border: 10px solid #c41e3a;
   background-color: #ffff07;
@@ -399,20 +486,44 @@ export default function CssProperties() {
           language="tsx"
           name="BoxModel"
           file="app/labs/lab2/BoxModel.tsx"
-        >{`export default function BoxModel() {
+        >{`export function BoxModelWidget() {
   return (
-    <div id="wd-css-box-model">
-      <h2>Box model</h2>
-      <div className="wd-box-model-margin">
-        margin
-        <div className="wd-box-model-border">
-          border
-          <div className="wd-box-model-padding">
-            padding
-            <div className="wd-box-model-content">content</div>
+    <div
+      className="wd-devtools-box"
+      role="img"
+      aria-label="Box model of the content-box sample: margin 0, 0, 10, 0; border 10; padding 20; content 200 by 180"
+    >
+      <div className="wd-bm-margin">
+        <span className="wd-bm-label">margin</span>
+        <span className="wd-bm-top">0</span>
+        <span className="wd-bm-left">0</span>
+        <span className="wd-bm-right">0</span>
+        <span className="wd-bm-bottom">10</span>
+        <div className="wd-bm-border">
+          <span className="wd-bm-label">border</span>
+          <span className="wd-bm-top">10</span>
+          <span className="wd-bm-left">10</span>
+          <span className="wd-bm-right">10</span>
+          <span className="wd-bm-bottom">10</span>
+          <div className="wd-bm-padding">
+            <span className="wd-bm-label">padding</span>
+            <span className="wd-bm-top">20</span>
+            <span className="wd-bm-left">20</span>
+            <span className="wd-bm-right">20</span>
+            <span className="wd-bm-bottom">20</span>
+            <div className="wd-bm-content">200×180</div>
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+export default function BoxModel() {
+  return (
+    <div id="wd-css-box-model">
+      <h2>Box model</h2>
+      <BoxModelWidget />
       <h3>box-sizing</h3>
       <div className="wd-box-sizing-demo">
         <div className="wd-box-sizing-content">
@@ -426,12 +537,19 @@ export default function CssProperties() {
   );
 }`}</CodeBlock>
         <p>
-          The nested labels walk outward through the four layers. Below them,
-          both yellow boxes declare <code>width: 200px</code>,{" "}
-          <code>padding: 20px</code>, and a 10px border — but the{" "}
-          <code>content-box</code>{" "}box is visibly wider (200 + 40 padding +
-          20 border = 260px on screen) while the <code>border-box</code>{" "}
-          box stays 200px:
+          The figure is the box model the way DevTools draws it: a tan margin,
+          a yellow border, a green padding ring, and a blue content box in the
+          center. It draws the <code>content-box</code> sample. Both yellow
+          boxes set <code>margin-bottom: 10px</code> (the other margins stay
+          0), a 10px border, and 20px of padding, so those rings read 0, 10,
+          10, and 20. The shared rule also sets <code>width: 200px</code> and{" "}
+          <code>height: 180px</code>. Under <code>content-box</code> those
+          lengths are the content box, so the center reads <code>200×180</code>.
+          The <code>border-box</code> box uses the same width, height, padding,
+          and border, so its content box is <code>140×120</code> (200 − 40
+          padding − 20 border wide, and 180 − 40 − 20 tall). On screen the
+          content-box box measures 260×240 (200 + 40 + 20 by 180 + 40 + 20)
+          and the border-box box stays 200×180:
         </p>
         <LiveDemo mode="styled" name="BoxModel" file="app/labs/lab2/BoxModel.tsx">
           <BoxModel />
@@ -741,16 +859,18 @@ export default function CssProperties() {
           file="app/labs/lab2/Positions.tsx"
         >{`export default function Positions() {
   return (
-    <div id="wd-css-position-relative">
-      <h2>Relative</h2>
-      <div className="wd-bg-color-gray">
-        <div className="wd-bg-color-yellow wd-dimension-portrait">
-          <div className="wd-pos-relative-nudge-down-right">Portrait</div>
+    <div id="wd-css-positions">
+      <div id="wd-css-position-relative">
+        <h2>Relative</h2>
+        <div className="wd-bg-color-gray">
+          <div className="wd-bg-color-yellow wd-dimension-portrait">
+            <div className="wd-pos-relative-nudge-down-right">Portrait</div>
+          </div>
+          <div className="wd-pos-relative-nudge-up-right wd-bg-color-blue wd-fg-color-white wd-dimension-landscape">
+            Landscape
+          </div>
+          <div className="wd-bg-color-red wd-dimension-square">Square</div>
         </div>
-        <div className="wd-pos-relative-nudge-up-right wd-bg-color-blue wd-fg-color-white wd-dimension-landscape">
-          Landscape
-        </div>
-        <div className="wd-bg-color-red wd-dimension-square">Square</div>
       </div>
     </div>
   );
@@ -813,6 +933,10 @@ export default function CssProperties() {
   top: 20px;
   left: 120px;
 }`}</CodeBlock>
+        <p>
+          Paste the TSX below inside <code>#wd-css-positions</code>, after the
+          previous section.
+        </p>
         <CodeBlock
           language="tsx"
           name="Positions"
@@ -876,6 +1000,10 @@ export default function CssProperties() {
   right: 0px;
   bottom: 50%;
 }`}</CodeBlock>
+        <p>
+          Paste the TSX below inside <code>#wd-css-positions</code>, after the
+          previous section.
+        </p>
         <CodeBlock
           language="tsx"
           name="Positions"
@@ -1218,6 +1346,28 @@ img.wd-float-right {
   flex-grow: 1;
 }`}</CodeBlock>
         <p>
+          Apply <code>wd-flex-grow-1</code>{" "}to Column 3 in{" "}
+          <code>Flex.tsx</code>:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Flex"
+          file="app/labs/lab2/Flex.tsx"
+        >{`export default function Flex() {
+  return (
+    <div id="wd-css-flex">
+      <h2>Flex</h2>
+      <div className="wd-flex-row-container">
+        <div className="wd-bg-color-yellow">Column 1</div>
+        <div className="wd-bg-color-blue wd-fg-color-white">Column 2</div>
+        <div className="wd-bg-color-red wd-fg-color-white wd-flex-grow-1">
+          Column 3
+        </div>
+      </div>
+    </div>
+  );
+}`}</CodeBlock>
+        <p>
           The third column now expands to consume all the remaining width in
           the row, while the first two stay exactly as wide as their text:
         </p>
@@ -1238,6 +1388,28 @@ img.wd-float-right {
   /* Room for "Column 1" + 10px padding under border-box */
   width: 110px;
   flex-shrink: 0;
+}`}</CodeBlock>
+        <p>
+          Apply <code>wd-width-75px</code>{" "}to Column 1 and keep{" "}
+          <code>wd-flex-grow-1</code>{" "}on Column 3:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Flex"
+          file="app/labs/lab2/Flex.tsx"
+        >{`export default function Flex() {
+  return (
+    <div id="wd-css-flex">
+      <h2>Flex</h2>
+      <div className="wd-flex-row-container">
+        <div className="wd-bg-color-yellow wd-width-75px">Column 1</div>
+        <div className="wd-bg-color-blue wd-fg-color-white">Column 2</div>
+        <div className="wd-bg-color-red wd-fg-color-white wd-flex-grow-1">
+          Column 3
+        </div>
+      </div>
+    </div>
+  );
 }`}</CodeBlock>
         <LiveDemo mode="styled" name="Flex" file="app/labs/lab2/Flex.tsx">
           <FlexWidth />
