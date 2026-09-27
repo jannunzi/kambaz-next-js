@@ -162,7 +162,7 @@ function BoxModel() {
       <div className="wd-box-model-parent">
         <div>parent background (shows through the margin)</div>
         <div className="wd-box-model-margin-label">
-          margin (transparent: the parent's gray shows through)
+          {"margin (transparent: the parent's gray shows through)"}
         </div>
         <div className="wd-box-model-box">
           <span className="wd-box-model-border-label">border (the red ring)</span>
