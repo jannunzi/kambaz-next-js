@@ -1,81 +1,63 @@
-.root {
-  width: 100%;
-  max-width: 100%;
-  font-family: system-ui, sans-serif;
-  color: #212529;
-}
-
-.toolbar {
+.pair {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 0.35rem;
-  margin-bottom: 0.5rem;
+  align-items: flex-start;
+  gap: 1rem;
+  width: 100%;
+  max-width: 100%;
 }
 
-.button {
-  margin: 0;
-  padding: 0.2rem 0.45rem;
-  border: 1px solid #d4d4d4;
-  border-radius: 0.25rem;
-  background: #fff;
-  color: #212529;
-  font: inherit;
+.pane {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.phone {
+  flex: 0 1 375px;
+  width: 375px;
+}
+
+.desktop {
+  flex: 1 1 20rem;
+  min-width: min(100%, 18rem);
+}
+
+.label {
+  margin: 0 0 0.35rem;
   font-size: 0.75rem;
+  font-weight: 600;
   line-height: 1.3;
-  cursor: pointer;
+  color: #404040;
 }
 
-.button[aria-pressed="true"] {
-  border-color: #171717;
-  background: #171717;
-  color: #fff;
+/*
+ * The scaler's width is the space this column actually has. Descendants
+ * scale the iframe with 100cqw / --frame-width. The iframe element itself
+ * stays at --frame-width, so viewport breakpoints see that width.
+ */
+.scaler {
+  container-type: inline-size;
+  width: 100%;
 }
 
-.readout {
-  margin-left: auto;
-  font-size: 0.75rem;
-  font-variant-numeric: tabular-nums;
-  color: #525252;
-  white-space: nowrap;
-}
-
-.viewport {
+.slot {
   position: relative;
-  width: 100%;
-  max-width: 100%;
-}
-
-.scroller {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: auto;
-  padding-bottom: 0.25rem;
-}
-
-.stage {
-  max-width: none;
+  overflow: hidden;
+  height: calc(var(--frame-height) * 100cqw / var(--frame-width));
+  border-radius: 0.5rem;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px #d4d4d4;
 }
 
 .frame {
-  display: block;
-  border: 0;
-  background: #fff;
-  box-sizing: border-box;
-}
-
-.handle {
   position: absolute;
   top: 0;
-  bottom: 0.25rem;
-  z-index: 1;
-  width: 12px;
-  margin: 0;
-  padding: 0;
+  left: 0;
+  display: block;
+  width: var(--frame-width);
+  height: var(--frame-height);
   border: 0;
-  border-left: 1px solid #d4d4d4;
-  background: linear-gradient(#e5e5e5, #e5e5e5) 50% 50% / 2px 18px no-repeat,
-    #f5f5f5;
-  cursor: ew-resize;
-  touch-action: none;
+  background: #fff;
+  transform: scale(calc(100cqw / var(--frame-width)));
+  transform-origin: top left;
 }

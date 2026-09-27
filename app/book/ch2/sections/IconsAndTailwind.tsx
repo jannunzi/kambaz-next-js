@@ -408,19 +408,13 @@ export default function TailwindLab() {
   );
 }`}</CodeBlock>
         <p>
-          Drag this figure&apos;s panel narrower and wider, or pick a width.
-          The preview is its own page, so <code>sm:</code>, <code>md:</code>,
-          and the rest follow that frame — below{" "}
-          <code>md</code>{" "}the image sits above the text in a single column;
-          at <code>md</code>{" "}and above, <code>md:flex</code>{" "}moves the
-          image beside the text:
+          The two frames below are separate pages, so <code>md:</code> follows
+          each frame. The phone frame is 375px and stacks the image on top.
+          The desktop frame is 1024px, drawn smaller so it fits this column,
+          and <code>md:flex</code>{" "}puts the image beside the text:
         </p>
         <LiveDemo mode="styled" name="TailwindResponsiveDesign" file="app/labs/lab2/tailwind/TailwindResponsiveDesign.tsx">
-          <ResponsivePreview
-            src={TAILWIND_RESPONSIVE_PREVIEW_SRC}
-            title="TailwindResponsiveDesign"
-            defaultWidth={768}
-          />
+          <ResponsivePreview src={TAILWIND_RESPONSIVE_PREVIEW_SRC} />
         </LiveDemo>
         <OnYourOwn>
           In{" "}
@@ -432,8 +426,8 @@ export default function TailwindLab() {
         <WithAI
           prompt={`In app/labs/lab2/tailwind/TailwindResponsiveDesign.tsx, keep my personal copy or image unchanged. After the existing card, add a second sample card with id wd-ai-responsive that keeps the course sample copy, and add one more breakpoint utility (for example lg:p-12 on the text column, or md:bg-indigo-50 on the card) so padding or background clearly differs between narrow and wide viewports. Do not overwrite my personal card.`}
         >
-          Paste this prompt to add a second sample breakpoint — then resize the
-          panel and confirm a property changes at md or lg:
+          Paste this prompt to add a second sample breakpoint — then compare the
+          phone and desktop frames and confirm a property changes at md or lg:
         </WithAI>
 
         <h3

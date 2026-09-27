@@ -53,6 +53,44 @@ export const MEDIA_QUERY_BREAKPOINTS: Breakpoint[] = [
 export const TAILWIND_RESPONSIVE_PREVIEW_SRC = "/preview/tailwind-responsive";
 export const MEDIA_QUERIES_PREVIEW_SRC = "/preview/media-queries";
 
+/** One static iframe. `width` is the iframe viewport, not the painted size. */
+export type PreviewFrame = {
+  width: number;
+  label: string;
+  title: string;
+};
+
+/** Phone stays below `md`. Desktop is `lg`, so `md:` and `lg:` both apply. */
+export const TAILWIND_PREVIEW_FRAMES: PreviewFrame[] = [
+  {
+    width: 375,
+    label: "Phone, 375px: stacked",
+    title: "Phone preview, stacked card",
+  },
+  {
+    width: 1024,
+    label: "Desktop, 1024px: side by side",
+    title: "Desktop preview, side-by-side card",
+  },
+];
+
+/**
+ * 375px is the default green range. 1024px is inside 1000–1250 (blue),
+ * clear of the shared edges at 1000px and 1250px.
+ */
+export const MEDIA_QUERY_PREVIEW_FRAMES: PreviewFrame[] = [
+  {
+    width: 375,
+    label: "Phone, 375px: green",
+    title: "Phone preview, green background",
+  },
+  {
+    width: 1024,
+    label: "Desktop, 1024px: blue",
+    title: "Desktop preview, blue background",
+  },
+];
+
 export function clampPreviewWidth(width: number): number {
   return Math.min(
     PREVIEW_MAX_WIDTH,

@@ -24,8 +24,7 @@ import FlexGrow from "@/app/labs/lab2/intermediates/2-1-19b-FlexGrow";
 import FlexWidth from "@/app/labs/lab2/intermediates/2-1-19c-FlexWidth";
 import ResponsivePreview from "../../components/ResponsivePreview";
 import {
-  MEDIA_QUERY_BREAKPOINTS,
-  MEDIA_QUERY_WIDTH_PRESETS,
+  MEDIA_QUERY_PREVIEW_FRAMES,
   MEDIA_QUERIES_PREVIEW_SRC,
 } from "../../components/responsive-preview-model";
 import PracticeCard from "../../components/PracticeCard";
@@ -1573,17 +1572,15 @@ export default function MediaQueriesDemo() {
           Notice that only the last <code>@media</code>{" "}block has no{" "}
           <code>max-width</code>, so it matches every width from 1250px
           upward. The matching bullet is bold and underlined so you can see
-          which rule is active. Drag this figure&apos;s panel, or pick a
-          width, to watch the background — and the highlighted bullet — cycle
-          through green, yellow, blue, and red. The preview is its own page, so
-          the queries follow that frame:
+          which rule is active. The phone frame is 375px, so the default green
+          rule is showing. The desktop frame is 1024px, inside the blue
+          1000–1250 range, and it is drawn smaller so it fits this column.
+          Each frame is its own page, so the queries follow that frame:
         </p>
         <LiveDemo mode="styled" name="MediaQueriesDemo" file="app/labs/lab2/MediaQueriesDemo.tsx">
           <ResponsivePreview
             src={MEDIA_QUERIES_PREVIEW_SRC}
-            title="MediaQueriesDemo"
-            presets={MEDIA_QUERY_WIDTH_PRESETS}
-            breakpoints={MEDIA_QUERY_BREAKPOINTS}
+            frames={MEDIA_QUERY_PREVIEW_FRAMES}
           />
         </LiveDemo>
       
