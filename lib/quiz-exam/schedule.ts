@@ -5,14 +5,13 @@
  * Unlock is the same instant for every student — not “one week after you
  * submitted”.
  *
- * Answer windows (package-14 / NOTE-package-13): answers open the Monday
- * 00:00 ET after the due-week Sunday, and close +7d, except Q3 and Q6,
- * which already waited out the exam week. Piazza Post 33 moved Q1–Q6 one
- * week later; take unlock/lock and those answer windows shifted +7 civil
- * ET days with them. Exam-prep reopen still ends at COURSE_EXAMS, but it
- * starts only after the last quiz in that group has locked for every
- * section. A full 7 days is kept when it fits before the exam; otherwise
- * the window is shortened so it does not overlap a take week.
+ * Answer windows: each of Q1–Q6 opens Monday 00:00 ET one week after the
+ * Monday following its Sunday lock, and stays open 7 civil days. Q1 locks
+ * Sunday Oct 4, so answers open Monday Oct 12. Q6 locks Sunday Dec 13, so
+ * answers open Monday Dec 21 (after X2). There is no separate “wait out
+ * the exam week” shift. Q1–Q3 also reopen for review Monday Nov 2 00:00 ET
+ * through Thursday Nov 5 00:00 ET, after X1 (week of Oct 26). That window’s
+ * placement is unchanged. Q4–Q6 have no exam-prep reopen before X2.
  *
  * Take windows are the class-wide website window for the quiz week:
  * Monday 00:00 ET unlock through Sunday 23:59 ET lock. That is the
@@ -114,14 +113,15 @@ export function scheduleFromIso(iso: QuizScheduleIso): QuizSchedule {
  * `app/syllabus/data/deadlines.ts`, plus a university final-exam period of
  * 2026-12-14–2026-12-20 (`app/syllabus/data/course.ts`).
  *
- * - `midtermAt` — Q1–Q3 answer-reopen close: Thursday 2026-11-05 00:00 ET,
- *   the first weekday after X1’s Sunday due.
+ * - `midtermAt` — close of the Q1–Q3 review window: Thursday 2026-11-05
+ *   00:00 ET. X1 is taken the week of October 26, before this review.
  * - `finalAt` — syllabus X2 unlock / finals week Monday: 2026-12-14 00:00 ET.
  *
- * Edit these two strings if Jose moves the exam instants used for Q1–Q6
- * answer reopen. X1 and X2 take dates stay in QUIZ_WINDOW_ISO. The reopen
- * would be `[exam − 7d, exam)`, but it is clamped so it cannot start until
- * the last covered quiz has locked (Q3 for the midterm, Q6 for the final).
+ * Edit these two strings if Jose moves those instants. X1 and X2 take dates
+ * stay in QUIZ_WINDOW_ISO. A reopen would be `[examAt − 7d, examAt)`, but it
+ * is clamped so it cannot start until the last covered quiz has locked
+ * (Q3 for the Q1–Q3 review, Q6 for the final). The Q1–Q3 review is not a
+ * window before the midterm.
  */
 export const COURSE_EXAMS = {
   midtermAt: "2026-11-05T05:00:00.000Z",
@@ -149,14 +149,14 @@ const QUIZ_WINDOW_ISO: Record<
   q1: {
     takeUnlockAt: "2026-09-28T04:00:00.000Z",
     takeLockAt: "2026-10-05T03:59:00.000Z",
-    answersOpenAt: "2026-10-05T04:00:00.000Z",
-    answersCloseAt: "2026-10-12T04:00:00.000Z",
+    answersOpenAt: "2026-10-12T04:00:00.000Z",
+    answersCloseAt: "2026-10-19T04:00:00.000Z",
   },
   q2: {
     takeUnlockAt: "2026-10-12T04:00:00.000Z",
     takeLockAt: "2026-10-19T03:59:00.000Z",
-    answersOpenAt: "2026-10-19T04:00:00.000Z",
-    answersCloseAt: "2026-10-26T04:00:00.000Z",
+    answersOpenAt: "2026-10-26T04:00:00.000Z",
+    answersCloseAt: "2026-11-02T05:00:00.000Z",
   },
   q3: {
     takeUnlockAt: "2026-10-26T04:00:00.000Z",
@@ -167,20 +167,20 @@ const QUIZ_WINDOW_ISO: Record<
   q4: {
     takeUnlockAt: "2026-11-09T05:00:00.000Z",
     takeLockAt: "2026-11-16T04:59:00.000Z",
-    answersOpenAt: "2026-11-16T05:00:00.000Z",
-    answersCloseAt: "2026-11-23T05:00:00.000Z",
+    answersOpenAt: "2026-11-23T05:00:00.000Z",
+    answersCloseAt: "2026-11-30T05:00:00.000Z",
   },
   q5: {
     takeUnlockAt: "2026-11-23T05:00:00.000Z",
     takeLockAt: "2026-11-30T04:59:00.000Z",
-    answersOpenAt: "2026-11-30T05:00:00.000Z",
-    answersCloseAt: "2026-12-07T05:00:00.000Z",
+    answersOpenAt: "2026-12-07T05:00:00.000Z",
+    answersCloseAt: "2026-12-14T05:00:00.000Z",
   },
   q6: {
     takeUnlockAt: "2026-12-07T05:00:00.000Z",
     takeLockAt: "2026-12-14T04:59:00.000Z",
-    answersOpenAt: "2026-12-28T05:00:00.000Z",
-    answersCloseAt: "2027-01-04T05:00:00.000Z",
+    answersOpenAt: "2026-12-21T05:00:00.000Z",
+    answersCloseAt: "2026-12-28T05:00:00.000Z",
   },
   x1: {
     takeUnlockAt: "2026-10-26T04:00:00.000Z",
@@ -324,7 +324,7 @@ function firstMinuteAfter(date: Date): Date {
 /**
  * Exam-prep reopen ending at `examAt`. Prefers a 7-day window. If that
  * would start while any covered quiz is still open, start at the first
- * minute after the latest take lock. If nothing fits before the exam,
+ * minute after the latest take lock. If nothing fits before `examAt`,
  * return a zero-length window at `examAt` (no reopen, no overlap).
  */
 export function clampedExamPrepWindow(
@@ -567,17 +567,21 @@ export function syllabusTakeWindowSentence(schedule: QuizSchedule): string {
   return `Syllabus window: opens ${unlock} and is due ${lock}. Those dates do not open the quiz by themselves.`;
 }
 
-export function examLabel(name: ExamName): string {
-  return name === "midterm" ? "midterm" : "final";
-}
-
-/** Q4–Q6 have no exam-prep reopen before X2. X1 wording stays on the midterm path. */
+/** Q4–Q6 have no exam-prep reopen before X2. Q6’s normal window is after X2. */
 function finalChapterAnswerNote(schedule: QuizSchedule): string | undefined {
-  if (schedule.examName !== "final") return undefined;
   if (schedule.quizId !== "q4" && schedule.quizId !== "q5" && schedule.quizId !== "q6") {
     return undefined;
   }
   return "Q4 and Q5 answers are available in their normal windows, and Q6 answers open after X2.";
+}
+
+function isChapterQuiz(quizId: string): boolean {
+  return quizId === "q1" || quizId === "q2" || quizId === "q3" || quizId === "q4" || quizId === "q5" || quizId === "q6";
+}
+
+/** Neutral description of the post-X1 Q1–Q3 review. Not a pre-midterm window. */
+function q1q3ReviewSentence(prepOpen: string, prepClose: string): string {
+  return `Q1–Q3 answers reopen for review ${prepOpen} through ${prepClose}.`;
 }
 
 export type AnswerWindowCopy = {
@@ -597,14 +601,21 @@ export function answerWindowCopy(
   const close = formatEasternDateTime(schedule.answersCloseAt);
   const prepOpen = formatEasternDateTime(schedule.examPrepOpenAt);
   const prepClose = formatEasternDateTime(schedule.examPrepCloseAt);
-  const exam = examLabel(schedule.examName);
   const hasExamPrep =
     schedule.examPrepOpenAt.getTime() < schedule.examPrepCloseAt.getTime();
   const midtermPrep = schedule.examName === "midterm" && hasExamPrep;
-  const prepAgain = midtermPrep
-    ? `They will be available again before the ${exam}, from ${prepOpen} until ${prepClose}.`
-    : undefined;
+  const reviewAgain =
+    midtermPrep &&
+    (schedule.quizId === "q1" || schedule.quizId === "q2" || schedule.quizId === "q3")
+      ? q1q3ReviewSentence(prepOpen, prepClose)
+      : undefined;
   const finalAnswerNote = finalChapterAnswerNote(schedule);
+  const firstWindowLead = isChapterQuiz(schedule.quizId)
+    ? `Correct answers will be available starting ${open}, one week after this quiz closes, and stay available for one week, until ${close}.`
+    : `Correct answers will be available starting ${open}, only for one week, until ${close}.`;
+  const firstWindowOpen = isChapterQuiz(schedule.quizId)
+    ? `Answers are available for one week, until ${close}. This window opened one week after the quiz closed.`
+    : `Answers are available only for one week, until ${close}.`;
   const answersOverride = activeAnswersVisibleOverride(answersVisible);
 
   if (answersOverride === "on" && phase !== "take_open" && phase !== "take_closed") {
@@ -633,8 +644,8 @@ export function answerWindowCopy(
     return {
       title: "Answers are not open yet",
       paragraphs: [
-        `Correct answers will be available starting ${open}, only for one week, until ${close}.`,
-        ...(prepAgain ? [prepAgain] : []),
+        firstWindowLead,
+        ...(reviewAgain ? [reviewAgain] : []),
         ...(finalAnswerNote ? [finalAnswerNote] : []),
       ],
       tone: "warn",
@@ -645,8 +656,8 @@ export function answerWindowCopy(
     return {
       title: "Answers are available this week",
       paragraphs: [
-        `Answers are available only for one week, until ${close}.`,
-        ...(prepAgain ? [prepAgain] : []),
+        firstWindowOpen,
+        ...(reviewAgain ? [reviewAgain] : []),
         ...(finalAnswerNote ? [finalAnswerNote] : []),
       ],
       tone: "ok",
@@ -665,10 +676,8 @@ export function answerWindowCopy(
       };
     }
     return {
-      title: `Answers are available for ${exam} prep`,
-      paragraphs: [
-        `This is the prep window before the ${exam}. Answers stay visible until ${prepClose}.`,
-      ],
+      title: "Q1–Q3 answers are open for review",
+      paragraphs: [q1q3ReviewSentence(prepOpen, prepClose)],
       tone: "ok",
     };
   }
@@ -682,14 +691,10 @@ export function answerWindowCopy(
       title: "The answer review window has ended",
       paragraphs: [
         `The class review window ended on ${close}.`,
-        ...(prepStillAhead
-          ? [
-              `Answers will be available again before the ${exam}, from ${prepOpen} until ${prepClose}.`,
-            ]
-          : []),
+        ...(prepStillAhead && reviewAgain ? [reviewAgain] : []),
         ...(prepEnded
           ? [
-              `The ${exam} prep window (${prepOpen} until ${prepClose}) has also ended.`,
+              `The Q1–Q3 review window (${prepOpen} through ${prepClose}) has ended.`,
             ]
           : []),
         ...(finalAnswerNote ? [finalAnswerNote] : []),

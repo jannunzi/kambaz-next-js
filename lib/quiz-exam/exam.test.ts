@@ -220,8 +220,8 @@ describe("student exam sampling and grading", () => {
       quizId: "q1",
       drawnQuestionIds: drawn.map((item) => item.question.id),
       answers: {},
-      startedAt: "2026-10-08T16:00:00.000Z",
-      now: new Date("2026-10-08T16:00:00.000Z"),
+      startedAt: "2026-10-13T16:00:00.000Z",
+      now: new Date("2026-10-13T16:00:00.000Z"),
       actor: { clerkUserId: "user_review", email: "jane.doe@northeastern.edu" },
       roster: {
         status: "matched",
