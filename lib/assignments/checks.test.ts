@@ -255,6 +255,27 @@ describe("runA1Checks", () => {
     );
   });
 
+  it("keeps Name on Labs as a skipped row when the student is signed out", async () => {
+    const results = await runA1Checks({
+      vercelUrl: "https://jane-a1.vercel.app",
+      probes: {
+        async getHtml(url) {
+          return { ok: true, status: 200, finalUrl: url, html: htmlForPath(url) };
+        },
+      },
+    });
+    const name = results.find((row) => row.id === "a1-delivery-name-section");
+    assert.ok(name);
+    assert.equal(name.label, "Name on Labs");
+    assert.equal(name.skipped, true);
+    assert.equal(name.passed, false);
+    assert.equal(
+      name.message,
+      "Sign in with your roster (Northeastern) account to check your name on Labs",
+    );
+    assert.equal(name.message, ASSIGNMENT_STUDENT_COPY.nameCheckNeedsRoster);
+  });
+
   it("does not treat a sign-in page as Labs when /labs is available", async () => {
     const results = await runA1Checks({
       vercelUrl: `${KENNETH_ORIGIN}/account/signin`,

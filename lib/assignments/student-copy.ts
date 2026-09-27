@@ -85,6 +85,8 @@ export const ASSIGNMENT_STUDENT_COPY = {
     "The page opened, but Labs navigation / wd- ids were not found. Open /labs on your deploy and follow Chapter 1.",
   labsUnread: "Could not read the page to check Labs markers.",
   nameOk: "Found your full Canvas name on Labs.",
+  nameCheckNeedsRoster:
+    "Sign in with your roster (Northeastern) account to check your name on Labs",
   nameMissing:
     "Your name was not found on Labs. Put your full Canvas name there (first then last, matching the roster). There is no Name and section checkbox in Run checks.",
   nameAndSection:

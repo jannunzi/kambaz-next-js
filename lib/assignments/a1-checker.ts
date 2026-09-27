@@ -105,7 +105,7 @@ export const A1_CHECKER: AssignmentChecker = {
     name: {
       criterionId: "a1-delivery-name-section",
       groupId: "delivery",
-      label: "Name and section",
+      label: "Name on Labs",
     },
   },
 };

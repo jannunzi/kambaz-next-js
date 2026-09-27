@@ -234,21 +234,36 @@ export async function runChecker(
     ),
   );
 
-  if (
-    delivery.name &&
-    input.nameQuery &&
-    hasUsableNameQuery(input.nameQuery)
-  ) {
-    const named = htmlHasStudentName(crawled.labsHtml, input.nameQuery);
-    results.push(
-      check(
-        delivery.name.criterionId,
-        delivery.name.label,
-        named,
-        named ? ASSIGNMENT_STUDENT_COPY.nameOk : ASSIGNMENT_STUDENT_COPY.nameMissing,
-        { criterionId: delivery.name.criterionId, groupId: delivery.name.groupId },
-      ),
+  if (delivery.name) {
+    const canCheckName = Boolean(
+      input.nameQuery && hasUsableNameQuery(input.nameQuery),
     );
+    if (canCheckName && input.nameQuery) {
+      const named = htmlHasStudentName(crawled.labsHtml, input.nameQuery);
+      results.push(
+        check(
+          delivery.name.criterionId,
+          delivery.name.label,
+          named,
+          named ? ASSIGNMENT_STUDENT_COPY.nameOk : ASSIGNMENT_STUDENT_COPY.nameMissing,
+          { criterionId: delivery.name.criterionId, groupId: delivery.name.groupId },
+        ),
+      );
+    } else {
+      results.push(
+        check(
+          delivery.name.criterionId,
+          delivery.name.label,
+          false,
+          ASSIGNMENT_STUDENT_COPY.nameCheckNeedsRoster,
+          {
+            criterionId: delivery.name.criterionId,
+            groupId: delivery.name.groupId,
+            skipped: true,
+          },
+        ),
+      );
+    }
   }
 
   for (const spec of config.autoSpecs) {
