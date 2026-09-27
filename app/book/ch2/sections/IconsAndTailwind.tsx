@@ -358,7 +358,7 @@ export default function TailwindLab() {
             <img
               className="h-48 w-full object-cover md:h-full md:w-48"
               src="/images/reactjs.jpg"
-              alt="ReactJS logo"
+              alt="React JS"
             />
           </div>
           <div className="p-8">
@@ -372,16 +372,10 @@ export default function TailwindLab() {
               Rocket Propulsion Fundamentals
             </a>
             <p className="mt-2 text-gray-500">
-              This course provides an in-depth study of the fundamentals of rocket
-              propulsion, covering topics such as propulsion theory, engine types,
-              fuel chemistry, and the practical applications of rocket technology.
-              Designed for students with a strong background in physics and
-              engineering, the course includes both theoretical instruction and
-              hands-on laboratory work
+              An in-depth study of the fundamentals of rocket propulsion...
             </p>
           </div>
         </div>
-        <br />
       </div>
     </div>
   );
@@ -398,6 +392,7 @@ export default function TailwindLab() {
           <ResponsivePreview
             src={TAILWIND_RESPONSIVE_PREVIEW_SRC}
             title="TailwindResponsiveDesign"
+            defaultWidth={768}
           />
         </LiveDemo>
         <OnYourOwn>

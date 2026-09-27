@@ -39,15 +39,22 @@ describe("activeBreakpoint", () => {
 });
 
 describe("book responsive previews", () => {
-  it("frames the Tailwind card without changing the student component", () => {
+  it("frames the Tailwind card with the same source as the lab file", () => {
     const book = read("app/book/ch2/sections/IconsAndTailwind.tsx");
     const student = read("app/labs/lab2/tailwind/TailwindResponsiveDesign.tsx");
     const page = read("app/preview/tailwind-responsive/page.tsx");
     assert.match(book, /<ResponsivePreview/);
     assert.match(book, /src=\{TAILWIND_RESPONSIVE_PREVIEW_SRC\}/);
     assert.doesNotMatch(book, /<TailwindResponsiveDesign/);
+    assert.match(book, /defaultWidth=\{768\}/);
     assert.match(student, /md:flex/);
-    assert.match(student, /md:max-w-2xl/);
+    assert.match(student, /md:shrink-0/);
+    assert.match(student, /md:h-full md:w-48/);
+    assert.match(student, /An in-depth study of the fundamentals of rocket propulsion/);
+    assert.match(student, /\/images\/reactjs\.jpg/);
+    const source = student.trim();
+    assert.ok(book.includes(source));
+    assert.ok(read("lib/lectures/decks/tailwind-responsive.ts").includes(source));
     assert.doesNotMatch(student, /ResponsivePreview|@container|iframe/);
     assert.match(page, /TailwindResponsiveDesign/);
   });

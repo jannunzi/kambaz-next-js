@@ -27,16 +27,19 @@ export default function ResponsivePreview({
   title = "Responsive preview",
   presets = TAILWIND_WIDTH_PRESETS,
   breakpoints = TAILWIND_BREAKPOINTS,
+  defaultWidth = null,
 }: {
   src: string;
   title?: string;
   presets?: WidthPreset[];
   breakpoints?: Breakpoint[];
+  /** Starting frame width in pixels. Omit to match the book column. */
+  defaultWidth?: number | null;
 }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const dragStart = useRef<{ x: number; width: number } | null>(null);
-  const [chosen, setChosen] = useState<number | null>(null);
+  const [chosen, setChosen] = useState<number | null>(defaultWidth);
   const [fitted, setFitted] = useState(375);
   const [frameHeight, setFrameHeight] = useState(480);
 
@@ -46,7 +49,7 @@ export default function ResponsivePreview({
 
   useEffect(() => {
     const scroller = scrollerRef.current;
-    if (!scroller || chosen !== null) return;
+    if (!scroller) return;
     const update = () => {
       setFitted(Math.max(1, Math.round(scroller.clientWidth)));
     };
@@ -54,7 +57,7 @@ export default function ResponsivePreview({
     const observer = new ResizeObserver(update);
     observer.observe(scroller);
     return () => observer.disconnect();
-  }, [chosen]);
+  }, []);
 
   const measureContent = useCallback(() => {
     const doc = iframeRef.current?.contentDocument;
