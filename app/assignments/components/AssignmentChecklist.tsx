@@ -16,7 +16,7 @@ import {
   type CriterionGradeRow,
   type GradeAudience,
 } from "@/lib/assignments/grade-rows";
-import { formatPointsPercent, pointsPercent } from "@/lib/assignments/grade";
+import { formatPointsPercent } from "@/lib/assignments/grade";
 import { ASSIGNMENT_STUDENT_COPY } from "@/lib/assignments/student-copy";
 import type { AssignmentHubItem, RubricCriterion } from "@/lib/assignments/types";
 import { criterionVerifyUrl } from "@/lib/assignments/verify-urls";
@@ -175,9 +175,7 @@ function CriterionRow({
                 onPoints?.(criterion.id, next);
               }}
             />
-            <span>
-              / {row.maxPoints} ({pointsPercent(row.points, row.maxPoints)}%)
-            </span>
+            <span>/ {row.maxPoints}</span>
           </label>
         ) : null}
         {presentation.label ? (

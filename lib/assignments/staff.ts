@@ -1,4 +1,6 @@
-import { normalizeEmail } from "../roster/emails";
+import { isDemoRosterEmail } from "../roster/demo-students";
+import { emailMatchKeys, normalizeEmail, rosterDocumentEmails } from "../roster/emails";
+import { isStaff } from "../roster/instructors";
 import {
   compareSectionLabels,
   compareStudents,
@@ -63,6 +65,12 @@ export function assignmentGradeSaveAccess(input: {
   return { ok: true };
 }
 
+export type PriorSubmissionNote = {
+  url: string;
+  /** ISO timestamp of the older submission (`updatedAt`, else `createdAt`). */
+  at: string;
+};
+
 export type StaffStudentRow = {
   key: string;
   email: string;
@@ -71,74 +79,166 @@ export type StaffStudentRow = {
   clerkUserId?: string;
   canvasUserId?: string;
   hasSubmission: boolean;
+  /** Submission that did not match a roster student. Not part of section counts. */
+  unmatched?: boolean;
   githubUrl?: string;
   vercelUrl?: string;
   lastCheckedAt?: string;
   checkResults?: AssignmentCheckResult[];
   staffGrade?: AssignmentStaffGrade;
+  /** Older submissions for the same student. The row itself is the newest. */
+  priorSubmissions?: PriorSubmissionNote[];
 };
+
+export type StaffQueueOptions = {
+  instructorEmails?: readonly string[];
+  taEmails?: readonly string[];
+};
+
+function timeMs(value: Date | string | undefined): number {
+  if (!value) return 0;
+  const ms = value instanceof Date ? value.getTime() : new Date(value).getTime();
+  return Number.isFinite(ms) ? ms : 0;
+}
+
+function submissionStamp(doc: AssignmentSubmissionDoc): string {
+  const ms = timeMs(doc.updatedAt) || timeMs(doc.createdAt);
+  return ms ? new Date(ms).toISOString() : "";
+}
+
+/** Newer `updatedAt` first, then newer `createdAt`. */
+function compareNewestSubmission(
+  a: AssignmentSubmissionDoc,
+  b: AssignmentSubmissionDoc,
+): number {
+  const updated = timeMs(b.updatedAt) - timeMs(a.updatedAt);
+  if (updated !== 0) return updated;
+  return timeMs(b.createdAt) - timeMs(a.createdAt);
+}
+
+export function priorSubmissionLabel(
+  notes: readonly PriorSubmissionNote[] | undefined,
+): string {
+  if (!notes?.length) return "";
+  return notes
+    .map((note) => {
+      const date = note.at ? note.at.slice(0, 10) : "unknown date";
+      return `also submitted: ${note.url}, ${date}`;
+    })
+    .join("; ");
+}
 
 function submissionEmails(doc: AssignmentSubmissionDoc): string[] {
   return [doc.rosterEmail, doc.email]
     .filter((value): value is string => Boolean(value))
-    .map(normalizeEmail);
+    .map(normalizeEmail)
+    .filter(Boolean);
 }
 
-function submissionUpdatedAt(doc: AssignmentSubmissionDoc): number {
-  const value = doc.updatedAt as Date | string;
-  const time = value instanceof Date ? value.getTime() : new Date(value).getTime();
-  return Number.isNaN(time) ? Number.NEGATIVE_INFINITY : time;
+type RosterMatchEntry = {
+  email?: string | null;
+  canvasUserId?: string | null;
+  sisLoginId?: string | null;
+  emails?: readonly string[] | null;
+  source?: CanvasRosterEntry["source"];
+};
+
+function emailKeys(emails: readonly string[]): Set<string> {
+  const keys = new Set<string>();
+  for (const email of emails) {
+    for (const key of emailMatchKeys(email)) keys.add(key);
+  }
+  return keys;
 }
 
-/** Same identity the staff queue uses: roster email or Canvas user id. */
-export function submissionMatchesRosterStudent(
-  entry: { email?: string | null; canvasUserId?: string | null },
-  doc: AssignmentSubmissionDoc,
+function isDemoIdentity(emails: readonly string[], canvasUserId?: string): boolean {
+  if (emails.some((email) => isDemoRosterEmail(email))) return true;
+  const id = canvasUserId?.trim();
+  return id === "demo-ada-lovelace" || id === "demo-bob-marley";
+}
+
+function isStaffIdentity(
+  emails: readonly string[],
+  options?: StaffQueueOptions,
 ): boolean {
-  const email = entry.email ? normalizeEmail(entry.email) : "";
-  if (email && submissionEmails(doc).includes(email)) return true;
+  return isStaff(
+    [...emails],
+    options?.instructorEmails ? [...options.instructorEmails] : undefined,
+    options?.taEmails ? [...options.taEmails] : undefined,
+  );
+}
+
+function excludedRosterEntry(
+  entry: CanvasRosterEntry,
+  options?: StaffQueueOptions,
+): boolean {
+  const emails = rosterDocumentEmails(entry);
+  return (
+    entry.source === "demo" ||
+    isDemoIdentity(emails, entry.canvasUserId) ||
+    isStaffIdentity(emails, options)
+  );
+}
+
+function excludedSubmission(
+  doc: AssignmentSubmissionDoc,
+  options?: StaffQueueOptions,
+): boolean {
+  const emails = submissionEmails(doc);
+  return isDemoIdentity(emails, doc.canvasUserId) || isStaffIdentity(emails, options);
+}
+
+/** Every roster mailbox (primary, SIS, aliases) or Canvas user id. */
+function submissionMatchesRoster(
+  doc: AssignmentSubmissionDoc,
+  entry: RosterMatchEntry,
+): boolean {
+  const rosterKeys = emailKeys(rosterDocumentEmails(entry));
+  const submissionKeys = emailKeys(submissionEmails(doc));
+  for (const key of submissionKeys) {
+    if (rosterKeys.has(key)) return true;
+  }
   const canvasId = entry.canvasUserId?.trim();
-  return Boolean(canvasId && doc.canvasUserId && doc.canvasUserId.trim() === canvasId);
+  return Boolean(canvasId && doc.canvasUserId?.trim() === canvasId);
+}
+
+function priorNote(doc: AssignmentSubmissionDoc): PriorSubmissionNote {
+  const url = doc.vercelUrl?.trim() || doc.githubUrl?.trim() || "(no url)";
+  return { url, at: submissionStamp(doc) };
 }
 
 /**
  * Newest submission for one canvas_roster student across every linked
- * Clerk account. A document matches the roster email (or Canvas id), and
- * when `clerkUserId` is set, the signed-in account's own document matches
- * too. Staff grading omits `clerkUserId` and still collapses every roster
- * match to this same newest record. The student Submitted banner passes
- * both keys so a development Clerk id and a production Clerk id agree.
+ * Clerk account. A document matches any roster email (or Canvas id).
+ * Staff and demo accounts are skipped. When `clerkUserId` is set, that
+ * signed-in account's own document matches too, so an older dev-Clerk
+ * submission found by `rosterEmail` and a newer production account agree.
+ * Staff grading omits `clerkUserId` and still collapses every roster match
+ * to this same newest record.
  */
 export function selectRosterSubmission(
-  entry: { email?: string | null; canvasUserId?: string | null },
+  entry: RosterMatchEntry,
   submissions: readonly AssignmentSubmissionDoc[],
-  options?: { clerkUserId?: string | null },
+  options?: { clerkUserId?: string | null } & StaffQueueOptions,
 ): AssignmentSubmissionDoc | undefined {
   const clerkUserId = options?.clerkUserId?.trim() ?? "";
-  let newest: AssignmentSubmissionDoc | undefined;
-  let newestTime = Number.NEGATIVE_INFINITY;
-  for (const doc of submissions) {
-    const matchesRoster = submissionMatchesRosterStudent(entry, doc);
+  const matches = submissions.filter((doc) => {
     const matchesClerk = clerkUserId !== "" && doc.clerkUserId === clerkUserId;
-    if (!matchesRoster && !matchesClerk) continue;
-    const time = submissionUpdatedAt(doc);
-    if (!newest || time > newestTime) {
-      newest = doc;
-      newestTime = time;
-    }
-  }
-  return newest;
+    if (excludedSubmission(doc, options) && !matchesClerk) return false;
+    return submissionMatchesRoster(doc, entry) || matchesClerk;
+  });
+  matches.sort(compareNewestSubmission);
+  return matches[0];
 }
 
 /**
  * Submission the signed-in student should see. Candidates are documents
- * whose roster email matches the signed-in roster entry, plus the document
- * stored under the current `clerkUserId`. The newest `updatedAt` wins, the
- * same rule the staff queue uses for that roster student.
+ * that match any roster email, plus the document stored under the current
+ * `clerkUserId`. The newest `updatedAt`, then `createdAt`, wins.
  */
 export function studentVisibleSubmission(input: {
   clerkUserId: string;
-  rosterEntry?: { email?: string | null; canvasUserId?: string | null } | null;
+  rosterEntry?: RosterMatchEntry | null;
   submissions: readonly AssignmentSubmissionDoc[];
 }): AssignmentSubmissionDoc | null {
   return (
@@ -179,46 +279,57 @@ function rowFromSubmission(
       : undefined,
     checkResults: doc.checkResults,
     staffGrade: doc.staffGrade,
+    priorSubmissions: undefined,
   };
 }
 
 /**
- * Roster students first (with or without a submission), then leftover
- * submissions that did not match the roster.
+ * Active roster students first. Each student keeps the newest matching
+ * submission (`updatedAt`, then `createdAt`). Older matches stay on the row
+ * as prior notes and are not extra queue rows. Staff and demo students are
+ * omitted. Submissions that match nobody else are `unmatched`.
+ * Nothing is deleted from the database.
  */
 export function buildStaffStudentQueue(
   roster: readonly CanvasRosterEntry[],
   submissions: readonly AssignmentSubmissionDoc[],
+  options?: StaffQueueOptions,
 ): StaffStudentRow[] {
-  const docs = [...submissions];
+  const docs = submissions.filter((doc) => !excludedSubmission(doc, options));
   const used = new Set<AssignmentSubmissionDoc>();
   const rows: StaffStudentRow[] = [];
 
-  const rosterSorted = [...roster].sort(compareStudents);
+  const rosterSorted = [...roster]
+    .filter((entry) => !excludedRosterEntry(entry, options))
+    .sort(compareStudents);
   for (const entry of rosterSorted) {
     const available = docs.filter((doc) => !used.has(doc));
-    const matched = selectRosterSubmission(entry, available);
-    for (const doc of available) {
-      if (submissionMatchesRosterStudent(entry, doc)) used.add(doc);
-    }
-    const email = normalizeEmail(entry.email);
-    if (matched) {
-      rows.push(rowFromSubmission(matched, entry));
+    const matches = available
+      .filter((doc) => submissionMatchesRoster(doc, entry))
+      .sort(compareNewestSubmission);
+    for (const doc of matches) used.add(doc);
+    const email = normalizeEmail(entry.email) || rosterDocumentEmails(entry)[0] || "";
+    const newest = selectRosterSubmission(entry, available, options) ?? matches[0];
+    if (!newest) {
+      rows.push({
+        key: email || `canvas:${entry.canvasUserId ?? ""}`,
+        email,
+        name: studentDisplayName(entry),
+        section: entry.section,
+        canvasUserId: entry.canvasUserId,
+        hasSubmission: false,
+      });
       continue;
     }
-    rows.push({
-      key: email,
-      email,
-      name: studentDisplayName(entry),
-      section: entry.section,
-      canvasUserId: entry.canvasUserId,
-      hasSubmission: false,
-    });
+    const row = rowFromSubmission(newest, entry);
+    const prior = matches.slice(1).map(priorNote);
+    if (prior.length) row.priorSubmissions = prior;
+    rows.push(row);
   }
 
   const leftovers = docs
     .filter((doc) => !used.has(doc))
-    .map((doc) => rowFromSubmission(doc))
+    .map((doc) => ({ ...rowFromSubmission(doc), unmatched: true }))
     .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
   rows.push(...leftovers);
   return rows;
@@ -267,7 +378,11 @@ export function staffRowSectionLabel(row: {
 export function listStaffQueueSections(
   queue: readonly StaffStudentRow[],
 ): string[] {
-  return [...new Set(queue.map(staffRowSectionLabel))].sort(compareSectionLabels);
+  return [
+    ...new Set(
+      queue.filter((row) => !row.unmatched).map(staffRowSectionLabel),
+    ),
+  ].sort(compareSectionLabels);
 }
 
 /**
@@ -280,6 +395,7 @@ export function resolveStaffSectionFilter(
 ): string | undefined {
   const selected = section?.trim();
   if (!selected) return undefined;
+  if (selected === UNSECTIONED_LABEL) return UNSECTIONED_LABEL;
   return available.includes(selected) ? selected : undefined;
 }
 
@@ -289,7 +405,9 @@ export function filterStaffQueueBySection(
 ): StaffStudentRow[] {
   const selected = section?.trim();
   if (!selected) return [...queue];
-  return queue.filter((row) => staffRowSectionLabel(row) === selected);
+  return queue.filter(
+    (row) => !row.unmatched && staffRowSectionLabel(row) === selected,
+  );
 }
 
 export function staffQueueForSection(
@@ -305,15 +423,18 @@ export function staffQueueForSection(
 
 /**
  * A staff Save exists when `staffGrade` was written (including older
- * pass/fail overrides). An empty object is not a grade.
+ * pass/fail overrides). An empty object, including `criterionOverrides: {}`,
+ * is not a grade.
  */
 export function hasStaffGradeSave(
   grade: AssignmentStaffGrade | null | undefined,
 ): boolean {
   if (!grade) return false;
-  return Boolean(
-    grade.gradedAt || grade.rows?.length || grade.criterionOverrides,
+  const overrides = grade.criterionOverrides;
+  const hasOverrides = Boolean(
+    overrides && Object.keys(overrides).some((key) => key && typeof overrides[key] === "boolean"),
   );
+  return Boolean(grade.gradedAt || grade.rows?.length || hasOverrides);
 }
 
 export const STAFF_GRADE_FILTERS = [
@@ -322,6 +443,7 @@ export const STAFF_GRADE_FILTERS = [
   "not-submitted",
   "graded",
   "ungraded",
+  "unmatched",
 ] as const;
 
 export type StaffGradeFilter = (typeof STAFF_GRADE_FILTERS)[number];
@@ -334,6 +456,7 @@ const STAFF_GRADE_FILTER_LABEL: Record<StaffGradeFilter, string> = {
   "not-submitted": "Not submitted",
   graded: "Graded",
   ungraded: "Ungraded",
+  unmatched: "Unmatched",
 };
 
 /** Missing or unknown `?filter=` is All. */
@@ -345,6 +468,7 @@ export function resolveStaffGradeFilter(
   if (value === "not-submitted" || value === "not_submitted") return "not-submitted";
   if (value === "graded") return "graded";
   if (value === "ungraded") return "ungraded";
+  if (value === "unmatched") return "unmatched";
   return "all";
 }
 
@@ -355,23 +479,34 @@ export function staffGradeFilterLabel(
   return `${STAFF_GRADE_FILTER_LABEL[filter]} (${count})`;
 }
 
+function countsTowardRoster(row: StaffStudentRow): boolean {
+  return !row.unmatched;
+}
+
 /**
  * Counts for the status dropdown. Call this on the section-filtered queue
  * so the counts follow the section filter.
- * Not submitted: roster (or leftover) rows with no submission.
- * Graded: a submission with a staff Save. Ungraded: a submission without one.
+ * All / Submitted / Not submitted / Graded / Ungraded are roster students only.
+ * Staff, demo students, and unmatched submissions are outside those counts.
+ * Unmatched is its own option.
  */
 export function countStaffGradeFilters(
   queue: readonly StaffStudentRow[],
 ): StaffGradeFilterCounts {
   const counts: StaffGradeFilterCounts = {
-    all: queue.length,
+    all: 0,
     submitted: 0,
     "not-submitted": 0,
     graded: 0,
     ungraded: 0,
+    unmatched: 0,
   };
   for (const row of queue) {
+    if (!countsTowardRoster(row)) {
+      counts.unmatched += 1;
+      continue;
+    }
+    counts.all += 1;
     if (!row.hasSubmission) {
       counts["not-submitted"] += 1;
       continue;
@@ -388,19 +523,60 @@ export function filterStaffQueueByStatus(
   filter: string | undefined | null,
 ): StaffStudentRow[] {
   const selected = resolveStaffGradeFilter(filter);
-  if (selected === "all") return [...queue];
-  if (selected === "submitted") return queue.filter((row) => row.hasSubmission);
+  if (selected === "unmatched") return queue.filter((row) => row.unmatched);
+  const roster = queue.filter(countsTowardRoster);
+  if (selected === "all") return roster;
+  if (selected === "submitted") return roster.filter((row) => row.hasSubmission);
   if (selected === "not-submitted") {
-    return queue.filter((row) => !row.hasSubmission);
+    return roster.filter((row) => !row.hasSubmission);
   }
   if (selected === "graded") {
-    return queue.filter(
+    return roster.filter(
       (row) => row.hasSubmission && hasStaffGradeSave(row.staffGrade),
     );
   }
-  return queue.filter(
+  return roster.filter(
     (row) => row.hasSubmission && !hasStaffGradeSave(row.staffGrade),
   );
+}
+
+/**
+ * A `?student=` who is outside the current status or section filter is
+ * included by widening that filter, instead of leaving the grader on their
+ * own checklist.
+ */
+export function resolveStaffGraderView(input: {
+  queue: readonly StaffStudentRow[];
+  section?: string | null;
+  filter?: string | null;
+  studentKey?: string | null;
+}): {
+  section?: string;
+  filter: StaffGradeFilter;
+  student?: StaffStudentRow;
+} {
+  const sections = listStaffQueueSections(input.queue);
+  let section = resolveStaffSectionFilter(input.section, sections);
+  let filter = resolveStaffGradeFilter(input.filter);
+  const key = input.studentKey?.trim();
+  if (!key) return { section, filter };
+
+  const visible = findStaffStudent(
+    visibleStaffQueue(input.queue, section, filter),
+    key,
+  );
+  if (visible) return { section, filter, student: visible };
+
+  const anywhere = findStaffStudent(input.queue, key);
+  if (!anywhere) return { section, filter };
+
+  if (anywhere.unmatched) {
+    return { section: undefined, filter: "unmatched", student: anywhere };
+  }
+
+  const inSection = findStaffStudent(staffQueueForSection(input.queue, section), key);
+  if (!inSection) section = staffRowSectionLabel(anywhere);
+  return { section, filter: "all", student: anywhere };
 }
 
 /** Section first, then submission/grade status. */

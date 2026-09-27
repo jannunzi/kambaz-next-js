@@ -31,12 +31,8 @@ import {
 } from "@/lib/assignments/submissions-store";
 import {
   buildStaffStudentQueue,
-  findStaffStudent,
-  listStaffQueueSections,
-  resolveStaffGradeFilter,
-  resolveStaffSectionFilter,
+  resolveStaffGraderView,
   studentVisibleSubmission,
-  visibleStaffQueue,
   type StaffGradeFilter,
   type StaffStudentRow,
 } from "@/lib/assignments/staff";
@@ -273,17 +269,16 @@ export default async function AssignmentDetailPage({
             rosterList.status === "ok" ? rosterList.entries : [],
             submissions,
           );
-          selectedSection = resolveStaffSectionFilter(
-            sectionParam,
-            listStaffQueueSections(staffQueue),
-          );
-          selectedFilter = resolveStaffGradeFilter(filterParam);
+          const view = resolveStaffGraderView({
+            queue: staffQueue,
+            section: sectionParam,
+            filter: filterParam,
+            studentKey,
+          });
+          selectedSection = view.section;
+          selectedFilter = view.filter;
           if (studentKey) {
-            selectedStudent =
-              findStaffStudent(
-                visibleStaffQueue(staffQueue, selectedSection, selectedFilter),
-                studentKey,
-              ) ?? null;
+            selectedStudent = view.student ?? null;
             if (selectedStudent?.clerkUserId) {
               const doc = await readAssignmentSubmission(
                 selectedStudent.clerkUserId,

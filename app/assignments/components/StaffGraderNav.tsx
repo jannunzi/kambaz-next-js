@@ -10,6 +10,7 @@ import {
   findStaffStudent,
   hasStaffGradeSave,
   listStaffQueueSections,
+  priorSubmissionLabel,
   resolveStaffGradeFilter,
   resolveStaffSectionFilter,
   STAFF_GRADE_FILTERS,
@@ -30,12 +31,16 @@ function studentOptionLabel(row: StaffStudentRow): string {
   if (!row.hasSubmission) {
     parts.push("not submitted");
   } else if (hasStaffGradeSave(row.staffGrade) && row.staffGrade) {
-    parts.push(
-      formatPointsPercent(row.staffGrade.earnedPoints, row.staffGrade.totalPoints),
+    const score = formatPointsPercent(
+      row.staffGrade.earnedPoints,
+      row.staffGrade.totalPoints,
     );
-  } else {
+    if (score !== "—") parts.push(score);
+  } else if (!row.unmatched) {
     parts.push("ungraded");
   }
+  const prior = priorSubmissionLabel(row.priorSubmissions);
+  if (prior) parts.push(prior);
   return parts.join(" · ");
 }
 

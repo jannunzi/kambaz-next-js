@@ -13,7 +13,9 @@ import {
   hasStaffGradeSave,
   listStaffQueueSections,
   parseStaffStudentKey,
+  priorSubmissionLabel,
   resolveStaffGradeFilter,
+  resolveStaffGraderView,
   resolveStaffSectionFilter,
   selectRosterSubmission,
   staffGradeFilterLabel,
@@ -334,6 +336,12 @@ describe("staff student queue", () => {
     assert.equal(queue[0].email, "on-roster@northeastern.edu");
     assert.equal(queue[1].key, "orphan@northeastern.edu");
     assert.equal(queue[1].hasSubmission, true);
+    assert.equal(queue[1].unmatched, true);
+    const counts = countStaffGradeFilters(queue);
+    assert.equal(counts.all, 1);
+    assert.equal(counts.submitted, 0);
+    assert.equal(counts.unmatched, 1);
+    assert.equal(counts["not-submitted"], 1);
   });
 
   it("walks previous/next keys for the navigator", () => {
@@ -521,6 +529,16 @@ describe("staff grading status filter", () => {
     assert.equal(missing.vercelUrl, undefined);
     assert.equal(hasStaffGradeSave(missing.staffGrade), false);
     assert.equal(hasStaffGradeSave({} as never), false);
+    assert.equal(
+      hasStaffGradeSave({ criterionOverrides: {} } as never),
+      false,
+    );
+    assert.equal(
+      hasStaffGradeSave({
+        criterionOverrides: { "a1-delivery-vercel": true },
+      } as never),
+      true,
+    );
   });
 
   it("counts All, Submitted, Not submitted, Graded, and Ungraded", () => {
@@ -563,5 +581,312 @@ describe("staff grading status filter", () => {
     assert.equal(counts.graded, 1);
     assert.equal(counts.ungraded, 1);
     assert.equal(visibleStaffQueue(queue, "CS4550 CRN 11464", "nope").length, 3);
+  });
+
+  it("widens the filter when the student is outside it", () => {
+    const hidden = resolveStaffGraderView({
+      queue,
+      section: "CS4550 CRN 11464",
+      filter: "ungraded",
+      studentKey: "cyd@northeastern.edu",
+    });
+    assert.equal(hidden.filter, "all");
+    assert.equal(hidden.student?.email, "cyd@northeastern.edu");
+    assert.equal(hidden.section, "CS4550 CRN 11464");
+
+    const otherSection = resolveStaffGraderView({
+      queue,
+      section: "CS4550 CRN 11464",
+      filter: "submitted",
+      studentKey: "dee@northeastern.edu",
+    });
+    assert.equal(otherSection.filter, "all");
+    assert.equal(otherSection.section, "CS5610-02 CRN 17395");
+    assert.equal(otherSection.student?.email, "dee@northeastern.edu");
+  });
+});
+
+describe("duplicate submissions, staff, and demo students", () => {
+  const options = {
+    instructorEmails: ["jannunzi@gmail.com"],
+    taEmails: ["ta@northeastern.edu"],
+  };
+
+  it("keeps the newest submission and notes older urls", () => {
+    const queue = buildStaffStudentQueue(
+      [
+        {
+          email: "jane@northeastern.edu",
+          sisLoginId: "jane@husky.neu.edu",
+          name: "Jane Doe",
+          section: "CS4550 CRN 11464",
+          canvasUserId: "canvas-jane",
+        },
+      ],
+      [
+        submission({
+          clerkUserId: "user_old",
+          email: "jane@husky.neu.edu",
+          vercelUrl: "https://jane-old.vercel.app",
+          createdAt: new Date("2026-09-01T00:00:00.000Z"),
+          updatedAt: new Date("2026-09-01T00:00:00.000Z"),
+        }),
+        submission({
+          clerkUserId: "user_new",
+          email: "jane@northeastern.edu",
+          vercelUrl: "https://jane-new.vercel.app",
+          createdAt: new Date("2026-09-02T00:00:00.000Z"),
+          updatedAt: new Date("2026-09-10T00:00:00.000Z"),
+        }),
+      ],
+      options,
+    );
+    assert.equal(queue.length, 1);
+    assert.equal(queue[0].clerkUserId, "user_new");
+    assert.equal(queue[0].vercelUrl, "https://jane-new.vercel.app");
+    assert.equal(queue[0].unmatched, undefined);
+    assert.equal(
+      priorSubmissionLabel(queue[0].priorSubmissions),
+      "also submitted: https://jane-old.vercel.app, 2026-09-01",
+    );
+    assert.equal(countStaffGradeFilters(queue).unmatched, 0);
+    assert.equal(countStaffGradeFilters(queue).submitted, 1);
+  });
+
+  it("breaks a timestamp tie with createdAt and matches canvasUserId", () => {
+    const queue = buildStaffStudentQueue(
+      [
+        {
+          email: "pat@northeastern.edu",
+          name: "Pat",
+          canvasUserId: "canvas-pat",
+          section: "CS5610-09 CRN 21441",
+        },
+      ],
+      [
+        submission({
+          clerkUserId: "older-created",
+          canvasUserId: "canvas-pat",
+          email: "someone-else@gmail.com",
+          vercelUrl: "https://pat-old.vercel.app",
+          createdAt: new Date("2026-09-01T00:00:00.000Z"),
+          updatedAt: new Date("2026-09-08T00:00:00.000Z"),
+        }),
+        submission({
+          clerkUserId: "newer-created",
+          canvasUserId: "canvas-pat",
+          email: "someone-else@gmail.com",
+          vercelUrl: "https://pat-new.vercel.app",
+          createdAt: new Date("2026-09-03T00:00:00.000Z"),
+          updatedAt: new Date("2026-09-08T00:00:00.000Z"),
+        }),
+      ],
+      options,
+    );
+    assert.equal(queue[0].clerkUserId, "newer-created");
+    assert.equal(queue[0].vercelUrl, "https://pat-new.vercel.app");
+    assert.match(priorSubmissionLabel(queue[0].priorSubmissions), /pat-old.vercel.app/);
+  });
+
+  it("drops instructor, TA, and demo students from every count", () => {
+    const queue = buildStaffStudentQueue(
+      [
+        {
+          email: "student@northeastern.edu",
+          name: "Real Student",
+          section: "CS4550 CRN 11464",
+        },
+        {
+          email: "jannunzi@gmail.com",
+          name: "Jose",
+          section: "CS4550 CRN 11464",
+        },
+        {
+          email: "ada@ada.com",
+          name: "Ada Lovelace",
+          section: "CS4550 CRN 11464",
+          source: "demo",
+          canvasUserId: "demo-ada-lovelace",
+        },
+        {
+          email: "bob@bob.com",
+          name: "Bob Marley",
+          section: "CS5610-02 CRN 17395",
+          source: "demo",
+        },
+      ],
+      [
+        submission({
+          clerkUserId: "jose",
+          email: "jannunzi@gmail.com",
+          vercelUrl: "https://jose.vercel.app",
+        }),
+        submission({
+          clerkUserId: "ta",
+          email: "ta@northeastern.edu",
+          vercelUrl: "https://ta.vercel.app",
+        }),
+        submission({
+          clerkUserId: "stranger",
+          email: "stranger@gmail.com",
+          name: "Stranger",
+          vercelUrl: "https://stranger.vercel.app",
+        }),
+      ],
+      options,
+    );
+    assert.deepEqual(
+      queue.map((row) => row.email),
+      ["student@northeastern.edu", "stranger@gmail.com"],
+    );
+    assert.equal(queue[1].unmatched, true);
+    const counts = countStaffGradeFilters(queue);
+    assert.equal(counts.all, 1);
+    assert.equal(counts.submitted, 0);
+    assert.equal(counts["not-submitted"], 1);
+    assert.equal(counts.graded, 0);
+    assert.equal(counts.ungraded, 0);
+    assert.equal(counts.unmatched, 1);
+    assert.equal(staffGradeFilterLabel("unmatched", 1), "Unmatched (1)");
+    assert.equal(
+      listStaffQueueSections(queue).includes(UNSECTIONED_LABEL),
+      false,
+    );
+    const widened = resolveStaffGraderView({
+      queue,
+      filter: "not-submitted",
+      studentKey: "stranger@gmail.com",
+    });
+    assert.equal(widened.filter, "unmatched");
+    assert.equal(widened.student?.email, "stranger@gmail.com");
+  });
+
+  it("matches QA count parity for a 136-student roster with 10 duplicate submissions", () => {
+    const sections = [
+      ["CS4550 CRN 11464", 30, 12],
+      ["CS5610-02 CRN 17395", 51, 16],
+      ["CS5610-09 CRN 21441", 55, 18],
+    ] as const;
+    const roster: {
+      email: string;
+      name: string;
+      section: string;
+      canvasUserId: string;
+      sisLoginId?: string;
+    }[] = [];
+    const submissions: ReturnType<typeof submission>[] = [];
+    let index = 0;
+    for (const [section, total, submittedCount] of sections) {
+      for (let i = 0; i < total; i += 1) {
+        const email = `student${index}@northeastern.edu`;
+        const alias = `student${index}@husky.neu.edu`;
+        roster.push({
+          email,
+          sisLoginId: index < 10 ? alias : undefined,
+          name: `Student ${index}`,
+          section,
+          canvasUserId: `canvas-${index}`,
+        });
+        if (i < submittedCount) {
+          if (index < 10) {
+            submissions.push(
+              submission({
+                clerkUserId: `old_${index}`,
+                email: alias,
+                vercelUrl:
+                  index < 3
+                    ? `https://student${index}-old.vercel.app`
+                    : `https://student${index}.vercel.app`,
+                createdAt: new Date("2026-09-01T00:00:00.000Z"),
+                updatedAt: new Date("2026-09-01T00:00:00.000Z"),
+              }),
+            );
+          }
+          submissions.push(
+            submission({
+              clerkUserId: `new_${index}`,
+              email,
+              vercelUrl: `https://student${index}.vercel.app`,
+              createdAt: new Date("2026-09-02T00:00:00.000Z"),
+              updatedAt: new Date("2026-09-12T00:00:00.000Z"),
+            }),
+          );
+        }
+        index += 1;
+      }
+    }
+    roster.push(
+      {
+        email: "jannunzi@gmail.com",
+        name: "Jose",
+        section: "CS4550 CRN 11464",
+        canvasUserId: "jose",
+      },
+      {
+        email: "ada@ada.com",
+        name: "Ada Lovelace",
+        section: "CS4550 CRN 11464",
+        canvasUserId: "demo-ada-lovelace",
+        sisLoginId: undefined,
+      },
+      {
+        email: "bob@bob.com",
+        name: "Bob Marley",
+        section: "CS5610-02 CRN 17395",
+        canvasUserId: "demo-bob-marley",
+      },
+    );
+    submissions.push(
+      submission({
+        clerkUserId: "jose",
+        email: "jannunzi@gmail.com",
+        vercelUrl: "https://jose.vercel.app",
+      }),
+      submission({
+        clerkUserId: "ada",
+        email: "ada@ada.com",
+        vercelUrl: "https://ada.vercel.app",
+      }),
+    );
+
+    const queue = buildStaffStudentQueue(roster, submissions, options);
+    const expectCounts = (
+      rows: typeof queue,
+      all: number,
+      submittedCount: number,
+      missing: number,
+      graded: number,
+      ungraded: number,
+    ) => {
+      const counts = countStaffGradeFilters(rows);
+      assert.deepEqual(
+        [counts.all, counts.submitted, counts["not-submitted"], counts.graded, counts.ungraded],
+        [all, submittedCount, missing, graded, ungraded],
+      );
+    };
+
+    expectCounts(queue, 136, 46, 90, 0, 46);
+    expectCounts(staffQueueForSection(queue, "CS4550 CRN 11464"), 30, 12, 18, 0, 12);
+    expectCounts(staffQueueForSection(queue, "CS5610-02 CRN 17395"), 51, 16, 35, 0, 16);
+    expectCounts(staffQueueForSection(queue, "CS5610-09 CRN 21441"), 55, 18, 37, 0, 18);
+    expectCounts(staffQueueForSection(queue, UNSECTIONED_LABEL), 0, 0, 0, 0, 0);
+    assert.equal(countStaffGradeFilters(queue).unmatched, 0);
+    const noted = queue.filter((row) => row.priorSubmissions?.length);
+    assert.equal(noted.length, 10);
+    const differentUrl = noted.filter((row) =>
+      row.priorSubmissions?.some((note) => note.url !== row.vercelUrl),
+    );
+    assert.equal(differentUrl.length, 3);
+    assert.equal(
+      queue.some((row) => row.email === "jannunzi@gmail.com" || row.email === "ada@ada.com"),
+      false,
+    );
+
+    const a2 = buildStaffStudentQueue(roster, [], options);
+    expectCounts(a2, 136, 0, 136, 0, 0);
+    assert.equal(
+      countStaffGradeFilters(staffQueueForSection(a2, UNSECTIONED_LABEL))["not-submitted"],
+      0,
+    );
   });
 });

@@ -46,17 +46,49 @@ export function computeAllOrNothingGrade(
   };
 }
 
-/** Whole percent. 110 / 125 is 88. A zero total is 0. */
-export function pointsPercent(earnedPoints: number, totalPoints: number): number {
-  if (!Number.isFinite(earnedPoints) || !Number.isFinite(totalPoints) || totalPoints <= 0) {
-    return 0;
-  }
-  return Math.round((earnedPoints / totalPoints) * 100);
+function finiteNumber(value: unknown): number | null {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
-/** Shared score text for A1, A2, and later assignments: `110 / 125 (88%)`. */
-export function formatPointsPercent(earnedPoints: number, totalPoints: number): string {
-  return `${earnedPoints} / ${totalPoints} (${pointsPercent(earnedPoints, totalPoints)}%)`;
+/**
+ * Integer percent for stored grades. Never rounds up to 100 before full
+ * credit, so 124.5 / 125 stays 99. Negatives clamp to 0. A missing or
+ * non-positive total is 0.
+ */
+export function pointsPercent(earnedPoints: number, totalPoints: number): number {
+  const total = finiteNumber(totalPoints);
+  const earned = finiteNumber(earnedPoints);
+  if (total == null || total <= 0 || earned == null) return 0;
+  const clamped = Math.min(Math.max(0, earned), total);
+  if (clamped >= total) return 100;
+  const raw = (clamped / total) * 100;
+  if (raw >= 99) return Math.floor(raw);
+  return Math.round(raw);
+}
+
+function displayPercent(earned: number, total: number): string {
+  if (earned >= total) return "100";
+  const raw = (earned / total) * 100;
+  if (raw >= 99) {
+    const tenths = Math.floor(raw * 10) / 10;
+    return Number.isInteger(tenths) ? String(tenths) : tenths.toFixed(1);
+  }
+  return String(Math.round(raw));
+}
+
+/**
+ * Shared score text for A1, A2, and later assignments: `110 / 125 (88%)`.
+ * Missing, NaN, or a zero total is an em dash — never `undefined / undefined`.
+ * Negatives clamp to 0. A score above the max is flagged.
+ * 124.5 / 125 is 99.6%, not 100%.
+ */
+export function formatPointsPercent(earnedPoints: unknown, totalPoints: unknown): string {
+  const total = finiteNumber(totalPoints);
+  const earned = finiteNumber(earnedPoints);
+  if (total == null || total <= 0 || earned == null) return "—";
+  if (earned > total) return `${earned} / ${total} (over max)`;
+  const clamped = Math.max(0, earned);
+  return `${clamped} / ${total} (${displayPercent(clamped, total)}%)`;
 }
 
 export function formatGradeSummary(

@@ -63,7 +63,14 @@ describe("all-or-nothing grade calculation", () => {
     assert.equal(formatPointsPercent(110, 125), "110 / 125 (88%)");
     assert.equal(pointsPercent(1, 3), 33);
     assert.equal(formatPointsPercent(1, 3), "1 / 3 (33%)");
-    assert.equal(formatPointsPercent(0, 0), "0 / 0 (0%)");
+    assert.equal(formatPointsPercent(0, 0), "—");
+    assert.equal(formatPointsPercent(Number.NaN, 125), "—");
+    assert.equal(formatPointsPercent(undefined, undefined), "—");
+    assert.equal(formatPointsPercent(-4, 125), "0 / 125 (0%)");
+    assert.equal(formatPointsPercent(130, 125), "130 / 125 (over max)");
+    assert.equal(pointsPercent(124.5, 125), 99);
+    assert.equal(formatPointsPercent(124.5, 125), "124.5 / 125 (99.6%)");
+    assert.equal(formatPointsPercent(125, 125), "125 / 125 (100%)");
     const a2 = computeAllOrNothingGrade(A2_RUBRIC, []);
     assert.equal(formatGradeSummary(a2), `0 / ${a2.totalPoints} (0%)`);
   });
