@@ -3,11 +3,14 @@ import { describe, it } from "node:test";
 import { A1_RUBRIC } from "./a1";
 import { listRubricCriteria, rubricPointTotal } from "./catalog";
 import type { AssignmentCheckResult } from "./check-types";
+import { A2_RUBRIC } from "./a2";
 import {
   computeAllOrNothingGrade,
   effectivePassedIds,
   formatGradeSummary,
+  formatPointsPercent,
   gradeFromResultsAndOverrides,
+  pointsPercent,
   proposedGradeFromResults,
   proposedPassedIdsFromResults,
 } from "./grade";
@@ -55,8 +58,14 @@ describe("all-or-nothing grade calculation", () => {
     assert.equal(grade.passedIds.join(","), ids.join(","));
     assert.equal(
       formatGradeSummary(grade),
-      `8 / ${grade.totalPoints} pts (${grade.percent}%)`,
+      `8 / ${grade.totalPoints} (${grade.percent}%)`,
     );
+    assert.equal(formatPointsPercent(110, 125), "110 / 125 (88%)");
+    assert.equal(pointsPercent(1, 3), 33);
+    assert.equal(formatPointsPercent(1, 3), "1 / 3 (33%)");
+    assert.equal(formatPointsPercent(0, 0), "0 / 0 (0%)");
+    const a2 = computeAllOrNothingGrade(A2_RUBRIC, []);
+    assert.equal(formatGradeSummary(a2), `0 / ${a2.totalPoints} (0%)`);
   });
 
   it("builds a proposed grade from auto-pass results only", () => {

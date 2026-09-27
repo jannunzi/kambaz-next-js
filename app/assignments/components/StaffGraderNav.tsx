@@ -1,46 +1,95 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { formatPointsPercent } from "@/lib/assignments/grade";
 import {
   adjacentStaffStudentKeys,
+  countStaffGradeFilters,
   filterStaffQueueBySection,
+  filterStaffQueueByStatus,
   findStaffStudent,
+  hasStaffGradeSave,
   listStaffQueueSections,
+  resolveStaffGradeFilter,
   resolveStaffSectionFilter,
+  STAFF_GRADE_FILTERS,
+  staffGradeFilterLabel,
   staffGraderHref,
+  type StaffGradeFilter,
   type StaffStudentRow,
 } from "@/lib/assignments/staff";
+
+function studentOptionLabel(row: StaffStudentRow): string {
+  const parts = [row.name];
+  if (row.email && row.email !== row.name) parts.push(row.email);
+  if (row.section) parts.push(row.section);
+  if (!row.hasSubmission) {
+    parts.push("not submitted");
+  } else if (hasStaffGradeSave(row.staffGrade) && row.staffGrade) {
+    parts.push(
+      formatPointsPercent(row.staffGrade.earnedPoints, row.staffGrade.totalPoints),
+    );
+  } else {
+    parts.push("ungraded");
+  }
+  return parts.join(" · ");
+}
 
 export default function StaffGraderNav({
   assignmentId,
   queue,
   selectedKey,
   selectedSection,
+  selectedFilter,
 }: {
   assignmentId: string;
   queue: StaffStudentRow[];
   selectedKey?: string;
   selectedSection?: string;
+  selectedFilter?: string;
 }) {
   const router = useRouter();
   const sections = listStaffQueueSections(queue);
   const section = resolveStaffSectionFilter(selectedSection, sections);
-  const visible = filterStaffQueueBySection(queue, section);
+  const filter: StaffGradeFilter = resolveStaffGradeFilter(selectedFilter);
+  const sectionQueue = filterStaffQueueBySection(queue, section);
+  const counts = countStaffGradeFilters(sectionQueue);
+  const visible = filterStaffQueueByStatus(sectionQueue, filter);
   const { previous, next, index } = adjacentStaffStudentKeys(
     visible,
     selectedKey,
   );
   const submitted = visible.filter((row) => row.hasSubmission).length;
 
-  function go(key: string | null, nextSection = section) {
-    router.push(staffGraderHref(assignmentId, { section: nextSection, student: key }));
+  function go(
+    key: string | null,
+    nextSection = section,
+    nextFilter: StaffGradeFilter = filter,
+  ) {
+    router.push(
+      staffGraderHref(assignmentId, {
+        section: nextSection,
+        student: key,
+        filter: nextFilter,
+      }),
+    );
   }
 
   function onSectionChange(value: string) {
     const nextSection = value || undefined;
-    const nextQueue = filterStaffQueueBySection(queue, nextSection);
+    const nextQueue = filterStaffQueueByStatus(
+      filterStaffQueueBySection(queue, nextSection),
+      filter,
+    );
     const keep = findStaffStudent(nextQueue, selectedKey)?.key ?? null;
-    go(keep, nextSection);
+    go(keep, nextSection, filter);
+  }
+
+  function onFilterChange(value: string) {
+    const nextFilter = resolveStaffGradeFilter(value);
+    const nextQueue = filterStaffQueueByStatus(sectionQueue, nextFilter);
+    const keep = findStaffStudent(nextQueue, selectedKey)?.key ?? null;
+    go(keep, section, nextFilter);
   }
 
   if (queue.length === 0) {
@@ -81,6 +130,21 @@ export default function StaffGraderNav({
             ))}
           </select>
         </label>
+        <label className="min-w-[12rem] text-sm font-semibold">
+          Show
+          <select
+            aria-label="Submission and grade filter"
+            className="mt-1 box-border w-full rounded border border-neutral-400 bg-white px-3 py-2 font-normal"
+            value={filter}
+            onChange={(event) => onFilterChange(event.target.value)}
+          >
+            {STAFF_GRADE_FILTERS.map((id) => (
+              <option key={id} value={id}>
+                {staffGradeFilterLabel(id, counts[id])}
+              </option>
+            ))}
+          </select>
+        </label>
         <label className="min-w-[16rem] flex-1 text-sm font-semibold">
           Student
           <select
@@ -91,10 +155,7 @@ export default function StaffGraderNav({
             <option value="">Your own checklist</option>
             {visible.map((row) => (
               <option key={row.key} value={row.key}>
-                {row.name}
-                {row.email && row.email !== row.name ? ` · ${row.email}` : ""}
-                {row.section ? ` · ${row.section}` : ""}
-                {row.hasSubmission ? "" : " · no submission"}
+                {studentOptionLabel(row)}
               </option>
             ))}
           </select>

@@ -54,17 +54,25 @@ export type { SubmissionGateReason } from "./submission-form";
 export {
   computeAllOrNothingGrade,
   formatGradeSummary,
+  formatPointsPercent,
+  pointsPercent,
   proposedGradeFromResults,
 } from "./grade";
 export {
   adjacentStaffStudentKeys,
   buildStaffStudentQueue,
+  countStaffGradeFilters,
   filterStaffQueueBySection,
+  filterStaffQueueByStatus,
   findStaffStudent,
+  hasStaffGradeSave,
   listStaffQueueSections,
+  resolveStaffGradeFilter,
   resolveStaffSectionFilter,
+  staffGradeFilterLabel,
   staffGraderHref,
   staffQueueForSection,
+  visibleStaffQueue,
 } from "./staff";
 export { criterionVerifyUrl } from "./verify-urls";
 export type {

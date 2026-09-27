@@ -303,14 +303,129 @@ export function staffQueueForSection(
   return filterStaffQueueBySection(queue, resolved);
 }
 
+/**
+ * A staff Save exists when `staffGrade` was written (including older
+ * pass/fail overrides). An empty object is not a grade.
+ */
+export function hasStaffGradeSave(
+  grade: AssignmentStaffGrade | null | undefined,
+): boolean {
+  if (!grade) return false;
+  return Boolean(
+    grade.gradedAt || grade.rows?.length || grade.criterionOverrides,
+  );
+}
+
+export const STAFF_GRADE_FILTERS = [
+  "all",
+  "submitted",
+  "not-submitted",
+  "graded",
+  "ungraded",
+] as const;
+
+export type StaffGradeFilter = (typeof STAFF_GRADE_FILTERS)[number];
+
+export type StaffGradeFilterCounts = Record<StaffGradeFilter, number>;
+
+const STAFF_GRADE_FILTER_LABEL: Record<StaffGradeFilter, string> = {
+  all: "All",
+  submitted: "Submitted",
+  "not-submitted": "Not submitted",
+  graded: "Graded",
+  ungraded: "Ungraded",
+};
+
+/** Missing or unknown `?filter=` is All. */
+export function resolveStaffGradeFilter(
+  filter: string | undefined | null,
+): StaffGradeFilter {
+  const value = filter?.trim().toLowerCase();
+  if (value === "submitted") return "submitted";
+  if (value === "not-submitted" || value === "not_submitted") return "not-submitted";
+  if (value === "graded") return "graded";
+  if (value === "ungraded") return "ungraded";
+  return "all";
+}
+
+export function staffGradeFilterLabel(
+  filter: StaffGradeFilter,
+  count: number,
+): string {
+  return `${STAFF_GRADE_FILTER_LABEL[filter]} (${count})`;
+}
+
+/**
+ * Counts for the status dropdown. Call this on the section-filtered queue
+ * so the counts follow the section filter.
+ * Not submitted: roster (or leftover) rows with no submission.
+ * Graded: a submission with a staff Save. Ungraded: a submission without one.
+ */
+export function countStaffGradeFilters(
+  queue: readonly StaffStudentRow[],
+): StaffGradeFilterCounts {
+  const counts: StaffGradeFilterCounts = {
+    all: queue.length,
+    submitted: 0,
+    "not-submitted": 0,
+    graded: 0,
+    ungraded: 0,
+  };
+  for (const row of queue) {
+    if (!row.hasSubmission) {
+      counts["not-submitted"] += 1;
+      continue;
+    }
+    counts.submitted += 1;
+    if (hasStaffGradeSave(row.staffGrade)) counts.graded += 1;
+    else counts.ungraded += 1;
+  }
+  return counts;
+}
+
+export function filterStaffQueueByStatus(
+  queue: readonly StaffStudentRow[],
+  filter: string | undefined | null,
+): StaffStudentRow[] {
+  const selected = resolveStaffGradeFilter(filter);
+  if (selected === "all") return [...queue];
+  if (selected === "submitted") return queue.filter((row) => row.hasSubmission);
+  if (selected === "not-submitted") {
+    return queue.filter((row) => !row.hasSubmission);
+  }
+  if (selected === "graded") {
+    return queue.filter(
+      (row) => row.hasSubmission && hasStaffGradeSave(row.staffGrade),
+    );
+  }
+  return queue.filter(
+    (row) => row.hasSubmission && !hasStaffGradeSave(row.staffGrade),
+  );
+}
+
+/** Section first, then submission/grade status. */
+export function visibleStaffQueue(
+  queue: readonly StaffStudentRow[],
+  section: string | undefined | null,
+  filter: string | undefined | null,
+): StaffStudentRow[] {
+  return filterStaffQueueByStatus(staffQueueForSection(queue, section), filter);
+}
+
 export function staffGraderHref(
   assignmentId: string,
-  options?: { section?: string | null; student?: string | null },
+  options?: {
+    section?: string | null;
+    student?: string | null;
+    filter?: string | null;
+  },
 ): string {
   const params = new URLSearchParams();
   const section = options?.section?.trim();
   const student = options?.student?.trim();
+  const filter = resolveStaffGradeFilter(options?.filter);
   if (section) params.set("section", section);
+  if (filter !== "all") params.set("filter", filter);
   if (student) params.set("student", student);
   const query = params.toString();
   return query

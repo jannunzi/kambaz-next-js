@@ -6,17 +6,23 @@ import {
   assignmentGradeSaveAccess,
   canPersistStaffGrade,
   canViewStaffGrader,
+  countStaffGradeFilters,
   filterStaffQueueBySection,
+  filterStaffQueueByStatus,
   findStaffStudent,
+  hasStaffGradeSave,
   listStaffQueueSections,
   parseStaffStudentKey,
+  resolveStaffGradeFilter,
   resolveStaffSectionFilter,
   selectRosterSubmission,
+  staffGradeFilterLabel,
   staffGraderAccess,
   staffGraderHref,
   staffQueueForSection,
   staffRowSectionLabel,
   studentVisibleSubmission,
+  visibleStaffQueue,
   UNSECTIONED_LABEL,
 } from "./staff";
 import {
@@ -441,5 +447,121 @@ describe("staff queue section filter", () => {
       }),
       "/assignments/a1?section=CS4550+CRN+11464&student=ug%40northeastern.edu",
     );
+    assert.equal(
+      staffGraderHref("a2", { filter: "ungraded", section: "CS4550 CRN 11464" }),
+      "/assignments/a2?section=CS4550+CRN+11464&filter=ungraded",
+    );
+    assert.equal(staffGraderHref("a1", { filter: "all" }), "/assignments/a1");
+    assert.equal(staffGraderHref("a1", { filter: "nope" }), "/assignments/a1");
+  });
+});
+
+describe("staff grading status filter", () => {
+  const gradedAt = new Date("2026-09-20T12:00:00.000Z");
+  const queue = buildStaffStudentQueue(
+    [
+      {
+        email: "ada@northeastern.edu",
+        name: "Ada Submitted",
+        section: "CS4550 CRN 11464",
+      },
+      {
+        email: "bea@northeastern.edu",
+        name: "Bea Graded",
+        section: "CS4550 CRN 11464",
+      },
+      {
+        email: "cyd@northeastern.edu",
+        name: "Cyd Missing",
+        section: "CS4550 CRN 11464",
+      },
+      {
+        email: "dee@northeastern.edu",
+        name: "Dee Other",
+        section: "CS5610-02 CRN 17395",
+      },
+    ],
+    [
+      submission({
+        clerkUserId: "user_ada",
+        email: "ada@northeastern.edu",
+        name: "Ada Submitted",
+        section: "CS4550 CRN 11464",
+      }),
+      submission({
+        clerkUserId: "user_bea",
+        email: "bea@northeastern.edu",
+        name: "Bea Graded",
+        section: "CS4550 CRN 11464",
+        githubUrl: "https://github.com/bea/webdev-client",
+        vercelUrl: "https://bea-a1.vercel.app",
+        staffGrade: {
+          earnedPoints: 110,
+          totalPoints: 125,
+          percent: 88,
+          acceptedProposed: false,
+          gradedAt,
+          gradedByEmail: "staff@northeastern.edu",
+        },
+      }),
+      submission({
+        clerkUserId: "user_dee",
+        email: "dee@northeastern.edu",
+        name: "Dee Other",
+        section: "CS5610-02 CRN 17395",
+      }),
+    ],
+  );
+
+  it("keeps roster students with no submission and blank URLs", () => {
+    const missing = queue.find((row) => row.email === "cyd@northeastern.edu");
+    assert.ok(missing);
+    assert.equal(missing.hasSubmission, false);
+    assert.equal(missing.githubUrl, undefined);
+    assert.equal(missing.vercelUrl, undefined);
+    assert.equal(hasStaffGradeSave(missing.staffGrade), false);
+    assert.equal(hasStaffGradeSave({} as never), false);
+  });
+
+  it("counts All, Submitted, Not submitted, Graded, and Ungraded", () => {
+    const counts = countStaffGradeFilters(queue);
+    assert.equal(counts.all, 4);
+    assert.equal(counts.submitted, 3);
+    assert.equal(counts["not-submitted"], 1);
+    assert.equal(counts.graded, 1);
+    assert.equal(counts.ungraded, 2);
+    assert.equal(staffGradeFilterLabel("submitted", counts.submitted), "Submitted (3)");
+    assert.equal(resolveStaffGradeFilter(undefined), "all");
+    assert.equal(resolveStaffGradeFilter("not_submitted"), "not-submitted");
+    assert.equal(resolveStaffGradeFilter("bogus"), "all");
+  });
+
+  it("filters by status and composes with the section filter", () => {
+    assert.deepEqual(
+      filterStaffQueueByStatus(queue, "not-submitted").map((row) => row.email),
+      ["cyd@northeastern.edu"],
+    );
+    assert.deepEqual(
+      filterStaffQueueByStatus(queue, "graded").map((row) => row.email),
+      ["bea@northeastern.edu"],
+    );
+    assert.deepEqual(
+      filterStaffQueueByStatus(queue, "ungraded").map((row) => row.email),
+      ["ada@northeastern.edu", "dee@northeastern.edu"],
+    );
+    const section = visibleStaffQueue(queue, "CS4550 CRN 11464", "ungraded");
+    assert.deepEqual(
+      section.map((row) => row.email),
+      ["ada@northeastern.edu"],
+    );
+    const counts = countStaffGradeFilters(
+      staffQueueForSection(queue, "CS4550 CRN 11464"),
+    );
+    assert.equal(counts.all, 3);
+    assert.equal(counts.submitted, 2);
+    assert.equal(counts["not-submitted"], 1);
+    assert.equal(counts.graded, 1);
+    assert.equal(counts.ungraded, 1);
+    assert.equal(visibleStaffQueue(queue, "CS4550 CRN 11464", "nope").length, 3);
   });
 });

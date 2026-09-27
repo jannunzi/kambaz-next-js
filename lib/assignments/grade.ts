@@ -35,8 +35,7 @@ export function computeAllOrNothingGrade(
     }
   }
   const totalPoints = rubricPointTotal(rubric);
-  const percent =
-    totalPoints === 0 ? 0 : Math.round((earnedPoints / totalPoints) * 100);
+  const percent = pointsPercent(earnedPoints, totalPoints);
   return {
     earnedPoints,
     totalPoints,
@@ -47,8 +46,23 @@ export function computeAllOrNothingGrade(
   };
 }
 
-export function formatGradeSummary(grade: GradeBreakdown): string {
-  return `${grade.earnedPoints} / ${grade.totalPoints} pts (${grade.percent}%)`;
+/** Whole percent. 110 / 125 is 88. A zero total is 0. */
+export function pointsPercent(earnedPoints: number, totalPoints: number): number {
+  if (!Number.isFinite(earnedPoints) || !Number.isFinite(totalPoints) || totalPoints <= 0) {
+    return 0;
+  }
+  return Math.round((earnedPoints / totalPoints) * 100);
+}
+
+/** Shared score text for A1, A2, and later assignments: `110 / 125 (88%)`. */
+export function formatPointsPercent(earnedPoints: number, totalPoints: number): string {
+  return `${earnedPoints} / ${totalPoints} (${pointsPercent(earnedPoints, totalPoints)}%)`;
+}
+
+export function formatGradeSummary(
+  grade: Pick<GradeBreakdown, "earnedPoints" | "totalPoints">,
+): string {
+  return formatPointsPercent(grade.earnedPoints, grade.totalPoints);
 }
 
 /** Auto-pass only. Skipped / missing results do not earn points. */

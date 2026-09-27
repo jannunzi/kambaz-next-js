@@ -37,6 +37,7 @@ export default function A1WorkArea({
   staffQueue?: StaffStudentRow[];
   selectedStudent?: StaffStudentRow | null;
   selectedSection?: string;
+  selectedFilter?: string;
 }) {
   return (
     <AssignmentViewer serverUserId={serverUserId} authEnabled={authEnabled}>
@@ -65,6 +66,7 @@ function A1WorkSession({
   staffQueue,
   selectedStudent,
   selectedSection,
+  selectedFilter,
 }: {
   assignment: AssignmentHubItem;
   initialSubmission: AssignmentSubmissionView | null;
@@ -76,6 +78,7 @@ function A1WorkSession({
   staffQueue?: StaffStudentRow[];
   selectedStudent?: StaffStudentRow | null;
   selectedSection?: string;
+  selectedFilter?: string;
 }) {
   const staffMode = Boolean(selectedStudent);
   const [submission, setSubmission] = useState(initialSubmission);
@@ -162,6 +165,7 @@ function A1WorkSession({
           queue={staffQueue}
           selectedKey={selectedStudent?.key}
           selectedSection={selectedSection}
+          selectedFilter={selectedFilter}
         />
       ) : null}
 

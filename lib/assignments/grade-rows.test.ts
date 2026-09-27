@@ -86,6 +86,7 @@ describe("override detection and points", () => {
     assert.deepEqual(studentAutoPoints(rows, new Set(["manual"])), {
       earnedPoints: 3,
       totalPoints: 3,
+      percent: 100,
     });
     assert.equal(gradePoints(rows).earnedPoints, 7);
   });

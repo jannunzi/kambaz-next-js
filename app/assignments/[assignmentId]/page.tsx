@@ -33,9 +33,11 @@ import {
   buildStaffStudentQueue,
   findStaffStudent,
   listStaffQueueSections,
+  resolveStaffGradeFilter,
   resolveStaffSectionFilter,
-  staffQueueForSection,
   studentVisibleSubmission,
+  visibleStaffQueue,
+  type StaffGradeFilter,
   type StaffStudentRow,
 } from "@/lib/assignments/staff";
 import { buildA1GateDiagnostics } from "@/lib/assignments/diagnostics";
@@ -85,7 +87,7 @@ function loggedOutSubmitVisibility(assignmentId: string, configured: boolean) {
 
 type PageProps = {
   params: Promise<{ assignmentId: string }>;
-  searchParams: Promise<{ student?: string; section?: string }>;
+  searchParams: Promise<{ student?: string; section?: string; filter?: string }>;
 };
 
 export function generateStaticParams() {
@@ -109,7 +111,11 @@ export default async function AssignmentDetailPage({
   searchParams,
 }: PageProps) {
   const { assignmentId } = await params;
-  const { student: studentKey, section: sectionParam } = await searchParams;
+  const {
+    student: studentKey,
+    section: sectionParam,
+    filter: filterParam,
+  } = await searchParams;
   const assignment = getAssignment(assignmentId);
   if (!assignment) notFound();
 
@@ -125,6 +131,7 @@ export default async function AssignmentDetailPage({
   let staffQueue: StaffStudentRow[] | undefined;
   let selectedStudent: StaffStudentRow | null = null;
   let selectedSection: string | undefined;
+  let selectedFilter: StaffGradeFilter = "all";
   let showStaffGrader = false;
   let staffDiagnostics: A1GateDiagnostics | null = null;
 
@@ -270,10 +277,11 @@ export default async function AssignmentDetailPage({
             sectionParam,
             listStaffQueueSections(staffQueue),
           );
+          selectedFilter = resolveStaffGradeFilter(filterParam);
           if (studentKey) {
             selectedStudent =
               findStaffStudent(
-                staffQueueForSection(staffQueue, selectedSection),
+                visibleStaffQueue(staffQueue, selectedSection, selectedFilter),
                 studentKey,
               ) ?? null;
             if (selectedStudent?.clerkUserId) {
@@ -391,6 +399,7 @@ export default async function AssignmentDetailPage({
           staffQueue={staffQueue}
           selectedStudent={selectedStudent}
           selectedSection={selectedSection}
+          selectedFilter={selectedFilter}
         />
       ) : (
         <AssignmentChecklist
