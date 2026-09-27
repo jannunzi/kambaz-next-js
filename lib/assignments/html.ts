@@ -111,7 +111,7 @@ export function isLabsPath(path: string): boolean {
 }
 
 export function isCourseScreenPath(path: string): boolean {
-  return /^\/courses\/[^/]+\/(home|modules|assignments)(\/|$)/i.test(path);
+  return /^\/courses\/[^/]+\/(home|modules|assignments|people)(\/|$)/i.test(path);
 }
 
 export function uniqueUrls(urls: readonly (string | null | undefined)[]): string[] {

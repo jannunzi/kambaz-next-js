@@ -27,6 +27,7 @@ function formatSavedAt(iso?: string): string | null {
 }
 
 export default function A1SubmissionForm({
+  assignmentId,
   initialSubmission,
   canSubmit,
   impersonating = false,
@@ -41,6 +42,7 @@ export default function A1SubmissionForm({
   onSubmission,
   onDeployUrlChange,
 }: {
+  assignmentId: string;
   initialSubmission: AssignmentSubmissionView | null;
   canSubmit: boolean;
   impersonating?: boolean;
@@ -122,7 +124,7 @@ export default function A1SubmissionForm({
     setError(null);
     startTransition(async () => {
       const result = await saveAssignmentSubmission({
-        assignmentId: "a1",
+        assignmentId,
         githubUrl,
         vercelUrl,
       });
@@ -138,19 +140,19 @@ export default function A1SubmissionForm({
       const result =
         checkAction === "staff" && staffStudentKey
           ? await runStaffAssignmentChecks({
-              assignmentId: "a1",
+              assignmentId,
               studentKey: staffStudentKey,
               githubUrl,
               vercelUrl,
             })
           : checkAction === "public"
             ? await runPublicAssignmentChecks({
-                assignmentId: "a1",
+                assignmentId,
                 githubUrl,
                 vercelUrl,
               })
             : await runAssignmentChecks({
-                assignmentId: "a1",
+                assignmentId,
                 githubUrl,
                 vercelUrl,
               });
@@ -188,13 +190,13 @@ export default function A1SubmissionForm({
         >
           <div>
             <label
-              htmlFor="a1-github-url"
+              htmlFor={`${assignmentId}-github-url`}
               className="font-sans text-sm font-semibold"
             >
               Public GitHub repository URL (optional)
             </label>
             <input
-              id="a1-github-url"
+              id={`${assignmentId}-github-url`}
               name="githubUrl"
               type="url"
               inputMode="url"
@@ -215,13 +217,13 @@ export default function A1SubmissionForm({
           </div>
           <div>
             <label
-              htmlFor="a1-vercel-url"
+              htmlFor={`${assignmentId}-vercel-url`}
               className="font-sans text-sm font-semibold"
             >
               Public Vercel deployment URL
             </label>
             <input
-              id="a1-vercel-url"
+              id={`${assignmentId}-vercel-url`}
               name="vercelUrl"
               type="url"
               inputMode="url"

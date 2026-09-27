@@ -186,6 +186,27 @@ export function parseGithubRepoUrl(
   return { ok: true, repo: { owner, repo, href } };
 }
 
+/**
+ * Branch name from a GitHub `/tree/<branch>` or `/commits/<branch>` URL.
+ * A repository-root URL has no branch.
+ */
+export function githubUrlBranch(raw: string): string | null {
+  const parsed = parseHttpsUrl(raw);
+  if (!parsed.ok) return null;
+  const host = hostnameOf(parsed.url.hostname);
+  if (host !== "github.com" && host !== "www.github.com") return null;
+  const parts = parsed.url.pathname.split("/").filter(Boolean);
+  if (parts.length < 4) return null;
+  if (parts[2] !== "tree" && parts[2] !== "commits") return null;
+  const branch = parts[3];
+  if (!branch) return null;
+  try {
+    return decodeURIComponent(branch);
+  } catch {
+    return branch;
+  }
+}
+
 export function deployOriginFromUrl(raw: string): UrlParseResult {
   const parsed = looksLikeDeployUrl(raw);
   if (!parsed.ok) return parsed;
@@ -208,11 +229,14 @@ export const A1_SEED_PATHS = [
   "/dashboard",
 ] as const;
 
-export function a1SeedUrls(deployUrl: string): string[] {
+export function seedUrlsForDeploy(
+  deployUrl: string,
+  seedPaths: readonly string[],
+): string[] {
   const origin = deployOriginFromUrl(deployUrl);
   if (!origin.ok) return [];
   const submitted = looksLikeDeployUrl(deployUrl);
-  const urls = A1_SEED_PATHS.map((path) => urlOnDeployOrigin(origin.href, path));
+  const urls = seedPaths.map((path) => urlOnDeployOrigin(origin.href, path));
   if (submitted.ok) urls.unshift(submitted.href);
   const seen = new Set<string>();
   const unique: string[] = [];
@@ -222,6 +246,10 @@ export function a1SeedUrls(deployUrl: string): string[] {
     unique.push(href);
   }
   return unique;
+}
+
+export function a1SeedUrls(deployUrl: string): string[] {
+  return seedUrlsForDeploy(deployUrl, A1_SEED_PATHS);
 }
 
 export function labsUrlFromDeploy(deployUrl: string): string | null {
