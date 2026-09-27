@@ -114,9 +114,18 @@ export async function fetchDeployHtml(url: string): Promise<HtmlFetchResult> {
 
 export async function probeGithubRepo(url: string): Promise<UrlProbeResult> {
   try {
-    let res = await fetchWithTimeout(url, { method: "HEAD" });
-    if (res.status === 405 || res.status === 501) {
+    let treePage = false;
+    try {
+      treePage = /\/tree\//.test(new URL(url).pathname);
+    } catch {
+      treePage = false;
+    }
+    let res = await fetchWithTimeout(url, { method: treePage ? "GET" : "HEAD" });
+    if (!treePage && (res.status === 405 || res.status === 501)) {
       res = await fetchWithTimeout(url, { method: "GET" });
+    }
+    if (res.body) {
+      await res.body.cancel().catch(() => undefined);
     }
     if (res.status === 404) {
       return { ok: false, status: 404, message: ASSIGNMENT_STUDENT_COPY.githubPrivate };

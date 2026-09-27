@@ -246,7 +246,7 @@ describe("assignment catalog", () => {
       "<div id=\"wd-h-tag\"><h4>Heading Tags</h4></div>",
     );
     assert.equal(headingFail.passed, false);
-    assert.equal(supportsUrlSubmission("a2"), false);
+    assert.equal(supportsUrlSubmission("a2"), true);
   });
 });
 

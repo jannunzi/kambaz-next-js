@@ -48,7 +48,7 @@ export default function StaffGraderNav({
       <section className="mb-6 rounded-lg border border-neutral-300 bg-white p-4 font-sans shadow-sm">
         <h2 className="mt-0 mb-1 text-lg font-semibold">Staff grading</h2>
         <p className="mb-0 text-sm text-neutral-700">
-          No roster students or A1 submissions are available yet.
+          No roster students or submissions are available yet.
         </p>
       </section>
     );

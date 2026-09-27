@@ -169,6 +169,7 @@ function A1WorkSession({
       ) : (
         <A1SubmissionForm
           key={`${selectedStudent?.key ?? "self"}:${submission?.updatedAt ?? "none"}`}
+          assignmentId={assignment.id}
           initialSubmission={submission}
           canSubmit={canSubmit || staffMode}
           impersonating={impersonating}

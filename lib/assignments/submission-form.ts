@@ -85,7 +85,21 @@ export function preparePublicAssignmentCheck(input: {
       message: ASSIGNMENT_STUDENT_COPY.vercelRequired,
     };
   }
+  const githubMissing = missingA2GithubMessage(input.assignmentId, githubUrl);
+  if (githubMissing) {
+    return { ok: false, code: "invalid", message: githubMissing };
+  }
   return { ok: true, githubUrl, vercelUrl };
+}
+
+/** A2 Save/submit requires a GitHub URL. A1 stays optional. */
+export function missingA2GithubMessage(
+  assignmentId: string,
+  githubUrl: string,
+): string | null {
+  if (assignmentId !== "a2") return null;
+  if (githubUrl.trim()) return null;
+  return ASSIGNMENT_STUDENT_COPY.a2GithubRequired;
 }
 
 export function gateReasonFromAccess(

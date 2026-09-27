@@ -8,14 +8,14 @@ import {
   pathnameOf,
   uniqueUrls,
 } from "./html";
+import { A1_CHECKER } from "./a1-checker";
 import {
   A1_SEED_PATHS,
-  a1SeedUrls,
   deployOriginFromUrl,
   looksLikeDeployUrl,
+  seedUrlsForDeploy,
   urlOnDeployOrigin,
 } from "./urls";
-import { A1_CRITERION_VERIFY_PATHS } from "./verify-urls";
 
 export type PageSnapshot = {
   path: string;
@@ -68,10 +68,13 @@ function sameOriginHref(origin: string, href: string): string | null {
   }
 }
 
-function checklistFollowupPaths(): string[] {
-  const seeds = new Set<string>(A1_SEED_PATHS);
+function checklistFollowupPaths(
+  seedPaths: readonly string[],
+  verifyPaths: readonly string[],
+): string[] {
+  const seeds = new Set<string>(seedPaths);
   const paths: string[] = [];
-  for (const path of Object.values(A1_CRITERION_VERIFY_PATHS)) {
+  for (const path of verifyPaths) {
     if (seeds.has(path) || paths.includes(path)) continue;
     paths.push(path);
   }
@@ -152,8 +155,12 @@ function followupUrls(
   origin: string,
   html: string,
   exclude: ReadonlySet<string>,
+  seedPaths: readonly string[],
+  verifyPaths: readonly string[],
+  followupCap: number,
+  extraCourseScreens: readonly string[] = [],
 ): string[] {
-  const checklistPaths = checklistFollowupPaths();
+  const checklistPaths = checklistFollowupPaths(seedPaths, verifyPaths);
   const required = pathsOnOrigin(origin, withCaseVariants(checklistPaths));
 
   const extraCanonical: string[] = [];
@@ -162,6 +169,14 @@ function followupUrls(
     const assignmentId =
       extractAssignmentIds(html, courseId)[0] ?? DEFAULT_ASSIGNMENT_ID;
     for (const path of canonicalCoursePaths(courseId, assignmentId)) {
+      extraCanonical.push(path);
+      const variant = caseVariantPath(path);
+      if (variant) extraVariants.push(variant);
+    }
+    for (const screen of extraCourseScreens) {
+      const suffix = screen.replace(/^\//, "");
+      if (!suffix) continue;
+      const path = `/courses/${courseId}/${suffix}`;
       extraCanonical.push(path);
       const variant = caseVariantPath(path);
       if (variant) extraVariants.push(variant);
@@ -180,17 +195,22 @@ function followupUrls(
   for (const url of ranked) {
     if (requiredSet.has(url)) requiredKept += 1;
   }
-  return ranked.slice(0, Math.max(A1_FOLLOWUP_URL_CAP, requiredKept));
+  return ranked.slice(0, Math.max(followupCap, requiredKept));
 }
 
-export async function crawlA1Deploy(input: {
+export async function crawlDeploy(input: {
   deployUrl: string;
   getHtml: (url: string) => Promise<HtmlFetchResult>;
+  seedPaths: readonly string[];
+  verifyPaths: readonly string[];
+  followupCap: number;
+  /** Extra /courses/:id/<screen> follow-ups. A1 leaves this empty. */
+  extraCourseScreens?: readonly string[];
 }): Promise<DeployCorpus | { ok: false; message: string }> {
   const origin = deployOriginFromUrl(input.deployUrl);
   if (!origin.ok) return { ok: false, message: origin.message };
 
-  const seed = a1SeedUrls(input.deployUrl);
+  const seed = seedUrlsForDeploy(input.deployUrl, input.seedPaths);
   const first = await Promise.all(
     seed.map(async (url) => {
       const result = await input.getHtml(url);
@@ -206,6 +226,10 @@ export async function crawlA1Deploy(input: {
     origin.href,
     successfulHtml(first),
     new Set(seed),
+    input.seedPaths,
+    input.verifyPaths,
+    input.followupCap,
+    input.extraCourseScreens,
   );
   const second = await Promise.all(
     more.map(async (url) => {
@@ -226,6 +250,19 @@ export async function crawlA1Deploy(input: {
     allHtml: successfulHtml(pages),
     labsHtml: labsHtmlFrom(pages),
   };
+}
+
+export async function crawlA1Deploy(input: {
+  deployUrl: string;
+  getHtml: (url: string) => Promise<HtmlFetchResult>;
+}): Promise<DeployCorpus | { ok: false; message: string }> {
+  return crawlDeploy({
+    deployUrl: input.deployUrl,
+    getHtml: input.getHtml,
+    seedPaths: A1_SEED_PATHS,
+    verifyPaths: Object.values(A1_CHECKER.verifyPaths),
+    followupCap: A1_FOLLOWUP_URL_CAP,
+  });
 }
 
 export function submittedUrlOpens(

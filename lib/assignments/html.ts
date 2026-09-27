@@ -32,6 +32,125 @@ export function htmlHasAllSnippets(
   return { ok: missing.length === 0, missing };
 }
 
+/** Pathname of an anchor href, ignoring origin, query, hash, and a trailing slash. */
+export function anchorPathname(href: string): string | null {
+  const trimmed = href.trim();
+  if (
+    !trimmed ||
+    trimmed.startsWith("#") ||
+    trimmed.startsWith("mailto:") ||
+    trimmed.startsWith("javascript:")
+  ) {
+    return null;
+  }
+  try {
+    const url = new URL(trimmed, "https://deploy.local");
+    let path = url.pathname;
+    if (path.length > 1 && path.endsWith("/")) path = path.slice(0, -1);
+    return path.toLowerCase();
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Host of an absolute or protocol-relative href. Relative hrefs have no host.
+ */
+export function anchorHrefHost(href: string): string | null {
+  const trimmed = href.trim();
+  if (!trimmed) return null;
+  try {
+    if (trimmed.startsWith("//")) {
+      return new URL(`https:${trimmed}`).hostname.toLowerCase().replace(/\.$/, "");
+    }
+    if (/^[a-z][a-z0-9+.-]*:/i.test(trimmed)) {
+      return new URL(trimmed).hostname.toLowerCase().replace(/\.$/, "");
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+/**
+ * True when an <a href> points at path (relative or absolute, optional trailing slash).
+ * When siteHost is set, only relative hrefs and absolute hrefs on that host count.
+ */
+export function htmlHasAnchorPath(
+  html: string,
+  path: string,
+  siteHost?: string,
+): boolean {
+  const target = anchorPathname(path);
+  if (!target) return false;
+  const expected = siteHost?.trim().toLowerCase().replace(/\.$/, "") ?? "";
+  const re = /<a\b[^>]*\bhref\s*=\s*["']([^"']+)["'][^>]*>/gi;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(html))) {
+    if (expected) {
+      const host = anchorHrefHost(match[1]);
+      if (host && host !== expected) continue;
+    }
+    if (anchorPathname(match[1]) === target) return true;
+  }
+  return false;
+}
+
+/** Whole tokens from class and className attributes. Not prose, not substrings. */
+export function htmlClassTokens(html: string): string[] {
+  const tokens: string[] = [];
+  const re = /\b(?:className|class)\s*=\s*(?:"([^"]*)"|'([^']*)')/gi;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(html))) {
+    const value = match[1] ?? match[2] ?? "";
+    for (const token of value.split(/\s+/)) {
+      if (token) tokens.push(token);
+    }
+  }
+  return tokens;
+}
+
+function elementInnerHtml(html: string, id: string): string[] {
+  const safe = escapeRegExp(id);
+  const openRe = new RegExp(
+    `<([a-zA-Z][\\w:-]*)\\b([^>]*?)\\bid\\s*=\\s*["']${safe}["']([^>]*)>`,
+    "gi",
+  );
+  const inners: string[] = [];
+  let match: RegExpExecArray | null;
+  while ((match = openRe.exec(html))) {
+    const tag = match[1];
+    const full = match[0];
+    if (/\/\s*>$/.test(full)) {
+      inners.push("");
+      continue;
+    }
+    const start = match.index + full.length;
+    const tagRe = new RegExp(`<(/?)${escapeRegExp(tag)}\\b[^>]*>`, "gi");
+    tagRe.lastIndex = start;
+    let depth = 1;
+    let closer: RegExpExecArray | null;
+    let end = html.length;
+    while ((closer = tagRe.exec(html))) {
+      if (!closer[1] && /\/\s*>$/.test(closer[0])) continue;
+      depth += closer[1] ? -1 : 1;
+      if (depth === 0) {
+        end = closer.index;
+        break;
+      }
+    }
+    inners.push(html.slice(start, end));
+    openRe.lastIndex = end;
+  }
+  return inners;
+}
+
+/** True when any element with id contains a start tag for tagName. */
+export function htmlIdContainsTag(html: string, id: string, tagName: string): boolean {
+  const tagRe = new RegExp(`<${escapeRegExp(tagName)}\\b`, "i");
+  return elementInnerHtml(html, id).some((inner) => tagRe.test(inner));
+}
+
 export function htmlHasTag(html: string, tag: string): boolean {
   return new RegExp(`<${escapeRegExp(tag)}\\b`, "i").test(html);
 }
