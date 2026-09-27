@@ -1,8 +1,8 @@
 export default function GridLayout() {
   return (
     <div id="wd-css-grid-layout">
+      <h2>Grid layout</h2>
       <div id="wd-css-left-right-layout">
-        <h2>Grid layout</h2>
         <div className="wd-grid-row">
           <div className="wd-grid-col-half-page wd-bg-color-yellow">
             <h3>Left half</h3>
