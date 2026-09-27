@@ -272,22 +272,44 @@ function walk(dir: string, acc: string[] = []): string[] {
   return acc;
 }
 
+/** Pair each `codeFile` with the `code` template that belongs to that slide. */
+function slideCodeFiles(src: string): Array<{ code: string; file: string }> {
+  const out: Array<{ code: string; file: string }> = [];
+  const fileRe = /\n[ \t]*codeFile:\s*"([^"]+)"/g;
+  let match: RegExpExecArray | null;
+  while ((match = fileRe.exec(src))) {
+    const head = src.slice(0, match.index);
+    const langAt = head.lastIndexOf("codeLanguage:");
+    const close = head.lastIndexOf("`", langAt);
+    const open = head.lastIndexOf("code: `", close);
+    if (langAt < 0 || close < 0 || open < 0) continue;
+    out.push({ code: head.slice(open + "code: `".length, close), file: match[1] });
+  }
+  return out;
+}
+
 describe("Lab 2 lecture listings of a whole component", () => {
-  it("matches the lab file when the slide function name is that file", () => {
+  it("matches the lab file, or the same book step, when the slide function name is that file", () => {
+    const bookStepsFor = new Map<string, Set<string>>();
+    for (const step of LAB2_COMPONENT_STEPS) {
+      const codes = bookStepsFor.get(step.file) ?? new Set<string>();
+      codes.add(step.code.trim());
+      bookStepsFor.set(step.file, codes);
+    }
     const mismatches: string[] = [];
     for (const deck of walk("lib/lectures/decks")) {
-      const src = read(deck);
-      const re =
-        /code:\s*`([\s\S]*?)`,\s*\n\s*codeLanguage:[^\n]*\n\s*codeFile:\s*"([^"]+)"/g;
-      let match: RegExpExecArray | null;
-      while ((match = re.exec(src))) {
-        const code = match[1];
-        const file = match[2];
+      for (const listing of slideCodeFiles(read(deck))) {
+        const { code, file } = listing;
         if (!file.startsWith("app/labs/lab2/") || !file.endsWith(".tsx")) continue;
         const fn = code.match(/export default function (\w+)/)?.[1];
         const base = file.split("/").pop()?.replace(/\.tsx$/, "");
         if (!fn || fn !== base) continue;
-        if (code.trim() !== read(file).trim()) mismatches.push(`${deck} ${file}`);
+        const trimmed = code.trim();
+        if (trimmed === read(file).trim()) continue;
+        // A slide may copy one book step that starts with `export default function`
+        // instead of the finished lab file.
+        if (bookStepsFor.get(file)?.has(trimmed)) continue;
+        mismatches.push(`${deck} ${file}`);
       }
     }
     assert.deepEqual(mismatches, []);

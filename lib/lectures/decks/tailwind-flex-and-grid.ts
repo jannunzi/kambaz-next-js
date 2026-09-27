@@ -54,19 +54,25 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
     bullets: [
       "`grid grid-cols-4 gap-4` — four columns, consistent gutters",
       "Nine cells wrap onto a third row. No manual row break",
-      "Book step 1 wraps this in `<h2>Tailwind Grids</h2>`. Paste the 3 Columns Grid next, then the Grid system `h2`",
+      "Book step 1 is the wrapper, the Tailwind Grids `h2`, and this grid. Paste the 3 Columns Grid next, then the Grid system `h2`",
     ],
-    code: `<h2>Tailwind Grids</h2>
-<div>
-  <h3 className="mt-6 text-3xl font-bold">4 Columns Grid</h3>
-  <div className="grid grid-cols-4 gap-4">
-    {Array.from({ length: 9 }, (_, i) => (
-      <div key={i} className="text-center bg-blue-300 p-3">
-        {String(i + 1).padStart(2, "0")}
+    code: `export default function TailwindGrids() {
+  return (
+    <div>
+      <h2>Tailwind Grids</h2>
+      <div>
+        <h3 className="mt-6 text-3xl font-bold">4 Columns Grid</h3>
+        <div className="grid grid-cols-4 gap-4">
+          {Array.from({ length: 9 }, (_, i) => (
+            <div key={i} className="text-center bg-blue-300 p-3">
+              {String(i + 1).padStart(2, "0")}
+            </div>
+          ))}
+        </div>
       </div>
-    ))}
-  </div>
-</div>`,
+    </div>
+  );
+}`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/tailwind/TailwindGrids.tsx",
   },
