@@ -19,6 +19,10 @@ import {
   type StaffStudentRow,
 } from "@/lib/assignments/staff";
 
+/** Closed dropdown. Same classes as Section; no size and no multiple. */
+const staffSelectClass =
+  "form-select mt-1 box-border block h-10 w-full truncate rounded border border-neutral-400 bg-white px-3 font-normal";
+
 function studentOptionLabel(row: StaffStudentRow): string {
   const parts = [row.name];
   if (row.email && row.email !== row.name) parts.push(row.email);
@@ -114,11 +118,11 @@ export default function StaffGraderNav({
           ? ` Viewing ${index + 1} of ${visible.length}.`
           : " Select a student to review their deploy."}
       </p>
-      <div className="flex flex-wrap items-end gap-2">
-        <label className="min-w-[12rem] text-sm font-semibold">
+      <div className="flex flex-nowrap items-end gap-2">
+        <label className="w-52 shrink-0 text-sm font-semibold">
           Section
           <select
-            className="mt-1 box-border w-full rounded border border-neutral-400 bg-white px-3 py-2 font-normal"
+            className={staffSelectClass}
             value={section ?? ""}
             onChange={(event) => onSectionChange(event.target.value)}
           >
@@ -130,11 +134,11 @@ export default function StaffGraderNav({
             ))}
           </select>
         </label>
-        <label className="min-w-[12rem] text-sm font-semibold">
+        <label className="w-52 shrink-0 text-sm font-semibold">
           Show
           <select
             aria-label="Submission and grade filter"
-            className="mt-1 box-border w-full rounded border border-neutral-400 bg-white px-3 py-2 font-normal"
+            className={staffSelectClass}
             value={filter}
             onChange={(event) => onFilterChange(event.target.value)}
           >
@@ -145,10 +149,10 @@ export default function StaffGraderNav({
             ))}
           </select>
         </label>
-        <label className="min-w-[16rem] flex-1 text-sm font-semibold">
+        <label className="min-w-0 flex-1 text-sm font-semibold">
           Student
           <select
-            className="mt-1 box-border w-full rounded border border-neutral-400 bg-white px-3 py-2 font-normal"
+            className={staffSelectClass}
             value={selectedKey ?? ""}
             onChange={(event) => go(event.target.value || null)}
           >
@@ -162,7 +166,7 @@ export default function StaffGraderNav({
         </label>
         <button
           type="button"
-          className="rounded border border-neutral-800 bg-white px-3 py-2 text-sm hover:bg-neutral-50 disabled:opacity-50"
+          className="h-10 shrink-0 rounded border border-neutral-800 bg-white px-3 text-sm hover:bg-neutral-50 disabled:opacity-50"
           disabled={!previous}
           onClick={() => go(previous)}
         >
@@ -170,7 +174,7 @@ export default function StaffGraderNav({
         </button>
         <button
           type="button"
-          className="rounded border border-neutral-800 bg-white px-3 py-2 text-sm hover:bg-neutral-50 disabled:opacity-50"
+          className="h-10 shrink-0 rounded border border-neutral-800 bg-white px-3 text-sm hover:bg-neutral-50 disabled:opacity-50"
           disabled={!next}
           onClick={() => go(next)}
         >
