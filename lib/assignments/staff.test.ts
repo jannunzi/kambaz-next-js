@@ -869,7 +869,11 @@ describe("duplicate submissions, staff, and demo students", () => {
     expectCounts(staffQueueForSection(queue, "CS4550 CRN 11464"), 30, 12, 18, 0, 12);
     expectCounts(staffQueueForSection(queue, "CS5610-02 CRN 17395"), 51, 16, 35, 0, 16);
     expectCounts(staffQueueForSection(queue, "CS5610-09 CRN 21441"), 55, 18, 37, 0, 18);
-    expectCounts(staffQueueForSection(queue, UNSECTIONED_LABEL), 0, 0, 0, 0, 0);
+    assert.equal(listStaffQueueSections(queue).includes(UNSECTIONED_LABEL), false);
+    assert.equal(
+      resolveStaffSectionFilter(UNSECTIONED_LABEL, listStaffQueueSections(queue)),
+      undefined,
+    );
     assert.equal(countStaffGradeFilters(queue).unmatched, 0);
     const noted = queue.filter((row) => row.priorSubmissions?.length);
     assert.equal(noted.length, 10);
@@ -884,9 +888,100 @@ describe("duplicate submissions, staff, and demo students", () => {
 
     const a2 = buildStaffStudentQueue(roster, [], options);
     expectCounts(a2, 136, 0, 136, 0, 0);
+    assert.equal(listStaffQueueSections(a2).includes(UNSECTIONED_LABEL), false);
     assert.equal(
-      countStaffGradeFilters(staffQueueForSection(a2, UNSECTIONED_LABEL))["not-submitted"],
-      0,
+      resolveStaffSectionFilter(UNSECTIONED_LABEL, listStaffQueueSections(a2)),
+      undefined,
+    );
+  });
+
+  it("keeps unmatched rows with a section hint under that section", () => {
+    const queue = buildStaffStudentQueue(
+      [{ email: "on@northeastern.edu", name: "On Roster", section: "CS4550 CRN 11464" }],
+      [
+        submission({
+          clerkUserId: "hinted",
+          email: "hinted@gmail.com",
+          name: "Hinted",
+          section: "CS4550 CRN 11464",
+          vercelUrl: "https://hinted.vercel.app",
+        }),
+        submission({
+          clerkUserId: "blank",
+          email: "blank@gmail.com",
+          name: "Blank",
+          vercelUrl: "https://blank.vercel.app",
+        }),
+      ],
+      options,
+    );
+    assert.equal(listStaffQueueSections(queue).includes(UNSECTIONED_LABEL), false);
+    assert.ok(listStaffQueueSections(queue).includes("CS4550 CRN 11464"));
+    const sectionRows = staffQueueForSection(queue, "CS4550 CRN 11464");
+    assert.equal(
+      sectionRows.some((row) => row.email === "hinted@gmail.com" && row.unmatched),
+      true,
+    );
+    assert.equal(sectionRows.some((row) => row.email === "blank@gmail.com"), false);
+    const sectionCounts = countStaffGradeFilters(sectionRows);
+    assert.equal(sectionCounts.unmatched, 1);
+    assert.equal(sectionCounts.submitted, 0);
+    assert.equal(countStaffGradeFilters(queue).unmatched, 2);
+    const widened = resolveStaffGraderView({
+      queue,
+      section: "CS5610-02 CRN 17395",
+      filter: "all",
+      studentKey: "hinted@gmail.com",
+    });
+    assert.equal(widened.filter, "unmatched");
+    assert.equal(widened.section, "CS4550 CRN 11464");
+    const blank = resolveStaffGraderView({
+      queue,
+      section: "CS4550 CRN 11464",
+      filter: "all",
+      studentKey: "blank@gmail.com",
+    });
+    assert.equal(blank.filter, "unmatched");
+    assert.equal(blank.section, undefined);
+  });
+
+  it("records a previously graded older submission with the same percent", () => {
+    const queue = buildStaffStudentQueue(
+      [
+        {
+          email: "jane@northeastern.edu",
+          name: "Jane Doe",
+          section: "CS4550 CRN 11464",
+        },
+      ],
+      [
+        submission({
+          clerkUserId: "user_old",
+          email: "jane@northeastern.edu",
+          vercelUrl: "https://jane-old.vercel.app",
+          createdAt: new Date("2026-09-01T00:00:00.000Z"),
+          updatedAt: new Date("2026-09-01T00:00:00.000Z"),
+          staffGrade: {
+            earnedPoints: 110,
+            totalPoints: 125,
+            percent: 88,
+            acceptedProposed: true,
+            gradedAt: new Date("2026-09-02T12:00:00.000Z"),
+          },
+        }),
+        submission({
+          clerkUserId: "user_new",
+          email: "jane@northeastern.edu",
+          vercelUrl: "https://jane-new.vercel.app",
+          createdAt: new Date("2026-09-03T00:00:00.000Z"),
+          updatedAt: new Date("2026-09-10T00:00:00.000Z"),
+        }),
+      ],
+      options,
+    );
+    assert.equal(
+      priorSubmissionLabel(queue[0].priorSubmissions),
+      "also submitted: https://jane-old.vercel.app, 2026-09-01; previously graded: 110 / 125 (88.0%) on 2026-09-02 for https://jane-old.vercel.app",
     );
   });
 });

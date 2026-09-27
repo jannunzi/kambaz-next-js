@@ -20,28 +20,28 @@ import {
   type StaffStudentRow,
 } from "@/lib/assignments/staff";
 
-/** Closed dropdown. Same classes as Section; no size and no multiple. */
+/** Closed dropdown. Tailwind only; no size and no multiple. */
 const staffSelectClass =
-  "form-select mt-1 box-border block h-10 w-full truncate rounded border border-neutral-400 bg-white px-3 font-normal";
+  "mt-1 box-border block h-10 w-full truncate rounded border border-neutral-400 bg-white px-3 font-normal";
+
+function studentStatus(row: StaffStudentRow): string {
+  if (row.unmatched) return "unmatched";
+  if (!row.hasSubmission) return "not submitted";
+  if (hasStaffGradeSave(row.staffGrade)) return "graded";
+  return "ungraded";
+}
 
 function studentOptionLabel(row: StaffStudentRow): string {
-  const parts = [row.name];
-  if (row.email && row.email !== row.name) parts.push(row.email);
-  if (row.section) parts.push(row.section);
-  if (!row.hasSubmission) {
-    parts.push("not submitted");
-  } else if (hasStaffGradeSave(row.staffGrade) && row.staffGrade) {
-    const score = formatPointsPercent(
-      row.staffGrade.earnedPoints,
-      row.staffGrade.totalPoints,
-    );
-    if (score !== "—") parts.push(score);
-  } else if (!row.unmatched) {
-    parts.push("ungraded");
-  }
-  const prior = priorSubmissionLabel(row.priorSubmissions);
-  if (prior) parts.push(prior);
-  return parts.join(" · ");
+  return `${row.name} · ${studentStatus(row)}`;
+}
+
+function selectedScore(row: StaffStudentRow): string {
+  if (!hasStaffGradeSave(row.staffGrade) || !row.staffGrade) return "";
+  const score = formatPointsPercent(
+    row.staffGrade.earnedPoints,
+    row.staffGrade.totalPoints,
+  );
+  return score === "—" ? "" : score;
 }
 
 export default function StaffGraderNav({
@@ -69,6 +69,10 @@ export default function StaffGraderNav({
     selectedKey,
   );
   const submitted = visible.filter((row) => row.hasSubmission).length;
+  const selectedRow =
+    findStaffStudent(visible, selectedKey) ?? findStaffStudent(queue, selectedKey);
+  const score = selectedRow ? selectedScore(selectedRow) : "";
+  const prior = selectedRow ? priorSubmissionLabel(selectedRow.priorSubmissions) : "";
 
   function go(
     key: string | null,
@@ -139,10 +143,13 @@ export default function StaffGraderNav({
             ))}
           </select>
         </label>
-        <label className="w-52 shrink-0 text-sm font-semibold">
+        <label
+          htmlFor="staff-show-filter"
+          className="w-52 shrink-0 text-sm font-semibold"
+        >
           Show
           <select
-            aria-label="Submission and grade filter"
+            id="staff-show-filter"
             className={staffSelectClass}
             value={filter}
             onChange={(event) => onFilterChange(event.target.value)}
@@ -186,6 +193,12 @@ export default function StaffGraderNav({
           Next
         </button>
       </div>
+      {score || prior ? (
+        <div className="mt-3 text-sm text-sky-950">
+          {score ? <p className="mb-1">{score}</p> : null}
+          {prior ? <p className="mb-0 break-words">{prior}</p> : null}
+        </div>
+      ) : null}
     </section>
   );
 }

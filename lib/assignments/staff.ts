@@ -9,6 +9,7 @@ import {
 } from "../roster/sections";
 import type { CanvasRosterEntry } from "../roster/types";
 import type { AssignmentCheckResult } from "./check-types";
+import { formatPointsPercent } from "./grade";
 import type { AssignmentStaffGrade, AssignmentSubmissionDoc } from "./submissions-store";
 
 /** Same fallback as `/people` when `canvas_roster.section` is blank. */
@@ -69,6 +70,12 @@ export type PriorSubmissionNote = {
   url: string;
   /** ISO timestamp of the older submission (`updatedAt`, else `createdAt`). */
   at: string;
+  /** Present when that older submission already has a staff Save. */
+  graded?: {
+    earnedPoints: number;
+    totalPoints: number;
+    gradedAt: string;
+  };
 };
 
 export type StaffStudentRow = {
@@ -116,16 +123,22 @@ function compareNewestSubmission(
   return timeMs(b.createdAt) - timeMs(a.createdAt);
 }
 
+function priorNoteText(note: PriorSubmissionNote): string {
+  const date = note.at ? note.at.slice(0, 10) : "unknown date";
+  const parts = [`also submitted: ${note.url}, ${date}`];
+  if (note.graded) {
+    const score = formatPointsPercent(note.graded.earnedPoints, note.graded.totalPoints);
+    const gradedOn = note.graded.gradedAt.slice(0, 10) || date;
+    parts.push(`previously graded: ${score} on ${gradedOn} for ${note.url}`);
+  }
+  return parts.join("; ");
+}
+
 export function priorSubmissionLabel(
   notes: readonly PriorSubmissionNote[] | undefined,
 ): string {
   if (!notes?.length) return "";
-  return notes
-    .map((note) => {
-      const date = note.at ? note.at.slice(0, 10) : "unknown date";
-      return `also submitted: ${note.url}, ${date}`;
-    })
-    .join("; ");
+  return notes.map(priorNoteText).join("; ");
 }
 
 function submissionEmails(doc: AssignmentSubmissionDoc): string[] {
@@ -204,7 +217,17 @@ function submissionMatchesRoster(
 
 function priorNote(doc: AssignmentSubmissionDoc): PriorSubmissionNote {
   const url = doc.vercelUrl?.trim() || doc.githubUrl?.trim() || "(no url)";
-  return { url, at: submissionStamp(doc) };
+  const note: PriorSubmissionNote = { url, at: submissionStamp(doc) };
+  const grade = doc.staffGrade;
+  if (grade && hasStaffGradeSave(grade)) {
+    const gradedAt = grade.gradedAt;
+    note.graded = {
+      earnedPoints: grade.earnedPoints,
+      totalPoints: grade.totalPoints,
+      gradedAt: gradedAt instanceof Date ? gradedAt.toISOString() : String(gradedAt),
+    };
+  }
+  return note;
 }
 
 /**
@@ -378,16 +401,21 @@ export function staffRowSectionLabel(row: {
 export function listStaffQueueSections(
   queue: readonly StaffStudentRow[],
 ): string[] {
-  return [
-    ...new Set(
-      queue.filter((row) => !row.unmatched).map(staffRowSectionLabel),
-    ),
-  ].sort(compareSectionLabels);
+  const labels = new Set<string>();
+  for (const row of queue) {
+    if (row.unmatched) {
+      if (row.section?.trim()) labels.add(staffRowSectionLabel(row));
+      continue;
+    }
+    labels.add(staffRowSectionLabel(row));
+  }
+  return [...labels].sort(compareSectionLabels);
 }
 
 /**
  * Unknown or empty `?section=` is All (same as `/people`).
- * Valid values are the stored Canvas section labels.
+ * Valid values are labels that at least one row actually has.
+ * `Unsectioned` is valid only when a roster row has a blank section.
  */
 export function resolveStaffSectionFilter(
   section: string | undefined | null,
@@ -395,7 +423,6 @@ export function resolveStaffSectionFilter(
 ): string | undefined {
   const selected = section?.trim();
   if (!selected) return undefined;
-  if (selected === UNSECTIONED_LABEL) return UNSECTIONED_LABEL;
   return available.includes(selected) ? selected : undefined;
 }
 
@@ -405,9 +432,12 @@ export function filterStaffQueueBySection(
 ): StaffStudentRow[] {
   const selected = section?.trim();
   if (!selected) return [...queue];
-  return queue.filter(
-    (row) => !row.unmatched && staffRowSectionLabel(row) === selected,
-  );
+  return queue.filter((row) => {
+    if (row.unmatched) {
+      return Boolean(row.section?.trim()) && staffRowSectionLabel(row) === selected;
+    }
+    return staffRowSectionLabel(row) === selected;
+  });
 }
 
 export function staffQueueForSection(
@@ -557,7 +587,7 @@ export function resolveStaffGraderView(input: {
 } {
   const sections = listStaffQueueSections(input.queue);
   let section = resolveStaffSectionFilter(input.section, sections);
-  let filter = resolveStaffGradeFilter(input.filter);
+  const filter = resolveStaffGradeFilter(input.filter);
   const key = input.studentKey?.trim();
   if (!key) return { section, filter };
 
@@ -571,7 +601,12 @@ export function resolveStaffGraderView(input: {
   if (!anywhere) return { section, filter };
 
   if (anywhere.unmatched) {
-    return { section: undefined, filter: "unmatched", student: anywhere };
+    const hint = anywhere.section?.trim();
+    return {
+      section: hint ? staffRowSectionLabel(anywhere) : undefined,
+      filter: "unmatched",
+      student: anywhere,
+    };
   }
 
   const inSection = findStaffStudent(staffQueueForSection(input.queue, section), key);

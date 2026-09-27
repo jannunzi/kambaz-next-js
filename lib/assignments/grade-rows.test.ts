@@ -71,7 +71,7 @@ describe("override detection and points", () => {
     assert.deepEqual(gradePoints(rows), {
       earnedPoints: 5,
       totalPoints: 8,
-      percent: 63,
+      percent: 62.5,
     });
   });
 

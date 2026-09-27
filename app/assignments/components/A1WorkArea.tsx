@@ -11,7 +11,7 @@ import {
 } from "@/lib/assignments/grade-rows";
 import type { AssignmentGradeView } from "@/lib/assignments/grade-rows";
 import { ASSIGNMENT_STUDENT_COPY } from "@/lib/assignments/student-copy";
-import { priorSubmissionLabel, type StaffStudentRow } from "@/lib/assignments/staff";
+import { type StaffStudentRow } from "@/lib/assignments/staff";
 import type { AssignmentHubItem } from "@/lib/assignments/types";
 import type { AssignmentSubmissionView } from "@/lib/assignments/submissions-store";
 import { saveAssignmentGrade } from "../staff-actions";
@@ -167,12 +167,6 @@ function A1WorkSession({
           selectedSection={selectedSection}
           selectedFilter={selectedFilter}
         />
-      ) : null}
-
-      {staffMode && selectedStudent && priorSubmissionLabel(selectedStudent.priorSubmissions) ? (
-        <p className="mb-3 rounded-lg border border-sky-300 bg-white px-4 py-3 font-sans text-sm text-sky-950">
-          {priorSubmissionLabel(selectedStudent.priorSubmissions)}
-        </p>
       ) : null}
 
       {staffMode && selectedStudent && !selectedStudent.hasSubmission ? (
