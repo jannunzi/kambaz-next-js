@@ -261,7 +261,7 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
 }`,
     codeLanguage: "css",
     codeFile: "app/labs/lab2/index.css",
-    codeHighlightLines: [[1, 37], 45],
+    codeHighlightLines: [[43, 51], [52, 57]],
   },
   {
     id: "box-model-tsx",

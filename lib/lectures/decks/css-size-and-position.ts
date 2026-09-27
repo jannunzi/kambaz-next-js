@@ -221,7 +221,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
 }`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/Positions.tsx",
-    codeHighlightLines: [3, 4, 18],
+    codeHighlightLines: [3, 4, 17],
   },
   {
     id: "relative-live",

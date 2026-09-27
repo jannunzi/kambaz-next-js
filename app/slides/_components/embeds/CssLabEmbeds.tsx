@@ -125,7 +125,7 @@ export function CssMarginsEmbed() {
 export function CssBoxModelEmbed() {
   return (
     <LectureDemoFrame label="BoxModel.tsx" url="/labs/lab2">
-      <div className="font-sans text-base [&_h2]:mt-0 [&_h3]:mt-2">
+      <div className="font-sans text-[16px] [&_h2]:mt-0 [&_h3]:mt-2">
         <BoxModel />
       </div>
     </LectureDemoFrame>
