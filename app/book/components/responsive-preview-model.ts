@@ -32,15 +32,15 @@ export const TAILWIND_BREAKPOINTS: Breakpoint[] = [
 ];
 
 /**
- * Widths that land in each range of MediaQueriesDemo.css.
- * At 1000px and 1250px two queries match; the later rule wins, so those
- * widths are the blue and red ranges.
+ * Widths inside each range of MediaQueriesDemo.css.
+ * The queries share their edges (1000px and 1250px match two blocks), so the
+ * presets sit strictly inside a range and only one checklist bullet is active.
  */
 export const MEDIA_QUERY_WIDTH_PRESETS: WidthPreset[] = [
   { label: "Phone 375", width: 375 },
-  { label: "750", width: 750 },
-  { label: "1000", width: 1000 },
-  { label: "1250", width: 1250 },
+  { label: "800", width: 800 },
+  { label: "1100", width: 1100 },
+  { label: "1300", width: 1300 },
 ];
 
 export const MEDIA_QUERY_BREAKPOINTS: Breakpoint[] = [
