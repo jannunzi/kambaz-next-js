@@ -446,6 +446,24 @@ export function formatEasternDateTime(date: Date | string): string {
   }).format(value);
 }
 
+/**
+ * Civil America/New_York timestamp with no offset, for Canvas
+ * `unlock_at` / `due_at` / `lock_at` (`YYYY-MM-DDTHH:mm:ss`).
+ */
+export function formatEasternCivilTimestamp(date: Date | string): string {
+  const value = typeof date === "string" ? new Date(date) : date;
+  const parts = easternCivilParts(value);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${parts.year}-${pad(parts.month)}-${pad(parts.day)}T${pad(parts.hour)}:${pad(parts.minute)}:${pad(parts.second)}`;
+}
+
+/** Student-facing take window. Dates are display-only; staff still enable taking. */
+export function syllabusTakeWindowSentence(schedule: QuizSchedule): string {
+  const unlock = formatEasternDateTime(schedule.takeUnlockAt);
+  const lock = formatEasternDateTime(schedule.takeLockAt);
+  return `Syllabus window: opens ${unlock} and is due ${lock}. Those dates do not open the quiz by themselves.`;
+}
+
 export function examLabel(name: ExamName): string {
   return name === "midterm" ? "midterm" : "final";
 }
@@ -543,9 +561,7 @@ export function answerWindowCopy(
   }
 
   if (phase === "take_closed") {
-    const unlock = formatEasternDateTime(schedule.takeUnlockAt);
-    const lock = formatEasternDateTime(schedule.takeLockAt);
-    const dates = `Syllabus window: opens ${unlock} and is due ${lock}. Those dates do not open the quiz by themselves.`;
+    const dates = syllabusTakeWindowSentence(schedule);
     if (override === "closed") {
       return {
         title: "This quiz is disabled for your section",

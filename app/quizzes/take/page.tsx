@@ -7,6 +7,10 @@ import {
   quizTimeLimitMinutes,
   STUDENT_COPY,
 } from "@/lib/quiz-exam";
+import {
+  getQuizSchedule,
+  syllabusTakeWindowSentence,
+} from "@/lib/quiz-exam/schedule";
 import QuizAccessOverrides from "./components/QuizAccessOverrides";
 import StaffAttemptsLink from "../staff/components/StaffAttemptsLink";
 
@@ -54,6 +58,7 @@ export default function TakeQuizIndexPage() {
         {exams.map(({ quizId, bank }) => {
           const questions = quizDrawCount(quizId) ?? bank.groups.length;
           const minutes = quizTimeLimitMinutes(quizId);
+          const schedule = getQuizSchedule(quizId);
           return (
             <li
               key={quizId}
@@ -68,6 +73,11 @@ export default function TakeQuizIndexPage() {
                 {minutes ? ` · about ${minutes} minutes` : ""}
                 {" · 100 points"}
               </p>
+              {schedule ? (
+                <p className="text-sm text-neutral-700">
+                  {syllabusTakeWindowSentence(schedule)}
+                </p>
+              ) : null}
               <Link
                 href={`/quizzes/take/${quizId}`}
                 className="book-practice-cta inline-block rounded border border-neutral-800 bg-neutral-800 px-3 py-2 text-sm"

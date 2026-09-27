@@ -6,6 +6,7 @@ import {
   canRevealAnswers,
   etWallTimeToUtc,
   examPrepOpenAt,
+  formatEasternCivilTimestamp,
   formatEasternDateTime,
   getAnswerRevealPhase,
   getQuizSchedule,
@@ -40,6 +41,16 @@ describe("Eastern wall-time conversion", () => {
     assert.equal(q1.answersOpenAt.toISOString(), et(2026, 10, 5).toISOString());
     assert.equal(q1.answersCloseAt.toISOString(), et(2026, 10, 12).toISOString());
     assert.equal(q1.examName, "midterm");
+    assert.equal(
+      formatEasternCivilTimestamp(q1.takeUnlockAt),
+      "2026-09-28T00:00:00",
+    );
+    assert.equal(
+      formatEasternCivilTimestamp(q1.takeLockAt),
+      "2026-10-04T23:59:00",
+    );
+    assert.match(formatEasternDateTime(q1.takeLockAt), /October 4, 2026/);
+    assert.doesNotMatch(formatEasternDateTime(q1.takeLockAt), /September 27/);
   });
 
   it("crosses the Nov 1 DST fallback for X1 lock vs answers open", () => {

@@ -20,6 +20,7 @@ import {
   getQuizSchedule,
   isTakeWindowOpen,
   scheduleToIso,
+  syllabusTakeWindowSentence,
   type QuizAnswersVisibleMode,
   type QuizTakeOverrideMode,
 } from "@/lib/quiz-exam/schedule";
@@ -187,6 +188,11 @@ export default async function TakeExamPage({ params }: PageProps) {
       <h1 className="mt-0 text-3xl font-semibold tracking-tight">
         {bank.title}
       </h1>
+      {schedule ? (
+        <p className="mt-3 mb-0 text-sm text-neutral-700">
+          {syllabusTakeWindowSentence(schedule)}
+        </p>
+      ) : null}
       {impersonating ? (
         <p className="rounded-lg border-2 border-amber-500 bg-amber-50 px-4 py-3 text-amber-950">
           Impersonation — viewing as {IMPERSONATION_STUDENT_NAME} (

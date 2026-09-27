@@ -1,5 +1,9 @@
 import { COURSE_SITE_ORIGIN } from "../assignments/catalog";
-import type { GradedQuizId } from "./draw-counts";
+import { GRADED_QUIZ_IDS, type GradedQuizId } from "./draw-counts";
+import {
+  formatEasternCivilTimestamp,
+  getQuizSchedule,
+} from "./schedule";
 
 /**
  * Canvas quiz / exam student copy for Fall 2026 fallback packages.
@@ -32,72 +36,41 @@ export function canvasQuizTakeUrl(quizId: CanvasFallbackQuizId): string {
   return `${COURSE_SITE_ORIGIN}/quizzes/take/${quizId}`;
 }
 
-export const CANVAS_FALLBACK_QUIZZES: CanvasFallbackQuizMeta[] = [
-  {
-    quizId: "q1",
-    canvasTitle: "Q1 — HTML",
-    unlockAt: "2026-09-21T00:00:00",
-    dueAt: "2026-09-27T23:59:00",
-    lockAt: "2026-09-27T23:59:00",
-    takePath: "/quizzes/take/q1",
-  },
-  {
-    quizId: "q2",
-    canvasTitle: "Q2 — CSS",
-    unlockAt: "2026-10-05T00:00:00",
-    dueAt: "2026-10-11T23:59:00",
-    lockAt: "2026-10-11T23:59:00",
-    takePath: "/quizzes/take/q2",
-  },
-  {
-    quizId: "q3",
-    canvasTitle: "Q3 — JavaScript",
-    unlockAt: "2026-10-19T00:00:00",
-    dueAt: "2026-10-25T23:59:00",
-    lockAt: "2026-10-25T23:59:00",
-    takePath: "/quizzes/take/q3",
-  },
-  {
-    quizId: "q4",
-    canvasTitle: "Q4 — Client state",
-    unlockAt: "2026-11-02T00:00:00",
-    dueAt: "2026-11-08T23:59:00",
-    lockAt: "2026-11-08T23:59:00",
-    takePath: "/quizzes/take/q4",
-  },
-  {
-    quizId: "q5",
-    canvasTitle: "Q5 — REST",
-    unlockAt: "2026-11-16T00:00:00",
-    dueAt: "2026-11-22T23:59:00",
-    lockAt: "2026-11-22T23:59:00",
-    takePath: "/quizzes/take/q5",
-  },
-  {
-    quizId: "q6",
-    canvasTitle: "Q6 — MongoDB",
-    unlockAt: "2026-11-30T00:00:00",
-    dueAt: "2026-12-06T23:59:00",
-    lockAt: "2026-12-06T23:59:00",
-    takePath: "/quizzes/take/q6",
-  },
-  {
-    quizId: "x1",
-    canvasTitle: "X1 — Midterm",
-    unlockAt: "2026-10-26T00:00:00",
-    dueAt: "2026-11-01T23:59:00",
-    lockAt: "2026-11-01T23:59:00",
-    takePath: "/quizzes/take/x1",
-  },
-  {
-    quizId: "x2",
-    canvasTitle: "X2 — Final",
-    unlockAt: "2026-12-14T00:00:00",
-    dueAt: "2026-12-20T23:59:00",
-    lockAt: "2026-12-20T23:59:00",
-    takePath: "/quizzes/take/x2",
-  },
-];
+const CANVAS_FALLBACK_TITLES: Record<GradedQuizId, string> = {
+  q1: "Q1 — HTML",
+  q2: "Q2 — CSS",
+  q3: "Q3 — JavaScript",
+  q4: "Q4 — Client state",
+  q5: "Q5 — REST",
+  q6: "Q6 — MongoDB",
+  x1: "X1 — Midterm",
+  x2: "X2 — Final",
+};
+
+/** Canvas dates are the website take window in civil ET, so they cannot drift. */
+function canvasWindow(
+  quizId: GradedQuizId,
+): Pick<CanvasFallbackQuizMeta, "unlockAt" | "dueAt" | "lockAt"> {
+  const schedule = getQuizSchedule(quizId);
+  if (!schedule) {
+    throw new Error(`Missing quiz schedule for Canvas fallback ${quizId}`);
+  }
+  const dueAt = formatEasternCivilTimestamp(schedule.takeLockAt);
+  return {
+    unlockAt: formatEasternCivilTimestamp(schedule.takeUnlockAt),
+    dueAt,
+    lockAt: dueAt,
+  };
+}
+
+export const CANVAS_FALLBACK_QUIZZES: CanvasFallbackQuizMeta[] = GRADED_QUIZ_IDS.map(
+  (quizId) => ({
+    quizId,
+    canvasTitle: CANVAS_FALLBACK_TITLES[quizId],
+    ...canvasWindow(quizId),
+    takePath: `/quizzes/take/${quizId}`,
+  }),
+);
 
 export function getCanvasFallbackQuiz(
   quizId: string,
