@@ -350,9 +350,9 @@ export default function TailwindLab() {
           file="app/labs/lab2/tailwind/TailwindResponsiveDesign.tsx"
         >{`export default function TailwindResponsiveDesign() {
   return (
-    <div>
+    <div className="font-sans">
       <h2 className="text-3xl font-bold mb-4">Responsive Design</h2>
-      <div className="mx-auto max-w-md overflow-hidden rounded-xl bg-white shadow-md md:max-w-2xl">
+      <div className="mx-auto w-full max-w-md overflow-hidden rounded-xl bg-white shadow-md md:max-w-2xl">
         <div className="md:flex">
           <div className="relative md:w-48 md:shrink-0">
             <img
@@ -388,13 +388,13 @@ export default function TailwindLab() {
               <div className="mt-2 text-2xl font-semibold">React JS</div>
             </div>
           </div>
-          <div className="p-8">
+          <div className="min-w-0 p-8">
             <div className="text-sm font-semibold tracking-wide text-indigo-500 uppercase">
               Professional Courses
             </div>
             <a
               href="#"
-              className="mt-1 block text-lg leading-tight font-medium text-black hover:underline"
+              className="mt-1 block text-lg leading-tight font-medium text-black no-underline hover:underline"
             >
               Rocket Propulsion Fundamentals
             </a>

@@ -87,5 +87,11 @@ describe("book responsive previews", () => {
     const layout = read("app/preview/layout.tsx");
     assert.match(layout, /tailwind\/utilities\.css/);
     assert.match(layout, /id="preview-root"/);
+    assert.match(read("app/preview/tailwind-responsive/page.tsx"), /tailwind\/index\.css/);
+    assert.match(read("app/labs/lab2/tailwind/page.tsx"), /import "\.\/index\.css"/);
+    const student = read("app/labs/lab2/tailwind/TailwindResponsiveDesign.tsx");
+    assert.match(student, /font-sans/);
+    assert.match(student, /no-underline/);
+    assert.match(student, /min-w-0/);
   });
 });
