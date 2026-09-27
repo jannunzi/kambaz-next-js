@@ -126,11 +126,11 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
   },
   {
     id: "next-up",
-    title: "Next: style Kambaz",
+    title: "Next: filters",
     kind: "title",
     bullets: [
       "You can stack on phones and row at `md` with prefix utilities",
-      "§2.4: wire Tailwind into the Kambaz shell — theme + utilities, no Preflight",
+      "§2.3.5: `blur-*` on an image, then §2.3.6 grid",
     ],
   },
 ];

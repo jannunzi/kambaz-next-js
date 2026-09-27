@@ -34,9 +34,9 @@ export const LECTURE_4_SLUGS = [
   "css-colors",
   "css-box-model",
   "css-size-and-position",
-  "css-media-queries",
   "css-float",
   "css-flex",
+  "css-media-queries",
   "css-rotation",
 ] as const;
 
@@ -46,8 +46,8 @@ export const LECTURE_6_SLUGS = [
   "tailwind-spacing",
   "tailwind-typography",
   "tailwind-colors",
-  "tailwind-flex-and-grid",
   "tailwind-responsive",
+  "tailwind-filters-and-grid",
 ] as const;
 
 export const LECTURE_7_SLUGS = [

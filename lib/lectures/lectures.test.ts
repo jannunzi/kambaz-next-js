@@ -1144,8 +1144,8 @@ describe("lecture catalog", () => {
     assert.equal(lastLecture3.prev?.slug, "kambaz-modules");
     const lastLecture4 = adjacentLectureSlugs("css-rotation");
     assert.equal(lastLecture4.next?.slug, "react-icons");
-    assert.equal(lastLecture4.prev?.slug, "css-flex");
-    const lastLecture6 = adjacentLectureSlugs("tailwind-responsive");
+    assert.equal(lastLecture4.prev?.slug, "css-media-queries");
+    const lastLecture6 = adjacentLectureSlugs("tailwind-filters-and-grid");
     assert.equal(lastLecture6.next?.slug, "kambaz-styling");
     const lastCh2 = adjacentLectureSlugs("kambaz-account-styling");
     assert.equal(lastCh2.next?.slug, "intro-to-javascript");
@@ -1204,27 +1204,27 @@ describe("lecture decks", () => {
     assert.equal(counts["kambaz-courses"], 8);
     assert.equal(counts["kambaz-modules"], 12);
     assert.equal(counts["kambaz-assignments"], 12);
-    assert.equal(counts["css-intro"], 12);
-    assert.equal(counts["css-colors"], 9);
-    assert.equal(counts["css-box-model"], 10);
-    assert.equal(counts["css-size-and-position"], 10);
+    assert.equal(counts["css-intro"], 22);
+    assert.equal(counts["css-colors"], 10);
+    assert.equal(counts["css-box-model"], 18);
+    assert.equal(counts["css-size-and-position"], 22);
     assert.equal(counts["css-media-queries"], 8);
-    assert.equal(counts["css-float"], 8);
-    assert.equal(counts["css-flex"], 7);
+    assert.equal(counts["css-float"], 9);
+    assert.equal(counts["css-flex"], 12);
     assert.equal(counts["css-rotation"], 6);
-    assert.equal(counts["react-icons"], 8);
+    assert.equal(counts["react-icons"], 9);
     assert.equal(counts["tailwind-intro"], 9);
     assert.equal(counts["tailwind-spacing"], 7);
     assert.equal(counts["tailwind-typography"], 6);
-    assert.equal(counts["tailwind-colors"], 8);
-    assert.equal(counts["tailwind-flex-and-grid"], 8);
+    assert.equal(counts["tailwind-colors"], 5);
+    assert.equal(counts["tailwind-filters-and-grid"], 13);
     assert.equal(counts["tailwind-responsive"], 7);
     assert.equal(counts["kambaz-styling"], 8);
     assert.equal(counts["kambaz-nav-styling"], 7);
     assert.equal(counts["kambaz-dashboard-styling"], 7);
-    assert.equal(counts["kambaz-courses-styling"], 13);
+    assert.equal(counts["kambaz-courses-styling"], 14);
     assert.equal(counts["kambaz-assignments-styling"], 9);
-    assert.equal(counts["kambaz-account-styling"], 7);
+    assert.equal(counts["kambaz-account-styling"], 8);
     assert.equal(counts["intro-to-javascript"], 8);
     assert.equal(counts["variables-and-constants"], 7);
     assert.equal(counts["variable-types"], 6);
@@ -1548,10 +1548,10 @@ describe("lecture decks", () => {
       },
       "css-intro": {
         "style-attr": "css-style-attr",
-        "import-css": "css-import",
-        "id-selectors": "css-id-selectors",
-        "class-selectors": "css-class-selectors",
-        structure: "css-structure-selectors",
+        "import-live": "css-import",
+        "id-live": "css-id-selectors",
+        "class-live": "css-class-selectors",
+        "structure-live": "css-structure-selectors",
       },
       "css-colors": {
         "fg-demo": "css-foreground",
@@ -1559,18 +1559,18 @@ describe("lecture decks", () => {
       },
       "css-box-model": {
         "borders-demo": "css-borders",
-        padding: "css-padding",
-        margins: "css-margins",
+        "padding-live": "css-padding",
+        "margins-live": "css-margins",
         "box-model-demo": "css-box-model",
-        corners: "css-corners",
+        "corners-live": "css-corners",
       },
       "css-size-and-position": {
-        dimensions: "css-dimensions",
+        "dimensions-live": "css-dimensions",
         "display-demo": "css-display",
-        relative: "css-position-relative",
-        absolute: "css-position-absolute",
-        fixed: "css-position-fixed",
-        zindex: "css-zindex",
+        "relative-live": "css-position-relative",
+        "absolute-live": "css-position-absolute",
+        "fixed-live": "css-position-fixed",
+        "zindex-live": "css-zindex",
       },
       "css-media-queries": { demo: "css-media-queries" },
       "css-float": {
@@ -1578,22 +1578,22 @@ describe("lecture decks", () => {
         "grid-demo": "css-grid-layout",
       },
       "css-flex": {
-        row: "css-flex-row",
-        grow: "css-flex-grow",
-        pin: "css-flex-width",
+        "row-live": "css-flex-row",
+        "grow-live": "css-flex-grow",
+        "pin-live": "css-flex-width",
       },
       "css-rotation": {
         rotate: "css-rotate",
         gradient: "css-gradient",
       },
-      "react-icons": { sampler: "react-icons" },
+      "react-icons": { "sampler-live": "react-icons" },
       "tailwind-spacing": { demo: "tw-spacing" },
       "tailwind-typography": { demo: "tw-typography" },
       "tailwind-colors": {
         demo: "tw-backgrounds",
-        "filters-demo": "tw-filters",
       },
-      "tailwind-flex-and-grid": {
+      "tailwind-filters-and-grid": {
+        "filters-demo": "tw-filters",
         "flex-demo": "tw-flex",
         "grid-demo": "tw-grids",
       },
@@ -2165,8 +2165,11 @@ describe("lecture decks", () => {
     const float = slideText("css-float");
     assert.match(float, /wd-float-left/);
     assert.match(float, /wd-float-done/);
+    assert.match(float, /wd-float-divs/);
+    assert.match(float, /STARSHIP/);
+    assert.match(float, /staradvertiser/i);
     assert.match(float, /wd-grid-col-half-page/);
-    assert.doesNotMatch(float, /staradvertiser/i);
+    assert.match(float, /wd-grid-col-left-sidebar/);
     assert.doesNotMatch(float, /googleusercontent/i);
 
     const flex = slideText("css-flex");
@@ -2212,11 +2215,12 @@ describe("lecture decks", () => {
     const colors = slideText("tailwind-colors");
     assert.match(colors, /bg-red-500/);
     assert.match(colors, /yellow-500/);
-    assert.match(colors, /blur-lg/);
-    assert.match(colors, /TailwindFilters/);
+    assert.doesNotMatch(colors, /TailwindFilters/);
 
-    const flexGrid = slideText("tailwind-flex-and-grid");
+    const flexGrid = slideText("tailwind-filters-and-grid");
     assert.match(flexGrid, /shrink-0/);
+    assert.match(flexGrid, /blur-lg/);
+    assert.match(flexGrid, /TailwindFilters/);
     assert.match(flexGrid, /grid-cols-4/);
     assert.match(flexGrid, /col-span-4/);
     assert.match(flexGrid, /wd-tailwind-grid-system/);

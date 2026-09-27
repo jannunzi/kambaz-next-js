@@ -1,7 +1,7 @@
 import "@/app/labs/lab2/index.css";
 import BackgroundColors from "@/app/labs/lab2/intermediates/2-1-8-BackgroundColors";
+import BoxModel from "@/app/labs/lab2/BoxModel";
 import Borders from "@/app/labs/lab2/intermediates/2-1-9-Borders";
-import BoxModel from "@/app/labs/lab2/intermediates/2-1-10c-BoxModel";
 import ClassSelectors from "@/app/labs/lab2/intermediates/2-1-4-ClassSelectors";
 import Corners from "@/app/labs/lab2/intermediates/2-1-11-Corners";
 import CssImport from "@/app/labs/lab2/intermediates/2-1-2-CssImport";
@@ -12,6 +12,7 @@ import FlexGrow from "@/app/labs/lab2/intermediates/2-1-19b-FlexGrow";
 import FlexRow from "@/app/labs/lab2/intermediates/2-1-19a-FlexRow";
 import FlexWidth from "@/app/labs/lab2/intermediates/2-1-19c-FlexWidth";
 import ForegroundColors from "@/app/labs/lab2/intermediates/2-1-7-ForegroundColors";
+import Float from "@/app/labs/lab2/Float";
 import GridLayout from "@/app/labs/lab2/intermediates/2-1-18-GridLayout";
 import IdSelectors from "@/app/labs/lab2/intermediates/2-1-3-IdSelectors";
 import Margins from "@/app/labs/lab2/intermediates/2-1-10b-Margins";
@@ -123,9 +124,11 @@ export function CssMarginsEmbed() {
 
 export function CssBoxModelEmbed() {
   return (
-    <CssDemo label="BoxModel.tsx">
-      <BoxModel />
-    </CssDemo>
+    <LectureDemoFrame label="BoxModel.tsx" url="/labs/lab2">
+      <div className="font-sans text-[16px] [&_h2]:mt-0 [&_h3]:mt-2">
+        <BoxModel />
+      </div>
+    </LectureDemoFrame>
   );
 }
 
@@ -198,29 +201,7 @@ export function CssZindexEmbed() {
 export function CssFloatEmbed() {
   return (
     <CssDemo label="Float.tsx">
-      <div id="wd-float-divs">
-        <h2>Float</h2>
-        <div>
-          <div className="wd-float-left wd-dimension-portrait wd-bg-color-yellow">
-            Yellow
-          </div>
-          <div className="wd-float-left wd-dimension-portrait wd-bg-color-blue wd-fg-color-white">
-            Blue
-          </div>
-          <div className="wd-float-left wd-dimension-portrait wd-bg-color-red">
-            Red
-          </div>
-          <div className="wd-float-right wd-dimension-square wd-bg-color-gray">
-            Wrap
-          </div>
-          <p>
-            Floated boxes leave the normal stack so this paragraph can sit
-            beside them. Lab 2 uses the same <code>wd-float-left</code> and{" "}
-            <code>wd-float-right</code> classes.
-          </p>
-          <div className="wd-float-done" />
-        </div>
-      </div>
+      <Float />
     </CssDemo>
   );
 }

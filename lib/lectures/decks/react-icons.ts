@@ -63,6 +63,15 @@ export default function ReactIconsSampler() {
 }`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/ReactIconsSampler.tsx",
+  },
+  {
+    id: "sampler-live",
+    title: "Live ReactIconsSampler",
+    kind: "demo",
+    bullets: [
+      "Six icons, one row, sized by the parent `text-3xl`",
+      "Import the sampler into Lab 2 so it stays on the growing page",
+    ],
     embed: "react-icons",
   },
   {
@@ -71,7 +80,7 @@ export default function ReactIconsSampler() {
     kind: "content",
     bullets: [
       "Icon components accept ordinary element props",
-      "`className=\"text-4xl text-blue-600\"` — Tailwind utilities work here too",
+      "`className=\"text-4xl text-red-600\"` — Tailwind utilities work here too",
       "`size={32}` is pixels if you prefer a number",
       "`text-3xl` on the parent already scaled the sampler row",
     ],

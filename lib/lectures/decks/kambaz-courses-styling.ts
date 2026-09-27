@@ -140,34 +140,67 @@ export default function GreenCheckmark() {
   },
   {
     id: "module-lesson",
-    title: "Gray headers, green lessons",
+    title: "Module.tsx",
     kind: "content",
     bullets: [
-      "`Module`: gray `bg-neutral-200` title bar, checkmark on the right",
-      "`Lesson`: `border-l-[3px] border-green-600` — same accent Assignments reuse",
+      "Gray `bg-neutral-200` title bar, checkmark on the right",
+      "Import `GreenCheckmark` — it is new in Chapter 2, so the JSX alone will not compile",
     ],
-    code: `<li className="wd-module mb-5 overflow-hidden border border-neutral-400 p-0 text-xl">
-  <div className="wd-title flex items-center justify-between bg-neutral-200 p-3 ps-2">
-    <span>{title}</span>
-    <GreenCheckmark />
-  </div>
-  <ul className="wd-lessons m-0 list-none p-0">{children}</ul>
-</li>`,
+    code: `import type { ReactNode } from "react";
+import GreenCheckmark from "./GreenCheckmark";
+
+export default function Module({
+  title,
+  children,
+}: {
+  title: string;
+  children?: ReactNode;
+}) {
+  return (
+    <li className="wd-module mb-5 overflow-hidden border border-neutral-400 p-0 text-xl">
+      <div className="wd-title flex items-center justify-between bg-neutral-200 p-3 ps-2">
+        <span>{title}</span>
+        <GreenCheckmark />
+      </div>
+      <ul className="wd-lessons m-0 list-none p-0">{children}</ul>
+    </li>
+  );
+}`,
     codeLanguage: "tsx",
     codeFile: "app/(kambaz)/courses/[cid]/modules/Module.tsx",
-    codeBlocks: [
-      {
-        file: "app/(kambaz)/courses/[cid]/modules/Lesson.tsx",
-        language: "tsx",
-        code: `<li className="wd-lesson border-l-[3px] border-green-600 p-3 pl-1">
-  <div className="flex items-center justify-between">
-    <span className="wd-title">{title}</span>
-    <GreenCheckmark />
-  </div>
-  <ul className="wd-content mt-2 list-disc pl-6">{children}</ul>
-</li>`,
-      },
+    codeAddedLines: [[1, 10]],
+  },
+  {
+    id: "lesson",
+    title: "Lesson.tsx",
+    kind: "content",
+    bullets: [
+      "Same imports as `Module` — `GreenCheckmark` is new in Chapter 2",
+      "`border-l-[3px] border-green-600` is the accent Assignments reuse",
     ],
+    code: `import type { ReactNode } from "react";
+import GreenCheckmark from "./GreenCheckmark";
+
+export default function Lesson({
+  title,
+  children,
+}: {
+  title: string;
+  children?: ReactNode;
+}) {
+  return (
+    <li className="wd-lesson border-l-[3px] border-green-600 p-3 pl-1">
+      <div className="flex items-center justify-between">
+        <span className="wd-title">{title}</span>
+        <GreenCheckmark />
+      </div>
+      <ul className="wd-content mt-2 list-disc pl-6">{children}</ul>
+    </li>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/(kambaz)/courses/[cid]/modules/Lesson.tsx",
+    codeAddedLines: [[1, 10]],
   },
   {
     id: "toolbar",
@@ -178,15 +211,35 @@ export default function GreenCheckmark() {
       "`border-neutral-300` on secondary buttons — bare `border` looks near-black",
     ],
     code: `<div className="mb-3 flex flex-wrap items-center gap-2">
-  <button type="button" className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm">
+  <button
+    type="button"
+    className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
+  >
     Collapse All
   </button>
-  <button type="button" className="rounded border border-red-600 bg-red-600 px-3 py-1.5 text-sm font-medium text-white">
+  <button
+    type="button"
+    className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
+  >
+    View Progress
+  </button>
+  <select
+    defaultValue="publish-all"
+    className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
+  >
+    <option value="publish-all">Publish All</option>
+  </select>
+  <button
+    type="button"
+    className="rounded border border-red-600 bg-red-600 px-3 py-1.5 text-sm font-medium text-white"
+  >
     + Module
   </button>
-</div>`,
+</div>
+{/* ...Module / Lesson tree... */}`,
     codeLanguage: "tsx",
     codeFile: "app/(kambaz)/courses/[cid]/modules/page.tsx",
+    codeAddedLines: [[8, 19], 27],
   },
   {
     id: "modules-demo",
@@ -206,19 +259,41 @@ export default function GreenCheckmark() {
       "Unpublish / Publish share a two-column `flex` row",
       "The rest are full-width bordered buttons with React Icons",
     ],
-    code: `<div id="wd-course-status">
-  <h2 className="mb-3 text-xl font-semibold">Course Status</h2>
-  <div className="flex gap-1">
-    <button type="button" className="inline-flex min-w-0 flex-1 items-center justify-center rounded border border-neutral-300 bg-white px-1.5 py-1.5 text-xs">
-      <MdDoNotDisturbAlt className="me-1 shrink-0 text-base" /> Unpublish
-    </button>
-    <button type="button" className="inline-flex min-w-0 flex-1 items-center justify-center rounded bg-green-600 px-1.5 py-1.5 text-xs text-white">
-      <FaCheckCircle className="me-1 shrink-0 text-base" /> Publish
-    </button>
-  </div>
-</div>`,
+    code: `import { FaCheckCircle } from "react-icons/fa";
+import { MdDoNotDisturbAlt } from "react-icons/md";
+
+export default function CourseStatus() {
+  return (
+    <div id="wd-course-status">
+      <h2 className="mb-3 text-xl font-semibold">Course Status</h2>
+      <div className="flex gap-1">
+        <button
+          type="button"
+          className="inline-flex min-w-0 flex-1 items-center justify-center rounded border border-neutral-300 bg-white px-1.5 py-1.5 text-xs"
+        >
+          <MdDoNotDisturbAlt className="me-1 shrink-0 text-base" /> Unpublish
+        </button>
+        <button
+          type="button"
+          className="inline-flex min-w-0 flex-1 items-center justify-center rounded bg-green-600 px-1.5 py-1.5 text-xs text-white hover:bg-green-700"
+        >
+          <FaCheckCircle className="me-1 shrink-0 text-base" /> Publish
+        </button>
+      </div>
+      <button
+        type="button"
+        className="mb-1 flex w-full items-center rounded border border-neutral-300 bg-white px-3 py-2 text-left text-sm"
+      >
+        {/* icon */} Import Existing Content
+      </button>
+      {/* ...repeat full-width bordered buttons for Import from Commons,
+             Choose Home Page, and the rest... */}
+    </div>
+  );
+}`,
     codeLanguage: "tsx",
     codeFile: "app/(kambaz)/courses/[cid]/home/Status.tsx",
+    codeAddedLines: [[1, 2], 17, [22, 29]],
   },
   {
     id: "flex-layouts",

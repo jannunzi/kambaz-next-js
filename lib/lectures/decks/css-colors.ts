@@ -22,6 +22,31 @@ export const CSS_COLORS_SLIDES: LectureSlide[] = [
     ],
   },
   {
+    id: "wire",
+    title: "Import each demo into page.tsx",
+    kind: "content",
+    bullets: [
+      "`import \"./index.css\"` once, then one component import and one tag per exercise",
+      "Repeat the same two lines for BackgroundColors, Borders, and every later file",
+      "Edit the Lab 2 page. Do not replace the style, id, and class sections already there",
+    ],
+    code: `import "./index.css";
+import ForegroundColors from "./ForegroundColors";
+
+export default function Lab2() {
+  return (
+    <div id="wd-lab2">
+      <h2>Lab 2 - Cascading Style Sheets</h2>
+      {/* ...earlier exercises... */}
+      <ForegroundColors />
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/page.tsx",
+    codeAddedLines: [2, 9],
+  },
+  {
     id: "notations",
     title: "Named, hex, and rgb colors",
     kind: "content",
