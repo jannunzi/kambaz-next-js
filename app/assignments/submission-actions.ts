@@ -17,7 +17,10 @@ import {
   toSubmissionView,
   type AssignmentSubmissionView,
 } from "@/lib/assignments/submissions-store";
-import { preparePublicAssignmentCheck } from "@/lib/assignments/submission-form";
+import {
+  missingA2GithubMessage,
+  preparePublicAssignmentCheck,
+} from "@/lib/assignments/submission-form";
 import { ASSIGNMENT_STUDENT_COPY } from "@/lib/assignments/student-copy";
 import { isAssignmentId } from "@/lib/assignments/catalog";
 import type { AssignmentId } from "@/lib/assignments/types";
@@ -253,6 +256,10 @@ export async function saveAssignmentSubmission(input: {
       message: ASSIGNMENT_STUDENT_COPY.vercelRequired,
     };
   }
+  const githubMissing = missingA2GithubMessage(input.assignmentId, githubUrl);
+  if (githubMissing) {
+    return { ok: false, code: "invalid", message: githubMissing };
+  }
 
   const persist = authz.canPersist;
 
@@ -326,6 +333,10 @@ export async function runAssignmentChecks(input: {
       code: "invalid",
       message: ASSIGNMENT_STUDENT_COPY.vercelRequired,
     };
+  }
+  const githubMissing = missingA2GithubMessage(input.assignmentId, githubUrl);
+  if (githubMissing) {
+    return { ok: false, code: "invalid", message: githubMissing };
   }
 
   const checkResults = await runChecksForAssignment({

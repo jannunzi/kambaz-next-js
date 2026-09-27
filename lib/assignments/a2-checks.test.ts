@@ -296,12 +296,37 @@ describe("runA2Checks", () => {
     const graded = await grade({
       githubUrl: TREE,
       vercelUrl: MAIN_ORIGIN,
-      html: bookHtml,
+      html(url) {
+        if (url.includes("/labs") && !url.includes("/labs/lab2")) {
+          return PASS_LABS.replace(`${ORIGIN}/labs/lab2`, "/labs/lab2");
+        }
+        return bookHtml(url);
+      },
     });
     assert.equal(graded.by.get("a2-delivery-vercel")?.passed, false);
-    assert.match(graded.by.get("a2-delivery-vercel")?.message ?? "", /-git-a2-/);
+    assert.match(graded.by.get("a2-delivery-vercel")?.message ?? "", /-git-a2/);
+    assert.match(graded.by.get("a2-delivery-vercel")?.message ?? "", /override/i);
     assert.equal(graded.by.get("a2-lab-page")?.passed, true);
     assert.equal(graded.points, 35);
+  });
+
+  it("accepts a truncated -git-a2 Vercel label and rejects a non-Vercel host", async () => {
+    const label = `${"n".repeat(63 - "-git-a2".length)}-git-a2`;
+    const truncated = await grade({
+      githubUrl: TREE,
+      vercelUrl: `https://${label}.vercel.app`,
+      html: bookHtml,
+    });
+    assert.equal(truncated.by.get("a2-delivery-vercel")?.passed, true);
+
+    const otherHost = await grade({
+      githubUrl: TREE,
+      vercelUrl: "https://webdev-client-git-a2-jane.example.com",
+      html: bookHtml,
+    });
+    assert.equal(otherHost.by.get("a2-delivery-vercel")?.passed, false);
+    assert.match(otherHost.by.get("a2-delivery-vercel")?.message ?? "", /\.vercel\.app/);
+    assert.match(otherHost.by.get("a2-delivery-vercel")?.message ?? "", /override/i);
   });
 
   it("scores a blank site 0 on the auto rows", async () => {
@@ -318,7 +343,7 @@ describe("runA2Checks", () => {
     }
   });
 
-  it("scores an A1-only site near 0 on the A2 auto rows", async () => {
+  it("scores an A1-only site 6 when Labs already links Lab 2", async () => {
     const graded = await grade({
       githubUrl: REPO,
       vercelUrl: MAIN_ORIGIN,
@@ -335,9 +360,13 @@ describe("runA2Checks", () => {
         if (url.includes("/labs")) {
           return `
             <div id="wd-labs">
+              <h1>Labs</h1>
               <h2>Jane Doe</h2>
-              <a id="wd-home-link" href="/labs">Labs</a>
-              <a href="/labs/lab1">Lab 1</a>
+              <ul>
+                <li><a href="/labs/lab1">Lab 1: HTML Examples</a></li>
+                <li><a href="/labs/lab2">Lab 2: CSS Basics</a></li>
+                <li><a href="/labs/lab3">Lab 3: JavaScript Fundamentals</a></li>
+              </ul>
               <a id="wd-kambaz-link" href="/">Kambaz</a>
               <a id="wd-github" href="${REPO}">GitHub</a>
               <div id="wd-lab1"></div>
@@ -352,13 +381,59 @@ describe("runA2Checks", () => {
       },
     });
     assert.equal(graded.by.get("a2-delivery-name-github")?.passed, true);
+    assert.equal(graded.by.get("a2-delivery-labs-nav")?.passed, true);
     assert.equal(graded.by.get("a2-delivery-vercel")?.passed, false);
     assert.equal(graded.by.get("a2-delivery-branch")?.passed, false);
-    assert.equal(graded.by.get("a2-delivery-labs-nav")?.passed, false);
     assert.equal(graded.by.get("a2-lab-page")?.passed, false);
     assert.equal(graded.by.get("a2-lab-tailwind")?.passed, false);
     assert.equal(graded.by.get("a2-lab-icons")?.passed, false);
-    assert.equal(graded.points, 3);
+    assert.equal(graded.points, 6);
+  });
+
+  it("ignores a Lab 2 link that points at another site", async () => {
+    const graded = await grade({
+      githubUrl: TREE,
+      html(url) {
+        if (url.includes("/labs/lab2")) return bookHtml(url);
+        if (url.includes("/labs")) {
+          return PASS_LABS.replace(
+            `${ORIGIN}/labs/lab2`,
+            "https://kambaz.dev/labs/lab2",
+          ).replace('href="/labs/lab1/"', 'href="https://kambaz.dev/labs/lab1"');
+        }
+        return bookHtml(url);
+      },
+    });
+    assert.equal(graded.by.get("a2-delivery-labs-nav")?.passed, false);
+    assert.equal(graded.by.get("a2-lab-page")?.passed, false);
+  });
+
+  it("asks to retry when GitHub returns 403 or 429", async () => {
+    for (const status of [403, 429]) {
+      const graded = await grade({
+        githubUrl: TREE,
+        probeStatus: status,
+        html: bookHtml,
+      });
+      assert.equal(
+        graded.by.get("a2-delivery-branch")?.message,
+        "GitHub didn't respond, try again",
+      );
+      assert.equal(graded.by.get("a2-delivery-name-github")?.passed, true);
+    }
+  });
+
+  it("suggests …/tree/a2 for http and schemeless GitHub URLs", async () => {
+    for (const githubUrl of [
+      "http://github.com/jane-doe/webdev-client/tree/a2",
+      "github.com/jane-doe/webdev-client/tree/a2",
+    ]) {
+      const graded = await grade({ githubUrl, html: bookHtml });
+      const message = graded.by.get("a2-delivery-branch")?.message ?? "";
+      assert.match(message, /tree\/a2/);
+      assert.notEqual(message, ASSIGNMENT_STUDENT_COPY.githubFormat);
+      assert.equal(graded.by.get("a2-delivery-branch")?.passed, false);
+    }
   });
 
   it("does not pass Tailwind from prose, a longer utility, or a 404 page", async () => {

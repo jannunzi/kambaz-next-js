@@ -9,10 +9,13 @@ import {
   isCourseSiteUrl,
   isVercelAuthWallUrl,
   labsUrlFromDeploy,
+  a2GithubSchemeMessage,
+  isVercelBranchPreviewHost,
   looksLikeDeployUrl,
   parseGithubRepoUrl,
   parseHttpsUrl,
 } from "./urls";
+import { ASSIGNMENT_STUDENT_COPY } from "./student-copy";
 
 describe("parseHttpsUrl", () => {
   it("accepts https and rejects http or garbage", () => {
@@ -225,6 +228,51 @@ describe("criterion verify URLs", () => {
     assert.equal(criterionVerifyUrl("not a url", "a1-lab-forms"), null);
     assert.equal(
       criterionVerifyUrl("http://jane-a1.vercel.app", "a1-lab-forms"),
+      null,
+    );
+  });
+});
+
+describe("A2 Vercel branch host", () => {
+  it("matches -git-a2 on the first label of a .vercel.app host", () => {
+    assert.equal(
+      isVercelBranchPreviewHost("webdev-client-git-a2-jane.vercel.app", "a2"),
+      true,
+    );
+    assert.equal(isVercelBranchPreviewHost("my-app-git-a2.vercel.app", "a2"), true);
+    const truncated = `${"n".repeat(63 - "-git-a2".length)}-git-a2`;
+    assert.equal(truncated.length, 63);
+    assert.equal(isVercelBranchPreviewHost(`${truncated}.vercel.app`, "a2"), true);
+    assert.equal(isVercelBranchPreviewHost("jane-a1.vercel.app", "a2"), false);
+    assert.equal(isVercelBranchPreviewHost("foo-git-a20.vercel.app", "a2"), false);
+    assert.equal(
+      isVercelBranchPreviewHost("webdev-client-git-a2-jane.example.com", "a2"),
+      false,
+    );
+    assert.equal(
+      isVercelBranchPreviewHost("preview.my-app-git-a2.vercel.app", "a2"),
+      false,
+    );
+  });
+});
+
+describe("A2 GitHub scheme messages", () => {
+  it("suggests …/tree/a2 for http and schemeless URLs only", () => {
+    assert.equal(
+      a2GithubSchemeMessage("http://github.com/jane-doe/webdev-client/tree/a2"),
+      ASSIGNMENT_STUDENT_COPY.a2GithubBranchUrl,
+    );
+    assert.match(ASSIGNMENT_STUDENT_COPY.a2GithubBranchUrl, /tree\/a2/);
+    assert.notEqual(
+      ASSIGNMENT_STUDENT_COPY.a2GithubBranchUrl,
+      ASSIGNMENT_STUDENT_COPY.githubFormat,
+    );
+    assert.equal(
+      a2GithubSchemeMessage("github.com/jane-doe/webdev-client/tree/a2"),
+      ASSIGNMENT_STUDENT_COPY.a2GithubBranchUrl,
+    );
+    assert.equal(
+      a2GithubSchemeMessage("https://github.com/jane-doe/webdev-client/tree/a2"),
       null,
     );
   });

@@ -13,7 +13,9 @@ import { htmlHasAllIds, htmlHasAnchorPath, htmlHasAnyId, htmlHasId } from "./htm
 import { hasUsableNameQuery, htmlHasStudentName, type NameQuery } from "./names";
 import { ASSIGNMENT_STUDENT_COPY } from "./student-copy";
 import {
+  a2GithubSchemeMessage,
   githubUrlBranch,
+  isVercelBranchPreviewHost,
   looksLikeDeployUrl,
   parseGithubRepoUrl,
 } from "./urls";
@@ -31,12 +33,13 @@ function check(
 function labsNavPassed(
   html: string,
   rule: AssignmentChecker["delivery"]["labsNav"],
+  siteHost?: string,
 ): boolean {
   const allOk = !rule.allIds?.length || htmlHasAllIds(html, rule.allIds).ok;
   const anyOk = !rule.anyIds?.length || htmlHasAnyId(html, rule.anyIds);
   const hrefsOk =
     !rule.allHrefs?.length ||
-    rule.allHrefs.every((path) => htmlHasAnchorPath(html, path));
+    rule.allHrefs.every((path) => htmlHasAnchorPath(html, path, siteHost));
   return allOk && anyOk && hrefsOk;
 }
 
@@ -86,11 +89,15 @@ export async function runChecker(
     const branch = delivery.branch;
     const parsed = githubRaw ? parseGithubRepoUrl(githubRaw) : null;
     const named = githubRaw ? githubUrlBranch(githubRaw) : null;
+    const schemeMessage = githubRaw ? a2GithubSchemeMessage(githubRaw) : null;
     let passed = false;
     let message = branch.missingMessage;
     if (!githubRaw) {
       passed = false;
       message = branch.missingMessage;
+    } else if (schemeMessage) {
+      passed = false;
+      message = schemeMessage;
     } else if (!parsed || !parsed.ok) {
       passed = false;
       message = parsed && !parsed.ok ? parsed.message : branch.missingMessage;
@@ -106,6 +113,9 @@ export async function runChecker(
       if (probe.ok && probe.status === 200) {
         passed = true;
         message = branch.passMessage;
+      } else if (probe.status === 403 || probe.status === 429) {
+        passed = false;
+        message = ASSIGNMENT_STUDENT_COPY.githubRetry;
       } else if (!probe.ok && probe.status === 404) {
         passed = false;
         message = branch.notFoundMessage;
@@ -135,10 +145,11 @@ export async function runChecker(
     ),
   );
 
+  const siteHost = vercel.ok ? new URL(vercel.href).hostname : "";
   if (
     vercel.ok &&
-    delivery.previewHostIncludes &&
-    !new URL(vercel.href).hostname.toLowerCase().includes(delivery.previewHostIncludes.toLowerCase())
+    delivery.previewBranch &&
+    !isVercelBranchPreviewHost(siteHost, delivery.previewBranch)
   ) {
     results.push(
       check(
@@ -146,7 +157,7 @@ export async function runChecker(
         "Vercel branch deployment",
         false,
         delivery.previewHostMessage ||
-          `Submit the branch preview URL (hostname contains ${delivery.previewHostIncludes}).`,
+          `Submit the ${delivery.previewBranch} branch preview URL on .vercel.app. Staff can override this at grading.`,
         { criterionId: delivery.vercelCriterionId, groupId: "delivery" },
       ),
     );
@@ -195,7 +206,7 @@ export async function runChecker(
     return results;
   }
 
-  const labsNav = labsNavPassed(crawled.labsHtml, delivery.labsNav);
+  const labsNav = labsNavPassed(crawled.labsHtml, delivery.labsNav, siteHost);
   results.push(
     check(
       delivery.labsNav.criterionId,
@@ -263,7 +274,7 @@ export async function runChecker(
       const scope = spec.htmlScope ?? (spec.groupId === "lab" ? "labs" : "all");
       html = scope === "labs" ? crawled.labsHtml || crawled.allHtml : crawled.allHtml;
     }
-    const judged = evaluateRubricSpec(spec, html);
+    const judged = evaluateRubricSpec(spec, html, { siteHost });
     results.push(
       check(spec.criterionId, spec.label, judged.passed, judged.message, {
         criterionId: spec.criterionId,

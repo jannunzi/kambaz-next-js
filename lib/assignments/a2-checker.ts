@@ -192,9 +192,9 @@ export const A2_CHECKER: AssignmentChecker = {
   })),
   delivery: {
     vercelCriterionId: "a2-delivery-vercel",
-    previewHostIncludes: "-git-a2-",
+    previewBranch: "a2",
     previewHostMessage:
-      "Submit the a2 branch preview URL. Its hostname contains -git-a2- (for example https://your-app-git-a2-yourname.vercel.app), not the main deployment.",
+      "Submit the a2 branch preview on Vercel. The first hostname label must include -git-a2- or end in -git-a2 (Vercel cuts labels after 63 characters), and the host must end in .vercel.app. Staff can override this at grading.",
     labsNav: {
       criterionId: "a2-delivery-labs-nav",
       groupId: "delivery",

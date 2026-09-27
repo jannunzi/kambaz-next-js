@@ -52,6 +52,11 @@ export const ASSIGNMENT_STUDENT_COPY = {
   vercelRequired: "Enter a Vercel deployment URL so checks can open your site.",
   githubFormat:
     "Enter a public GitHub repository URL such as https://github.com/yourname/webdev-client.",
+  a2GithubRequired:
+    "Enter the GitHub URL for your a2 branch, such as https://github.com/yourname/webdev-client/tree/a2.",
+  a2GithubBranchUrl:
+    "Enter an https GitHub URL for your a2 branch, such as https://github.com/yourname/webdev-client/tree/a2.",
+  githubRetry: "GitHub didn't respond, try again",
   githubOfficial:
     "Submit your own public GitHub repository, not the course starter repo.",
   githubPrivate:

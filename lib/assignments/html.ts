@@ -53,13 +53,44 @@ export function anchorPathname(href: string): string | null {
   }
 }
 
-/** True when an <a href> points at path (relative or absolute, optional trailing slash). */
-export function htmlHasAnchorPath(html: string, path: string): boolean {
+/**
+ * Host of an absolute or protocol-relative href. Relative hrefs have no host.
+ */
+export function anchorHrefHost(href: string): string | null {
+  const trimmed = href.trim();
+  if (!trimmed) return null;
+  try {
+    if (trimmed.startsWith("//")) {
+      return new URL(`https:${trimmed}`).hostname.toLowerCase().replace(/\.$/, "");
+    }
+    if (/^[a-z][a-z0-9+.-]*:/i.test(trimmed)) {
+      return new URL(trimmed).hostname.toLowerCase().replace(/\.$/, "");
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+/**
+ * True when an <a href> points at path (relative or absolute, optional trailing slash).
+ * When siteHost is set, only relative hrefs and absolute hrefs on that host count.
+ */
+export function htmlHasAnchorPath(
+  html: string,
+  path: string,
+  siteHost?: string,
+): boolean {
   const target = anchorPathname(path);
   if (!target) return false;
+  const expected = siteHost?.trim().toLowerCase().replace(/\.$/, "") ?? "";
   const re = /<a\b[^>]*\bhref\s*=\s*["']([^"']+)["'][^>]*>/gi;
   let match: RegExpExecArray | null;
   while ((match = re.exec(html))) {
+    if (expected) {
+      const host = anchorHrefHost(match[1]);
+      if (host && host !== expected) continue;
+    }
     if (anchorPathname(match[1]) === target) return true;
   }
   return false;

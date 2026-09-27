@@ -187,6 +187,33 @@ export function parseGithubRepoUrl(
 }
 
 /**
+ * Vercel branch previews put `-git-<branch>-` in the first DNS label.
+ * Labels longer than 63 characters are truncated, so the label may end at
+ * `-git-<branch>` with no trailing hyphen.
+ */
+export function isVercelBranchPreviewHost(hostname: string, branch: string): boolean {
+  const host = hostnameOf(hostname);
+  if (!host.endsWith(".vercel.app")) return false;
+  const label = host.split(".")[0] ?? "";
+  if (!label || !branch) return false;
+  const safe = branch.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`-git-${safe}(?:-|$)`).test(label);
+}
+
+/**
+ * A2-only hint for http:// and schemeless GitHub URLs. Null for other inputs
+ * so A1 keeps ASSIGNMENT_STUDENT_COPY.githubFormat.
+ */
+export function a2GithubSchemeMessage(raw: string): string | null {
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  const lower = trimmed.toLowerCase();
+  const schemeless = !/^[a-z][a-z0-9+.-]*:/i.test(trimmed);
+  if (!lower.startsWith("http://") && !schemeless) return null;
+  return ASSIGNMENT_STUDENT_COPY.a2GithubBranchUrl;
+}
+
+/**
  * Branch name from a GitHub `/tree/<branch>` or `/commits/<branch>` URL.
  * A repository-root URL has no branch.
  */

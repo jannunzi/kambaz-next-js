@@ -119,6 +119,7 @@ export const A1_RUBRIC_AUTO_SPECS: A1RubricAutoSpec[] = [
 export function evaluateRubricSpec(
   spec: A1RubricAutoSpec,
   html: string,
+  options?: { siteHost?: string },
 ): { passed: boolean; message: string } {
   if (spec.kind === "manual") {
     return { passed: false, message: spec.failMessage };
@@ -144,7 +145,9 @@ export function evaluateRubricSpec(
   }
   if (spec.requireAnchorPaths?.length) {
     for (const path of spec.requireAnchorPaths) {
-      if (!htmlHasAnchorPath(html, path)) missing.push(`a link to ${path}`);
+      if (!htmlHasAnchorPath(html, path, options?.siteHost)) {
+        missing.push(`a link to ${path}`);
+      }
     }
   }
   if (spec.requireClassTokens?.length || spec.requireClassTokenPatterns?.length) {

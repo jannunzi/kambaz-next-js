@@ -127,6 +127,20 @@ describe("anchor paths and class tokens", () => {
     assert.equal(htmlHasAnchorPath(html, "/labs/lab2"), true);
     assert.equal(anchorPathname("https://app.vercel.app/labs/lab1/"), "/labs/lab1");
     assert.equal(htmlHasAnchorPath(html, "/labs/lab3"), false);
+    const offsite = `<a href="https://kambaz.dev/labs/lab2">Lab 2</a>`;
+    assert.equal(htmlHasAnchorPath(offsite, "/labs/lab2", "student.vercel.app"), false);
+    assert.equal(
+      htmlHasAnchorPath(`<a href="/labs/lab2">Lab 2</a>`, "/labs/lab2", "student.vercel.app"),
+      true,
+    );
+    assert.equal(
+      htmlHasAnchorPath(
+        `<a href="https://student.vercel.app/labs/lab2/">Lab 2</a>`,
+        "/labs/lab2",
+        "student.vercel.app",
+      ),
+      true,
+    );
   });
 
   it("reads whole class tokens and ignores prose and prefixes", () => {

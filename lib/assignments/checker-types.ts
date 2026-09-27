@@ -43,10 +43,10 @@ export type AssignmentChecker = {
   delivery: {
     vercelCriterionId: string;
     /**
-     * When set, the deployment hostname must contain this substring
-     * (Vercel branch previews look like `…-git-a2-…`).
+     * When set, the first DNS label must match `-git-<branch>` (Vercel
+     * truncates labels at 63 characters) and the host must end in `.vercel.app`.
      */
-    previewHostIncludes?: string;
+    previewBranch?: string;
     previewHostMessage?: string;
     labsNav: CheckerLabsNav;
     github: {
