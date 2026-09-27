@@ -30,7 +30,7 @@ import {
 } from "./resolve.ts";
 import { semesterCodeFromTermLabel, semesterRank } from "./semester.ts";
 import type { LectureClipMap } from "./types.ts";
-import { HTML_1_3_POSTERS, brandedPosterUrl } from "./thumbs.ts";
+import { CSS_2_1_POSTERS, HTML_1_3_POSTERS, brandedPosterUrl } from "./thumbs.ts";
 import { parseLectureClipMap } from "./validate.ts";
 import {
   youtubeEmbedUrl,
@@ -202,17 +202,16 @@ const HTML_PILOT_SECTION_IDS = [
 ];
 
 describe("HTML §1.3 lecture clip map", () => {
-  it("keeps Yolanda's 15 sections and leaves CSS §2.1 unmapped", () => {
+  it("keeps Yolanda's 15 HTML §1.3 sections", () => {
     assert.match(lectureClipMap.description ?? "", /HTML §1\.3/);
     assert.doesNotMatch(lectureClipMap.description ?? "", /PLACEHOLDER/);
-    assert.deepEqual(listBookSectionIds(), [...HTML_PILOT_SECTION_IDS].sort((a, b) =>
+    const htmlIds = listBookSectionIds().filter((id) => id.startsWith("sec-1-"));
+    assert.deepEqual(htmlIds, [...HTML_PILOT_SECTION_IDS].sort((a, b) =>
       a.localeCompare(b, undefined, { numeric: true }),
     ));
-    assert.equal(listBookSectionIds().length, 15);
+    assert.equal(htmlIds.length, 15);
     assert.equal(defaultBookSectionId(), "sec-1-3");
     assert.equal(bookSectionHasClip("sec-1-3-1"), true);
-    assert.equal(bookSectionHasClip("sec-2-1"), false);
-    assert.equal(bookSectionHasClip("sec-2-1-10"), false);
     assert.equal(bookSectionHasClip("sec-1-3-4"), false);
     assert.equal(bookSectionHasClip("sec-1-3-6-2"), false);
 
@@ -227,14 +226,6 @@ describe("HTML §1.3 lecture clip map", () => {
     }
     assert.equal(bookSectionTitle("sec-1-3-1"), "Headings, div, and span");
     assert.equal(bookPathForSection("sec-1-3-1"), "/book/ch1#sec-1-3-1");
-    assert.equal(
-      resolveLectureClip(lectureClipMap, {
-        bookSectionId: "sec-2-1",
-        preferredCourse: "CS4550",
-        preferredSemester: "FA26",
-      }),
-      null,
-    );
   });
 
   it("resolves sec-1-3-1 to the SP26 CS4550 clip for a Fall 2026 student", () => {
@@ -289,7 +280,7 @@ describe("HTML §1.3 lecture clip map", () => {
     assert.equal(part.clip.fullLectureUrl, undefined);
     assert.equal(part.clip.playlistUrl, undefined);
 
-    for (const id of listBookSectionIds()) {
+    for (const id of HTML_PILOT_SECTION_IDS) {
       const resolved = resolveLectureClip(lectureClipMap, {
         bookSectionId: id,
         preferredCourse: "CS4550",
@@ -516,14 +507,14 @@ describe("videos query and course ids", () => {
 });
 
 describe("videos hub", () => {
-  it("groups mapped clips like the slides hub and leaves CSS out", () => {
+  it("groups mapped clips like the slides hub, HTML then CSS §2.1", () => {
     assert.equal(parentBookSectionId("sec-1-3-6-1"), "sec-1-3");
     assert.equal(parentBookSectionId("sec-1-3"), "sec-1-3");
     const chapters = listVideoHubChapters(lectureClipMap, {
       course: "CS4550",
       semester: "FA26",
     });
-    assert.equal(chapters.length, 1);
+    assert.equal(chapters.length, 2);
     assert.equal(chapters[0]?.chapter, 1);
     assert.equal(chapters[0]?.title, "Building Next.js User Interfaces with HTML");
     assert.equal(chapters[0]?.sections.length, 1);
@@ -555,9 +546,23 @@ describe("videos hub", () => {
         ?.posterUrl,
       "/videos/thumbs/html-1-3/01-html-overview.jpg",
     );
+    const css = chapters[1];
+    assert.equal(css?.chapter, 2);
+    assert.equal(css?.title, "Styling User Interfaces with CSS and Tailwind");
+    assert.equal(css?.sections.length, 1);
+    assert.equal(css?.sections[0]?.id, "sec-2-1");
+    assert.equal(css?.sections[0]?.title, "2.1 Styling React Components with CSS");
+    assert.equal(css?.sections[0]?.clips.length, 21);
+    const flex = css?.sections[0]?.clips.find((clip) => clip.id === "sec-2-1-19");
+    assert.equal(flex?.youtubeVideoId, "y0Y2ZHeu6us");
+    assert.equal(flex?.posterUrl, "/videos/thumbs/css-2-1/20-flexbox.jpg");
     assert.equal(
-      chapters.some((chapter) =>
-        chapter.sections.some((section) => section.id.startsWith("sec-2-1")),
+      flex?.fullLectureUrl,
+      "https://www.youtube.com/watch?v=wBh_OSjiRqY",
+    );
+    assert.equal(
+      css?.sections[0]?.clips.some(
+        (clip) => clip.id === "sec-2-1-21" || clip.id === "sec-2-2",
       ),
       false,
     );
@@ -630,12 +635,98 @@ describe("HTML §1.3 branded posters", () => {
     }
 
     for (const id of listBookSectionIds()) {
-      if (id in expected) continue;
+      if (id in expected || id in CSS_2_1_POSTERS) continue;
       assert.equal(brandedPosterUrl(id), null, `${id} stays on hqdefault`);
     }
     assert.equal(brandedPosterUrl("sec-1-3-7"), null);
     assert.equal(brandedPosterUrl("sec-1-3-8"), null);
-    assert.equal(brandedPosterUrl("sec-2-1"), null);
+  });
+});
+
+const CSS_2_1_SECTION_IDS = [
+  "sec-2-1",
+  "sec-2-1-1",
+  "sec-2-1-2",
+  "sec-2-1-3",
+  "sec-2-1-4",
+  "sec-2-1-5",
+  "sec-2-1-6",
+  "sec-2-1-7",
+  "sec-2-1-8",
+  "sec-2-1-9",
+  "sec-2-1-10",
+  "sec-2-1-11",
+  "sec-2-1-12",
+  "sec-2-1-13",
+  "sec-2-1-14",
+  "sec-2-1-15",
+  "sec-2-1-16",
+  "sec-2-1-17",
+  "sec-2-1-18",
+  "sec-2-1-19",
+  "sec-2-1-20",
+];
+
+describe("CSS §2.1 lecture clips", () => {
+  it("resolves sec-2-1-19 to the standalone Flex upload", () => {
+    const resolved = resolveLectureClip(lectureClipMap, {
+      bookSectionId: "sec-2-1-19",
+      preferredCourse: "CS4550",
+      preferredSemester: "FA26",
+    });
+    assert.ok(resolved);
+    assert.equal(resolved.tier, "prior-semester");
+    assert.equal(resolved.youtubeVideoId, "y0Y2ZHeu6us");
+    assert.equal(resolved.clip.startSec, 0);
+    assert.equal(resolved.clip.endSec, 993);
+    assert.equal(resolved.clip.parentLectureYoutubeId, "wBh_OSjiRqY");
+    assert.equal(resolved.clip.sourceCourse, "CS5610");
+    assert.equal(resolved.clip.semester, "FA25");
+    assert.equal(resolved.clip.confidence, 0.9);
+    assert.equal(
+      brandedPosterUrl("sec-2-1-19"),
+      "/videos/thumbs/css-2-1/20-flexbox.jpg",
+    );
+    assert.equal(
+      fullLectureHref(resolved),
+      "https://www.youtube.com/watch?v=wBh_OSjiRqY",
+    );
+  });
+
+  it("leaves Check Your Understanding, React Icons, Tailwind, Kambaz styling, and Delivery empty", () => {
+    for (const id of ["sec-2-1-21", "sec-2-2", "sec-2-3", "sec-2-4", "sec-2-5"]) {
+      assert.equal(bookSectionHasClip(id), false, id);
+      assert.equal(lectureClipMap.sections[id], undefined, id);
+      assert.equal(lectureClipMap.titles?.[id], undefined, id);
+    }
+  });
+
+  it("maps 21 standalone uploads and validates them through the clip parser", () => {
+    assert.match(
+      lectureClipMap.description ?? "",
+      /CSS §2\.1 is mapped to 21 standalone @WebDevTV uploads/,
+    );
+    assert.equal(CSS_2_1_SECTION_IDS.length, 21);
+    assert.equal(Object.keys(CSS_2_1_POSTERS).length, 21);
+    assert.deepEqual(Object.keys(CSS_2_1_POSTERS), CSS_2_1_SECTION_IDS);
+    for (const id of CSS_2_1_SECTION_IDS) {
+      const clips = lectureClipMap.sections[id] ?? [];
+      assert.equal(clips.length, 1, id);
+      const clip = clips[0]!;
+      assert.equal(clip.startSec, 0, id);
+      assert.ok(clip.endSec > 0, id);
+      assert.equal(clip.sourceCourse, "CS5610", id);
+      assert.match(clip.semester, /^(FA25|FA24|SP23)$/, id);
+      assert.equal(typeof clip.confidence, "number", id);
+      assert.ok(typeof clip.confidence === "number" && clip.confidence >= 0.7, id);
+      assert.match(clip.parentLectureYoutubeId ?? "", /^[A-Za-z0-9_-]{11}$/, id);
+      assert.match(clip.youtubeVideoId ?? "", /^[A-Za-z0-9_-]{11}$/, id);
+      const path = CSS_2_1_POSTERS[id];
+      assert.equal(brandedPosterUrl(id), path, id);
+      const disk = join(root, "public", path.slice(1));
+      assert.ok(existsSync(disk), `${path} is missing on disk`);
+      assert.deepEqual(jpegSize(disk), { width: 1280, height: 720 });
+    }
   });
 });
 

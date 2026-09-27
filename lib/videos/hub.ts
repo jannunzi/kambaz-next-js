@@ -80,7 +80,7 @@ function sectionGroupTitle(sectionId: string, map: LectureClipMap): string {
 
 /**
  * Mapped clips only, grouped like the slides hub: chapter, then book section.
- * Unmapped ids (including CSS §2.1) are left out.
+ * Unmapped ids are left out.
  */
 export function listVideoHubChapters(
   map: LectureClipMap,
