@@ -30,8 +30,19 @@ import {
   type AssignmentSubmissionView,
 } from "@/lib/assignments/submissions-store";
 import {
+  assignmentDueInstant,
+  describeReopenPanel,
+  reopenBadgeForStudent,
+  studentLockView,
+  type AssignmentReopenRecord,
+  type ReopenPanelState,
+  type StudentLockView,
+} from "@/lib/assignments/lock";
+import { listAssignmentReopens } from "@/lib/assignments/reopens";
+import {
   buildStaffStudentQueue,
   resolveStaffGraderView,
+  resolveStaffReopenFilter,
   studentVisibleSubmission,
   type StaffGradeFilter,
   type StaffStudentRow,
@@ -83,7 +94,12 @@ function loggedOutSubmitVisibility(assignmentId: string, configured: boolean) {
 
 type PageProps = {
   params: Promise<{ assignmentId: string }>;
-  searchParams: Promise<{ student?: string; section?: string; filter?: string }>;
+  searchParams: Promise<{
+    student?: string;
+    section?: string;
+    filter?: string;
+    reopen?: string;
+  }>;
 };
 
 export function generateStaticParams() {
@@ -111,6 +127,7 @@ export default async function AssignmentDetailPage({
     student: studentKey,
     section: sectionParam,
     filter: filterParam,
+    reopen: reopenParam,
   } = await searchParams;
   const assignment = getAssignment(assignmentId);
   if (!assignment) notFound();
@@ -130,6 +147,10 @@ export default async function AssignmentDetailPage({
   let selectedFilter: StaffGradeFilter = "all";
   let showStaffGrader = false;
   let staffDiagnostics: A1GateDiagnostics | null = null;
+  let lockView: StudentLockView = { kind: "open" };
+  let reopenPanel: ReopenPanelState | null = null;
+  let reopenFilter = resolveStaffReopenFilter(reopenParam);
+  let reopenRecords: AssignmentReopenRecord[] = [];
 
   if (isClerkConfigured()) {
     const { userId, sessionClaims } = await auth();
@@ -258,6 +279,15 @@ export default async function AssignmentDetailPage({
       } catch (error) {
         console.error("assignment submission load failed", error);
       }
+      const ownSubmission = initialSubmission;
+
+      if (mongoReady && supportsUrlSubmission(assignment.id)) {
+        try {
+          reopenRecords = await listAssignmentReopens(assignment.id);
+        } catch (error) {
+          console.error("assignment reopen load failed", error);
+        }
+      }
 
       try {
         if (showStaffGrader && mongoReady) {
@@ -265,10 +295,22 @@ export default async function AssignmentDetailPage({
             listCanvasRoster(),
             listSubmissionsForAssignment(assignment.id),
           ]);
+          const now = new Date();
           staffQueue = buildStaffStudentQueue(
             rosterList.status === "ok" ? rosterList.entries : [],
             submissions,
-          );
+          ).map((row) => ({
+            ...row,
+            reopen: reopenBadgeForStudent(
+              reopenRecords,
+              {
+                email: row.email,
+                clerkUserId: row.clerkUserId,
+                canvasUserId: row.canvasUserId,
+              },
+              now,
+            ),
+          }));
           const view = resolveStaffGraderView({
             queue: staffQueue,
             section: sectionParam,
@@ -277,6 +319,9 @@ export default async function AssignmentDetailPage({
           });
           selectedSection = view.section;
           selectedFilter = view.filter;
+          if (view.student && reopenFilter === "reopened" && !view.student.reopen) {
+            reopenFilter = undefined;
+          }
           if (studentKey) {
             selectedStudent = view.student ?? null;
             if (selectedStudent?.clerkUserId) {
@@ -296,13 +341,49 @@ export default async function AssignmentDetailPage({
                     email: selectedStudent.email,
                     name: selectedStudent.name,
                     staffGrade: selectedStudent.staffGrade,
+                    regradeResubmission: selectedStudent.regradeResubmission,
+                    previousStaffGrade: selectedStudent.previousStaffGrade,
                   }
                 : null;
+            }
+            if (selectedStudent) {
+              reopenPanel = describeReopenPanel({
+                records: reopenRecords,
+                student: {
+                  email: selectedStudent.email,
+                  clerkUserId: selectedStudent.clerkUserId,
+                  canvasUserId: selectedStudent.canvasUserId,
+                },
+                now,
+              });
             }
           }
         }
       } catch (error) {
         console.error("assignment staff queue load failed", error);
+      }
+
+      if (canSubmit && !selectedStudent && supportsUrlSubmission(assignment.id)) {
+        lockView = studentLockView({
+          now: new Date(),
+          dueAt: assignmentDueInstant({
+            assignmentId: assignment.id,
+            sharedDueDate: assignment.dueDate,
+            section: roster.status === "matched" ? roster.entry.section : undefined,
+          }),
+          reopens: reopenRecords,
+          student: {
+            email:
+              roster.status === "matched" ? roster.entry.email : emails[0],
+            clerkUserId: userId,
+            canvasUserId:
+              roster.status === "matched"
+                ? roster.entry.canvasUserId
+                : canvasUserId,
+          },
+          hasSubmission: Boolean(ownSubmission),
+          lastSubmittedAt: ownSubmission?.updatedAt,
+        });
       }
     } else {
       const visibility = loggedOutSubmitVisibility(assignment.id, mongoReady);
@@ -395,6 +476,9 @@ export default async function AssignmentDetailPage({
           selectedStudent={selectedStudent}
           selectedSection={selectedSection}
           selectedFilter={selectedFilter}
+          reopenFilter={reopenFilter}
+          lockView={lockView}
+          reopenPanel={reopenPanel}
         />
       ) : (
         <AssignmentChecklist

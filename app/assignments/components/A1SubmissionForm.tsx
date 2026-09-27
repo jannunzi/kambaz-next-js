@@ -10,6 +10,7 @@ import {
   submissionGateCopy,
   type SubmissionGateReason,
 } from "@/lib/assignments/submission-form";
+import type { StudentLockView } from "@/lib/assignments/lock";
 import {
   showSubmittedConfirmation,
   submitActionLabel,
@@ -49,6 +50,7 @@ export default function A1SubmissionForm({
   onResults,
   onSubmission,
   onDeployUrlChange,
+  lockView = { kind: "open" },
 }: {
   assignmentId: string;
   initialSubmission: AssignmentSubmissionView | null;
@@ -66,6 +68,7 @@ export default function A1SubmissionForm({
   onResults?: (results: AssignmentCheckResult[]) => void;
   onSubmission?: (submission: AssignmentSubmissionView) => void;
   onDeployUrlChange?: (url: string) => void;
+  lockView?: StudentLockView;
 }) {
   const [githubUrl, setGithubUrl] = useState(initialSubmission?.githubUrl ?? "");
   const [vercelUrl, setVercelUrl] = useState(initialSubmission?.vercelUrl ?? "");
@@ -81,6 +84,9 @@ export default function A1SubmissionForm({
   );
   const [, startTransition] = useTransition();
   const staffReview = Boolean(staffStudentKey);
+  const studentLock = staffReview ? ({ kind: "open" } as const) : lockView;
+  const submissionsClosed = studentLock.kind === "closed";
+  const reopened = studentLock.kind === "reopened";
   const formState = a1SubmissionFormState({ canSubmit, gateReason });
   const checkAction = a1CheckAction({ staffReview, form: formState });
   const saveGate =
@@ -105,6 +111,7 @@ export default function A1SubmissionForm({
           hasSubmission: hasStoredSubmission,
           submittedAt: submission?.updatedAt,
           detail: result.message,
+          code: result.code,
         }),
       );
       setError(null);
@@ -205,16 +212,43 @@ export default function A1SubmissionForm({
         </p>
       ) : null}
 
+      {!staffReview && studentLock.kind === "closed" ? (
+        <div
+          role="status"
+          className="mb-3 rounded-lg border-2 border-neutral-500 bg-neutral-100 px-4 py-3 font-sans text-sm text-neutral-900"
+        >
+          <p className="m-0 text-base font-semibold">{studentLock.heading}</p>
+          {studentLock.detail ? (
+            <p className="mb-0 mt-1">{studentLock.detail}</p>
+          ) : null}
+        </div>
+      ) : null}
+      {!staffReview && studentLock.kind === "reopened" ? (
+        <div
+          role="status"
+          className="mb-3 rounded-lg border-2 border-sky-600 bg-sky-50 px-4 py-3 font-sans text-sm text-sky-950"
+        >
+          <p className="m-0 text-base font-semibold">
+            <span className="mr-2 inline-block rounded-full border border-sky-700 bg-sky-100 px-2 py-0.5 align-middle text-xs font-semibold">
+              Reopened
+            </span>
+            {studentLock.openUntil}
+          </p>
+          <p className="mb-0 mt-2">{studentLock.message}</p>
+        </div>
+      ) : null}
       {!staffReview && submitError ? (
         <div
           role="alert"
           className="mb-3 rounded-lg border-2 border-red-600 bg-red-50 px-4 py-3 font-sans text-sm text-red-950"
         >
           <p className="m-0 font-semibold">{submitError.title}</p>
-          <p className="mb-0 mt-1">{submitError.body}</p>
+          {submitError.body ? (
+            <p className="mb-0 mt-1">{submitError.body}</p>
+          ) : null}
         </div>
       ) : null}
-      {!staffReview && showSubmitted && submission ? (
+      {!staffReview && showSubmitted && submission && !submissionsClosed ? (
         <SubmittedConfirmation submission={submission} />
       ) : null}
 
@@ -249,7 +283,7 @@ export default function A1SubmissionForm({
               className="mt-1 box-border w-full rounded border border-neutral-400 bg-white px-3 py-2 font-sans text-sm"
               value={githubUrl}
               onChange={(event) => setGithubUrl(event.target.value)}
-              disabled={pendingAction !== null}
+              disabled={pendingAction !== null || submissionsClosed}
             />
             {githubUrl ? (
               <p className="mb-0 mt-1 font-sans text-sm">
@@ -279,7 +313,7 @@ export default function A1SubmissionForm({
                 setVercelUrl(event.target.value);
                 onDeployUrlChange?.(event.target.value);
               }}
-              disabled={pendingAction !== null}
+              disabled={pendingAction !== null || submissionsClosed}
             />
             {vercelUrl ? (
               <p className="mb-0 mt-1 font-sans text-sm">
@@ -298,7 +332,7 @@ export default function A1SubmissionForm({
               <p className="mb-0 mt-1">{saveGate.body}</p>
             </div>
           ) : null}
-          {checkAction === "account" && !staffReview ? (
+          {checkAction === "account" && !staffReview && !submissionsClosed ? (
             <button
               type="button"
               className="rounded border border-neutral-800 bg-white px-3 py-2 font-sans text-sm hover:bg-neutral-50 disabled:opacity-60"
@@ -308,6 +342,7 @@ export default function A1SubmissionForm({
               {submitActionLabel({
                 hasSubmission: hasStoredSubmission,
                 pending: pendingAction === "save",
+                regrade: reopened && hasStoredSubmission,
               })}
             </button>
           ) : null}

@@ -3,12 +3,14 @@ import { formatPointsPercent, pointsPercent } from "./grade";
 
 /**
  * Student-facing submission status. Staff grades live on
- * `assignment_submissions.staffGrade`. This does not model regrade windows.
+ * `assignment_submissions.staffGrade`. `reopened` is a per-student window
+ * after the due date; the lock itself lives in `lock.ts`.
  */
 export const SUBMISSION_STATUS_LABEL = {
   not_submitted: "Not submitted",
   submitted: "Submitted",
   graded: "Graded",
+  reopened: "Reopened",
 } as const;
 
 export type StudentSubmissionStatus = keyof typeof SUBMISSION_STATUS_LABEL;
@@ -68,8 +70,10 @@ export function statusForAssignment(input: {
   assignmentId: string;
   hasSubmission: boolean;
   staffGrade?: StaffGradeSnapshot | null;
+  reopened?: boolean;
 }): StudentSubmissionStatus | null {
   if (!supportsUrlSubmission(input.assignmentId)) return null;
+  if (input.reopened) return "reopened";
   return studentSubmissionStatus(input);
 }
 
@@ -180,11 +184,35 @@ export function showSubmittedConfirmation(input: {
 export function submitActionLabel(input: {
   hasSubmission: boolean;
   pending: boolean;
+  regrade?: boolean;
 }): string {
+  if (input.regrade && input.hasSubmission) {
+    return input.pending ? "Resubmitting…" : "Resubmit for regrade";
+  }
   if (input.pending) {
     return input.hasSubmission ? "Updating…" : "Submitting…";
   }
   return input.hasSubmission ? "Update submission" : "Submit";
+}
+
+export function regradeStaffNote(input: {
+  regradeResubmission?: boolean;
+  previousStaffGrade?: StaffGradeSnapshot | null;
+  staffGrade?: StaffGradeSnapshot | null;
+}): string | null {
+  if (!input.regradeResubmission) return null;
+  const previous = submissionGradeLine(
+    input.previousStaffGrade ?? input.staffGrade,
+  );
+  const current = submissionGradeLine(input.staffGrade);
+  if (
+    input.previousStaffGrade &&
+    input.staffGrade &&
+    previous !== current
+  ) {
+    return `Regrade resubmission. Previous grade: ${previous}. Current grade: ${current}.`;
+  }
+  return `Regrade resubmission. Previous grade: ${previous}.`;
 }
 
 export function formatGradedConfirmation(input: {
@@ -248,7 +276,14 @@ export function submitFailureCopy(input: {
   hasSubmission: boolean;
   submittedAt?: string | Date | null;
   detail?: string;
+  code?: string;
 }): SubmitFailureCopy {
+  if (input.code === "submissions_closed") {
+    return {
+      title: input.detail?.trim() || "Submissions closed.",
+      body: "",
+    };
+  }
   if (input.hasSubmission) {
     const when = formatSubmittedTimestamp(input.submittedAt);
     return {

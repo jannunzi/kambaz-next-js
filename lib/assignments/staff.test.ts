@@ -7,6 +7,7 @@ import {
   canPersistStaffGrade,
   canViewStaffGrader,
   countStaffGradeFilters,
+  filterStaffQueueByReopen,
   filterStaffQueueBySection,
   filterStaffQueueByStatus,
   findStaffStudent,
@@ -16,6 +17,7 @@ import {
   priorSubmissionLabel,
   resolveStaffGradeFilter,
   resolveStaffGraderView,
+  resolveStaffReopenFilter,
   resolveStaffSectionFilter,
   selectRosterSubmission,
   staffGradeFilterLabel,
@@ -440,6 +442,45 @@ describe("staff queue section filter", () => {
     assert.equal(mid.previous, "grad-a@northeastern.edu");
     assert.equal(mid.next, null);
     assert.equal(mid.index, 1);
+  });
+
+  it("filters the queue to reopened students and keeps that in the URL", () => {
+    const queue = [
+      {
+        key: "jane.doe@northeastern.edu",
+        email: "jane.doe@northeastern.edu",
+        name: "Doe, Jane",
+        hasSubmission: true,
+        reopen: {
+          label: "Reopened until Mon, Oct 5, 12:00 PM ET",
+          closesAt: "2026-10-05T16:00:00.000Z",
+          message: "Fix the nav.",
+        },
+      },
+      {
+        key: "pat@northeastern.edu",
+        email: "pat@northeastern.edu",
+        name: "Pat",
+        hasSubmission: true,
+        reopen: null,
+      },
+    ];
+    assert.equal(resolveStaffReopenFilter("reopened"), "reopened");
+    assert.equal(resolveStaffReopenFilter("nope"), undefined);
+    assert.equal(filterStaffQueueByReopen(queue, "reopened").length, 1);
+    assert.equal(
+      filterStaffQueueByReopen(queue, "reopened")[0]?.email,
+      "jane.doe@northeastern.edu",
+    );
+    assert.equal(filterStaffQueueByReopen(queue, undefined).length, 2);
+    assert.equal(
+      staffGraderHref("a1", {
+        section: "CS4550 CRN 11464",
+        student: "jane.doe@northeastern.edu",
+        reopen: "reopened",
+      }),
+      "/assignments/a1?section=CS4550+CRN+11464&student=jane.doe%40northeastern.edu&reopen=reopened",
+    );
   });
 
   it("builds shareable assignment URLs with section and student", () => {

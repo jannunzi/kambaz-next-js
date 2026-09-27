@@ -96,6 +96,13 @@ export type StaffStudentRow = {
   staffGrade?: AssignmentStaffGrade;
   /** Older submissions for the same student. The row itself is the newest. */
   priorSubmissions?: PriorSubmissionNote[];
+  regradeResubmission?: boolean;
+  previousStaffGrade?: AssignmentStaffGrade;
+  reopen?: {
+    label: string;
+    closesAt: string;
+    message: string;
+  } | null;
 };
 
 export type StaffQueueOptions = {
@@ -314,6 +321,8 @@ function rowFromSubmission(
     checkResults: doc.checkResults,
     staffGrade: doc.staffGrade,
     priorSubmissions: undefined,
+    regradeResubmission: doc.regradeResubmission,
+    previousStaffGrade: doc.previousStaffGrade,
   };
 }
 
@@ -634,12 +643,27 @@ export function visibleStaffQueue(
   return filterStaffQueueByStatus(staffQueueForSection(queue, section), filter);
 }
 
+export function resolveStaffReopenFilter(
+  value: string | undefined | null,
+): "reopened" | undefined {
+  return value === "reopened" ? "reopened" : undefined;
+}
+
+export function filterStaffQueueByReopen(
+  queue: readonly StaffStudentRow[],
+  reopen: string | undefined | null,
+): StaffStudentRow[] {
+  if (resolveStaffReopenFilter(reopen) !== "reopened") return [...queue];
+  return queue.filter((row) => Boolean(row.reopen));
+}
+
 export function staffGraderHref(
   assignmentId: string,
   options?: {
     section?: string | null;
     student?: string | null;
     filter?: string | null;
+    reopen?: string | null;
   },
 ): string {
   const params = new URLSearchParams();
@@ -649,6 +673,7 @@ export function staffGraderHref(
   if (section) params.set("section", section);
   if (filter !== "all") params.set("filter", filter);
   if (student) params.set("student", student);
+  if (resolveStaffReopenFilter(options?.reopen)) params.set("reopen", "reopened");
   const query = params.toString();
   return query
     ? `/assignments/${assignmentId}?${query}`

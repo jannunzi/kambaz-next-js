@@ -4,12 +4,21 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { formatLongDate } from "@/app/syllabus/data/dates";
 import { assignmentsIntro } from "@/app/syllabus/data/assignments";
 import { supportsUrlSubmission } from "@/lib/assignments/access";
-import { listAssignmentIds, listAssignments, rubricPointTotal } from "@/lib/assignments/catalog";
+import {
+  getAssignment,
+  listAssignmentIds,
+  listAssignments,
+  rubricPointTotal,
+} from "@/lib/assignments/catalog";
+import {
+  assignmentDueInstant,
+  assignmentListStatus,
+} from "@/lib/assignments/lock";
+import { listAssignmentReopens } from "@/lib/assignments/reopens";
 import { studentVisibleSubmission } from "@/lib/assignments/staff";
 import { listSubmissionsForAssignment } from "@/lib/assignments/submissions";
 import {
   SIGN_IN_FOR_SUBMISSION_STATUS,
-  statusForViewer,
   type StudentSubmissionStatus,
 } from "@/lib/assignments/submission-status";
 import type { AssignmentId } from "@/lib/assignments/types";
@@ -62,6 +71,15 @@ async function loadSubmissionStatuses(): Promise<{
     if (!rosterEntry) {
       return { note: null, statuses: new Map() };
     }
+    const now = new Date();
+    const reopenLists = await Promise.all(
+      urlIds.map((id) =>
+        listAssignmentReopens(id).catch((error) => {
+          console.error("assignment list reopen load failed", error);
+          return [];
+        }),
+      ),
+    );
     const chosen = (
       await Promise.all(urlIds.map((id) => listSubmissionsForAssignment(id)))
     ).map((submissions) =>
@@ -74,12 +92,22 @@ async function loadSubmissionStatuses(): Promise<{
     const statuses = new Map<AssignmentId, StudentSubmissionStatus>();
     urlIds.forEach((id, index) => {
       const doc = chosen[index] ?? null;
-      const status = statusForViewer({
-        signedIn: true,
-        rosterMatched: true,
+      const status = assignmentListStatus({
         assignmentId: id,
         hasSubmission: Boolean(doc),
         staffGrade: doc?.staffGrade,
+        now,
+        dueAt: assignmentDueInstant({
+          assignmentId: id,
+          sharedDueDate: getAssignment(id)?.dueDate,
+          section: rosterEntry?.section,
+        }),
+        reopens: reopenLists[index] ?? [],
+        student: {
+          email: rosterEntry?.email,
+          clerkUserId: userId,
+          canvasUserId: rosterEntry?.canvasUserId,
+        },
       });
       if (status) statuses.set(id, status);
     });

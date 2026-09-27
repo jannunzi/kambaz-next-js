@@ -7,6 +7,7 @@ const TONE: Record<StudentSubmissionStatus, string> = {
   not_submitted: "border-neutral-400 bg-neutral-100 text-neutral-800",
   submitted: "border-emerald-600 bg-emerald-50 text-emerald-950",
   graded: "border-emerald-800 bg-emerald-100 text-emerald-950",
+  reopened: "border-sky-700 bg-sky-100 text-sky-950",
 };
 
 export default function AssignmentStatusBadge({
