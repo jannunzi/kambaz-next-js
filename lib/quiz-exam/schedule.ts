@@ -571,6 +571,15 @@ export function examLabel(name: ExamName): string {
   return name === "midterm" ? "midterm" : "final";
 }
 
+/** Q4–Q6 have no exam-prep reopen before X2. X1 wording stays on the midterm path. */
+function finalChapterAnswerNote(schedule: QuizSchedule): string | undefined {
+  if (schedule.examName !== "final") return undefined;
+  if (schedule.quizId !== "q4" && schedule.quizId !== "q5" && schedule.quizId !== "q6") {
+    return undefined;
+  }
+  return "Q4 and Q5 answers are available in their normal windows, and Q6 answers open after X2.";
+}
+
 export type AnswerWindowCopy = {
   title: string;
   paragraphs: string[];
@@ -591,9 +600,11 @@ export function answerWindowCopy(
   const exam = examLabel(schedule.examName);
   const hasExamPrep =
     schedule.examPrepOpenAt.getTime() < schedule.examPrepCloseAt.getTime();
-  const prepAgain = hasExamPrep
+  const midtermPrep = schedule.examName === "midterm" && hasExamPrep;
+  const prepAgain = midtermPrep
     ? `They will be available again before the ${exam}, from ${prepOpen} until ${prepClose}.`
     : undefined;
+  const finalAnswerNote = finalChapterAnswerNote(schedule);
   const answersOverride = activeAnswersVisibleOverride(answersVisible);
 
   if (answersOverride === "on" && phase !== "take_open" && phase !== "take_closed") {
@@ -624,6 +635,7 @@ export function answerWindowCopy(
       paragraphs: [
         `Correct answers will be available starting ${open}, only for one week, until ${close}.`,
         ...(prepAgain ? [prepAgain] : []),
+        ...(finalAnswerNote ? [finalAnswerNote] : []),
       ],
       tone: "warn",
     };
@@ -635,12 +647,23 @@ export function answerWindowCopy(
       paragraphs: [
         `Answers are available only for one week, until ${close}.`,
         ...(prepAgain ? [prepAgain] : []),
+        ...(finalAnswerNote ? [finalAnswerNote] : []),
       ],
       tone: "ok",
     };
   }
 
   if (phase === "answers_reopen") {
+    if (schedule.examName === "final") {
+      return {
+        title: "Answers are not reopened before X2",
+        paragraphs: [
+          finalAnswerNote ??
+            "Q4 and Q5 answers are available in their normal windows, and Q6 answers open after X2.",
+        ],
+        tone: "warn",
+      };
+    }
     return {
       title: `Answers are available for ${exam} prep`,
       paragraphs: [
@@ -652,9 +675,9 @@ export function answerWindowCopy(
 
   if (phase === "answers_closed") {
     const prepStillAhead =
-      hasExamPrep && now.getTime() < schedule.examPrepOpenAt.getTime();
+      midtermPrep && now.getTime() < schedule.examPrepOpenAt.getTime();
     const prepEnded =
-      hasExamPrep && now.getTime() >= schedule.examPrepCloseAt.getTime();
+      midtermPrep && now.getTime() >= schedule.examPrepCloseAt.getTime();
     return {
       title: "The answer review window has ended",
       paragraphs: [
@@ -669,6 +692,7 @@ export function answerWindowCopy(
               `The ${exam} prep window (${prepOpen} until ${prepClose}) has also ended.`,
             ]
           : []),
+        ...(finalAnswerNote ? [finalAnswerNote] : []),
       ],
       tone: "warn",
     };

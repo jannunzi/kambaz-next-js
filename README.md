@@ -348,10 +348,10 @@ Unlock is **class-wide** (wall-clock ET → stored as ISO UTC in
 | Phase | What the student sees |
 | --- | --- |
 | Take open, no attempt | Existing exam form. New attempts are blocked after the Sunday 23:59 ET due. |
-| Submitted, before answers open | Score / submitted status. Answers start **{answersOpenAt}**, only for **one week**, until **{answersCloseAt}**, and again one week before the midterm or final. |
-| First answer week | Full review of their drawn attempt with correct answers. Banner: only one week, until **{answersCloseAt}**; reopen one week before the exam. |
-| After that week | Answers hidden. Message that the window ended, plus the next reopen (week before midterm/final) if it is still ahead. |
-| Midterm / final prep week | Answers shown again until the exam instant. |
+| Submitted, before answers open | Score / submitted status. Answers start **{answersOpenAt}**, only for **one week**, until **{answersCloseAt}**, and again one week before the midterm. Q4 and Q5 answers are available in their normal windows, and Q6 answers open after X2. |
+| First answer week | Full review of their drawn attempt with correct answers. Banner: only one week, until **{answersCloseAt}**; Q1–Q3 reopen one week before the midterm. Q4 and Q5 answers are available in their normal windows, and Q6 answers open after X2. |
+| After that week | Answers hidden. Message that the window ended, plus the next reopen (week before the midterm) if it is still ahead. Q4 and Q5 answers are available in their normal windows, and Q6 answers open after X2. |
+| Midterm prep week | Q1–Q3 answers shown again until the midterm instant. There is no Q4–Q6 exam-prep reopen before X2. |
 
 The server clock decides the phase. `correctReveal` is omitted from HTML and
 from the submit payload unless the phase is `answers_open` or `answers_reopen`.
@@ -389,14 +389,15 @@ blurb) is generated with `npm run canvas:export-qti`. See
 `scripts/canvas-fallback/README.md`. Students still take the website
 unless staff unlock Canvas.
 
-Q1–Q3 exam-prep reopen is labeled “midterm” and Q4–Q6 “final”. Each window
-would be `[exam − 7d, exam)`, but it starts only after the last quiz in that
-group has locked for every section (Q3’s Sunday lock, then Q6’s). X1 and X2
-dates are unchanged. Q1–Q3 therefore reopen Monday 2026-11-02 00:00 ET through
-Thursday 2026-11-05 00:00 ET (3 days; a full week would overlap Q3). Q4–Q6 have
-no prep reopen: Q6 locks Sunday 2026-12-13 23:59 ET and `finalAt` is Monday
-2026-12-14 00:00 ET, so a non-overlapping window cannot fit. Edit the two
-`COURSE_EXAMS` strings if those exam instants move.
+Q1–Q3 exam-prep reopen is labeled “midterm”. That window would be
+`[midterm − 7d, midterm)`, but it starts only after Q3 has locked for every
+section (Q3’s Sunday lock). X1 and X2 dates are unchanged. Q1–Q3 therefore
+reopen Monday 2026-11-02 00:00 ET through Thursday 2026-11-05 00:00 ET (3 days;
+a full week would overlap Q3). There is no Q4–Q6 exam-prep reopen before X2:
+Q6 locks Sunday 2026-12-13 23:59 ET and `finalAt` is Monday 2026-12-14 00:00 ET,
+so a non-overlapping window cannot fit. Q4 and Q5 answers are available in
+their normal windows, and Q6 answers open after X2 (2026-12-28 through
+2027-01-04). Edit `COURSE_EXAMS.midtermAt` if that midterm instant moves.
 
 Staff **View as student** still does not persist an attempt. Impersonation can
 exercise the form even outside the take window; answers still follow the

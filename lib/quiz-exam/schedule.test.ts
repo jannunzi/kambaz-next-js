@@ -448,11 +448,24 @@ describe("answer-window copy", () => {
     assert.match(copy.paragraphs.join(" "), /midterm/);
   });
 
-  it("uses final labeling for post-midterm quizzes", () => {
-    const q5 = getQuizSchedule("q5");
-    assert.ok(q5);
-    const copy = answerWindowCopy(q5, "answers_reopen", et(2026, 11, 28));
-    assert.match(copy.title, /final/);
-    assert.match(copy.paragraphs.join(" "), /final/);
+  it("does not promise a review before the final for Q4–Q6", () => {
+    const policy =
+      /Q4 and Q5 answers are available in their normal windows, and Q6 answers open after X2/;
+    for (const quizId of ["q4", "q5", "q6"] as const) {
+      const schedule = getQuizSchedule(quizId);
+      assert.ok(schedule);
+      for (const phase of ["submitted_waiting", "answers_open", "answers_closed", "answers_reopen"] as const) {
+        const copy = answerWindowCopy(schedule, phase, et(2026, 11, 28));
+        const text = `${copy.title} ${copy.paragraphs.join(" ")}`;
+        assert.match(text, policy);
+        assert.doesNotMatch(text, /before the final/i);
+        assert.doesNotMatch(text, /prep window before/i);
+        assert.doesNotMatch(text, /one week before/i);
+      }
+    }
+    const x2 = getQuizSchedule("x2");
+    assert.ok(x2);
+    const x2Copy = answerWindowCopy(x2, "submitted_waiting", et(2026, 12, 21));
+    assert.doesNotMatch(x2Copy.paragraphs.join(" "), policy);
   });
 });
