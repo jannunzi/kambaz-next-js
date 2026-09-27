@@ -984,4 +984,49 @@ describe("duplicate submissions, staff, and demo students", () => {
       "also submitted: https://jane-old.vercel.app, 2026-09-01; previously graded: 110 / 125 (88.0%) on 2026-09-02 for https://jane-old.vercel.app",
     );
   });
+
+  it("omits the previously graded date when gradedAt is missing", () => {
+    const queue = buildStaffStudentQueue(
+      [
+        {
+          email: "jane@northeastern.edu",
+          name: "Jane Doe",
+          section: "CS4550 CRN 11464",
+        },
+      ],
+      [
+        submission({
+          clerkUserId: "user_old",
+          email: "jane@northeastern.edu",
+          vercelUrl: "https://jane-old.vercel.app",
+          createdAt: new Date("2026-09-01T00:00:00.000Z"),
+          updatedAt: new Date("2026-09-01T00:00:00.000Z"),
+          staffGrade: {
+            acceptedProposed: false,
+            rows: [
+              {
+                criterionId: "a",
+                maxPoints: 1,
+                autoPassed: false,
+                overridePassed: true,
+                points: 0,
+              },
+            ],
+          } as AssignmentSubmissionDoc["staffGrade"],
+        }),
+        submission({
+          clerkUserId: "user_new",
+          email: "jane@northeastern.edu",
+          vercelUrl: "https://jane-new.vercel.app",
+          createdAt: new Date("2026-09-03T00:00:00.000Z"),
+          updatedAt: new Date("2026-09-10T00:00:00.000Z"),
+        }),
+      ],
+      options,
+    );
+    assert.equal(
+      priorSubmissionLabel(queue[0].priorSubmissions),
+      "also submitted: https://jane-old.vercel.app, 2026-09-01; previously graded: — for https://jane-old.vercel.app",
+    );
+  });
 });

@@ -276,7 +276,7 @@ describe("submit confirmation copy", () => {
     assert.equal(submissionGradeLine({}), NOT_GRADED_YET);
     assert.equal(NOT_GRADED_YET, "Not graded yet");
     const line = formatGradedConfirmation(GRADE_95);
-    assert.equal(line, "Graded: 95 / 100 (95%)");
+    assert.equal(line, "Graded: 95 / 100 (95.0%)");
     assert.equal(
       line,
       `Graded: ${formatGradeSummary({
@@ -284,15 +284,15 @@ describe("submit confirmation copy", () => {
         passedCount: 0,
         totalCount: 0,
         passedIds: [],
-      }).replace(" pts", "")}`,
+      })}`,
     );
-    assert.equal(submissionGradeLine(GRADE_95), "Graded: 95 / 100 (95%)");
+    assert.equal(submissionGradeLine(GRADE_95), "Graded: 95 / 100 (95.0%)");
     assert.equal(
       submissionGradeLine({
         gradedAt: GRADE_95.gradedAt,
         rows: [{ points: 95, maxPoints: 100 }],
       }),
-      "Graded: 95 / 100 (95%)",
+      "Graded: 95 / 100 (95.0%)",
     );
   });
 

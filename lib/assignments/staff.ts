@@ -74,7 +74,8 @@ export type PriorSubmissionNote = {
   graded?: {
     earnedPoints: number;
     totalPoints: number;
-    gradedAt: string;
+    /** Omitted when the saved grade has no date. */
+    gradedAt?: string;
   };
 };
 
@@ -128,8 +129,9 @@ function priorNoteText(note: PriorSubmissionNote): string {
   const parts = [`also submitted: ${note.url}, ${date}`];
   if (note.graded) {
     const score = formatPointsPercent(note.graded.earnedPoints, note.graded.totalPoints);
-    const gradedOn = note.graded.gradedAt.slice(0, 10) || date;
-    parts.push(`previously graded: ${score} on ${gradedOn} for ${note.url}`);
+    const gradedOn = note.graded.gradedAt?.slice(0, 10) ?? "";
+    const when = gradedOn ? ` on ${gradedOn}` : "";
+    parts.push(`previously graded: ${score}${when} for ${note.url}`);
   }
   return parts.join("; ");
 }
@@ -215,16 +217,25 @@ function submissionMatchesRoster(
   return Boolean(canvasId && doc.canvasUserId?.trim() === canvasId);
 }
 
+function gradedAtIso(value: Date | string | undefined): string {
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? "" : value.toISOString();
+  }
+  if (typeof value !== "string" || !value.trim()) return "";
+  const ms = new Date(value).getTime();
+  return Number.isFinite(ms) ? new Date(ms).toISOString() : "";
+}
+
 function priorNote(doc: AssignmentSubmissionDoc): PriorSubmissionNote {
   const url = doc.vercelUrl?.trim() || doc.githubUrl?.trim() || "(no url)";
   const note: PriorSubmissionNote = { url, at: submissionStamp(doc) };
   const grade = doc.staffGrade;
   if (grade && hasStaffGradeSave(grade)) {
-    const gradedAt = grade.gradedAt;
+    const gradedAt = gradedAtIso(grade.gradedAt);
     note.graded = {
       earnedPoints: grade.earnedPoints,
       totalPoints: grade.totalPoints,
-      gradedAt: gradedAt instanceof Date ? gradedAt.toISOString() : String(gradedAt),
+      ...(gradedAt ? { gradedAt } : {}),
     };
   }
   return note;
