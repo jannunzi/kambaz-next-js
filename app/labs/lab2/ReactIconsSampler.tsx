@@ -7,7 +7,7 @@ import { VscAccount } from "react-icons/vsc";
 export default function ReactIconsSampler() {
   return (
     <div id="wd-react-icons-sampler" className="mb-4 font-sans">
-      <h3 className="text-lg font-semibold">React Icons Sampler</h3>
+      <h2 className="text-lg font-semibold">React Icons Sampler</h2>
       <div className="flex gap-3 text-3xl">
         <VscAccount />
         <AiOutlineDashboard />

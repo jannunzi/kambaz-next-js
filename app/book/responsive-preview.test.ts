@@ -52,6 +52,7 @@ describe("book responsive previews", () => {
     assert.match(preview, /TAILWIND_PREVIEW_FRAMES/);
     assert.match(previewCss, /transform:\s*scale\(calc\(100cqw/);
     assert.match(previewCss, /flex-wrap:\s*wrap/);
+    assert.match(previewCss, /@container \(max-width: 52rem\)/);
     assert.match(read("app/book/components/responsive-preview-model.ts"), /Phone, 375px: stacked/);
     assert.match(read("app/book/components/responsive-preview-model.ts"), /Desktop, 1024px: side by side/);
     assert.match(student, /md:flex/);
@@ -83,11 +84,18 @@ describe("book responsive previews", () => {
     assert.match(page, /MediaQueriesDemo/);
   });
 
-  it("loads Tailwind utilities on the preview document", () => {
+  it("loads one Tailwind entry on the responsive preview so Preflight does not follow utilities", () => {
     const layout = read("app/preview/layout.tsx");
-    assert.match(layout, /tailwind\/utilities\.css/);
+    const page = read("app/preview/tailwind-responsive/page.tsx");
+    const media = read("app/preview/media-queries/page.tsx");
+    const mediaDemo = read("app/labs/lab2/MediaQueriesDemo.tsx");
     assert.match(layout, /id="preview-root"/);
-    assert.match(read("app/preview/tailwind-responsive/page.tsx"), /tailwind\/index\.css/);
+    assert.doesNotMatch(layout, /tailwind/);
+    assert.match(page, /tailwind\/index\.css/);
+    assert.doesNotMatch(page, /utilities\.css/);
+    assert.doesNotMatch(media, /tailwind/);
+    assert.doesNotMatch(mediaDemo, /tailwind/);
+    assert.match(read("app/labs/lab2/tailwind/index.css"), /@import "tailwindcss"/);
     assert.match(read("app/labs/lab2/tailwind/page.tsx"), /import "\.\/index\.css"/);
     const student = read("app/labs/lab2/tailwind/TailwindResponsiveDesign.tsx");
     assert.match(student, /font-sans/);

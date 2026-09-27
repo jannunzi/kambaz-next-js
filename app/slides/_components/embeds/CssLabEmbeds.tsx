@@ -215,7 +215,8 @@ export function CssFloatEmbed() {
           </div>
           <p>
             Floated boxes leave the normal stack so this paragraph can sit
-            beside them. Lab 2 uses the same <code>wd-float-left</code> and <code>wd-float-right</code> classes.
+            beside them. Lab 2 uses the same <code>wd-float-left</code> and{" "}
+            <code>wd-float-right</code> classes.
           </p>
           <div className="wd-float-done" />
         </div>

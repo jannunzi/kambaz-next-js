@@ -147,7 +147,7 @@ export default function Lab2() {
         >{`export default function BackgroundColors() {
   return (
     <div id="wd-css-background-colors">
-      <h3 className="wd-bg-color-blue wd-fg-color-white">Background color</h3>
+      <h2 className="wd-bg-color-blue wd-fg-color-white">Background color</h2>
       <p className="wd-bg-color-red wd-fg-color-black">
         This background of this paragraph is red but{" "}
         <span className="wd-bg-color-green wd-fg-color-white">
@@ -557,7 +557,7 @@ export default function Lab2() {
         >{`export default function Corners() {
   return (
     <div id="wd-css-corners">
-      <h3>Rounded corners</h3>
+      <h2>Rounded corners</h2>
       <p className="wd-rounded-corners-top wd-border-thin wd-border-blue wd-border-solid wd-padding-fat">
         Rounded corners on the top
       </p>
@@ -1547,7 +1547,7 @@ export default function Flex() {
 export default function MediaQueriesDemo() {
   return (
     <div className="wd-media-queries-demo">
-      <h1>Media Query Demo</h1>
+      <h2>Media Query Demo</h2>
       <p>
         This demo uses CSS media queries to change colors based on screen width:
       </p>

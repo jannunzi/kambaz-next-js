@@ -60,7 +60,7 @@ import { VscAccount } from "react-icons/vsc";
 export default function ReactIconsSampler() {
   return (
     <div id="wd-react-icons-sampler" className="mb-4 font-sans">
-      <h3 className="text-lg font-semibold">React Icons Sampler</h3>
+      <h2 className="text-lg font-semibold">React Icons Sampler</h2>
       <div className="flex gap-3 text-3xl">
         <VscAccount />
         <AiOutlineDashboard />
@@ -455,7 +455,7 @@ export default function TailwindLab() {
   const src = "/images/reactjs.jpg";
   return (
     <div>
-      <h3>Blurs</h3>
+      <h2>Blurs</h2>
       <div className="flex">
         <img className="blur-none w-1/4" src={src} alt="blur none" />
         <img className="blur-sm w-1/4" src={src} alt="blur sm" />
