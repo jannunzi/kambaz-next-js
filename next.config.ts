@@ -27,7 +27,7 @@ const nextConfig: NextConfig = {
       {
         source: "/slides/tailwind-flex-and-grid",
         destination: "/slides/tailwind-filters-and-grid",
-        permanent: false,
+        permanent: true,
       },
     ];
   },

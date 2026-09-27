@@ -152,7 +152,9 @@ export const CSS_FLEX_SLIDES: LectureSlide[] = [
       "Column 1 gains `wd-width-75px`. Column 3 keeps `wd-flex-grow-1`",
       "This is the book’s final `Flex.tsx`",
     ],
-    code: `export default function Flex() {
+    code: `import "./index.css";
+
+export default function Flex() {
   return (
     <div id="wd-css-flex">
       <h2>Flex</h2>
@@ -168,7 +170,7 @@ export const CSS_FLEX_SLIDES: LectureSlide[] = [
 }`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/Flex.tsx",
-    codeHighlightLines: [6],
+    codeHighlightLines: [8],
   },
   {
     id: "pin-live",

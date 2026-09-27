@@ -1,5 +1,6 @@
 import "@/app/labs/lab2/index.css";
 import BackgroundColors from "@/app/labs/lab2/intermediates/2-1-8-BackgroundColors";
+import BoxModel from "@/app/labs/lab2/BoxModel";
 import Borders from "@/app/labs/lab2/intermediates/2-1-9-Borders";
 import ClassSelectors from "@/app/labs/lab2/intermediates/2-1-4-ClassSelectors";
 import Corners from "@/app/labs/lab2/intermediates/2-1-11-Corners";
@@ -121,94 +122,9 @@ export function CssMarginsEmbed() {
   );
 }
 
-// TODO: Switch to the lab import once #168 is on main:
-// import BoxModel from "@/app/labs/lab2/BoxModel"
-// The book's BoxModel.tsx and .wd-box-model-* CSS are not on main yet, so this
-// slide-side copy renders the same exercise without importing those lab files.
-const BOX_MODEL_EXERCISE_CSS = `.wd-box-model-parent {
-  background-color: lightgray;
-  padding: 8px 12px 12px;
-}
-.wd-box-model-margin-label,
-.wd-box-model-border-label,
-.wd-box-model-padding-label {
-  font-size: 12px;
-  line-height: 12px;
-}
-.wd-box-model-box {
-  position: relative;
-  margin: 20px;
-  padding: 20px;
-  border: 10px solid #c41e3a;
-  background-color: #cfe2ff;
-}
-.wd-box-model-border-label {
-  position: absolute;
-  top: -24px;
-  left: 0;
-  color: #c41e3a;
-}
-.wd-box-model-padding-label {
-  position: absolute;
-  top: 2px;
-  left: 6px;
-}
-.wd-box-model-content {
-  background-color: #d1e7dd;
-  padding: 8px;
-}
-.wd-box-sizing-demo {
-  background-color: lightgray;
-  padding: 10px;
-}
-.wd-box-sizing-content,
-.wd-box-sizing-border {
-  width: 200px;
-  height: 180px;
-  padding: 20px;
-  border: 10px solid #c41e3a;
-  background-color: #ffff07;
-  margin-bottom: 10px;
-}
-.wd-box-sizing-content {
-  box-sizing: content-box;
-}
-.wd-box-sizing-border {
-  box-sizing: border-box;
-}`;
-
-function BoxModel() {
-  return (
-    <div id="wd-css-box-model">
-      <h2>Box model</h2>
-      <div className="wd-box-model-parent">
-        <div>parent background (shows through the margin)</div>
-        <div className="wd-box-model-margin-label">
-          {"margin (transparent: the parent's gray shows through)"}
-        </div>
-        <div className="wd-box-model-box">
-          <span className="wd-box-model-border-label">border (the red ring)</span>
-          <span className="wd-box-model-padding-label">padding</span>
-          <div className="wd-box-model-content">content</div>
-        </div>
-      </div>
-      <h3>box-sizing</h3>
-      <div className="wd-box-sizing-demo">
-        <div className="wd-box-sizing-content">
-          content-box: width 200px plus padding and border
-        </div>
-        <div className="wd-box-sizing-border">
-          border-box: width 200px includes padding and border
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function CssBoxModelEmbed() {
   return (
     <LectureDemoFrame label="BoxModel.tsx" url="/labs/lab2">
-      <style>{BOX_MODEL_EXERCISE_CSS}</style>
       <div className="font-sans text-base [&_h2]:mt-0 [&_h3]:mt-2">
         <BoxModel />
       </div>

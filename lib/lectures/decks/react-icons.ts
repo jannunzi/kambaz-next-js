@@ -40,7 +40,8 @@ export const REACT_ICONS_SLIDES: LectureSlide[] = [
       "Each icon comes from a different path: `vsc`, `ai`, `fa6`, `fa`",
       "The parent `text-3xl` scales them — icons size in `em`",
     ],
-    code: `import { FaCalendar, FaEnvelopeOpenText, FaRegClock } from "react-icons/fa";
+    code: `import "@/app/labs/lab2/tailwind/utilities.css";
+import { FaCalendar, FaEnvelopeOpenText, FaRegClock } from "react-icons/fa";
 import { AiOutlineDashboard } from "react-icons/ai";
 import { FaBookBible } from "react-icons/fa6";
 import { VscAccount } from "react-icons/vsc";
@@ -48,7 +49,7 @@ import { VscAccount } from "react-icons/vsc";
 export default function ReactIconsSampler() {
   return (
     <div id="wd-react-icons-sampler" className="mb-4 font-sans">
-      <h3 className="text-lg font-semibold">React Icons Sampler</h3>
+      <h2 className="text-lg font-semibold">React Icons Sampler</h2>
       <div className="flex gap-3 text-3xl">
         <VscAccount />
         <AiOutlineDashboard />

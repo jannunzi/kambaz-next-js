@@ -1217,7 +1217,7 @@ describe("lecture decks", () => {
     assert.equal(counts["tailwind-spacing"], 7);
     assert.equal(counts["tailwind-typography"], 6);
     assert.equal(counts["tailwind-colors"], 5);
-    assert.equal(counts["tailwind-filters-and-grid"], 11);
+    assert.equal(counts["tailwind-filters-and-grid"], 13);
     assert.equal(counts["tailwind-responsive"], 7);
     assert.equal(counts["kambaz-styling"], 8);
     assert.equal(counts["kambaz-nav-styling"], 7);

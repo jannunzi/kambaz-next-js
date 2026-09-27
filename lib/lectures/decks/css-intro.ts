@@ -115,7 +115,7 @@ export const CSS_INTRO_SLIDES: LectureSlide[] = [
       <h3>Styling with the STYLE attribute</h3>
       <p style={{ backgroundColor: "blue", color: "white" }}>
         Style attribute allows configuring look and feel right on the
-        element. Although it's very convenient it is considered bad
+        element. Although it&apos;s very convenient it is considered bad
         practice and you should avoid using the style attribute
       </p>
     </div>
@@ -180,7 +180,7 @@ export default function Lab2() {
       <h3>Styling with the STYLE attribute</h3>
       <p>
         Style attribute allows configuring look and feel right on the
-        element. Although it's very convenient it is considered bad
+        element. Although it&apos;s very convenient it is considered bad
         practice and you should avoid using the style attribute
       </p>
     </div>
@@ -237,7 +237,7 @@ p#wd-id-selector-2 {
     specific element by its ID
   </p>
   <p id="wd-id-selector-2">
-    Here's another paragraph using a different ID and a
+    Here&apos;s another paragraph using a different ID and a
     different look and feel
   </p>
 </div>`,
@@ -277,7 +277,7 @@ p#wd-id-selector-2 {
   <h3>Class selectors</h3>
   <p className="wd-class-selector">
     Instead of using IDs to refer to elements, you can use an
-    element's CLASS attribute
+    element&apos;s CLASS attribute
   </p>
   <h4 className="wd-class-selector">
     This heading has same style as paragraph above
@@ -311,7 +311,7 @@ p#wd-id-selector-2 {
       Selectors can be combined to refer elements in particular
       places in the document
       <p className="wd-selector-3">
-        This paragraph's red background is referenced as
+        This paragraph&apos;s red background is referenced as
         <br />
         .selector-2 .selector3
         <br />

@@ -61,10 +61,11 @@ img.wd-float-right {
     title: "Float.tsx",
     kind: "content",
     bullets: [
-      "Slide-only: `STARSHIP` and `LOREM` constants so this file pastes and runs. The book leaves those names for you to fill in",
-      "Right image, then left image, then `wd-float-done`",
+      "The book defines `STARSHIP` and `LOREM`, then floats the photo right and left",
+      "The second block floats three colored boxes and one more image, then `wd-float-done`",
     ],
-    code: `// Slide-only. The book leaves STARSHIP and LOREM for you to define.
+    code: `import "./index.css";
+
 const STARSHIP =
   "https://www.staradvertiser.com/wp-content/uploads/2021/08/web1_Starship-gap2.jpg";
 const LOREM =
@@ -79,6 +80,23 @@ export default function Float() {
         {LOREM} {LOREM}
         <img className="wd-float-left" src={STARSHIP} alt="Starship" />
         {LOREM} {LOREM}
+        <img className="wd-float-right" src={STARSHIP} alt="Starship" />
+        {LOREM} {LOREM}
+        <img className="wd-float-left" src={STARSHIP} alt="Starship" />
+        {LOREM} {LOREM}
+        <div className="wd-float-done" />
+      </div>
+      <div>
+        <div className="wd-float-left wd-dimension-portrait wd-bg-color-yellow">
+          Yellow
+        </div>
+        <div className="wd-float-left wd-dimension-portrait wd-bg-color-blue wd-fg-color-white">
+          Blue
+        </div>
+        <div className="wd-float-left wd-dimension-portrait wd-bg-color-red">
+          Red
+        </div>
+        <img className="wd-float-right" src={STARSHIP} alt="Starship" />
         <div className="wd-float-done" />
       </div>
     </div>
@@ -86,7 +104,7 @@ export default function Float() {
 }`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/Float.tsx",
-    codeHighlightLines: [[1, 5], [12, 15]],
+    codeHighlightLines: [[3, 6], [14, 22], [24, 35]],
   },
   {
     id: "float-demo",
@@ -130,6 +148,7 @@ export default function Float() {
     code: `export default function GridLayout() {
   return (
     <div id="wd-css-grid-layout">
+      <h2>Grid layout</h2>
       <div className="wd-grid-row">
         <div className="wd-grid-col-half-page wd-bg-color-yellow">
           <h3>Left half</h3>
@@ -154,7 +173,7 @@ export default function Float() {
 }`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/GridLayout.tsx",
-    codeHighlightLines: [[12, 22]],
+    codeHighlightLines: [[13, 23]],
   },
   {
     id: "grid-demo",

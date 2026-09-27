@@ -203,6 +203,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
     code: `export default function Positions() {
   return (
     <div id="wd-css-positions">
+      <h2>Positions</h2>
       <div id="wd-css-position-relative">
         <h2>Relative</h2>
         <div className="wd-bg-color-gray">
@@ -220,7 +221,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
 }`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/Positions.tsx",
-    codeHighlightLines: [3, 16],
+    codeHighlightLines: [3, 4, 18],
   },
   {
     id: "relative-live",
@@ -322,9 +323,9 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
     ],
     code: `<div id="wd-css-position-fixed">
   <h2>Fixed position</h2>
-  Checkout the blue square that says "Fixed position" stuck all the way
-  on the right and half way down the page. It doesn't scroll with the
-  rest of the page. Its position is "Fixed".
+  Checkout the blue square that says &quot;Fixed position&quot; stuck all the way
+  on the right and half way down the page. It doesn&apos;t scroll with the
+  rest of the page. Its position is &quot;Fixed&quot;.
   <div className="wd-pos-fixed wd-dimension-square wd-bg-color-blue wd-fg-color-white">
     Fixed position
   </div>
@@ -353,6 +354,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
     code: `export default function Positions() {
   return (
     <div id="wd-css-positions">
+      <h2>Positions</h2>
       <div id="wd-css-position-relative">
         <h2>Relative</h2>
         <div className="wd-bg-color-gray">
@@ -365,6 +367,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
           <div className="wd-bg-color-red wd-dimension-square">Square</div>
         </div>
       </div>
+
       <div id="wd-css-position-absolute">
         <h2>Absolute position</h2>
         <div className="wd-pos-relative" style={{ height: 150 }}>
@@ -378,12 +381,14 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
             Square
           </div>
         </div>
+        <br /><br /><br /><br /><br /><br /><br />
       </div>
+
       <div id="wd-css-position-fixed">
         <h2>Fixed position</h2>
-        Checkout the blue square that says "Fixed position" stuck all the way
-        on the right and half way down the page. It doesn't scroll with the
-        rest of the page. Its position is "Fixed".
+        Checkout the blue square that says &quot;Fixed position&quot; stuck all the way
+        on the right and half way down the page. It doesn&apos;t scroll with the
+        rest of the page. Its position is &quot;Fixed&quot;.
         <div className="wd-pos-fixed wd-dimension-square wd-bg-color-blue wd-fg-color-white">
           Fixed position
         </div>
@@ -393,7 +398,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
 }`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/Positions.tsx",
-    codeHighlightLines: [3, 4, 16, 30, 39],
+    codeHighlightLines: [4, 5, 19, 35],
   },
   {
     id: "zindex",
@@ -432,6 +437,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
           Square
         </div>
       </div>
+      <br /><br /><br /><br /><br /><br /><br />
     </div>
   );
 }`,

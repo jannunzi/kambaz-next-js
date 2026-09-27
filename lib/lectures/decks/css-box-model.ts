@@ -198,13 +198,14 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
     title: "content-box vs border-box",
     kind: "content",
     bullets: [
-      "One box inside a gray parent: transparent margin, a red border ring, blue padding, and green content, each labeled on itself",
+      "One box inside a gray parent: a 20px margin gap, a red border, light-blue padding, and green content, each with its label",
       "Default `content-box`: `width: 200px` sizes **only** the content, so that yellow box measures 260×240",
       "`border-box` keeps the same yellow box 200×180. The DevTools figure is an illustration, not this CSS",
     ],
     code: `.wd-box-model-parent {
+  display: flow-root;
   background-color: lightgray;
-  padding: 8px 12px 12px;
+  padding-top: 8px;
 }
 .wd-box-model-margin-label,
 .wd-box-model-border-label,
@@ -224,6 +225,11 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
   top: -24px;
   left: 0;
   color: #c41e3a;
+}
+.wd-box-model-margin-label {
+  position: absolute;
+  bottom: -26px;
+  left: -20px;
 }
 .wd-box-model-padding-label {
   position: absolute;
@@ -255,17 +261,16 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
 }`,
     codeLanguage: "css",
     codeFile: "app/labs/lab2/index.css",
-    codeAddedLines: [[1, 32]],
-    codeHighlightLines: [47, 50],
+    codeHighlightLines: [[1, 37], 45],
   },
   {
     id: "box-model-tsx",
     title: "BoxModel.tsx",
     kind: "content",
     bullets: [
-      "`BoxModel.tsx` is the Lab 2 exercise: one labeled box in a gray parent, then two yellow boxes",
-      "The gray gap is the margin, the red ring is the border, the blue band is padding, and the green child is content",
-      "Both yellow boxes share width 200, height 180, padding 20, and a 10px border",
+      "A gray parent, a margin gap, a red border, light-blue padding, and green content, each labeled on the box",
+      "The margin label sits in the bottom gray gap. The red words sit in the top margin",
+      "Two yellow boxes share width 200, height 180, padding 20, and a 10px border. Only `box-sizing` differs",
     ],
     code: `export default function BoxModel() {
   return (
@@ -273,13 +278,13 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
       <h2>Box model</h2>
       <div className="wd-box-model-parent">
         <div>parent background (shows through the margin)</div>
-        <div className="wd-box-model-margin-label">
-          margin (transparent: the parent's gray shows through)
-        </div>
         <div className="wd-box-model-box">
           <span className="wd-box-model-border-label">border (the red ring)</span>
           <span className="wd-box-model-padding-label">padding</span>
           <div className="wd-box-model-content">content</div>
+          <span className="wd-box-model-margin-label">
+            margin: the 20px gray gap (transparent)
+          </span>
         </div>
       </div>
       <h3>box-sizing</h3>
@@ -296,16 +301,15 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
 }`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/BoxModel.tsx",
-    codeAddedLines: [[5, 15]],
-    codeHighlightLines: [18, 21],
+    codeHighlightLines: [[5, 13], 18, 21],
   },
   {
     id: "box-model-demo",
     title: "Live BoxModel.tsx",
     kind: "demo",
     bullets: [
-      "Gray parent shows through the margin. Red ring, blue padding, green content",
-      "`border-box` stays 200×180. `content-box` measures 260×240",
+      "Gray parent, margin gap, red ring, light-blue padding, green content — plus the two yellow boxes",
+      "`border-box` stays 200×180. `content-box` measures 260×240. The DevTools figure is only an illustration",
     ],
     embed: "css-box-model",
   },
@@ -346,7 +350,7 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
     code: `export default function Corners() {
   return (
     <div id="wd-css-corners">
-      <h3>Rounded corners</h3>
+      <h2>Rounded corners</h2>
       <p className="wd-rounded-corners-top wd-border-thin wd-border-blue wd-border-solid wd-padding-fat">
         Rounded corners on the top
       </p>

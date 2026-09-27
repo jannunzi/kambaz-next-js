@@ -9,6 +9,7 @@ import Borders from "@/app/labs/lab2/intermediates/2-1-9-Borders";
 import Padding from "@/app/labs/lab2/intermediates/2-1-10a-Padding";
 import Margins from "@/app/labs/lab2/intermediates/2-1-10b-Margins";
 import BoxModel from "@/app/labs/lab2/intermediates/2-1-10c-BoxModel";
+import BoxModelDiagram from "@/app/slides/_components/diagrams/BoxModelDiagram";
 import Corners from "@/app/labs/lab2/intermediates/2-1-11-Corners";
 import Dimensions from "@/app/labs/lab2/intermediates/2-1-12-Dimensions";
 import Display from "@/app/labs/lab2/intermediates/2-1-12b-Display";
@@ -21,7 +22,11 @@ import GridLayout from "@/app/labs/lab2/intermediates/2-1-18-GridLayout";
 import FlexRow from "@/app/labs/lab2/intermediates/2-1-19a-FlexRow";
 import FlexGrow from "@/app/labs/lab2/intermediates/2-1-19b-FlexGrow";
 import FlexWidth from "@/app/labs/lab2/intermediates/2-1-19c-FlexWidth";
-import MediaQueriesDemo from "@/app/labs/lab2/intermediates/2-1-20-MediaQueries";
+import ResponsivePreview from "../../components/ResponsivePreview";
+import {
+  MEDIA_QUERY_PREVIEW_FRAMES,
+  MEDIA_QUERIES_PREVIEW_SRC,
+} from "../../components/responsive-preview-model";
 import PracticeCard from "../../components/PracticeCard";
 import SectionLink from "../../components/SectionLink";
 import { OnYourOwn, WithAI } from "../../components/Practice";
@@ -142,7 +147,7 @@ export default function Lab2() {
         >{`export default function BackgroundColors() {
   return (
     <div id="wd-css-background-colors">
-      <h3 className="wd-bg-color-blue wd-fg-color-white">Background color</h3>
+      <h2 className="wd-bg-color-blue wd-fg-color-white">Background color</h2>
       <p className="wd-bg-color-red wd-fg-color-black">
         This background of this paragraph is red but{" "}
         <span className="wd-bg-color-green wd-fg-color-white">
@@ -359,6 +364,15 @@ export default function Lab2() {
           edge; margin is transparent — you see whatever is behind the gap.
         </p>
         <p>
+          The figure is that box the way DevTools draws it in the Computed
+          pane: a tan margin (<code>#F9CC9D</code>), a yellow border (<code>#FDDD9B</code>), a green padding ring (<code>#C3D08B</code>),
+          and a blue content box (<code>#8CB6C0</code>). It illustrates the
+          content-box sample in the exercise below. It is a picture to study
+          in the book and on the slides. The Lab 2 files you copy come after
+          it.
+        </p>
+        <BoxModelDiagram />
+        <p>
           Those layers also change how <code>width</code>{" "}is measured: the{" "}
           <code>box-sizing</code>{" "}property chooses the rule. The CSS default
           is <code>content-box</code>: <code>width: 200px</code>{" "}sizes only
@@ -367,101 +381,54 @@ export default function Lab2() {
           <em>inside</em>{" "}the 200px, so the box you see on screen stays 200px
           wide. Layout math is much easier with{" "}
           <code>border-box</code>, which is why many style resets (and Tailwind
-          later) set it globally. Draw those four layers the way the browser
-          does in the Computed pane, then two boxes that share the same{" "}
-          <code>width</code>, <code>padding</code>, and <code>border</code>{" "}
-          but differ only in <code>box-sizing</code>:
+          later) set it globally. Add the box-model classes and a{" "}
+          <code>BoxModel.tsx</code>{" "}that puts margin, border, padding, and
+          content on one box inside a gray parent, then two boxes that share
+          the same <code>width</code>, <code>height</code>,{" "}
+          <code>padding</code>, and <code>border</code>{" "}but differ only in{" "}
+          <code>box-sizing</code>:
         </p>
         <CodeBlock
           language="css"
           name="Lab2 styles"
           file="app/labs/lab2/index.css"
-        >{`.wd-devtools-box {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 34rem;
-  color: #222;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
-  font-size: clamp(12px, 2.5vw, 14px);
-  line-height: 1.2;
+        >{`.wd-box-model-parent {
+  display: flow-root;
+  background-color: lightgray;
+  padding-top: 8px;
 }
-.wd-devtools-box *,
-.wd-devtools-box *::before,
-.wd-devtools-box *::after {
-  box-sizing: border-box;
+.wd-box-model-margin-label,
+.wd-box-model-border-label,
+.wd-box-model-padding-label {
+  font-size: 12px;
+  line-height: 12px;
 }
-.wd-devtools-box .wd-bm-margin,
-.wd-devtools-box .wd-bm-border,
-.wd-devtools-box .wd-bm-padding {
-  display: grid;
-  grid-template-columns: minmax(2.75rem, auto) minmax(0, 1fr) minmax(2.75rem, auto);
-  grid-template-rows: auto minmax(2.25rem, 1fr) auto;
+.wd-box-model-box {
+  position: relative;
+  margin: 20px;
+  padding: 20px;
+  border: 10px solid #c41e3a;
+  background-color: #cfe2ff;
 }
-.wd-devtools-box .wd-bm-margin {
-  background-color: #f9cc9d;
-  border: 1px dashed #222;
+.wd-box-model-border-label {
+  position: absolute;
+  top: -24px;
+  left: 0;
+  color: #c41e3a;
 }
-.wd-devtools-box .wd-bm-border,
-.wd-devtools-box .wd-bm-padding,
-.wd-devtools-box .wd-bm-content {
-  grid-column: 2;
-  grid-row: 2;
-  min-width: 0;
+.wd-box-model-margin-label {
+  position: absolute;
+  bottom: -26px;
+  left: -20px;
 }
-.wd-devtools-box .wd-bm-border {
-  background-color: #fddd9b;
-  border: 1px solid #222;
+.wd-box-model-padding-label {
+  position: absolute;
+  top: 2px;
+  left: 6px;
 }
-.wd-devtools-box .wd-bm-padding {
-  background-color: #c3d08b;
-  border: 1px dashed #222;
-}
-.wd-devtools-box .wd-bm-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2.75rem;
-  padding: 0.45rem 0.6rem;
-  background-color: #8cb6c0;
-  border: 1px solid #222;
-  text-align: center;
-  white-space: nowrap;
-}
-.wd-devtools-box .wd-bm-label {
-  z-index: 1;
-  grid-column: 1;
-  grid-row: 1;
-  align-self: start;
-  justify-self: start;
-  padding: 3px 5px 0;
-  font-size: 0.85em;
-}
-.wd-devtools-box .wd-bm-top,
-.wd-devtools-box .wd-bm-bottom {
-  grid-column: 1 / -1;
-  padding: 0.35rem 0.25rem;
-  text-align: center;
-}
-.wd-devtools-box .wd-bm-top {
-  grid-row: 1;
-}
-.wd-devtools-box .wd-bm-bottom {
-  grid-row: 3;
-}
-.wd-devtools-box .wd-bm-left,
-.wd-devtools-box .wd-bm-right {
-  grid-row: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.25rem;
-}
-.wd-devtools-box .wd-bm-left {
-  grid-column: 1;
-}
-.wd-devtools-box .wd-bm-right {
-  grid-column: 3;
+.wd-box-model-content {
+  background-color: #d1e7dd;
+  padding: 8px;
 }
 .wd-box-sizing-demo {
   background-color: lightgray;
@@ -486,44 +453,21 @@ export default function Lab2() {
           language="tsx"
           name="BoxModel"
           file="app/labs/lab2/BoxModel.tsx"
-        >{`export function BoxModelWidget() {
-  return (
-    <div
-      className="wd-devtools-box"
-      role="img"
-      aria-label="Box model of the content-box sample: margin 0, 0, 10, 0; border 10; padding 20; content 200 by 180"
-    >
-      <div className="wd-bm-margin">
-        <span className="wd-bm-label">margin</span>
-        <span className="wd-bm-top">0</span>
-        <span className="wd-bm-left">0</span>
-        <span className="wd-bm-right">0</span>
-        <span className="wd-bm-bottom">10</span>
-        <div className="wd-bm-border">
-          <span className="wd-bm-label">border</span>
-          <span className="wd-bm-top">10</span>
-          <span className="wd-bm-left">10</span>
-          <span className="wd-bm-right">10</span>
-          <span className="wd-bm-bottom">10</span>
-          <div className="wd-bm-padding">
-            <span className="wd-bm-label">padding</span>
-            <span className="wd-bm-top">20</span>
-            <span className="wd-bm-left">20</span>
-            <span className="wd-bm-right">20</span>
-            <span className="wd-bm-bottom">20</span>
-            <div className="wd-bm-content">200×180</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default function BoxModel() {
+        >{`export default function BoxModel() {
   return (
     <div id="wd-css-box-model">
       <h2>Box model</h2>
-      <BoxModelWidget />
+      <div className="wd-box-model-parent">
+        <div>parent background (shows through the margin)</div>
+        <div className="wd-box-model-box">
+          <span className="wd-box-model-border-label">border (the red ring)</span>
+          <span className="wd-box-model-padding-label">padding</span>
+          <div className="wd-box-model-content">content</div>
+          <span className="wd-box-model-margin-label">
+            margin: the 20px gray gap (transparent)
+          </span>
+        </div>
+      </div>
       <h3>box-sizing</h3>
       <div className="wd-box-sizing-demo">
         <div className="wd-box-sizing-content">
@@ -537,19 +481,24 @@ export default function BoxModel() {
   );
 }`}</CodeBlock>
         <p>
-          The figure is the box model the way DevTools draws it: a tan margin,
-          a yellow border, a green padding ring, and a blue content box in the
-          center. It draws the <code>content-box</code> sample. Both yellow
-          boxes set <code>margin-bottom: 10px</code> (the other margins stay
-          0), a 10px border, and 20px of padding, so those rings read 0, 10,
-          10, and 20. The shared rule also sets <code>width: 200px</code> and{" "}
-          <code>height: 180px</code>. Under <code>content-box</code> those
-          lengths are the content box, so the center reads <code>200×180</code>.
-          The <code>border-box</code> box uses the same width, height, padding,
-          and border, so its content box is <code>140×120</code> (200 − 40
-          padding − 20 border wide, and 180 − 40 − 20 tall). On screen the
-          content-box box measures 260×240 (200 + 40 + 20 by 180 + 40 + 20)
-          and the border-box box stays 200×180:
+          On the left, right, and bottom, the gray around the blue box is
+          exactly that box&apos;s 20px margin. It is transparent, so the parent
+          background shows through. The margin label sits in the bottom gap.
+          The red words sit in the top margin, just outside the red ring,
+          which is the border. The light blue area is the padding, and the
+          green child is the content. Below that, both yellow boxes set{" "}
+          <code>margin-bottom: 10px</code> (the other
+          margins stay 0), a 10px border, 20px of padding,{" "}
+          <code>width: 200px</code>, and <code>height: 180px</code>. Under{" "}
+          <code>content-box</code> those lengths are the content box, so that
+          box&apos;s content is <code>200×180</code> and it measures 260×240
+          on screen (200 + 40 padding + 20 border wide, and 180 + 40 + 20
+          tall). The <code>border-box</code> box uses the same width, height,
+          padding, and border, so its content box is <code>140×120</code>{" "}
+          (200 − 40 − 20 wide, and 180 − 40 − 20 tall) and the painted box
+          stays 200×180. The figure above uses those content-box numbers:
+          margin 0, 0, 10, 0, border 10, padding 20, content{" "}
+          <code>200×180</code>:
         </p>
         <LiveDemo mode="styled" name="BoxModel" file="app/labs/lab2/BoxModel.tsx">
           <BoxModel />
@@ -608,7 +557,7 @@ export default function BoxModel() {
         >{`export default function Corners() {
   return (
     <div id="wd-css-corners">
-      <h3>Rounded corners</h3>
+      <h2>Rounded corners</h2>
       <p className="wd-rounded-corners-top wd-border-thin wd-border-blue wd-border-solid wd-padding-fat">
         Rounded corners on the top
       </p>
@@ -860,6 +809,7 @@ export default function BoxModel() {
         >{`export default function Positions() {
   return (
     <div id="wd-css-positions">
+      <h2>Positions</h2>
       <div id="wd-css-position-relative">
         <h2>Relative</h2>
         <div className="wd-bg-color-gray">
@@ -1010,19 +960,69 @@ export default function BoxModel() {
           file="app/labs/lab2/Positions.tsx"
         >{`<div id="wd-css-position-fixed">
   <h2>Fixed position</h2>
-  Checkout the blue square that says "Fixed position" stuck all the way
-  on the right and half way down the page. It doesn't scroll with the
-  rest of the page. Its position is "Fixed".
+  Checkout the blue square that says &quot;Fixed position&quot; stuck all the way
+  on the right and half way down the page. It doesn&apos;t scroll with the
+  rest of the page. Its position is &quot;Fixed&quot;.
   <div className="wd-pos-fixed wd-dimension-square wd-bg-color-blue wd-fg-color-white">
     Fixed position
   </div>
 </div>`}</CodeBlock>
         <p>
-          Combined into one <code>Positions.tsx</code>{" "}component, the relative,
-          absolute, and fixed demos all render together — scroll this figure
-          and the blue &quot;Fixed position&quot; square stays glued to the
-          right edge instead of scrolling away with the rest of the content:
+          Finished <code>Positions.tsx</code> puts the relative, absolute, and
+          fixed sections in one component. That file is what the figure
+          renders — scroll it and the blue &quot;Fixed position&quot; square
+          stays glued to the right edge instead of scrolling away with the rest
+          of the content:
         </p>
+        <CodeBlock
+          language="tsx"
+          name="Positions"
+          file="app/labs/lab2/Positions.tsx"
+        >{`export default function Positions() {
+  return (
+    <div id="wd-css-positions">
+      <h2>Positions</h2>
+      <div id="wd-css-position-relative">
+        <h2>Relative</h2>
+        <div className="wd-bg-color-gray">
+          <div className="wd-bg-color-yellow wd-dimension-portrait">
+            <div className="wd-pos-relative-nudge-down-right">Portrait</div>
+          </div>
+          <div className="wd-pos-relative-nudge-up-right wd-bg-color-blue wd-fg-color-white wd-dimension-landscape">
+            Landscape
+          </div>
+          <div className="wd-bg-color-red wd-dimension-square">Square</div>
+        </div>
+      </div>
+
+      <div id="wd-css-position-absolute">
+        <h2>Absolute position</h2>
+        <div className="wd-pos-relative" style={{ height: 150 }}>
+          <div className="wd-pos-absolute-10-10 wd-bg-color-yellow wd-dimension-portrait">
+            Portrait
+          </div>
+          <div className="wd-pos-absolute-50-50 wd-bg-color-blue wd-fg-color-white wd-dimension-landscape">
+            Landscape
+          </div>
+          <div className="wd-pos-absolute-120-20 wd-bg-color-red wd-dimension-square">
+            Square
+          </div>
+        </div>
+        <br /><br /><br /><br /><br /><br /><br />
+      </div>
+
+      <div id="wd-css-position-fixed">
+        <h2>Fixed position</h2>
+        Checkout the blue square that says &quot;Fixed position&quot; stuck all the way
+        on the right and half way down the page. It doesn&apos;t scroll with the
+        rest of the page. Its position is &quot;Fixed&quot;.
+        <div className="wd-pos-fixed wd-dimension-square wd-bg-color-blue wd-fg-color-white">
+          Fixed position
+        </div>
+      </div>
+    </div>
+  );
+}`}</CodeBlock>
         <LiveDemo mode="styled" name="Positions" file="app/labs/lab2/Positions.tsx">
           <ContainFixed height={200}>
             <PositionFixed />
@@ -1088,6 +1088,7 @@ export default function BoxModel() {
           Square
         </div>
       </div>
+      <br /><br /><br /><br /><br /><br /><br />
     </div>
   );
 }`}</CodeBlock>
@@ -1157,7 +1158,14 @@ img.wd-float-right {
           language="tsx"
           name="Float"
           file="app/labs/lab2/Float.tsx"
-        >{`export default function Float() {
+        >{`import "./index.css";
+
+const STARSHIP =
+  "https://www.staradvertiser.com/wp-content/uploads/2021/08/web1_Starship-gap2.jpg";
+const LOREM =
+  "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eius hic reprehenderit doloremque adipisci iste deserunt. Inventore, hic. Esse nihil unde aut, dignissimos eos consequatur veniam distinctio?";
+
+export default function Float() {
   return (
     <div id="wd-float-divs">
       <h2>Float</h2>
@@ -1166,6 +1174,23 @@ img.wd-float-right {
         {LOREM} {LOREM}
         <img className="wd-float-left" src={STARSHIP} alt="Starship" />
         {LOREM} {LOREM}
+        <img className="wd-float-right" src={STARSHIP} alt="Starship" />
+        {LOREM} {LOREM}
+        <img className="wd-float-left" src={STARSHIP} alt="Starship" />
+        {LOREM} {LOREM}
+        <div className="wd-float-done" />
+      </div>
+      <div>
+        <div className="wd-float-left wd-dimension-portrait wd-bg-color-yellow">
+          Yellow
+        </div>
+        <div className="wd-float-left wd-dimension-portrait wd-bg-color-blue wd-fg-color-white">
+          Blue
+        </div>
+        <div className="wd-float-left wd-dimension-portrait wd-bg-color-red">
+          Red
+        </div>
+        <img className="wd-float-right" src={STARSHIP} alt="Starship" />
         <div className="wd-float-done" />
       </div>
     </div>
@@ -1236,6 +1261,7 @@ img.wd-float-right {
         >{`export default function GridLayout() {
   return (
     <div id="wd-css-grid-layout">
+      <h2>Grid layout</h2>
       <div className="wd-grid-row">
         <div className="wd-grid-col-half-page wd-bg-color-yellow">
           <h3>Left half</h3>
@@ -1397,7 +1423,9 @@ img.wd-float-right {
           language="tsx"
           name="Flex"
           file="app/labs/lab2/Flex.tsx"
-        >{`export default function Flex() {
+        >{`import "./index.css";
+
+export default function Flex() {
   return (
     <div id="wd-css-flex">
       <h2>Flex</h2>
@@ -1519,7 +1547,7 @@ img.wd-float-right {
 export default function MediaQueriesDemo() {
   return (
     <div className="wd-media-queries-demo">
-      <h1>Media Query Demo</h1>
+      <h2>Media Query Demo</h2>
       <p>
         This demo uses CSS media queries to change colors based on screen width:
       </p>
@@ -1544,12 +1572,16 @@ export default function MediaQueriesDemo() {
           Notice that only the last <code>@media</code>{" "}block has no{" "}
           <code>max-width</code>, so it matches every width from 1250px
           upward. The matching bullet is bold and underlined so you can see
-          which rule is active. Resize the browser window to watch the
-          background — and the highlighted bullet — cycle through green,
-          yellow, blue, and red:
+          which rule is active. The phone frame is 375px, so the default green
+          rule is showing. The desktop frame is 1024px, inside the blue
+          1000–1250 range, and it is drawn smaller so it fits this column.
+          Each frame is its own page, so the queries follow that frame:
         </p>
         <LiveDemo mode="styled" name="MediaQueriesDemo" file="app/labs/lab2/MediaQueriesDemo.tsx">
-          <MediaQueriesDemo />
+          <ResponsivePreview
+            src={MEDIA_QUERIES_PREVIEW_SRC}
+            frames={MEDIA_QUERY_PREVIEW_FRAMES}
+          />
         </LiveDemo>
       
         <OnYourOwn>

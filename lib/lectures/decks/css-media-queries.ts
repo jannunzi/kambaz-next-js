@@ -132,7 +132,7 @@ export const CSS_MEDIA_QUERIES_SLIDES: LectureSlide[] = [
 export default function MediaQueriesDemo() {
   return (
     <div className="wd-media-queries-demo">
-      <h1>Media Query Demo</h1>
+      <h2>Media Query Demo</h2>
       <p>
         This demo uses CSS media queries to change colors based on screen width:
       </p>
