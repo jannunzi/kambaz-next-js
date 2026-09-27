@@ -11,12 +11,15 @@ import {
   listStaffQueueSections,
   parseStaffStudentKey,
   resolveStaffSectionFilter,
+  selectRosterSubmission,
   staffGraderAccess,
   staffGraderHref,
   staffQueueForSection,
   staffRowSectionLabel,
+  studentVisibleSubmission,
   UNSECTIONED_LABEL,
 } from "./staff";
+import { statusForAssignment } from "./submission-status";
 import type { AssignmentSubmissionDoc } from "./submissions-store";
 
 function submission(
@@ -119,6 +122,69 @@ describe("staff student queue", () => {
     assert.equal(queue[0].vercelUrl, "https://jane-a1.vercel.app");
     assert.equal(queue[1].email, "pat@northeastern.edu");
     assert.equal(queue[1].hasSubmission, false);
+  });
+
+  it("uses the newest submission when two Clerk accounts match one roster student", () => {
+    const older = submission({
+      clerkUserId: "user_old",
+      email: "jane.personal@gmail.com",
+      canvasUserId: "c1",
+      githubUrl: "https://github.com/jane-doe/old",
+      vercelUrl: "https://old.vercel.app",
+      updatedAt: new Date("2026-09-20T15:00:00.000Z"),
+    });
+    const newer = submission({
+      clerkUserId: "user_new",
+      rosterEmail: "Jane.Doe@northeastern.edu",
+      email: "jane.doe@northeastern.edu",
+      canvasUserId: "c1",
+      githubUrl: "https://github.com/jane-doe/webdev-client",
+      vercelUrl: "https://jane-new.vercel.app",
+      updatedAt: new Date("2026-09-28T00:52:00.000Z"),
+      staffGrade: {
+        earnedPoints: 95,
+        totalPoints: 100,
+        percent: 95,
+        acceptedProposed: false,
+        gradedAt: new Date("2026-09-28T01:15:00.000Z"),
+      },
+    });
+    const rosterEntry = {
+      email: "jane.doe@northeastern.edu",
+      name: "Doe, Jane",
+      canvasUserId: "c1",
+    };
+
+    const selected = selectRosterSubmission(rosterEntry, [older, newer]);
+    assert.equal(selected?.clerkUserId, "user_new");
+    assert.equal(selected?.vercelUrl, "https://jane-new.vercel.app");
+    assert.equal(
+      selectRosterSubmission(rosterEntry, [newer, older])?.clerkUserId,
+      "user_new",
+    );
+
+    const visible = studentVisibleSubmission({
+      clerkUserId: "user_old",
+      rosterEntry,
+      submissions: [older, newer],
+    });
+    assert.equal(visible?.clerkUserId, "user_new");
+    assert.equal(visible?.githubUrl, "https://github.com/jane-doe/webdev-client");
+    assert.equal(
+      statusForAssignment({
+        assignmentId: "a1",
+        hasSubmission: Boolean(visible),
+        staffGrade: visible?.staffGrade,
+      }),
+      "graded",
+    );
+
+    const queue = buildStaffStudentQueue([rosterEntry], [older, newer]);
+    assert.equal(queue.length, 1);
+    assert.equal(queue[0].clerkUserId, "user_new");
+    assert.equal(queue[0].vercelUrl, "https://jane-new.vercel.app");
+    assert.equal(queue[0].hasSubmission, true);
+    assert.equal(queue[0].staffGrade?.earnedPoints, 95);
   });
 
   it("appends unmatched submissions after the roster", () => {

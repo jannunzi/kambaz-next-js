@@ -35,6 +35,7 @@ import {
   listStaffQueueSections,
   resolveStaffSectionFilter,
   staffQueueForSection,
+  studentVisibleSubmission,
   type StaffStudentRow,
 } from "@/lib/assignments/staff";
 import { buildA1GateDiagnostics } from "@/lib/assignments/diagnostics";
@@ -238,7 +239,14 @@ export default async function AssignmentDetailPage({
           !impersonating &&
           supportsUrlSubmission(assignment.id)
         ) {
-          const doc = await readAssignmentSubmission(userId, assignment.id);
+          const doc =
+            roster.status === "matched"
+              ? studentVisibleSubmission({
+                  clerkUserId: userId,
+                  rosterEntry: roster.entry,
+                  submissions: await listSubmissionsForAssignment(assignment.id),
+                })
+              : await readAssignmentSubmission(userId, assignment.id);
           initialSubmission = doc ? toSubmissionView(doc) : null;
         }
       } catch (error) {

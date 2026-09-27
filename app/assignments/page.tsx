@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { formatLongDate } from "@/app/syllabus/data/dates";
 import { assignmentsIntro } from "@/app/syllabus/data/assignments";
 import { supportsUrlSubmission } from "@/lib/assignments/access";
 import { listAssignmentIds, listAssignments, rubricPointTotal } from "@/lib/assignments/catalog";
-import { readAssignmentSubmission } from "@/lib/assignments/submissions";
+import { studentVisibleSubmission } from "@/lib/assignments/staff";
+import {
+  listSubmissionsForAssignment,
+  readAssignmentSubmission,
+} from "@/lib/assignments/submissions";
+import type { AssignmentSubmissionDoc } from "@/lib/assignments/submissions-store";
 import {
   statusForAssignment,
   type StudentSubmissionStatus,
@@ -16,6 +21,10 @@ import {
   isAssignmentProgressConfigured,
   isClerkConfigured,
 } from "@/lib/config";
+import { canvasUserIdFromMetadata } from "@/lib/roster/emails";
+import { loadClerkRosterEmails } from "@/lib/roster/load-clerk-emails";
+import { lookupCanvasRoster } from "@/lib/roster/lookup";
+import type { CanvasRosterEntry } from "@/lib/roster/types";
 import AssignmentHubNav from "./components/AssignmentHubNav";
 import AssignmentStatusBadge from "./components/AssignmentStatusBadge";
 
@@ -32,14 +41,39 @@ async function loadSubmissionStatuses(): Promise<
     return notSubmitted;
   }
   try {
-    const { userId } = await auth();
+    const { userId, sessionClaims } = await auth();
     if (!userId) return notSubmitted;
-    const docs = await Promise.all(
-      urlIds.map((id) => readAssignmentSubmission(userId, id)),
-    );
+    let rosterEntry: CanvasRosterEntry | null = null;
+    try {
+      const user = await currentUser();
+      const emails = await loadClerkRosterEmails({
+        user,
+        sessionClaims,
+        userId,
+      });
+      const canvasUserId = canvasUserIdFromMetadata(user);
+      const roster = await lookupCanvasRoster({
+        emails,
+        canvasUserIds: canvasUserId ? [canvasUserId] : [],
+      });
+      if (roster.status === "matched") rosterEntry = roster.entry;
+    } catch (error) {
+      console.error("assignment list roster lookup failed", error);
+    }
+    const chosen: Array<AssignmentSubmissionDoc | null> = rosterEntry
+      ? (
+          await Promise.all(urlIds.map((id) => listSubmissionsForAssignment(id)))
+        ).map((submissions) =>
+          studentVisibleSubmission({
+            clerkUserId: userId,
+            rosterEntry,
+            submissions,
+          }),
+        )
+      : await Promise.all(urlIds.map((id) => readAssignmentSubmission(userId, id)));
     const statuses = new Map<AssignmentId, StudentSubmissionStatus>();
     urlIds.forEach((id, index) => {
-      const doc = docs[index];
+      const doc = chosen[index] ?? null;
       const status = statusForAssignment({
         assignmentId: id,
         hasSubmission: Boolean(doc),
