@@ -11,11 +11,17 @@ import {
   type SubmissionGateReason,
 } from "@/lib/assignments/submission-form";
 import {
+  notSubmittedMessage,
+  showSubmittedConfirmation,
+  submitActionLabel,
+} from "@/lib/assignments/submission-status";
+import {
   runAssignmentChecks,
   runPublicAssignmentChecks,
   saveAssignmentSubmission,
 } from "../submission-actions";
 import { runStaffAssignmentChecks } from "../staff-actions";
+import SubmittedConfirmation from "./SubmittedConfirmation";
 
 export type { SubmissionGateReason };
 
@@ -65,6 +71,7 @@ export default function A1SubmissionForm({
   );
   const [note, setNote] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [pendingAction, setPendingAction] = useState<"save" | "check" | null>(
     null,
   );
@@ -77,15 +84,22 @@ export default function A1SubmissionForm({
 
   const savedAt = savedToAccount ? formatSavedAt(submission?.updatedAt) : null;
   const checkedAt = formatSavedAt(submission?.lastCheckedAt);
+  const hasStoredSubmission = Boolean(savedToAccount && submission);
+  const showSubmitted = showSubmittedConfirmation({
+    hasSubmission: hasStoredSubmission,
+    submitFailed: Boolean(submitError),
+  });
 
   function applySave(
     result: Awaited<ReturnType<typeof saveAssignmentSubmission>>,
   ) {
     if (!result.ok) {
-      setError(result.message);
+      setSubmitError(notSubmittedMessage(result.message));
+      setError(null);
       setNote(null);
       return;
     }
+    setSubmitError(null);
     setError(null);
     setGithubUrl(result.submission.githubUrl);
     setVercelUrl(result.submission.vercelUrl);
@@ -93,11 +107,7 @@ export default function A1SubmissionForm({
     setSubmission(result.submission);
     setSavedToAccount(result.persisted);
     onSubmission?.(result.submission);
-    setNote(
-      result.persisted
-        ? ASSIGNMENT_STUDENT_COPY.saved
-        : ASSIGNMENT_STUDENT_COPY.savedButNotPersisted,
-    );
+    setNote(result.persisted ? null : ASSIGNMENT_STUDENT_COPY.savedButNotPersisted);
   }
 
   function applyRun(result: {
@@ -181,6 +191,19 @@ export default function A1SubmissionForm({
         <p className="rounded-lg border-2 border-amber-500 bg-amber-50 px-4 py-3 font-sans text-sm text-amber-950">
           {ASSIGNMENT_STUDENT_COPY.impersonationBanner}
         </p>
+      ) : null}
+
+      {!staffReview && submitError ? (
+        <div
+          role="alert"
+          className="mb-3 rounded-lg border-2 border-red-600 bg-red-50 px-4 py-3 font-sans text-sm text-red-950"
+        >
+          <p className="m-0 font-semibold">Not submitted</p>
+          <p className="mb-0 mt-1">{submitError}</p>
+        </div>
+      ) : null}
+      {!staffReview && showSubmitted && submission ? (
+        <SubmittedConfirmation submission={submission} />
       ) : null}
 
       <form
@@ -270,7 +293,10 @@ export default function A1SubmissionForm({
               disabled={pendingAction !== null}
               onClick={onSaveUrls}
             >
-              {pendingAction === "save" ? "Saving…" : "Save URLs"}
+              {submitActionLabel({
+                hasSubmission: hasStoredSubmission,
+                pending: pendingAction === "save",
+              })}
             </button>
           ) : null}
           <div className="flex flex-wrap gap-2">
@@ -302,7 +328,7 @@ export default function A1SubmissionForm({
           </div>
         </form>
 
-      {savedAt ? (
+      {staffReview && savedAt ? (
         <p className="mb-1 mt-3 font-sans text-sm text-neutral-700">
           Last saved {savedAt}
           {checkedAt ? ` · Last checked ${checkedAt}` : null}

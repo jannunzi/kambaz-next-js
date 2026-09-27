@@ -1,17 +1,66 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { auth } from "@clerk/nextjs/server";
 import { formatLongDate } from "@/app/syllabus/data/dates";
 import { assignmentsIntro } from "@/app/syllabus/data/assignments";
-import { listAssignments, rubricPointTotal } from "@/lib/assignments/catalog";
+import { supportsUrlSubmission } from "@/lib/assignments/access";
+import { listAssignmentIds, listAssignments, rubricPointTotal } from "@/lib/assignments/catalog";
+import { readAssignmentSubmission } from "@/lib/assignments/submissions";
+import {
+  statusForAssignment,
+  type StudentSubmissionStatus,
+} from "@/lib/assignments/submission-status";
+import type { AssignmentId } from "@/lib/assignments/types";
 import { COURSE_WEBSITE_ACCOUNT_COPY } from "@/lib/course-site/account-copy";
+import {
+  isAssignmentProgressConfigured,
+  isClerkConfigured,
+} from "@/lib/config";
 import AssignmentHubNav from "./components/AssignmentHubNav";
+import AssignmentStatusBadge from "./components/AssignmentStatusBadge";
+
+export const dynamic = "force-dynamic";
+
+async function loadSubmissionStatuses(): Promise<
+  Map<AssignmentId, StudentSubmissionStatus>
+> {
+  const urlIds = listAssignmentIds().filter((id) => supportsUrlSubmission(id));
+  const notSubmitted = new Map<AssignmentId, StudentSubmissionStatus>(
+    urlIds.map((id) => [id, "not_submitted"]),
+  );
+  if (!isClerkConfigured() || !isAssignmentProgressConfigured()) {
+    return notSubmitted;
+  }
+  try {
+    const { userId } = await auth();
+    if (!userId) return notSubmitted;
+    const docs = await Promise.all(
+      urlIds.map((id) => readAssignmentSubmission(userId, id)),
+    );
+    const statuses = new Map<AssignmentId, StudentSubmissionStatus>();
+    urlIds.forEach((id, index) => {
+      const doc = docs[index];
+      const status = statusForAssignment({
+        assignmentId: id,
+        hasSubmission: Boolean(doc),
+        staffGrade: doc?.staffGrade,
+      });
+      if (status) statuses.set(id, status);
+    });
+    return statuses;
+  } catch (error) {
+    console.error("assignment list submission status failed", error);
+    return new Map();
+  }
+}
 
 export const metadata: Metadata = {
   title: "Assignments — CS 4550 / CS 5610",
 };
 
-export default function AssignmentsIndexPage() {
+export default async function AssignmentsIndexPage() {
   const items = listAssignments();
+  const statuses = await loadSubmissionStatuses();
 
   return (
     <article className="page-content">
@@ -37,15 +86,17 @@ export default function AssignmentsIndexPage() {
       <ul className="mt-6 list-none space-y-3 p-0">
         {items.map((item) => {
           const points = item.rubric ? rubricPointTotal(item.rubric) : null;
+          const status = statuses.get(item.id);
           return (
             <li
               key={item.id}
               className="rounded-lg border border-neutral-300 bg-white p-4 shadow-sm"
             >
-              <h2 className="mt-0 mb-1 font-sans text-lg font-semibold">
+              <h2 className="mt-0 mb-1 flex flex-wrap items-center gap-2 font-sans text-lg font-semibold">
                 <Link href={`/assignments/${item.id}`}>
                   {item.canvasId} — {item.title}
                 </Link>
+                {status ? <AssignmentStatusBadge status={status} /> : null}
               </h2>
               <p className="mt-0 mb-2 font-sans text-sm text-neutral-700">
                 {item.dueDate ? `Due ${formatLongDate(item.dueDate)}` : null}
