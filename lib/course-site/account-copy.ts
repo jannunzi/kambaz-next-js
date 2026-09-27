@@ -25,7 +25,7 @@ export const COURSE_WEBSITE_ACCOUNT_COPY = {
   assignmentAuthHint:
     "Need an account? Sign up first with the same Northeastern email you use on Canvas, then Sign in. This site is not Canvas, and accounts are not pre-provisioned. Using your Canvas email lets us map site progress back to the roster.",
   assignmentSignInHint:
-    "This site is separate from Canvas. Accounts are not created for you — Sign up first with the same Northeastern email you use on Canvas, then Sign in to save URLs across devices.",
+    "This site is separate from Canvas. Accounts are not created for you — Sign up first with the same Northeastern email you use on Canvas, then Sign in to submit URLs across devices.",
   signInWithCanvasEmail: "Sign in with your Canvas email",
   signUpWithCanvasEmail: "Sign up with your Canvas email",
   signUpCtaSuffix: "if you do not have an account yet.",

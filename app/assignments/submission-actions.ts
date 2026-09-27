@@ -68,7 +68,7 @@ function gateMessage(
     case "invalid":
       return ASSIGNMENT_STUDENT_COPY.unknownAssignment;
     default:
-      return "Could not save the submission.";
+      return "Could not submit.";
   }
 }
 

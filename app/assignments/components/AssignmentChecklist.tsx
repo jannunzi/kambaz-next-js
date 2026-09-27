@@ -12,6 +12,7 @@ import {
   gradePoints,
   rowPresentation,
   studentAutoPoints,
+  visibleCheckMessage,
   type CriterionGradeRow,
   type GradeAudience,
 } from "@/lib/assignments/grade-rows";
@@ -104,6 +105,12 @@ function CriterionRow({
     changed,
     audience,
     manual,
+    skipped: Boolean(result?.skipped),
+  });
+  const checkMessage = visibleCheckMessage({
+    message: result?.message,
+    skipped: result?.skipped,
+    manual: manual && audience === "student",
   });
   const autoId = `auto-${criterion.id}`;
   const overrideId = `override-${criterion.id}`;
@@ -193,8 +200,8 @@ function CriterionRow({
         <p className="mb-1 font-sans text-sm">{ASSIGNMENT_STUDENT_COPY.manualCheckHint}</p>
       ) : null}
       <p className="mb-1 text-sm">{criterion.description}</p>
-      {result && !result.skipped && result.message ? (
-        <p className="mb-1 font-sans text-sm">{result.message}</p>
+      {checkMessage ? (
+        <p className="mb-1 font-sans text-sm">{checkMessage}</p>
       ) : null}
       <p className="mb-0 font-sans text-sm">
         <span className="font-medium">{criterion.points} pts</span>
@@ -296,7 +303,7 @@ export default function AssignmentChecklist({
               ? `${headerPoints.earnedPoints} / ${headerPoints.totalPoints} pts`
               : `Auto checks ${headerPoints.earnedPoints} / ${headerPoints.totalPoints} pts`
             : supportsUrlSubmission(assignment.id)
-              ? "No checks yet. Run to score this page. Checkmarks are not saved."
+              ? "No checks yet. Run to score this page. Checkmarks stay on this page only."
               : "Checked by staff at grading. This page does not save checkmarks or award points."}
         </p>
         {savedPoints ? (

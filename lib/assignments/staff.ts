@@ -84,19 +84,68 @@ function submissionEmails(doc: AssignmentSubmissionDoc): string[] {
     .map(normalizeEmail);
 }
 
-function matchSubmission(
-  entry: CanvasRosterEntry,
-  submissions: AssignmentSubmissionDoc[],
-): AssignmentSubmissionDoc | undefined {
-  const email = normalizeEmail(entry.email);
+function submissionUpdatedAt(doc: AssignmentSubmissionDoc): number {
+  const value = doc.updatedAt as Date | string;
+  const time = value instanceof Date ? value.getTime() : new Date(value).getTime();
+  return Number.isNaN(time) ? Number.NEGATIVE_INFINITY : time;
+}
+
+/** Same identity the staff queue uses: roster email or Canvas user id. */
+export function submissionMatchesRosterStudent(
+  entry: { email?: string | null; canvasUserId?: string | null },
+  doc: AssignmentSubmissionDoc,
+): boolean {
+  const email = entry.email ? normalizeEmail(entry.email) : "";
+  if (email && submissionEmails(doc).includes(email)) return true;
   const canvasId = entry.canvasUserId?.trim();
-  return submissions.find((doc) => {
-    if (submissionEmails(doc).includes(email)) return true;
-    if (canvasId && doc.canvasUserId && doc.canvasUserId.trim() === canvasId) {
-      return true;
+  return Boolean(canvasId && doc.canvasUserId && doc.canvasUserId.trim() === canvasId);
+}
+
+/**
+ * Newest submission for one canvas_roster student across every linked
+ * Clerk account. A document matches the roster email (or Canvas id), and
+ * when `clerkUserId` is set, the signed-in account's own document matches
+ * too. Staff grading omits `clerkUserId` and still collapses every roster
+ * match to this same newest record. The student Submitted banner passes
+ * both keys so a development Clerk id and a production Clerk id agree.
+ */
+export function selectRosterSubmission(
+  entry: { email?: string | null; canvasUserId?: string | null },
+  submissions: readonly AssignmentSubmissionDoc[],
+  options?: { clerkUserId?: string | null },
+): AssignmentSubmissionDoc | undefined {
+  const clerkUserId = options?.clerkUserId?.trim() ?? "";
+  let newest: AssignmentSubmissionDoc | undefined;
+  let newestTime = Number.NEGATIVE_INFINITY;
+  for (const doc of submissions) {
+    const matchesRoster = submissionMatchesRosterStudent(entry, doc);
+    const matchesClerk = clerkUserId !== "" && doc.clerkUserId === clerkUserId;
+    if (!matchesRoster && !matchesClerk) continue;
+    const time = submissionUpdatedAt(doc);
+    if (!newest || time > newestTime) {
+      newest = doc;
+      newestTime = time;
     }
-    return false;
-  });
+  }
+  return newest;
+}
+
+/**
+ * Submission the signed-in student should see. Candidates are documents
+ * whose roster email matches the signed-in roster entry, plus the document
+ * stored under the current `clerkUserId`. The newest `updatedAt` wins, the
+ * same rule the staff queue uses for that roster student.
+ */
+export function studentVisibleSubmission(input: {
+  clerkUserId: string;
+  rosterEntry?: { email?: string | null; canvasUserId?: string | null } | null;
+  submissions: readonly AssignmentSubmissionDoc[];
+}): AssignmentSubmissionDoc | null {
+  return (
+    selectRosterSubmission(input.rosterEntry ?? {}, input.submissions, {
+      clerkUserId: input.clerkUserId,
+    }) ?? null
+  );
 }
 
 function rowFromSubmission(
@@ -147,8 +196,11 @@ export function buildStaffStudentQueue(
 
   const rosterSorted = [...roster].sort(compareStudents);
   for (const entry of rosterSorted) {
-    const matched = matchSubmission(entry, docs);
-    if (matched) used.add(matched);
+    const available = docs.filter((doc) => !used.has(doc));
+    const matched = selectRosterSubmission(entry, available);
+    for (const doc of available) {
+      if (submissionMatchesRosterStudent(entry, doc)) used.add(doc);
+    }
     const email = normalizeEmail(entry.email);
     if (matched) {
       rows.push(rowFromSubmission(matched, entry));
