@@ -112,15 +112,20 @@ export function gradePoints(rows: readonly CriterionGradeRow[]): {
   };
 }
 
-/** Student-facing auto-check total. Manual rows and override points are excluded. */
+/**
+ * Student-facing auto-check total. Manual rows, override points, and skipped
+ * rows (such as Name on Labs when the student is signed out) are left out of
+ * both the earned points and the total.
+ */
 export function studentAutoPoints(
   rows: readonly CriterionGradeRow[],
   manualIds: ReadonlySet<string>,
+  skippedIds: ReadonlySet<string> = new Set(),
 ): { earnedPoints: number; totalPoints: number; percent: number } {
   let earnedPoints = 0;
   let totalPoints = 0;
   for (const row of rows) {
-    if (manualIds.has(row.criterionId)) continue;
+    if (manualIds.has(row.criterionId) || skippedIds.has(row.criterionId)) continue;
     totalPoints += row.maxPoints;
     if (row.autoPassed) earnedPoints += row.maxPoints;
   }

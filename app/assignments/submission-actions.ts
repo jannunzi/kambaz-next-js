@@ -33,6 +33,7 @@ import {
 } from "@/lib/assignments/lock";
 import { listAssignmentReopens } from "@/lib/assignments/reopens";
 import { studentVisibleSubmission } from "@/lib/assignments/staff";
+import { submissionPersistMessage } from "@/lib/assignments/submission-status";
 import type { AssignmentId } from "@/lib/assignments/types";
 import { isAssignmentProgressConfigured } from "@/lib/config";
 import {
@@ -360,8 +361,7 @@ export async function saveAssignmentSubmission(input: {
       },
     };
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Could not save the submission.";
+    const message = submissionPersistMessage(error);
     console.error("assignment submission persist failed", message);
     return { ok: false, code: "persist_failed", message };
   }

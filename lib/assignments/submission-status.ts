@@ -170,11 +170,17 @@ export function storedSubmissionLinks(input: {
   return links;
 }
 
+/**
+ * The green Submitted banner stays up when a later update fails, so the
+ * student still sees the previous submission. `submitFailed` is the separate
+ * update-failure alert.
+ */
 export function showSubmittedConfirmation(input: {
   hasSubmission: boolean;
   submitFailed: boolean;
 }): boolean {
-  return input.hasSubmission && !input.submitFailed;
+  void input.submitFailed;
+  return input.hasSubmission;
 }
 
 /**
@@ -254,6 +260,11 @@ export function submissionGradeLine(
   return formatGradedConfirmation(summary);
 }
 
+/** Fallback when a submit write throws something other than an Error. */
+export function submissionPersistMessage(error: unknown): string {
+  return error instanceof Error ? error.message : "Could not submit.";
+}
+
 export function notSubmittedMessage(detail?: string): string {
   const lead = "Not submitted. This assignment was not submitted.";
   const extra = detail?.trim();
@@ -286,11 +297,13 @@ export function submitFailureCopy(input: {
   }
   if (input.hasSubmission) {
     const when = formatSubmittedTimestamp(input.submittedAt);
+    const kept = when
+      ? `Update failed. Your previous submission from ${when} is still on file.`
+      : "Update failed. Your previous submission is still on file.";
+    const reason = input.detail?.trim();
     return {
       title: "Update failed",
-      body: when
-        ? `Update failed. Your previous submission from ${when} is still on file.`
-        : "Update failed. Your previous submission is still on file.",
+      body: reason ? `${kept} ${reason}` : kept,
     };
   }
   return {

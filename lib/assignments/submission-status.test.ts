@@ -10,6 +10,7 @@ import {
   hasSavedStaffGrade,
   notSubmittedMessage,
   showSubmittedConfirmation,
+  submissionPersistMessage,
   signedOutStatusNote,
   statusForAssignment,
   statusForViewer,
@@ -239,14 +240,14 @@ describe("submit confirmation copy", () => {
     );
   });
 
-  it("hides the Submitted banner when the submit call failed", () => {
+  it("keeps the Submitted banner when an update fails", () => {
     assert.equal(
       showSubmittedConfirmation({ hasSubmission: true, submitFailed: false }),
       true,
     );
     assert.equal(
       showSubmittedConfirmation({ hasSubmission: true, submitFailed: true }),
-      false,
+      true,
     );
     assert.equal(
       showSubmittedConfirmation({ hasSubmission: false, submitFailed: false }),
@@ -360,13 +361,17 @@ describe("submit confirmation copy", () => {
     assert.equal(failed.title, "Update failed");
     assert.equal(
       failed.body,
-      "Update failed. Your previous submission from Sun, Sep 27, 8:52 PM ET is still on file.",
+      "Update failed. Your previous submission from Sun, Sep 27, 8:52 PM ET is still on file. Could not submit.",
     );
+    assert.match(failed.body, /Could not submit/);
     assert.doesNotMatch(`${failed.title} ${failed.body}`, /not submitted/i);
     assert.equal(
       submitFailureCopy({ hasSubmission: true, submittedAt: null }).body,
       "Update failed. Your previous submission is still on file.",
     );
+    assert.equal(submissionPersistMessage(new Error("db down")), "db down");
+    assert.equal(submissionPersistMessage(null), "Could not submit.");
+    assert.doesNotMatch(submissionPersistMessage(undefined), /save the submission/i);
   });
 
   it("uses Submit and Update submission in the student helper copy", () => {

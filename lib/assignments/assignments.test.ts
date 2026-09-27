@@ -196,6 +196,8 @@ describe("assignment catalog", () => {
     const deliveryIntro =
       A1_RUBRIC.groups.find((group) => group.id === "delivery")?.intro ?? "";
     assert.ok(deliveryIntro.includes(ASSIGNMENT_STUDENT_COPY.nameAndSectionDeliveryNote));
+    assert.match(deliveryIntro, /Name on Labs is your full Canvas name/i);
+    assert.doesNotMatch(deliveryIntro, /Name and section is/);
     assert.match(
       deliveryIntro,
       /full Canvas name on Labs \(first then last, matching the roster\), not a checkbox or control in Run checks/i,

@@ -93,7 +93,7 @@ export const ASSIGNMENT_STUDENT_COPY = {
   nameAndSection:
     "Show your full Canvas name on Labs (first then last, matching the roster). There is no Name and section checkbox or control in Run checks.",
   nameAndSectionDeliveryNote:
-    "Name and section is your full Canvas name on Labs (first then last, matching the roster), not a checkbox or control in Run checks.",
+    "Name on Labs is your full Canvas name on Labs (first then last, matching the roster), not a checkbox or control in Run checks.",
   manualCheckHint:
     "Checked by staff at grading. Staff grade this row on your deploy URL. Run checks does not mark it pass or fail. Manual check is not a failed auto check.",
   manualCheckLabNote:
