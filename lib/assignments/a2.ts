@@ -18,7 +18,7 @@ export const A2_RUBRIC: AssignmentRubric = {
           id: "a2-delivery-branch",
           label: "a2 GitHub branch",
           description:
-            "Create, commit, and push a branch named a2 on the same public repository from A1. Submit that branch’s GitHub URL (…/tree/a2).",
+            "Create, commit, and push a branch named a2 on the same public repository from A1. Submit that branch’s GitHub URL (…/tree/a2). The tree page must load.",
           points: 3,
           bookHref: "/book/ch2#sec-2-5",
           bookLabel: "§2.5",
@@ -27,7 +27,7 @@ export const A2_RUBRIC: AssignmentRubric = {
           id: "a2-delivery-vercel",
           label: "Vercel branch deployment",
           description:
-            "Enable branch deployments so a2 has its own preview URL, with Deployment Protection off.",
+            "Enable branch deployments so a2 has its own preview URL whose hostname contains -git-a2-, with Deployment Protection off.",
           points: 3,
           bookHref: "/book/ch2#sec-2-5",
           bookLabel: "§2.5",
@@ -45,7 +45,7 @@ export const A2_RUBRIC: AssignmentRubric = {
           id: "a2-delivery-labs-nav",
           label: "Labs still listed",
           description:
-            "app/labs/TOC.tsx and app/labs/page.tsx still list Lab 1 (wd-lab1-link), Lab 2 (wd-lab2-link), and Kambaz (wd-kambaz-link).",
+            "app/labs/TOC.tsx and app/labs/page.tsx still link Lab 1 (/labs/lab1), Lab 2 (/labs/lab2), and Kambaz (wd-kambaz-link).",
           points: 3,
           bookHref: "/book/ch2#sec-2-5",
           bookLabel: "§2.5",
@@ -62,7 +62,7 @@ export const A2_RUBRIC: AssignmentRubric = {
           id: "a2-lab-page",
           label: "Lab 2 page and CSS file",
           description:
-            "Create app/labs/lab2/page.tsx (id wd-lab2) and index.css, and link Lab 2 from the Labs index and TOC (id wd-lab2-link).",
+            "Create app/labs/lab2/page.tsx (id wd-lab2) and index.css, and link Lab 2 from the Labs index and TOC (href /labs/lab2).",
           points: 3,
           bookHref: "/book/ch2#sec-2-1",
           bookLabel: "§2.1",
@@ -98,7 +98,7 @@ export const A2_RUBRIC: AssignmentRubric = {
           id: "a2-lab-icons",
           label: "React Icons",
           description:
-            "Create ReactIconsSampler.tsx (id wd-react-icons-sampler) and import it on Lab 2.",
+            "Create ReactIconsSampler.tsx (id wd-react-icons-sampler) with at least one icon and import it on Lab 2.",
           points: 3,
           bookHref: "/book/ch2#sec-2-2",
           bookLabel: "§2.2",

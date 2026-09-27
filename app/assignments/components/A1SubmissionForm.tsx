@@ -172,7 +172,9 @@ export default function A1SubmissionForm({
         </p>
       )}
       <p className="mt-0 text-neutral-800">
-        {ASSIGNMENT_STUDENT_COPY.checkInstructions}
+        {assignmentId === "a2"
+          ? "Paste the a2 branch preview URL (the hostname contains -git-a2-) and the GitHub URL for that branch (…/tree/a2). Checks open that branch, then fetch Labs, Lab 2, the Tailwind page, and Kambaz screens."
+          : ASSIGNMENT_STUDENT_COPY.checkInstructions}
       </p>
 
       {impersonating ? (
@@ -193,7 +195,9 @@ export default function A1SubmissionForm({
               htmlFor={`${assignmentId}-github-url`}
               className="font-sans text-sm font-semibold"
             >
-              Public GitHub repository URL (optional)
+              {assignmentId === "a2"
+                ? "GitHub a2 branch URL (…/tree/a2)"
+                : "Public GitHub repository URL (optional)"}
             </label>
             <input
               id={`${assignmentId}-github-url`}
@@ -201,7 +205,12 @@ export default function A1SubmissionForm({
               type="url"
               inputMode="url"
               autoComplete="url"
-              placeholder="https://github.com/yourname/webdev-client"
+              required={assignmentId === "a2"}
+              placeholder={
+                assignmentId === "a2"
+                  ? "https://github.com/yourname/webdev-client/tree/a2"
+                  : "https://github.com/yourname/webdev-client"
+              }
               className="mt-1 box-border w-full rounded border border-neutral-400 bg-white px-3 py-2 font-sans text-sm"
               value={githubUrl}
               onChange={(event) => setGithubUrl(event.target.value)}

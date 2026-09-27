@@ -9,7 +9,7 @@ import {
   classifyDeployFetch,
   deployOpenFailureMessage,
 } from "./fetch-classify";
-import { htmlHasAllIds, htmlHasAnyId, htmlHasId } from "./html";
+import { htmlHasAllIds, htmlHasAnchorPath, htmlHasAnyId, htmlHasId } from "./html";
 import { hasUsableNameQuery, htmlHasStudentName, type NameQuery } from "./names";
 import { ASSIGNMENT_STUDENT_COPY } from "./student-copy";
 import {
@@ -34,7 +34,10 @@ function labsNavPassed(
 ): boolean {
   const allOk = !rule.allIds?.length || htmlHasAllIds(html, rule.allIds).ok;
   const anyOk = !rule.anyIds?.length || htmlHasAnyId(html, rule.anyIds);
-  return allOk && anyOk;
+  const hrefsOk =
+    !rule.allHrefs?.length ||
+    rule.allHrefs.every((path) => htmlHasAnchorPath(html, path));
+  return allOk && anyOk && hrefsOk;
 }
 
 export async function runChecker(
@@ -50,7 +53,7 @@ export async function runChecker(
   const githubRaw = input.githubUrl?.trim() ?? "";
   const { delivery } = config;
 
-  if (githubRaw) {
+  if (githubRaw && !delivery.branch) {
     const github = parseGithubRepoUrl(githubRaw);
     results.push(
       check(
@@ -88,15 +91,28 @@ export async function runChecker(
     if (!githubRaw) {
       passed = false;
       message = branch.missingMessage;
-    } else if (parsed && !parsed.ok) {
+    } else if (!parsed || !parsed.ok) {
       passed = false;
-      message = parsed.message;
+      message = parsed && !parsed.ok ? parsed.message : branch.missingMessage;
     } else if (named !== branch.branch) {
       passed = false;
       message = branch.wrongBranchMessage;
+    } else if (!input.probes.probeUrl) {
+      passed = false;
+      message = branch.notFoundMessage;
     } else {
-      passed = true;
-      message = branch.passMessage;
+      const treeUrl = `https://github.com/${parsed.repo.owner}/${parsed.repo.repo}/tree/${encodeURIComponent(branch.branch)}`;
+      const probe = await input.probes.probeUrl(treeUrl);
+      if (probe.ok && probe.status === 200) {
+        passed = true;
+        message = branch.passMessage;
+      } else if (probe.status === 404) {
+        passed = false;
+        message = branch.notFoundMessage;
+      } else {
+        passed = false;
+        message = probe.message || branch.notFoundMessage;
+      }
     }
     results.push(
       check(branch.criterionId, branch.label, passed, message, {
@@ -117,6 +133,23 @@ export async function runChecker(
     ),
   );
 
+  if (
+    vercel.ok &&
+    delivery.previewHostIncludes &&
+    !new URL(vercel.href).hostname.toLowerCase().includes(delivery.previewHostIncludes.toLowerCase())
+  ) {
+    results.push(
+      check(
+        `${delivery.vercelCriterionId}-branch-host`,
+        "Vercel branch deployment",
+        false,
+        delivery.previewHostMessage ||
+          `Submit the branch preview URL (hostname contains ${delivery.previewHostIncludes}).`,
+        { criterionId: delivery.vercelCriterionId, groupId: "delivery" },
+      ),
+    );
+  }
+
   if (!vercel.ok) {
     return results;
   }
@@ -126,6 +159,7 @@ export async function runChecker(
     seedPaths: config.seedPaths,
     verifyPaths: Object.values(config.verifyPaths),
     followupCap: config.followupCap,
+    extraCourseScreens: config.extraCourseScreens,
     getHtml: async (url) => classifyDeployFetch(await input.probes.getHtml(url)),
   });
   if (!crawled.ok) {
@@ -205,9 +239,28 @@ export async function runChecker(
   }
 
   for (const spec of config.autoSpecs) {
-    const scope = spec.htmlScope ?? (spec.groupId === "lab" ? "labs" : "all");
-    const html =
-      scope === "labs" ? crawled.labsHtml || crawled.allHtml : crawled.allHtml;
+    let html: string;
+    if (spec.pagePath) {
+      const page = crawled.pages.find((entry) => entry.path === spec.pagePath);
+      if (!page?.result.ok) {
+        const status = page && !page.result.ok ? page.result.status : undefined;
+        const message =
+          status === 404
+            ? `${spec.failMessage} ${spec.pagePath} returned HTTP 404.`
+            : `${spec.failMessage} Could not open ${spec.pagePath}.`;
+        results.push(
+          check(spec.criterionId, spec.label, false, message, {
+            criterionId: spec.criterionId,
+            groupId: spec.groupId,
+          }),
+        );
+        continue;
+      }
+      html = page.result.html;
+    } else {
+      const scope = spec.htmlScope ?? (spec.groupId === "lab" ? "labs" : "all");
+      html = scope === "labs" ? crawled.labsHtml || crawled.allHtml : crawled.allHtml;
+    }
     const judged = evaluateRubricSpec(spec, html);
     results.push(
       check(spec.criterionId, spec.label, judged.passed, judged.message, {

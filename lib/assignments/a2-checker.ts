@@ -16,7 +16,7 @@ export const A2_SEED_PATHS = [
   "/dashboard",
   "/courses/1234/home",
   "/courses/1234/modules",
-  "/courses/1234/people",
+  "/courses/1234/people/table",
   "/courses/1234/assignments",
   "/courses/1234/assignments/123",
 ] as const;
@@ -37,7 +37,7 @@ export const A2_VERIFY_PATHS: Record<string, string> = {
   "a2-kambaz-course-nav": "/courses/1234/home",
   "a2-kambaz-modules": "/courses/1234/modules",
   "a2-kambaz-home": "/courses/1234/home",
-  "a2-kambaz-people": "/courses/1234/people",
+  "a2-kambaz-people": "/courses/1234/people/table",
   "a2-kambaz-assignments": "/courses/1234/assignments",
   "a2-kambaz-editor": "/courses/1234/assignments/123",
   "a2-kambaz-account": "/account/signin",
@@ -45,7 +45,6 @@ export const A2_VERIFY_PATHS: Record<string, string> = {
 
 export const A2_VERIFY_HASHES: Record<string, string> = {
   "a2-delivery-name-github": "wd-github",
-  "a2-delivery-labs-nav": "wd-lab2-link",
   "a2-lab-page": "wd-lab2",
   "a2-lab-selectors": "wd-css-id-selectors",
   "a2-lab-box-model": "wd-css-colors",
@@ -70,10 +69,11 @@ const A2_LAB_SPECS: A1RubricAutoSpec[] = [
     label: "Lab 2 page and CSS file",
     kind: "ids",
     htmlScope: "labs",
-    requireAllIds: ["wd-lab2", "wd-lab2-link"],
-    passMessage: "Found the Lab 2 page (wd-lab2) and a Labs link (wd-lab2-link).",
+    requireAllIds: ["wd-lab2"],
+    requireAnchorPaths: ["/labs/lab2"],
+    passMessage: "Found the Lab 2 page (wd-lab2) and a link to /labs/lab2.",
     failMessage:
-      "Lab 2 needs id wd-lab2 on /labs/lab2 and a Labs index or TOC link with id wd-lab2-link.",
+      "Lab 2 needs id wd-lab2 on /labs/lab2 and a Labs index or TOC link to /labs/lab2.",
   },
   {
     criterionId: "a2-lab-selectors",
@@ -142,20 +142,23 @@ const A2_LAB_SPECS: A1RubricAutoSpec[] = [
     kind: "ids",
     htmlScope: "labs",
     requireAllIds: ["wd-react-icons-sampler"],
-    passMessage: "Found wd-react-icons-sampler.",
-    failMessage: "Import ReactIconsSampler on Lab 2 with id wd-react-icons-sampler.",
+    requireDescendantTag: { id: "wd-react-icons-sampler", tag: "svg" },
+    passMessage: "Found wd-react-icons-sampler with an icon svg.",
+    failMessage:
+      "Import ReactIconsSampler on Lab 2 with id wd-react-icons-sampler and at least one icon svg inside it.",
   },
   {
     criterionId: "a2-lab-tailwind",
     groupId: "lab",
     label: "Tailwind samples",
     kind: "ids",
-    htmlScope: "labs",
+    pagePath: "/labs/lab2/tailwind",
     requireAllIds: ["wd-tailwind-grid-system"],
-    requireHtmlIncludes: ["ms-4", "font-thin", "bg-red-500", "md:flex", "blur-lg"],
+    requireClassTokens: ["ms-4", "font-thin", "bg-red-500", "md:flex", "blur-lg", "grid"],
+    requireClassTokenPatterns: [{ label: "grid-cols-*", pattern: "^grid-cols-.+$" }],
     passMessage: "Found the Tailwind spacing, type, color, responsive, filter, and grid samples.",
     failMessage:
-      "Add the Tailwind samples under /labs/lab2/tailwind, including wd-tailwind-grid-system and the spacing, type, color, responsive, and filter utilities from §2.3.",
+      "Add the Tailwind samples on /labs/lab2/tailwind, including wd-tailwind-grid-system and the spacing, type, color, responsive, filter, and grid classes from §2.3.",
   },
 ];
 
@@ -176,6 +179,7 @@ export const A2_CHECKER: AssignmentChecker = {
   assignmentId: "a2",
   seedPaths: A2_SEED_PATHS,
   followupCap: A2_CHECKER_FOLLOWUP_CAP,
+  extraCourseScreens: ["people/table"],
   verifyPaths: A2_VERIFY_PATHS,
   verifyHashes: A2_VERIFY_HASHES,
   autoSpecs: A2_LAB_SPECS,
@@ -188,14 +192,18 @@ export const A2_CHECKER: AssignmentChecker = {
   })),
   delivery: {
     vercelCriterionId: "a2-delivery-vercel",
+    previewHostIncludes: "-git-a2-",
+    previewHostMessage:
+      "Submit the a2 branch preview URL. Its hostname contains -git-a2- (for example https://your-app-git-a2-yourname.vercel.app), not the main deployment.",
     labsNav: {
       criterionId: "a2-delivery-labs-nav",
       groupId: "delivery",
       label: "Labs still listed",
-      allIds: ["wd-lab1-link", "wd-lab2-link", "wd-kambaz-link"],
-      passMessage: "Found Lab 1, Lab 2, and Kambaz links on Labs.",
+      allIds: ["wd-kambaz-link"],
+      allHrefs: ["/labs/lab1", "/labs/lab2"],
+      passMessage: "Found links to Lab 1, Lab 2, and Kambaz on Labs.",
       failMessage:
-        "Labs should still link Lab 1 (wd-lab1-link), Lab 2 (wd-lab2-link), and Kambaz (wd-kambaz-link).",
+        "Labs should still link /labs/lab1, /labs/lab2, and Kambaz (wd-kambaz-link).",
     },
     github: {
       criterionId: "a2-delivery-name-github",
@@ -218,7 +226,9 @@ export const A2_CHECKER: AssignmentChecker = {
         "Submit the GitHub URL for your a2 branch, for example https://github.com/you/webdev-client/tree/a2.",
       wrongBranchMessage:
         "Point the GitHub URL at the a2 branch (…/tree/a2), not the repository root or another branch.",
-      passMessage: "GitHub URL points at the a2 branch.",
+      notFoundMessage:
+        "GitHub returned HTTP 404 for /tree/a2. Push a public a2 branch and submit https://github.com/you/webdev-client/tree/a2.",
+      passMessage: "GitHub /tree/a2 loaded (HTTP 200).",
     },
   },
 };

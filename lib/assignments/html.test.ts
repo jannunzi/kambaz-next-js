@@ -8,6 +8,10 @@ import {
   htmlHasAnyId,
   htmlHasHeadingLevels,
   htmlHasId,
+  anchorPathname,
+  htmlClassTokens,
+  htmlHasAnchorPath,
+  htmlIdContainsTag,
   isCourseScreenPath,
   isLabsPath,
   pathnameOf,
@@ -83,6 +87,8 @@ describe("url and path helpers", () => {
     assert.equal(isCourseScreenPath("/courses/RS101/home"), true);
     assert.equal(isCourseScreenPath("/Courses/RS101/Assignments/123"), true);
     assert.equal(isCourseScreenPath("/dashboard"), false);
+    assert.equal(isCourseScreenPath("/courses/1234/people"), false);
+    assert.equal(isCourseScreenPath("/courses/1234/people/table"), false);
   });
 
   it("dedupes absolute urls", () => {
@@ -106,5 +112,43 @@ describe("course and assignment id extraction", () => {
     `;
     assert.deepEqual(extractCourseIds(html), ["1234", "RS101"]);
     assert.deepEqual(extractAssignmentIds(html, "RS101"), ["A1"]);
+  });
+});
+
+describe("anchor paths and class tokens", () => {
+  it("matches lab hrefs with or without a host and trailing slash", () => {
+    const html = `
+      <a href="/labs/lab1">Lab 1</a>
+      <a href="/labs/lab2/">Lab 2</a>
+      <a href="https://app.vercel.app/labs/lab1/">absolute</a>
+      <a id="wd-kambaz-link" href="/">Kambaz</a>
+    `;
+    assert.equal(htmlHasAnchorPath(html, "/labs/lab1"), true);
+    assert.equal(htmlHasAnchorPath(html, "/labs/lab2"), true);
+    assert.equal(anchorPathname("https://app.vercel.app/labs/lab1/"), "/labs/lab1");
+    assert.equal(htmlHasAnchorPath(html, "/labs/lab3"), false);
+  });
+
+  it("reads whole class tokens and ignores prose and prefixes", () => {
+    const html = `
+      <p>Use ms-4 and grid and grid-cols-4 in your notes.</p>
+      <div class="ms-40 font-thin"></div>
+      <div className="bg-red-500 md:flex blur-lg"></div>
+      <div class="grid grid-cols-4 gap-4"></div>
+    `;
+    const tokens = htmlClassTokens(html);
+    assert.equal(tokens.includes("ms-4"), false);
+    assert.equal(tokens.includes("ms-40"), true);
+    assert.equal(tokens.includes("font-thin"), true);
+    assert.equal(tokens.includes("grid"), true);
+    assert.equal(tokens.includes("grid-cols-4"), true);
+    assert.equal(tokens.includes("md:flex"), true);
+  });
+
+  it("requires an svg inside the named element", () => {
+    const withIcon = `<div id="wd-react-icons-sampler"><div><svg class="icon"></svg></div></div>`;
+    const empty = `<div id="wd-react-icons-sampler"></div><svg></svg>`;
+    assert.equal(htmlIdContainsTag(withIcon, "wd-react-icons-sampler", "svg"), true);
+    assert.equal(htmlIdContainsTag(empty, "wd-react-icons-sampler", "svg"), false);
   });
 });

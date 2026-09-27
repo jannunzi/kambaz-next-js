@@ -113,7 +113,6 @@ function canonicalCoursePaths(courseId: string, assignmentId: string): string[] 
     `/courses/${courseId}/assignments/${assignmentId}`,
     `/courses/${courseId}/home`,
     `/courses/${courseId}/modules`,
-    `/courses/${courseId}/people`,
   ];
 }
 
@@ -159,6 +158,7 @@ function followupUrls(
   seedPaths: readonly string[],
   verifyPaths: readonly string[],
   followupCap: number,
+  extraCourseScreens: readonly string[] = [],
 ): string[] {
   const checklistPaths = checklistFollowupPaths(seedPaths, verifyPaths);
   const required = pathsOnOrigin(origin, withCaseVariants(checklistPaths));
@@ -169,6 +169,14 @@ function followupUrls(
     const assignmentId =
       extractAssignmentIds(html, courseId)[0] ?? DEFAULT_ASSIGNMENT_ID;
     for (const path of canonicalCoursePaths(courseId, assignmentId)) {
+      extraCanonical.push(path);
+      const variant = caseVariantPath(path);
+      if (variant) extraVariants.push(variant);
+    }
+    for (const screen of extraCourseScreens) {
+      const suffix = screen.replace(/^\//, "");
+      if (!suffix) continue;
+      const path = `/courses/${courseId}/${suffix}`;
       extraCanonical.push(path);
       const variant = caseVariantPath(path);
       if (variant) extraVariants.push(variant);
@@ -196,6 +204,8 @@ export async function crawlDeploy(input: {
   seedPaths: readonly string[];
   verifyPaths: readonly string[];
   followupCap: number;
+  /** Extra /courses/:id/<screen> follow-ups. A1 leaves this empty. */
+  extraCourseScreens?: readonly string[];
 }): Promise<DeployCorpus | { ok: false; message: string }> {
   const origin = deployOriginFromUrl(input.deployUrl);
   if (!origin.ok) return { ok: false, message: origin.message };
@@ -219,6 +229,7 @@ export async function crawlDeploy(input: {
     input.seedPaths,
     input.verifyPaths,
     input.followupCap,
+    input.extraCourseScreens,
   );
   const second = await Promise.all(
     more.map(async (url) => {

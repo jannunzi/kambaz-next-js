@@ -32,6 +32,94 @@ export function htmlHasAllSnippets(
   return { ok: missing.length === 0, missing };
 }
 
+/** Pathname of an anchor href, ignoring origin, query, hash, and a trailing slash. */
+export function anchorPathname(href: string): string | null {
+  const trimmed = href.trim();
+  if (
+    !trimmed ||
+    trimmed.startsWith("#") ||
+    trimmed.startsWith("mailto:") ||
+    trimmed.startsWith("javascript:")
+  ) {
+    return null;
+  }
+  try {
+    const url = new URL(trimmed, "https://deploy.local");
+    let path = url.pathname;
+    if (path.length > 1 && path.endsWith("/")) path = path.slice(0, -1);
+    return path.toLowerCase();
+  } catch {
+    return null;
+  }
+}
+
+/** True when an <a href> points at path (relative or absolute, optional trailing slash). */
+export function htmlHasAnchorPath(html: string, path: string): boolean {
+  const target = anchorPathname(path);
+  if (!target) return false;
+  const re = /<a\b[^>]*\bhref\s*=\s*["']([^"']+)["'][^>]*>/gi;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(html))) {
+    if (anchorPathname(match[1]) === target) return true;
+  }
+  return false;
+}
+
+/** Whole tokens from class and className attributes. Not prose, not substrings. */
+export function htmlClassTokens(html: string): string[] {
+  const tokens: string[] = [];
+  const re = /\b(?:className|class)\s*=\s*(?:"([^"]*)"|'([^']*)')/gi;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(html))) {
+    const value = match[1] ?? match[2] ?? "";
+    for (const token of value.split(/\s+/)) {
+      if (token) tokens.push(token);
+    }
+  }
+  return tokens;
+}
+
+function elementInnerHtml(html: string, id: string): string[] {
+  const safe = escapeRegExp(id);
+  const openRe = new RegExp(
+    `<([a-zA-Z][\\w:-]*)\\b([^>]*?)\\bid\\s*=\\s*["']${safe}["']([^>]*)>`,
+    "gi",
+  );
+  const inners: string[] = [];
+  let match: RegExpExecArray | null;
+  while ((match = openRe.exec(html))) {
+    const tag = match[1];
+    const full = match[0];
+    if (/\/\s*>$/.test(full)) {
+      inners.push("");
+      continue;
+    }
+    const start = match.index + full.length;
+    const tagRe = new RegExp(`<(/?)${escapeRegExp(tag)}\\b[^>]*>`, "gi");
+    tagRe.lastIndex = start;
+    let depth = 1;
+    let closer: RegExpExecArray | null;
+    let end = html.length;
+    while ((closer = tagRe.exec(html))) {
+      if (!closer[1] && /\/\s*>$/.test(closer[0])) continue;
+      depth += closer[1] ? -1 : 1;
+      if (depth === 0) {
+        end = closer.index;
+        break;
+      }
+    }
+    inners.push(html.slice(start, end));
+    openRe.lastIndex = end;
+  }
+  return inners;
+}
+
+/** True when any element with id contains a start tag for tagName. */
+export function htmlIdContainsTag(html: string, id: string, tagName: string): boolean {
+  const tagRe = new RegExp(`<${escapeRegExp(tagName)}\\b`, "i");
+  return elementInnerHtml(html, id).some((inner) => tagRe.test(inner));
+}
+
 export function htmlHasTag(html: string, tag: string): boolean {
   return new RegExp(`<${escapeRegExp(tag)}\\b`, "i").test(html);
 }
@@ -111,7 +199,7 @@ export function isLabsPath(path: string): boolean {
 }
 
 export function isCourseScreenPath(path: string): boolean {
-  return /^\/courses\/[^/]+\/(home|modules|assignments|people)(\/|$)/i.test(path);
+  return /^\/courses\/[^/]+\/(home|modules|assignments)(\/|$)/i.test(path);
 }
 
 export function uniqueUrls(urls: readonly (string | null | undefined)[]): string[] {

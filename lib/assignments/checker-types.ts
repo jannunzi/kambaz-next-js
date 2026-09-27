@@ -15,6 +15,8 @@ export type CheckerLabsNav = {
   allIds?: readonly string[];
   /** At least one id must be present. */
   anyIds?: readonly string[];
+  /** Anchor href pathnames that must all be present. */
+  allHrefs?: readonly string[];
   passMessage: string;
   failMessage: string;
 };
@@ -26,6 +28,11 @@ export type AssignmentChecker = {
   assignmentId: AssignmentId;
   seedPaths: readonly string[];
   followupCap: number;
+  /**
+   * Extra screens under /courses/:id/ fetched for course ids discovered
+   * on the deploy. A1 omits this so its crawl stays unchanged.
+   */
+  extraCourseScreens?: readonly string[];
   verifyPaths: Record<string, string>;
   /** Element id fragment, without a leading #. Omitted means path only. */
   verifyHashes: Record<string, string>;
@@ -35,6 +42,12 @@ export type AssignmentChecker = {
   manualRows: readonly CheckerManualRow[];
   delivery: {
     vercelCriterionId: string;
+    /**
+     * When set, the deployment hostname must contain this substring
+     * (Vercel branch previews look like `…-git-a2-…`).
+     */
+    previewHostIncludes?: string;
+    previewHostMessage?: string;
     labsNav: CheckerLabsNav;
     github: {
       criterionId: string;
@@ -59,6 +72,8 @@ export type AssignmentChecker = {
       branch: string;
       missingMessage: string;
       wrongBranchMessage: string;
+      /** Shown when /tree/<branch> responds 404. */
+      notFoundMessage: string;
       passMessage: string;
     };
   };
