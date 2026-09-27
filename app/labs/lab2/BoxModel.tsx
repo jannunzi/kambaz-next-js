@@ -2,14 +2,15 @@ export default function BoxModel() {
   return (
     <div id="wd-css-box-model">
       <h2>Box model</h2>
-      <div className="wd-box-model-margin">
-        margin
-        <div className="wd-box-model-border">
-          border
-          <div className="wd-box-model-padding">
-            padding
-            <div className="wd-box-model-content">content</div>
-          </div>
+      <div className="wd-box-model-parent">
+        <div>parent background (shows through the margin)</div>
+        <div className="wd-box-model-margin-label">
+          margin (transparent: the parent's gray shows through)
+        </div>
+        <div className="wd-box-model-box">
+          <span className="wd-box-model-border-label">border (the red ring)</span>
+          <span className="wd-box-model-padding-label">padding</span>
+          <div className="wd-box-model-content">content</div>
         </div>
       </div>
       <h3>box-sizing</h3>

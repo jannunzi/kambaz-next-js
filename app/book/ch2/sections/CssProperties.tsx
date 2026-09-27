@@ -378,8 +378,9 @@ export default function Lab2() {
           wide. Layout math is much easier with{" "}
           <code>border-box</code>, which is why many style resets (and Tailwind
           later) set it globally. Add the box-model classes and a{" "}
-          <code>BoxModel.tsx</code>{" "}that nests the four layers, then two
-          boxes that share the same <code>width</code>, <code>height</code>,{" "}
+          <code>BoxModel.tsx</code>{" "}that puts margin, border, padding, and
+          content on one box inside a gray parent, then two boxes that share
+          the same <code>width</code>, <code>height</code>,{" "}
           <code>padding</code>, and <code>border</code>{" "}but differ only in{" "}
           <code>box-sizing</code>:
         </p>
@@ -387,23 +388,37 @@ export default function Lab2() {
           language="css"
           name="Lab2 styles"
           file="app/labs/lab2/index.css"
-        >{`.wd-box-model-margin {
-  background-color: #f8d7da;
-  padding: 20px;
-  margin: 10px 0;
+        >{`.wd-box-model-parent {
+  background-color: lightgray;
+  padding: 8px 12px 12px;
 }
-.wd-box-model-border {
-  background-color: #fff3cd;
+.wd-box-model-margin-label,
+.wd-box-model-border-label,
+.wd-box-model-padding-label {
+  font-size: 12px;
+  line-height: 12px;
+}
+.wd-box-model-box {
+  position: relative;
+  margin: 20px;
+  padding: 20px;
   border: 10px solid #c41e3a;
-  padding: 20px;
-}
-.wd-box-model-padding {
   background-color: #cfe2ff;
-  padding: 20px;
+}
+.wd-box-model-border-label {
+  position: absolute;
+  top: -24px;
+  left: 0;
+  color: #c41e3a;
+}
+.wd-box-model-padding-label {
+  position: absolute;
+  top: 2px;
+  left: 6px;
 }
 .wd-box-model-content {
   background-color: #d1e7dd;
-  padding: 10px;
+  padding: 8px;
 }
 .wd-box-sizing-demo {
   background-color: lightgray;
@@ -432,14 +447,15 @@ export default function Lab2() {
   return (
     <div id="wd-css-box-model">
       <h2>Box model</h2>
-      <div className="wd-box-model-margin">
-        margin
-        <div className="wd-box-model-border">
-          border
-          <div className="wd-box-model-padding">
-            padding
-            <div className="wd-box-model-content">content</div>
-          </div>
+      <div className="wd-box-model-parent">
+        <div>parent background (shows through the margin)</div>
+        <div className="wd-box-model-margin-label">
+          margin (transparent: the parent's gray shows through)
+        </div>
+        <div className="wd-box-model-box">
+          <span className="wd-box-model-border-label">border (the red ring)</span>
+          <span className="wd-box-model-padding-label">padding</span>
+          <div className="wd-box-model-content">content</div>
         </div>
       </div>
       <h3>box-sizing</h3>
@@ -455,8 +471,12 @@ export default function Lab2() {
   );
 }`}</CodeBlock>
         <p>
-          The nested labels walk outward through the four layers. Below them,
-          both yellow boxes set <code>margin-bottom: 10px</code> (the other
+          The gray around the blue box is that box&apos;s 20px margin: it is
+          transparent, so the parent&apos;s background shows through. The red
+          words sit in that margin, just outside the red ring, which is the
+          border. The light blue area is the padding, and the green child is
+          the content. Below that, both yellow boxes set{" "}
+          <code>margin-bottom: 10px</code> (the other
           margins stay 0), a 10px border, 20px of padding,{" "}
           <code>width: 200px</code>, and <code>height: 180px</code>. Under{" "}
           <code>content-box</code> those lengths are the content box, so that
