@@ -18,7 +18,8 @@ import ReactIconsSampler from "@/app/labs/lab2/intermediates/2-2-ReactIconsSampl
 import TailwindSpacing from "@/app/labs/lab2/tailwind/TailwindSpacing";
 import TailwindTypography from "@/app/labs/lab2/tailwind/TailwindTypography";
 import TailwindBackgroundColors from "@/app/labs/lab2/tailwind/TailwindBackgroundColors";
-import TailwindResponsiveDesign from "@/app/labs/lab2/tailwind/TailwindResponsiveDesign";
+import ResponsivePreview from "../../components/ResponsivePreview";
+import { TAILWIND_RESPONSIVE_PREVIEW_SRC } from "../../components/responsive-preview-model";
 import TailwindFilters from "@/app/labs/lab2/tailwind/TailwindFilters";
 import TailwindGrids from "@/app/labs/lab2/tailwind/TailwindGrids";
 
@@ -50,7 +51,8 @@ export default function IconsAndTailwind() {
           language="tsx"
           name="ReactIconsSampler"
           file="app/labs/lab2/ReactIconsSampler.tsx"
-        >{`import { FaCalendar, FaEnvelopeOpenText, FaRegClock } from "react-icons/fa";
+        >{`import "@/app/labs/lab2/tailwind/utilities.css";
+import { FaCalendar, FaEnvelopeOpenText, FaRegClock } from "react-icons/fa";
 import { AiOutlineDashboard } from "react-icons/ai";
 import { FaBookBible } from "react-icons/fa6";
 import { VscAccount } from "react-icons/vsc";
@@ -58,7 +60,7 @@ import { VscAccount } from "react-icons/vsc";
 export default function ReactIconsSampler() {
   return (
     <div id="wd-react-icons-sampler" className="mb-4 font-sans">
-      <h3 className="text-lg font-semibold">React Icons Sampler</h3>
+      <h2 className="text-lg font-semibold">React Icons Sampler</h2>
       <div className="flex gap-3 text-3xl">
         <VscAccount />
         <AiOutlineDashboard />
@@ -234,9 +236,19 @@ export default function TailwindLab() {
     <div>
       <h2 className="text-3xl">Font Size</h2>
       <p className="text-sm">This is small text.</p>
+      <p className="text-base">This is base text.</p>
+      <p className="text-lg">This is large text.</p>
+      <p className="text-xl">This is extra large text.</p>
+      <p className="text-2xl">This is 2x extra large text.</p>
       <p className="text-3xl">This is 3x extra large text.</p>
       <h2 className="text-3xl font-bold mt-4">Font Weight</h2>
       <p className="font-thin">This is thin font weight.</p>
+      <p className="font-light">This is light font weight.</p>
+      <p className="font-normal">This is normal font weight.</p>
+      <p className="font-medium">This is medium font weight.</p>
+      <p className="font-semibold">This is semi-bold font weight.</p>
+      <p className="font-bold">This is bold font weight.</p>
+      <p className="font-extrabold">This is extra-bold font weight.</p>
       <p className="font-black">This is black font weight.</p>
     </div>
   );
@@ -295,7 +307,7 @@ export default function TailwindLab() {
 }`}</CodeBlock>
         <p>
           Four bands of color render top to bottom — the same{" "}
-          <code>-500</code>{" "}shade across red, green, and blue, but
+          <code>-500</code>{" "}shade across red, green, and blue, but{" "}
           <code>yellow-500</code>{" "}is light enough that it needs black text
           instead of white to stay legible:
         </p>
@@ -327,7 +339,7 @@ export default function TailwindLab() {
           applies at every width, while a class prefixed with a breakpoint
           like <code>md:</code>{" "}only takes effect once the viewport reaches
           that breakpoint and up. Save an image of the React logo to{" "}
-          <code>public/images/reactjs.jpg</code>{" "}(already available from
+          <code>public/images/reactjs.jpg</code>{" "}(already available from{" "}
           <ChapterLink to={1} />&apos;s Kambaz Dashboard exercise) and build a card that
           stacks vertically on narrow screens but switches to a side-by-side
           layout at the <code>md</code>{" "}breakpoint:
@@ -338,39 +350,71 @@ export default function TailwindLab() {
           file="app/labs/lab2/tailwind/TailwindResponsiveDesign.tsx"
         >{`export default function TailwindResponsiveDesign() {
   return (
-    <div className="mx-auto max-w-md overflow-hidden rounded-xl bg-white shadow-md md:max-w-2xl">
-      <div className="md:flex">
-        <div className="md:shrink-0">
-          <img
-            className="h-48 w-full object-cover md:h-full md:w-48"
-            src="/images/reactjs.jpg"
-            alt="ReactJS logo"
-          />
-        </div>
-        <div className="p-8">
-          <div className="text-sm font-semibold tracking-wide text-indigo-500 uppercase">
-            Professional Courses
+    <div className="font-sans">
+      <h2 className="text-3xl font-bold mb-4">Responsive Design</h2>
+      <div className="mx-auto w-full max-w-md overflow-hidden rounded-xl bg-white shadow-md md:max-w-2xl">
+        <div className="md:flex">
+          <div className="relative md:w-48 md:shrink-0">
+            <img
+              className="h-56 w-full object-cover md:h-full md:min-h-56 md:w-48"
+              src="/images/reactjs.jpg"
+              alt="React JS"
+            />
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
+              <svg
+                viewBox="0 0 24 24"
+                className="h-24 w-24"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="2.05" fill="currentColor" />
+                <g fill="none" stroke="currentColor" strokeWidth="1">
+                  <ellipse cx="12" cy="12" rx="10" ry="4.2" />
+                  <ellipse
+                    cx="12"
+                    cy="12"
+                    rx="10"
+                    ry="4.2"
+                    transform="rotate(60 12 12)"
+                  />
+                  <ellipse
+                    cx="12"
+                    cy="12"
+                    rx="10"
+                    ry="4.2"
+                    transform="rotate(120 12 12)"
+                  />
+                </g>
+              </svg>
+              <div className="mt-2 text-2xl font-semibold">React JS</div>
+            </div>
           </div>
-          <a href="#" className="mt-1 block text-lg leading-tight font-medium text-black hover:underline">
-            Rocket Propulsion Fundamentals
-          </a>
-          <p className="mt-2 text-gray-500">
-            An in-depth study of the fundamentals of rocket propulsion...
-          </p>
+          <div className="min-w-0 p-8">
+            <div className="text-sm font-semibold tracking-wide text-indigo-500 uppercase">
+              Professional Courses
+            </div>
+            <a
+              href="#"
+              className="mt-1 block text-lg leading-tight font-medium text-black no-underline hover:underline"
+            >
+              Rocket Propulsion Fundamentals
+            </a>
+            <p className="mt-2 text-gray-500">
+              An in-depth study of the fundamentals of rocket propulsion...
+            </p>
+          </div>
         </div>
       </div>
     </div>
   );
 }`}</CodeBlock>
         <p>
-          Drag this figure&apos;s panel narrower and wider — below the{" "}
-          <code>md</code>{" "}breakpoint the image sits above the text in a
-          single column; at <code>md</code>{" "}and above the{" "}
-          <code>md:flex</code>{" "}class kicks in and the image moves beside the
-          text:
+          The two frames below are separate pages, so <code>md:</code> follows
+          each frame. The phone frame is 375px and stacks the image on top.
+          The desktop frame is 1024px, drawn smaller so it fits this column,
+          and <code>md:flex</code>{" "}puts the image beside the text:
         </p>
         <LiveDemo mode="styled" name="TailwindResponsiveDesign" file="app/labs/lab2/tailwind/TailwindResponsiveDesign.tsx">
-          <TailwindResponsiveDesign />
+          <ResponsivePreview src={TAILWIND_RESPONSIVE_PREVIEW_SRC} />
         </LiveDemo>
         <OnYourOwn>
           In{" "}
@@ -382,8 +426,8 @@ export default function TailwindLab() {
         <WithAI
           prompt={`In app/labs/lab2/tailwind/TailwindResponsiveDesign.tsx, keep my personal copy or image unchanged. After the existing card, add a second sample card with id wd-ai-responsive that keeps the course sample copy, and add one more breakpoint utility (for example lg:p-12 on the text column, or md:bg-indigo-50 on the card) so padding or background clearly differs between narrow and wide viewports. Do not overwrite my personal card.`}
         >
-          Paste this prompt to add a second sample breakpoint — then resize the
-          panel and confirm a property changes at md or lg:
+          Paste this prompt to add a second sample breakpoint — then compare the
+          phone and desktop frames and confirm a property changes at md or lg:
         </WithAI>
 
         <h3
@@ -406,10 +450,12 @@ export default function TailwindLab() {
           name="TailwindFilters"
           file="app/labs/lab2/tailwind/TailwindFilters.tsx"
         >{`export default function TailwindFilters() {
+  // Download angel-falls.jpg into public/images for the PDF exercise;
+  // reactjs.jpg is used here so the lab runs out of the box.
   const src = "/images/reactjs.jpg";
   return (
     <div>
-      <h3>Blurs</h3>
+      <h2>Blurs</h2>
       <div className="flex">
         <img className="blur-none w-1/4" src={src} alt="blur none" />
         <img className="blur-sm w-1/4" src={src} alt="blur sm" />
@@ -451,7 +497,9 @@ export default function TailwindLab() {
           Tailwind also wraps CSS Grid in utility classes:{" "}
           <code>grid grid-cols-4 gap-4</code>{" "}turns a container into a
           four-column grid with consistent gutters, and children automatically
-          wrap onto new rows once a row fills up:
+          wrap onto new rows once a row fills up. Start{" "}
+          <code>TailwindGrids.tsx</code> with the outer wrapper and the{" "}
+          <code>h2</code> Tailwind Grids heading, then the four-column section:
         </p>
         <CodeBlock
           language="tsx"
@@ -460,55 +508,157 @@ export default function TailwindLab() {
         >{`export default function TailwindGrids() {
   return (
     <div>
-      <h3 className="mt-6 text-3xl font-bold">4 Columns Grid</h3>
-      <div className="grid grid-cols-4 gap-4">
-        {Array.from({ length: 9 }, (_, i) => (
-          <div key={i} className="text-center bg-blue-300 p-3">
-            {String(i + 1).padStart(2, "0")}
-          </div>
-        ))}
+      <h2>Tailwind Grids</h2>
+      <div>
+        <h3 className="mt-6 text-3xl font-bold">4 Columns Grid</h3>
+        <div className="grid grid-cols-4 gap-4">
+          {Array.from({ length: 9 }, (_, i) => (
+            <div key={i} className="text-center bg-blue-300 p-3">
+              {String(i + 1).padStart(2, "0")}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
 }`}</CodeBlock>
         <p>
           Nine numbered cells flow across four columns and wrap onto a third
-          row for the last one — no manual row-breaking required:
-        </p>
-        <p>
-          A single class can also span multiple grid columns with{" "}
-          <code>col-span-{"{n}"}</code>. Append a &quot;Grid system&quot;
-          demo to the same file that mixes an even two-column split with a
-          twelve-column split for a one-third/two-thirds layout and a
-          sidebar/content/sidebar layout — the same page layouts <SectionLink to="2.1.18" />{" "}built with float, this time with Grid:
+          row for the last one. <code>col-span-2</code> stretches a cell
+          across two tracks of a three-column grid. Paste the TSX below after
+          the 4 Columns Grid, still inside the outer <code>div</code>:
         </p>
         <CodeBlock
           language="tsx"
           name="TailwindGrids"
           file="app/labs/lab2/tailwind/TailwindGrids.tsx"
-        >{`<div id="wd-tailwind-grid-system" className="mt-6">
-  <h2>Grid system</h2>
-  <div className="grid grid-cols-2 gap-2">
-    <div className="bg-red-500 text-white"><h3>Left half</h3></div>
-    <div className="bg-blue-500 text-white"><h3>Right half</h3></div>
-  </div>
-  <div className="grid grid-cols-12 gap-2 mt-2">
-    <div className="col-span-4 bg-yellow-500"><h3>One third</h3></div>
-    <div className="col-span-8 bg-green-500 text-white"><h3>Two thirds</h3></div>
-  </div>
-  <div className="grid grid-cols-12 gap-2 mt-2">
-    <div className="col-span-2 bg-black text-white"><h3>Sidebar</h3></div>
-    <div className="col-span-8 bg-gray-500 text-white"><h3>Main content</h3></div>
-    <div className="col-span-2 bg-blue-400"><h3>Sidebar</h3></div>
-  </div>
-</div>`}</CodeBlock>
+        >{`      <div>
+        <h3 className="mt-6 text-3xl font-bold">3 Columns Grid</h3>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="text-center bg-blue-300 p-3">01</div>
+          <div className="text-center bg-blue-300 p-3">02</div>
+          <div className="text-center bg-blue-300 p-3">03</div>
+          <div className="col-span-2 text-center bg-blue-300 p-3">04</div>
+          <div className="text-center bg-blue-300 p-3">05</div>
+          <div className="text-center bg-blue-300 p-3">06</div>
+          <div className="col-span-2 text-center bg-blue-300 p-3">07</div>
+        </div>
+      </div>`}</CodeBlock>
+        <p>
+          The Grid system mixes an even two-column split with a twelve-column
+          split for a one-third/two-thirds layout and a sidebar/content/sidebar
+          layout — the same page layouts{" "}
+          <SectionLink to="2.1.18" /> built with float, this time with Grid.
+          Paste the TSX below after the 3 Columns Grid, still inside the outer{" "}
+          <code>div</code>. The heading is an <code>h2</code>, the same level
+          as Tailwind Grids:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="TailwindGrids"
+          file="app/labs/lab2/tailwind/TailwindGrids.tsx"
+        >{`      <div id="wd-tailwind-grid-system" className="mt-6">
+        <h2>Grid system</h2>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="bg-red-500 text-white">
+            <h3>Left half</h3>
+          </div>
+          <div className="bg-blue-500 text-white">
+            <h3>Right half</h3>
+          </div>
+        </div>
+        <div className="grid grid-cols-12 gap-2 mt-2">
+          <div className="col-span-4 bg-yellow-500">
+            <h3>One third</h3>
+          </div>
+          <div className="col-span-8 bg-green-500 text-white">
+            <h3>Two thirds</h3>
+          </div>
+        </div>
+        <div className="grid grid-cols-12 gap-2 mt-2">
+          <div className="col-span-2 bg-black text-white">
+            <h3>Sidebar</h3>
+          </div>
+          <div className="col-span-8 bg-gray-500 text-white">
+            <h3>Main content</h3>
+          </div>
+          <div className="col-span-2 bg-blue-400">
+            <h3>Sidebar</h3>
+          </div>
+        </div>
+      </div>`}</CodeBlock>
         <p>
           A twelve-column grid is the sweet spot for page layout because
           twelve divides evenly by two, three, four, and six — which is why{" "}
           <code>col-span-4</code>{" "}(one third) and{" "}
           <code>col-span-8</code>{" "}(two thirds) add up cleanly to twelve, and
-          why the sidebar/content/sidebar row below it uses 2/8/2:
+          why the sidebar/content/sidebar row below it uses 2/8/2. Pasting
+          those three blocks in order is the finished component, which is what
+          the figure renders:
         </p>
+        <CodeBlock
+          language="tsx"
+          name="TailwindGrids"
+          file="app/labs/lab2/tailwind/TailwindGrids.tsx"
+        >{`export default function TailwindGrids() {
+  return (
+    <div>
+      <h2>Tailwind Grids</h2>
+      <div>
+        <h3 className="mt-6 text-3xl font-bold">4 Columns Grid</h3>
+        <div className="grid grid-cols-4 gap-4">
+          {Array.from({ length: 9 }, (_, i) => (
+            <div key={i} className="text-center bg-blue-300 p-3">
+              {String(i + 1).padStart(2, "0")}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div>
+        <h3 className="mt-6 text-3xl font-bold">3 Columns Grid</h3>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="text-center bg-blue-300 p-3">01</div>
+          <div className="text-center bg-blue-300 p-3">02</div>
+          <div className="text-center bg-blue-300 p-3">03</div>
+          <div className="col-span-2 text-center bg-blue-300 p-3">04</div>
+          <div className="text-center bg-blue-300 p-3">05</div>
+          <div className="text-center bg-blue-300 p-3">06</div>
+          <div className="col-span-2 text-center bg-blue-300 p-3">07</div>
+        </div>
+      </div>
+      <div id="wd-tailwind-grid-system" className="mt-6">
+        <h2>Grid system</h2>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="bg-red-500 text-white">
+            <h3>Left half</h3>
+          </div>
+          <div className="bg-blue-500 text-white">
+            <h3>Right half</h3>
+          </div>
+        </div>
+        <div className="grid grid-cols-12 gap-2 mt-2">
+          <div className="col-span-4 bg-yellow-500">
+            <h3>One third</h3>
+          </div>
+          <div className="col-span-8 bg-green-500 text-white">
+            <h3>Two thirds</h3>
+          </div>
+        </div>
+        <div className="grid grid-cols-12 gap-2 mt-2">
+          <div className="col-span-2 bg-black text-white">
+            <h3>Sidebar</h3>
+          </div>
+          <div className="col-span-8 bg-gray-500 text-white">
+            <h3>Main content</h3>
+          </div>
+          <div className="col-span-2 bg-blue-400">
+            <h3>Sidebar</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}`}</CodeBlock>
         <LiveDemo mode="styled" name="TailwindGrids" file="app/labs/lab2/tailwind/TailwindGrids.tsx">
           <TailwindGrids />
         </LiveDemo>

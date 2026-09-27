@@ -74,8 +74,7 @@ export default function IntroAndSetup() {
           hyperlinks, which users access through Uniform Resource Locators (
           <OfficialLink href="https://url.spec.whatwg.org/">
             <strong>URL</strong>
-          </OfficialLink>
-          s) using the HyperText Transfer Protocol (
+          </OfficialLink>s) using the HyperText Transfer Protocol (
           <OfficialLink href="https://httpwg.org/specs/rfc9110.html">
             <strong>HTTP</strong>
           </OfficialLink>
@@ -211,8 +210,7 @@ export default function IntroAndSetup() {
           Applications (
           <OfficialLink href="https://en.wikipedia.org/wiki/Single-page_application">
             <strong>SPA</strong>
-          </OfficialLink>
-          s), which provide a seamless, fluid
+          </OfficialLink>s), which provide a seamless, fluid
           user experience by updating only the necessary parts of the page
           without requiring full-page reloads — unlike traditional multi-page
           sites, where every link often fetches an entirely new HTML document

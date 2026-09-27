@@ -1,0 +1,74 @@
+.pair {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 1rem;
+  width: 100%;
+  max-width: 100%;
+  container-type: inline-size;
+}
+
+/* Side by side only when the desktop frame can stay readable.
+   Below this, a 1024px iframe beside the phone shrinks to about 30%. */
+@container (max-width: 52rem) {
+  .phone,
+  .desktop {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+}
+
+.pane {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.phone {
+  flex: 0 1 375px;
+  width: 375px;
+}
+
+.desktop {
+  flex: 1 1 20rem;
+  min-width: min(100%, 18rem);
+}
+
+.label {
+  margin: 0 0 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #404040;
+}
+
+/*
+ * The scaler's width is the space this column actually has. Descendants
+ * scale the iframe with 100cqw / --frame-width. The iframe element itself
+ * stays at --frame-width, so viewport breakpoints see that width.
+ */
+.scaler {
+  container-type: inline-size;
+  width: 100%;
+}
+
+.slot {
+  position: relative;
+  overflow: hidden;
+  height: calc(var(--frame-height) * 100cqw / var(--frame-width));
+  border-radius: 0.5rem;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px #d4d4d4;
+}
+
+.frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: var(--frame-width);
+  height: var(--frame-height);
+  border: 0;
+  background: #fff;
+  transform: scale(calc(100cqw / var(--frame-width)));
+  transform-origin: top left;
+}

@@ -72,10 +72,12 @@ export const TAILWIND_COLORS_SLIDES: LectureSlide[] = [
       "The book’s PDF used Angel Falls; `reactjs.jpg` is enough to see the effect",
     ],
     code: `export default function TailwindFilters() {
+  // Download angel-falls.jpg into public/images for the PDF exercise;
+  // reactjs.jpg is used here so the lab runs out of the box.
   const src = "/images/reactjs.jpg";
   return (
     <div>
-      <h3>Blurs</h3>
+      <h2>Blurs</h2>
       <div className="flex">
         <img className="blur-none w-1/4" src={src} alt="blur none" />
         <img className="blur-sm w-1/4" src={src} alt="blur sm" />

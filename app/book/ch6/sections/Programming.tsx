@@ -343,8 +343,7 @@ export default model;`}</CodeBlock>
           implemented a data access object using arrays declared in the{" "}
           <code>Database/index.js</code>{" "}files. This chapter
           refactors the DAOs so they use an actual database.{" "}
-          <ChapterLink to={5} />
-          &apos;s DAO read arrays from that barrel file. This chapter
+          <ChapterLink to={5} />&apos;s DAO read arrays from that barrel file. This chapter
           keeps the same function names and reimplements them with the
           model. The following <code>Kambaz/Users/dao.js</code>{" "}
           re-implements the CRUD operations for the users collection

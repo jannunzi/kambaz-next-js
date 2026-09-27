@@ -79,98 +79,48 @@ p#wd-id-selector-2 {
   margin: 30px;
 }
 
-/* 2.1.10 box model — DevTools-style figure.
-   The figure is the content-box sample below:
-   margin-bottom 10px (other sides 0), border 10px, padding 20px,
-   width 200px, height 180px → content 200×180.
-   The border-box sample uses the same lengths, so its content box is
-   140×120 (200 − 40 padding − 20 border by 180 − 40 − 20). */
-.wd-devtools-box {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 34rem;
-  color: #222;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, sans-serif;
-  font-size: clamp(12px, 2.5vw, 14px);
-  line-height: 1.2;
+/* 2.1.10 box model. One box: 20px margin, 10px red border, 20px padding.
+   Yellow boxes: width 200px, height 180px, padding 20px, border 10px,
+   margin-bottom 10px.
+   content-box content is 200×180 (on screen 260×240).
+   border-box content is 140×120 (on screen 200×180). */
+.wd-box-model-parent {
+  display: flow-root;
+  background-color: lightgray;
+  padding-top: 8px;
 }
-.wd-devtools-box *,
-.wd-devtools-box *::before,
-.wd-devtools-box *::after {
-  box-sizing: border-box;
+.wd-box-model-margin-label,
+.wd-box-model-border-label,
+.wd-box-model-padding-label {
+  font-size: 12px;
+  line-height: 12px;
 }
-.wd-devtools-box .wd-bm-margin,
-.wd-devtools-box .wd-bm-border,
-.wd-devtools-box .wd-bm-padding {
-  display: grid;
-  grid-template-columns: minmax(2.75rem, auto) minmax(0, 1fr) minmax(2.75rem, auto);
-  grid-template-rows: auto minmax(2.25rem, 1fr) auto;
+.wd-box-model-box {
+  position: relative;
+  margin: 20px;
+  padding: 20px;
+  border: 10px solid #c41e3a;
+  background-color: #cfe2ff;
 }
-.wd-devtools-box .wd-bm-margin {
-  background-color: #f9cc9d;
-  border: 1px dashed #222;
+.wd-box-model-border-label {
+  position: absolute;
+  top: -24px;
+  left: 0;
+  color: #c41e3a;
 }
-.wd-devtools-box .wd-bm-border,
-.wd-devtools-box .wd-bm-padding,
-.wd-devtools-box .wd-bm-content {
-  grid-column: 2;
-  grid-row: 2;
-  min-width: 0;
+.wd-box-model-margin-label {
+  position: absolute;
+  bottom: -26px;
+  left: -20px;
 }
-.wd-devtools-box .wd-bm-border {
-  background-color: #fddd9b;
-  border: 1px solid #222;
+.wd-box-model-padding-label {
+  position: absolute;
+  top: 2px;
+  left: 6px;
 }
-.wd-devtools-box .wd-bm-padding {
-  background-color: #c3d08b;
-  border: 1px dashed #222;
-}
-.wd-devtools-box .wd-bm-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2.75rem;
-  padding: 0.45rem 0.6rem;
-  background-color: #8cb6c0;
-  border: 1px solid #222;
-  text-align: center;
-  white-space: nowrap;
-}
-.wd-devtools-box .wd-bm-label {
-  z-index: 1;
-  grid-column: 1;
-  grid-row: 1;
-  align-self: start;
-  justify-self: start;
-  padding: 3px 5px 0;
-  font-size: 0.85em;
-}
-.wd-devtools-box .wd-bm-top,
-.wd-devtools-box .wd-bm-bottom {
-  grid-column: 1 / -1;
-  padding: 0.35rem 0.25rem;
-  text-align: center;
-}
-.wd-devtools-box .wd-bm-top {
-  grid-row: 1;
-}
-.wd-devtools-box .wd-bm-bottom {
-  grid-row: 3;
-}
-.wd-devtools-box .wd-bm-left,
-.wd-devtools-box .wd-bm-right {
-  grid-row: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.25rem;
-}
-.wd-devtools-box .wd-bm-left {
-  grid-column: 1;
-}
-.wd-devtools-box .wd-bm-right {
-  grid-column: 3;
+.wd-box-model-content {
+  background-color: #d1e7dd;
+  padding: 8px;
 }
 .wd-box-sizing-demo {
   background-color: lightgray;

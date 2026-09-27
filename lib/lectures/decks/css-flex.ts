@@ -84,7 +84,9 @@ export const CSS_FLEX_SLIDES: LectureSlide[] = [
       "Lab 2’s finished `Flex.tsx` is the third step: pin + grow",
       "Build it incrementally: row, then grow on column 3, then pin column 1",
     ],
-    code: `export default function Flex() {
+    code: `import "./index.css";
+
+export default function Flex() {
   return (
     <div id="wd-css-flex">
       <h2>Flex</h2>
