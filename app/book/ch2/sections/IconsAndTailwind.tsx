@@ -497,34 +497,104 @@ export default function TailwindLab() {
           Tailwind also wraps CSS Grid in utility classes:{" "}
           <code>grid grid-cols-4 gap-4</code>{" "}turns a container into a
           four-column grid with consistent gutters, and children automatically
-          wrap onto new rows once a row fills up. The four-column section of{" "}
-          <code>TailwindGrids.tsx</code> is:
+          wrap onto new rows once a row fills up. Start{" "}
+          <code>TailwindGrids.tsx</code> with the outer wrapper and the{" "}
+          <code>h2</code> Tailwind Grids heading, then the four-column section:
         </p>
         <CodeBlock
           language="tsx"
           name="TailwindGrids"
           file="app/labs/lab2/tailwind/TailwindGrids.tsx"
-        >{`<h2>Tailwind Grids</h2>
-<div>
-  <h3 className="mt-6 text-3xl font-bold">4 Columns Grid</h3>
-  <div className="grid grid-cols-4 gap-4">
-    {Array.from({ length: 9 }, (_, i) => (
-      <div key={i} className="text-center bg-blue-300 p-3">
-        {String(i + 1).padStart(2, "0")}
+        >{`export default function TailwindGrids() {
+  return (
+    <div>
+      <h2>Tailwind Grids</h2>
+      <div>
+        <h3 className="mt-6 text-3xl font-bold">4 Columns Grid</h3>
+        <div className="grid grid-cols-4 gap-4">
+          {Array.from({ length: 9 }, (_, i) => (
+            <div key={i} className="text-center bg-blue-300 p-3">
+              {String(i + 1).padStart(2, "0")}
+            </div>
+          ))}
+        </div>
       </div>
-    ))}
-  </div>
-</div>`}</CodeBlock>
+    </div>
+  );
+}`}</CodeBlock>
         <p>
           Nine numbered cells flow across four columns and wrap onto a third
-          row for the last one — no manual row-breaking required. The same
-          file continues with a three-column grid, where{" "}
-          <code>col-span-2</code> stretches two cells across two tracks, then
-          a Grid system section that mixes an even two-column split with a
-          twelve-column split for a one-third/two-thirds layout and a
-          sidebar/content/sidebar layout — the same page layouts{" "}
+          row for the last one. <code>col-span-2</code> stretches a cell
+          across two tracks of a three-column grid. Paste the TSX below after
+          the 4 Columns Grid, still inside the outer <code>div</code>:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="TailwindGrids"
+          file="app/labs/lab2/tailwind/TailwindGrids.tsx"
+        >{`      <div>
+        <h3 className="mt-6 text-3xl font-bold">3 Columns Grid</h3>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="text-center bg-blue-300 p-3">01</div>
+          <div className="text-center bg-blue-300 p-3">02</div>
+          <div className="text-center bg-blue-300 p-3">03</div>
+          <div className="col-span-2 text-center bg-blue-300 p-3">04</div>
+          <div className="text-center bg-blue-300 p-3">05</div>
+          <div className="text-center bg-blue-300 p-3">06</div>
+          <div className="col-span-2 text-center bg-blue-300 p-3">07</div>
+        </div>
+      </div>`}</CodeBlock>
+        <p>
+          The Grid system mixes an even two-column split with a twelve-column
+          split for a one-third/two-thirds layout and a sidebar/content/sidebar
+          layout — the same page layouts{" "}
           <SectionLink to="2.1.18" /> built with float, this time with Grid.
-          The finished component is what the figure renders:
+          Paste the TSX below after the 3 Columns Grid, still inside the outer{" "}
+          <code>div</code>. The heading is an <code>h2</code>, the same level
+          as Tailwind Grids:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="TailwindGrids"
+          file="app/labs/lab2/tailwind/TailwindGrids.tsx"
+        >{`      <div id="wd-tailwind-grid-system" className="mt-6">
+        <h2>Grid system</h2>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="bg-red-500 text-white">
+            <h3>Left half</h3>
+          </div>
+          <div className="bg-blue-500 text-white">
+            <h3>Right half</h3>
+          </div>
+        </div>
+        <div className="grid grid-cols-12 gap-2 mt-2">
+          <div className="col-span-4 bg-yellow-500">
+            <h3>One third</h3>
+          </div>
+          <div className="col-span-8 bg-green-500 text-white">
+            <h3>Two thirds</h3>
+          </div>
+        </div>
+        <div className="grid grid-cols-12 gap-2 mt-2">
+          <div className="col-span-2 bg-black text-white">
+            <h3>Sidebar</h3>
+          </div>
+          <div className="col-span-8 bg-gray-500 text-white">
+            <h3>Main content</h3>
+          </div>
+          <div className="col-span-2 bg-blue-400">
+            <h3>Sidebar</h3>
+          </div>
+        </div>
+      </div>`}</CodeBlock>
+        <p>
+          A twelve-column grid is the sweet spot for page layout because
+          twelve divides evenly by two, three, four, and six — which is why{" "}
+          <code>col-span-4</code>{" "}(one third) and{" "}
+          <code>col-span-8</code>{" "}(two thirds) add up cleanly to twelve, and
+          why the sidebar/content/sidebar row below it uses 2/8/2. Pasting
+          those three blocks in order is the finished component, which is what
+          the figure renders:
         </p>
         <CodeBlock
           language="tsx"
@@ -589,13 +659,6 @@ export default function TailwindLab() {
     </div>
   );
 }`}</CodeBlock>
-        <p>
-          A twelve-column grid is the sweet spot for page layout because
-          twelve divides evenly by two, three, four, and six — which is why{" "}
-          <code>col-span-4</code>{" "}(one third) and{" "}
-          <code>col-span-8</code>{" "}(two thirds) add up cleanly to twelve, and
-          why the sidebar/content/sidebar row below it uses 2/8/2:
-        </p>
         <LiveDemo mode="styled" name="TailwindGrids" file="app/labs/lab2/tailwind/TailwindGrids.tsx">
           <TailwindGrids />
         </LiveDemo>

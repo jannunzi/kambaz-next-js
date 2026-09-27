@@ -54,6 +54,7 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
     bullets: [
       "`grid grid-cols-4 gap-4` — four columns, consistent gutters",
       "Nine cells wrap onto a third row. No manual row break",
+      "Book step 1 wraps this in `<h2>Tailwind Grids</h2>`. Paste the 3 Columns Grid next, then the Grid system `h2`",
     ],
     code: `<h2>Tailwind Grids</h2>
 <div>
