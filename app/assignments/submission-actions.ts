@@ -6,7 +6,7 @@ import {
   canPersistAssignmentSubmission,
   supportsUrlSubmission,
 } from "@/lib/assignments/access";
-import { runA1Checks, type AssignmentCheckResult } from "@/lib/assignments/checks";
+import { runConfiguredChecks, type AssignmentCheckResult } from "@/lib/assignments/checks";
 import { fetchDeployHtml, probeGithubRepo } from "@/lib/assignments/fetch-deploy";
 import { resolveNameQuery, type NameSource } from "@/lib/assignments/names";
 import {
@@ -17,7 +17,10 @@ import {
   toSubmissionView,
   type AssignmentSubmissionView,
 } from "@/lib/assignments/submissions-store";
-import { preparePublicAssignmentCheck } from "@/lib/assignments/submission-form";
+import {
+  missingA2GithubMessage,
+  preparePublicAssignmentCheck,
+} from "@/lib/assignments/submission-form";
 import { ASSIGNMENT_STUDENT_COPY } from "@/lib/assignments/student-copy";
 import { isAssignmentId } from "@/lib/assignments/catalog";
 import type { AssignmentId } from "@/lib/assignments/types";
@@ -172,12 +175,13 @@ async function authorizeSubmission(assignmentId: string): Promise<
   };
 }
 
-async function runChecksForA1(input: {
+async function runChecksForAssignment(input: {
+  assignmentId: string;
   githubUrl: string;
   vercelUrl: string;
   nameSource: NameSource;
 }): Promise<AssignmentCheckResult[]> {
-  return runA1Checks({
+  return runConfiguredChecks(input.assignmentId, {
     githubUrl: input.githubUrl,
     vercelUrl: input.vercelUrl,
     nameQuery: resolveNameQuery(input.nameSource),
@@ -217,7 +221,8 @@ export async function runPublicAssignmentChecks(input: {
   const prepared = preparePublicAssignmentCheck(input);
   if (!prepared.ok) return prepared;
 
-  const checkResults = await runChecksForA1({
+  const checkResults = await runChecksForAssignment({
+    assignmentId: input.assignmentId,
     githubUrl: prepared.githubUrl,
     vercelUrl: prepared.vercelUrl,
     nameSource: {},
@@ -250,6 +255,10 @@ export async function saveAssignmentSubmission(input: {
       code: "invalid",
       message: ASSIGNMENT_STUDENT_COPY.vercelRequired,
     };
+  }
+  const githubMissing = missingA2GithubMessage(input.assignmentId, githubUrl);
+  if (githubMissing) {
+    return { ok: false, code: "invalid", message: githubMissing };
   }
 
   const persist = authz.canPersist;
@@ -325,8 +334,13 @@ export async function runAssignmentChecks(input: {
       message: ASSIGNMENT_STUDENT_COPY.vercelRequired,
     };
   }
+  const githubMissing = missingA2GithubMessage(input.assignmentId, githubUrl);
+  if (githubMissing) {
+    return { ok: false, code: "invalid", message: githubMissing };
+  }
 
-  const checkResults = await runChecksForA1({
+  const checkResults = await runChecksForAssignment({
+    assignmentId: input.assignmentId,
     githubUrl,
     vercelUrl,
     nameSource: authz.nameSource,

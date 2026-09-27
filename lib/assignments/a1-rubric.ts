@@ -14,11 +14,14 @@ import {
 } from "./a1-lab-exercises";
 import type { A1RubricAutoSpec } from "./a1-rubric-types";
 import {
+  htmlClassTokens,
   htmlHasAllIds,
   htmlHasAllSnippets,
+  htmlHasAnchorPath,
   htmlHasAnyId,
   htmlHasHeadingLevels,
   htmlHasId,
+  htmlIdContainsTag,
 } from "./html";
 
 export type { A1RubricAutoSpec, RubricAutoKind } from "./a1-rubric-types";
@@ -116,6 +119,7 @@ export const A1_RUBRIC_AUTO_SPECS: A1RubricAutoSpec[] = [
 export function evaluateRubricSpec(
   spec: A1RubricAutoSpec,
   html: string,
+  options?: { siteHost?: string },
 ): { passed: boolean; message: string } {
   if (spec.kind === "manual") {
     return { passed: false, message: spec.failMessage };
@@ -138,6 +142,29 @@ export function evaluateRubricSpec(
   if (spec.requireHtmlIncludes?.length) {
     const snippets = htmlHasAllSnippets(html, spec.requireHtmlIncludes);
     missing.push(...snippets.missing);
+  }
+  if (spec.requireAnchorPaths?.length) {
+    for (const path of spec.requireAnchorPaths) {
+      if (!htmlHasAnchorPath(html, path, options?.siteHost)) {
+        missing.push(`a link to ${path}`);
+      }
+    }
+  }
+  if (spec.requireClassTokens?.length || spec.requireClassTokenPatterns?.length) {
+    const tokens = new Set(htmlClassTokens(html));
+    for (const token of spec.requireClassTokens ?? []) {
+      if (!tokens.has(token)) missing.push(`class ${token}`);
+    }
+    for (const rule of spec.requireClassTokenPatterns ?? []) {
+      const pattern = new RegExp(rule.pattern);
+      if (![...tokens].some((token) => pattern.test(token))) missing.push(rule.label);
+    }
+  }
+  if (spec.requireDescendantTag) {
+    const { id, tag } = spec.requireDescendantTag;
+    if (!htmlIdContainsTag(html, id, tag)) {
+      missing.push(`<${tag}> inside #${id}`);
+    }
   }
 
   if (missing.length === 0 && spec.requireAllIds?.length) {

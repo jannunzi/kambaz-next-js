@@ -34,7 +34,7 @@ export const ASSIGNMENT_STUDENT_COPY = {
   notConfiguredTitle: "URL submit is not available yet",
   notConfigured:
     "This is not a date lock. The course site could not read the imported Canvas/FACT roster, so saving URLs stays closed. You can still run checks on a public Vercel URL. Sign in with the same Northeastern email you use on Canvas. If you are still blocked, ask staff on Piazza to refresh the roster or contact the instructor — this is a site roster connection problem, not a missing Sign-in.",
-  unknownAssignment: "URL submit is only available for A1 right now.",
+  unknownAssignment: "URL submit is only available for A1 and A2 right now.",
   impersonationBanner:
     "Impersonation — you can run checks to smoke-test the form. The submission is not saved.",
     saved: "Saved. You can run checks again after you update your Vercel URL.",
@@ -52,6 +52,11 @@ export const ASSIGNMENT_STUDENT_COPY = {
   vercelRequired: "Enter a Vercel deployment URL so checks can open your site.",
   githubFormat:
     "Enter a public GitHub repository URL such as https://github.com/yourname/webdev-client.",
+  a2GithubRequired:
+    "Enter the GitHub URL for your a2 branch, such as https://github.com/yourname/webdev-client/tree/a2.",
+  a2GithubBranchUrl:
+    "Enter an https GitHub URL for your a2 branch, such as https://github.com/yourname/webdev-client/tree/a2.",
+  githubRetry: "GitHub didn't respond, try again",
   githubOfficial:
     "Submit your own public GitHub repository, not the course starter repo.",
   githubPrivate:

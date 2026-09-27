@@ -1,8 +1,8 @@
 "use server";
 
 import { auth, currentUser } from "@clerk/nextjs/server";
-import { canViewStaffGrader } from "@/lib/assignments/access";
-import { runA1Checks } from "@/lib/assignments/checks";
+import { canViewStaffGrader, supportsUrlSubmission } from "@/lib/assignments/access";
+import { runConfiguredChecks } from "@/lib/assignments/checks";
 import { fetchDeployHtml, probeGithubRepo } from "@/lib/assignments/fetch-deploy";
 import type { AssignmentCheckResult } from "@/lib/assignments/check-types";
 import {
@@ -86,7 +86,7 @@ async function loadStaffTarget(input: {
   assignmentId: string;
   studentKey: string;
 }) {
-  if (!isAssignmentId(input.assignmentId) || input.assignmentId !== "a1") {
+  if (!isAssignmentId(input.assignmentId) || !supportsUrlSubmission(input.assignmentId)) {
     return { ok: false as const, message: ASSIGNMENT_STUDENT_COPY.unknownAssignment };
   }
   const parsed = parseStaffStudentKey(input.studentKey);
@@ -132,7 +132,7 @@ export async function runStaffAssignmentChecks(input: {
     };
   }
 
-  const checkResults = await runA1Checks({
+  const checkResults = await runConfiguredChecks(target.assignmentId, {
     githubUrl,
     vercelUrl,
     nameQuery: resolveNameQuery({ rosterName: target.doc.name }),

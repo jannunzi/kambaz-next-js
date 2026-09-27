@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, type ReactNode } from "react";
-import { a1CriterionCoverage } from "@/lib/assignments/a1-rubric";
+import { criterionCoverage } from "@/lib/assignments/checkers";
 import { listRubricCriteria, nestRubricCriteria } from "@/lib/assignments/catalog";
 import type { AssignmentCheckResult } from "@/lib/assignments/checks";
 import { latestResultByCriterion } from "@/lib/assignments/checks";
@@ -36,8 +36,7 @@ function DeployTitle({
 }
 
 function isManualCriterion(assignmentId: string, criterionId: string): boolean {
-  if (assignmentId !== "a1") return true;
-  return a1CriterionCoverage(criterionId) !== "auto";
+  return criterionCoverage(assignmentId, criterionId) !== "auto";
 }
 
 function Legend({

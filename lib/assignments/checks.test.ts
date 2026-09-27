@@ -414,7 +414,7 @@ describe("runA1Checks", () => {
 describe("assignment submission access and store", () => {
   it("lets rostered students and staff through; skips persist while impersonating", () => {
     assert.equal(supportsUrlSubmission("a1"), true);
-    assert.equal(supportsUrlSubmission("a2"), false);
+    assert.equal(supportsUrlSubmission("a2"), true);
     assert.equal(canPersistAssignmentSubmission(true), false);
     assert.equal(canPersistAssignmentSubmission(false), true);
 

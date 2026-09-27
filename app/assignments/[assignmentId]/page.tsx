@@ -219,7 +219,7 @@ export default async function AssignmentDetailPage({
         });
       }
 
-      console.info("a1 submit gate", {
+      console.info("assignment submit gate", {
         assignmentId: assignment.id,
         emailCount: emails.length,
         hasNortheasternEmail: emails.some((email) =>
