@@ -1406,6 +1406,17 @@ describe("lecture decks", () => {
     );
     assert.match(embeds, /function CssMarginsEmbed\(\)[\s\S]*<Margins \/>/);
     assert.doesNotMatch(embeds, /function CssMarginsEmbed\(\)[\s\S]*max-h-/);
+    assert.match(
+      embeds,
+      /function CssRotateEmbed\(\)[\s\S]*px-8 py-8/,
+      "rotated cards need room inside the frame",
+    );
+    const styling = readFileSync(join(embedDir, "KambazStylingEmbeds.tsx"), "utf8");
+    assert.match(
+      styling,
+      /function KambazStyledNavEmbed\(\)[\s\S]*<ContainFixed height="auto">/,
+      "the fixed sidebar needs a frame tall enough to show Courses",
+    );
 
     // Known positive: the pre-fix Live Margins.tsx frame. If this stays
     // quiet, the clip check is not actually looking for a scroller or a

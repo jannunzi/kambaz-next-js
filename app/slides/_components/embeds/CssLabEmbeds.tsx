@@ -249,7 +249,9 @@ export function CssMediaQueriesEmbed() {
 export function CssRotateEmbed() {
   return (
     <CssDemo label="transform: rotate">
-      <div className="flex flex-wrap items-center gap-10 py-6">
+      {/* rotate() does not grow the layout box. The 12deg card overhangs
+          about 13px; this padding keeps that paint inside the frame. */}
+      <div className="flex flex-wrap items-center gap-10 px-8 py-8">
         <div
           className="flex items-center justify-center rounded-md px-4 py-6 font-semibold text-white"
           style={{
