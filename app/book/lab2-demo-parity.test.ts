@@ -244,6 +244,44 @@ describe("Lab 2 multi-step paste parity", () => {
   });
 });
 
+describe("Tailwind lab page listing", () => {
+  it("shows the finished page, with the responsive demos before the card", () => {
+    const steps = bookSteps("app/book/ch2/sections/IconsAndTailwind.tsx").filter(
+      (step) => step.file === "app/labs/lab2/tailwind/page.tsx",
+    );
+    const disk = read("app/labs/lab2/tailwind/page.tsx").trim();
+    const finished = steps.filter((step) => step.code.trim() === disk);
+    assert.equal(finished.length, 1);
+    assert.ok(
+      steps.some(
+        (step) =>
+          step.code.includes('import "./index.css"') &&
+          !step.code.includes("TailwindResponsiveBreakpoint"),
+      ),
+    );
+    const code = finished[0]!.code;
+    const order = [
+      "TailwindResponsiveBreakpoint",
+      "TailwindResponsiveShowHide",
+      "TailwindResponsiveFlex",
+      "TailwindResponsiveGrid",
+      "TailwindResponsiveSpacingText",
+      "TailwindResponsiveDesign",
+    ];
+    let importAt = -1;
+    let renderAt = -1;
+    for (const name of order) {
+      const imported = code.indexOf(`import ${name} from`);
+      const rendered = code.indexOf(`<${name} />`);
+      assert.ok(imported > importAt, `import ${name}`);
+      assert.ok(rendered > renderAt, `render ${name}`);
+      importAt = imported;
+      renderAt = rendered;
+    }
+    assert.ok(code.indexOf("<TailwindFilters />") > renderAt);
+  });
+});
+
 describe("TailwindGrids", () => {
   it("paste steps add 4 columns, then 3 columns, then the grid system h2", () => {
     const file = read("app/labs/lab2/tailwind/TailwindGrids.tsx");

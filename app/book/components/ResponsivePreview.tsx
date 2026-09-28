@@ -8,16 +8,19 @@ import {
 import styles from "./responsive-preview.module.css";
 
 /**
- * Two iframes at real viewport widths, shown together. The wide frame is
- * painted smaller with a CSS transform so it fits the book column; `md:`
- * and `@media (min-width)` still follow the iframe's own width.
+ * Iframes at real viewport widths, shown together. `contain` paints a wide
+ * frame smaller so it fits the column. `natural` keeps CSS pixels and scrolls
+ * sideways, so a larger font stays visually larger. `md:` and
+ * `@media (min-width)` follow the iframe's own width either way.
  */
 export default function ResponsivePreview({
   src,
   frames = TAILWIND_PREVIEW_FRAMES,
+  fit = "contain",
 }: {
   src: string;
   frames?: PreviewFrame[];
+  fit?: "contain" | "natural";
 }) {
   const iframeRefs = useRef<(HTMLIFrameElement | null)[]>([]);
   const [heights, setHeights] = useState<number[]>(() => frames.map(() => 640));
@@ -61,36 +64,59 @@ export default function ResponsivePreview({
     };
   }, [frames, src]);
 
+  const natural = fit === "natural";
+
   return (
-    <div className={styles.pair}>
-      {frames.map((frame, index) => (
-        <div
-          key={frame.width}
-          className={`${styles.pane} ${frame.width < 768 ? styles.phone : styles.desktop}`}
-        >
-          <p className={styles.label}>{frame.label}</p>
+    <div className={natural ? `${styles.pair} ${styles.naturalPair}` : styles.pair}>
+      {frames.map((frame, index) => {
+        const height = heights[index] ?? 640;
+        return (
           <div
-            className={styles.scaler}
-            style={
-              {
-                "--frame-width": `${frame.width}px`,
-                "--frame-height": `${heights[index] ?? 640}px`,
-              } as CSSProperties
+            key={frame.width}
+            className={
+              natural
+                ? `${styles.pane} ${styles.naturalPane}`
+                : `${styles.pane} ${frame.width < 768 ? styles.phone : styles.desktop}`
             }
           >
-            <div className={styles.slot}>
-              <iframe
-                ref={(node) => {
-                  iframeRefs.current[index] = node;
-                }}
-                className={styles.frame}
-                src={src}
-                title={frame.title}
-              />
-            </div>
+            <p className={styles.label}>{frame.label}</p>
+            {natural ? (
+              <div className={styles.naturalScroll}>
+                <iframe
+                  ref={(node) => {
+                    iframeRefs.current[index] = node;
+                  }}
+                  className={styles.naturalFrame}
+                  style={{ width: frame.width, height }}
+                  src={src}
+                  title={frame.title}
+                />
+              </div>
+            ) : (
+              <div
+                className={styles.scaler}
+                style={
+                  {
+                    "--frame-width": `${frame.width}px`,
+                    "--frame-height": `${height}px`,
+                  } as CSSProperties
+                }
+              >
+                <div className={styles.slot}>
+                  <iframe
+                    ref={(node) => {
+                      iframeRefs.current[index] = node;
+                    }}
+                    className={styles.frame}
+                    src={src}
+                    title={frame.title}
+                  />
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
