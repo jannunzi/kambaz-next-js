@@ -22,7 +22,7 @@ export default function KambazModules() {
         list. Instead of moving the modules array and functions to a
         shared parent, we will put them in a Zustand store so the list is
         available throughout the application. The screens, dialog, trash
-        can, and pencil below are the controls you will add.
+        can, and pencil below are what you will add.
       </p>
       <p>
         The walkthrough starts from the list you already have, adds a

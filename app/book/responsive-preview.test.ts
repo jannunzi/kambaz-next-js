@@ -186,7 +186,27 @@ describe("book responsive previews", () => {
     assert.match(section, /80rem \(1280px\)/);
     assert.match(section, /96rem \(1536px\)/);
     assert.match(section, /<strong>breakpoint<\/strong>/);
-    assert.match(section, /1rem is the\s+root font size, usually 16px/);
+    assert.match(section, /to="2\.1\.20"/);
+    assert.match(section, /1rem is usually 16px, so 48rem is 768px/);
+    assert.match(section, /to="2\.1\.17"/);
+    const css = read("app/book/ch2/sections/CssProperties.tsx");
+    const remAt = css.search(
+      /relative to the\s+root font size, usually\s+16px, so 2rem = 32px/,
+    );
+    assert.ok(remAt >= 0 && remAt < css.indexOf("margin: 0 1rem"));
+    const breakpointAt = css.search(/viewport width at\s+which styles change/);
+    assert.ok(
+      breakpointAt >= 0 &&
+        breakpointAt < css.indexOf("one more <code>@media</code>"),
+    );
+    const throughCard = lab
+      .replace(/\nimport TailwindFilters from "\.\/TailwindFilters";/, "")
+      .replace(/\nimport TailwindGrids from "\.\/TailwindGrids";/, "")
+      .replace(
+        /\n\s*<hr className="my-8" \/>\n\s*<TailwindFilters \/>\n\s*<hr className="my-8" \/>\n\s*<TailwindGrids \/>/,
+        "",
+      )
+      .trim();
     assert.match(section, /flex-direction: column/);
     assert.match(section, /flex-direction: row/);
     assert.match(section, /CSS Grid/);
@@ -198,7 +218,8 @@ describe("book responsive previews", () => {
     assert.doesNotMatch(section, /gutter/);
     assert.match(read("app/book/components/ResponsivePreview.tsx"), /fit\?: "contain" \| "natural"/);
     assert.match(read("app/book/components/responsive-preview.module.css"), /overflow-x:\s*auto/);
-    assert.ok(section.includes(lab.trim()));
+    assert.ok(section.includes(throughCard));
+    assert.doesNotMatch(section, /TailwindFilters|TailwindGrids/);
 
     let labAt = 0;
     let demoAt = 0;

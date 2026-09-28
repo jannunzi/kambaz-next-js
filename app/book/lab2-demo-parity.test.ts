@@ -244,14 +244,29 @@ describe("Lab 2 multi-step paste parity", () => {
   });
 });
 
+/** page.tsx as it stands at the end of 2.3.4, before Filters and Grids. */
+function pageThroughResponsiveDesign(disk: string): string {
+  return disk
+    .replace(/\nimport TailwindFilters from "\.\/TailwindFilters";/, "")
+    .replace(/\nimport TailwindGrids from "\.\/TailwindGrids";/, "")
+    .replace(
+      /\n\s*<hr className="my-8" \/>\n\s*<TailwindFilters \/>\n\s*<hr className="my-8" \/>\n\s*<TailwindGrids \/>/,
+      "",
+    )
+    .trim();
+}
+
 describe("Tailwind lab page listing", () => {
-  it("shows the finished page, with the responsive demos before the card", () => {
+  it("shows page.tsx through the card, before Filters and Grids exist", () => {
     const steps = bookSteps("app/book/ch2/sections/IconsAndTailwind.tsx").filter(
       (step) => step.file === "app/labs/lab2/tailwind/page.tsx",
     );
     const disk = read("app/labs/lab2/tailwind/page.tsx").trim();
-    const finished = steps.filter((step) => step.code.trim() === disk);
-    assert.equal(finished.length, 1);
+    const throughCard = pageThroughResponsiveDesign(disk);
+    assert.notEqual(throughCard, disk);
+    assert.equal(steps.filter((step) => step.code.trim() === disk).length, 0);
+    const listed = steps.filter((step) => step.code.trim() === throughCard);
+    assert.equal(listed.length, 1);
     assert.ok(
       steps.some(
         (step) =>
@@ -259,7 +274,8 @@ describe("Tailwind lab page listing", () => {
           !step.code.includes("TailwindResponsiveBreakpoint"),
       ),
     );
-    const code = finished[0]!.code;
+    const code = listed[0]!.code;
+    assert.doesNotMatch(code, /TailwindFilters|TailwindGrids/);
     const order = [
       "TailwindResponsiveBreakpoint",
       "TailwindResponsiveShowHide",
@@ -273,12 +289,16 @@ describe("Tailwind lab page listing", () => {
     for (const name of order) {
       const imported = code.indexOf(`import ${name} from`);
       const rendered = code.indexOf(`<${name} />`);
+      const diskImport = disk.indexOf(`import ${name} from`);
+      const diskRender = disk.indexOf(`<${name} />`);
       assert.ok(imported > importAt, `import ${name}`);
       assert.ok(rendered > renderAt, `render ${name}`);
+      assert.ok(diskImport > -1 && diskRender > -1, name);
       importAt = imported;
       renderAt = rendered;
     }
-    assert.ok(code.indexOf("<TailwindFilters />") > renderAt);
+    assert.ok(disk.indexOf("import TailwindFilters") > disk.indexOf("import TailwindResponsiveDesign"));
+    assert.ok(disk.indexOf("<TailwindFilters />") > disk.indexOf("<TailwindResponsiveDesign />"));
   });
 });
 
