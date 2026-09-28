@@ -18,13 +18,13 @@ export const CSS_MEDIA_QUERIES_SLIDES: LectureSlide[] = [
       "**Media queries** apply a CSS block only when the browser matches a condition",
       "Most common condition: a viewport **width** range — the foundation of responsive design",
       "A **breakpoint** is a viewport width at which styles change, for example through a media query.",
-      "This deck uses Lab 2’s own breakpoints (750 / 1000 / 1250). Not Bootstrap’s grid",
+      "Lab 2’s demo uses its own width breakpoints: 750px, 1000px, and 1250px",
       "Tailwind later wraps the same idea as `md:` / `lg:` utilities. Learn the CSS first",
     ],
   },
   {
     id: "syntax",
-    title: "MediaQueriesDemo.css",
+    title: "Width range rules",
     kind: "content",
     bullets: [
       "`@media (min-width: 750px) and (max-width: 1000px) { … }`",
@@ -122,7 +122,7 @@ export const CSS_MEDIA_QUERIES_SLIDES: LectureSlide[] = [
   },
   {
     id: "tsx",
-    title: "MediaQueriesDemo.tsx",
+    title: "The four color rules",
     kind: "content",
     bullets: [
       "Import the CSS, then list the four promises as `li` tags",
@@ -162,12 +162,12 @@ export default function MediaQueriesDemo() {
     title: "Resize the window to cycle colors",
     kind: "demo",
     bullets: [
-      "`@media` watches the **viewport**, not this figure’s width",
+      "`@media` watches the **browser window**, not the width of this preview",
       "Shrink or widen the browser (or DevTools device mode) and watch the fill + bold bullet",
     ],
     embed: "css-media-queries",
     interactiveHint:
-      "Queries use the window width. Present mode on a wide display lands on red; a phone-sized window is green.",
+      "Queries use the window width. A wide window lands on red; a phone-sized window is green.",
   },
   {
     id: "later",

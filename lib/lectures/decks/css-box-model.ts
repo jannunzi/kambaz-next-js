@@ -44,7 +44,7 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
   },
   {
     id: "borders-tsx",
-    title: "Borders.tsx",
+    title: "Two bordered paragraphs",
     kind: "content",
     bullets: [
       "First paragraph: fat, red, solid. Second: thin, blue, dashed",
@@ -68,7 +68,7 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
   },
   {
     id: "borders-demo",
-    title: "Live Borders.tsx",
+    title: "Live border samples",
     kind: "demo",
     bullets: [
       "Fat red solid, then thin blue dashed",
@@ -100,7 +100,7 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
   },
   {
     id: "padding-tsx",
-    title: "Padding.tsx",
+    title: "Padding on three boxes",
     kind: "content",
     bullets: [
       "Padding is the space between an element's content and its border.",
@@ -128,7 +128,7 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
   },
   {
     id: "padding-live",
-    title: "Live Padding.tsx",
+    title: "Live padding",
     kind: "demo",
     bullets: [
       "Yellow fill runs through the padding, up to the border",
@@ -159,7 +159,7 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
   },
   {
     id: "margins-tsx",
-    title: "Margins.tsx",
+    title: "Margin on three boxes",
     kind: "content",
     bullets: [
       "Wrapper id `wd-css-margins`",
@@ -186,7 +186,7 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
   },
   {
     id: "margins-live",
-    title: "Live Margins.tsx",
+    title: "Live margins",
     kind: "demo",
     bullets: [
       "The space between boxes is empty — margin does not paint",
@@ -266,7 +266,7 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
   },
   {
     id: "box-model-tsx",
-    title: "BoxModel.tsx",
+    title: "Same size, two box models",
     kind: "content",
     bullets: [
       "One component stacks the four layers on a single element, instead of three separate demos",
@@ -306,7 +306,7 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
   },
   {
     id: "box-model-demo",
-    title: "Live BoxModel.tsx",
+    title: "Live box model",
     kind: "demo",
     bullets: [
       "`border-box` counts padding and border inside the 200px, so the box stays 200px wide.",
@@ -343,7 +343,7 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
   },
   {
     id: "corners-tsx",
-    title: "Corners.tsx",
+    title: "Four corner radii",
     kind: "content",
     bullets: [
       "Wrapper id `wd-css-corners`. Four paragraphs, four radius classes",
@@ -373,7 +373,7 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
   },
   {
     id: "corners-live",
-    title: "Live Corners.tsx",
+    title: "Live rounded corners",
     kind: "demo",
     bullets: [
       "`border-radius` rounds corners by setting all four, listing four values, or targeting one.",

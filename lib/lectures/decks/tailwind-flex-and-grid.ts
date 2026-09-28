@@ -17,7 +17,7 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
     bullets: [
       "§2.3.5: `blur-*`, `grayscale`, `brightness-*`, `contrast-*` on the element",
       "§2.3.6: `grid grid-cols-4 gap-4`, then `col-span-*` on a 12-column page",
-      "A flex-class map at the end is a reminder of §2.1.19 — not a book step",
+      "The last slides spell the §2.1.19 flex row with Tailwind utilities",
     ],
   },
   {
@@ -31,12 +31,11 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
   },
   {
     id: "filters-tsx",
-    title: "TailwindFilters.tsx",
+    title: "Blur utilities",
     kind: "content",
     bullets: [
       "Filter utilities apply visual effects like blur straight onto an image or element.",
       "Four copies of the same image, blur growing from none to `2xl`",
-      "The book’s PDF used Angel Falls; `reactjs.jpg` is enough to see the effect",
     ],
     code: `export default function TailwindFilters() {
   // reactjs.jpg is used here so the lab runs out of the box.
@@ -90,7 +89,7 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
     bullets: [
       "`grid grid-cols-4 gap-4` — four columns, consistent gutters",
       "Nine cells wrap onto a third row. No manual row break",
-      "Book step 1 is the wrapper, the Tailwind Grids `h2`, and this grid. Paste the 3 Columns Grid next, then the Grid system `h2`",
+      "Start `TailwindGrids.tsx` with the outer wrapper, the Tailwind Grids `h2`, and this four-column grid",
     ],
     code: `export default function TailwindGrids() {
   return (
@@ -183,7 +182,7 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
     title: "col-span on a 12-column grid",
     kind: "content",
     bullets: [
-      "The listing is the whole `TailwindGrids.tsx` the next figure renders",
+      "This is the finished `TailwindGrids.tsx`: four columns, three columns, then the 12-column system",
       "A 3-column grid uses `col-span-2` on two of the cells",
       "Twelve divides by 2, 3, 4, and 6 — `col-span-4` + `col-span-8`, then `2 / 8 / 2`",
     ],
@@ -280,7 +279,7 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
     title: "Flex.tsx → Tailwind classes",
     kind: "content",
     bullets: [
-      "Not a book step — the utility spelling of the Lab 2 flex row",
+      "The Lab 2 flex row, written with Tailwind utilities",
       "`w-[110px] shrink-0` pins column 1. `grow` stretches column 3",
     ],
     code: `<div className="flex flex-row">

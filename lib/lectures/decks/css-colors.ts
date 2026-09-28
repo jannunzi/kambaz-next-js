@@ -41,7 +41,7 @@ export const CSS_COLORS_SLIDES: LectureSlide[] = [
   },
   {
     id: "fg-tsx",
-    title: "ForegroundColors.tsx",
+    title: "Foreground color",
     kind: "content",
     bullets: [
       "Wrapper id: `wd-css-colors`",
@@ -117,7 +117,7 @@ export default function Lab2() {
   },
   {
     id: "bg-tsx",
-    title: "BackgroundColors.tsx",
+    title: "Background color",
     kind: "content",
     bullets: [
       "One element, two classes: `wd-bg-color-blue wd-fg-color-white`",

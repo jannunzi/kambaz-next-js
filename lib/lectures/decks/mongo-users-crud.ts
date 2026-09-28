@@ -67,7 +67,7 @@ const findUsersByPartialName = (partialName) => {
     kind: "demo",
     bullets: [
       "All Roles clears the filter and calls `fetchUsers` again",
-      "Tailwind bordered controls — not Bootstrap `form-select`",
+      "Style the select with Tailwind: a bordered control about a quarter of the width",
     ],
     code: `export const findUsersByRole = async (role: string) => {
   const response = await axios.get(\`\${USERS_API}?role=\${role}\`);
@@ -106,7 +106,7 @@ app.get("/api/users/:userId", findUserById);`,
     bullets: [
       "Parse `uid`. If missing, return `null` so the panel does not render",
       "`useEffect` depends on `uid` so a second click reloads",
-      "Fixed right column — `fixed top-0 end-0`, not Bootstrap offcanvas",
+      "The panel is a fixed column on the right: `fixed top-0 end-0 bottom-0`, a white background, and a shadow",
     ],
     code: `export const findUserById = async (id: string) => {
   const response = await axios.get(\`\${USERS_API}/\${id}\`);

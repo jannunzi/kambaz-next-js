@@ -110,7 +110,7 @@ export default function CourseNavigation({ cid }: { cid: string }) {
     kind: "demo",
     bullets: [
       "A narrow list group uses red idle links and a black left border on the active route.",
-      "Home is active on this figure (the lecture route is not a course path)",
+      "Home is highlighted here because this preview is not open on a course page",
       "Clicking a link leaves the deck and opens the real course screen",
     ],
     embed: "kambaz-styled-course-nav",
@@ -141,7 +141,7 @@ export default function GreenCheckmark() {
   },
   {
     id: "module-lesson",
-    title: "Module.tsx",
+    title: "A module with a checkmark",
     kind: "content",
     bullets: [
       "Modules and Home share this list, styled once with a gray header and a checkmark.",
@@ -174,7 +174,7 @@ export default function Module({
   },
   {
     id: "lesson",
-    title: "Lesson.tsx",
+    title: "A lesson with a green edge",
     kind: "content",
     bullets: [
       "Lesson reuses Module's checkmark control and adds the green lesson border.",

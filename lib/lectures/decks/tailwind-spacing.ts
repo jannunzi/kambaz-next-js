@@ -34,7 +34,7 @@ export const TAILWIND_SPACING_SLIDES: LectureSlide[] = [
   },
   {
     id: "tsx",
-    title: "TailwindSpacing.tsx",
+    title: "Margin and padding utilities",
     kind: "content",
     bullets: [
       "Blue boxes show margin. Green boxes show padding",

@@ -23,7 +23,7 @@ export const TAILWIND_COLORS_SLIDES: LectureSlide[] = [
   },
   {
     id: "tsx",
-    title: "TailwindBackgroundColors.tsx",
+    title: "Background Colors",
     kind: "content",
     bullets: [
       "Four bands. Red, green, and blue use white text",

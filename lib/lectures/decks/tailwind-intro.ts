@@ -37,7 +37,7 @@ export const TAILWIND_INTRO_SLIDES: LectureSlide[] = [
     title: "Full Tailwind includes Preflight",
     kind: "content",
     bullets: [
-      "`@import \"tailwindcss\"` loads **Preflight** — a reset that wipes browser defaults",
+      "`@import \"tailwindcss\"` loads **Preflight**, Tailwind's base reset. It wipes plain HTML defaults",
       "Lab 2’s CSS samples (`p`, headings, lists) would look wrong under that reset",
       "So Lab 2 Tailwind lives on its own route: `app/labs/lab2/tailwind/`",
       "Kambaz later imports **theme + utilities only** — no Preflight",
@@ -83,7 +83,7 @@ export default function TailwindLab() {
     title: "Link it from Lab 2",
     kind: "content",
     bullets: [
-      "The book says this in prose: link `/labs/lab2/tailwind` from the Lab 2 page",
+      "Link to `/labs/lab2/tailwind` from the main Lab 2 page so both are reachable from the Labs table of contents",
       "Both routes stay in the Labs TOC — CSS first, then utilities",
       "Work through spacing, type, color, responsive, filters, and grid one component at a time",
     ],
@@ -97,14 +97,14 @@ export default function TailwindLab() {
     codeAddedLines: [1],
   },
   {
-    id: "not-bootstrap",
-    title: "Bootstrap is optional history",
+    id: "tailwind-and-icons",
+    title: "Tailwind and React Icons",
     kind: "content",
     bullets: [
-      "Drive A2 used React-Bootstrap (`d-flex`, `ListGroup`, `Card`). This course does not",
-      "Book path: **Tailwind + React Icons** — `/book/ch2` and `/labs/lab2/tailwind`",
-      "If you see those names: `d-flex` → `flex`, `col-md-6` → `md:col-span-6`",
-      "A Kambaz “list group” is CSS you write in `kambaz.css` — not a kit import",
+      "This course styles screens with **Tailwind** utilities and **React Icons**",
+      "Follow `/book/ch2` and build along `/labs/lab2/tailwind`",
+      "`flex` lines children up in a row. `md:col-span-6` spans six of twelve columns from the `md` breakpoint",
+      "Course Navigation’s list group is CSS you write in `kambaz.css`",
     ],
   },
   {

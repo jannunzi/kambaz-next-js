@@ -43,11 +43,11 @@ export const CSS_FLEX_SLIDES: LectureSlide[] = [
   },
   {
     id: "tsx",
-    title: "Flex.tsx",
+    title: "Three columns in a row",
     kind: "content",
     bullets: [
       "`display: flex` lines children up in a row with no floats, clearing, or percentage math.",
-      "The book’s first `Flex.tsx` is this row — yellow, blue, red, no extra classes",
+      "This first `Flex.tsx` is the row — yellow, blue, red, no extra classes",
       "The next steps add `wd-flex-grow-1`, then `wd-width-75px`, and reprint the file",
     ],
     code: `export default function Flex() {
@@ -93,7 +93,7 @@ export const CSS_FLEX_SLIDES: LectureSlide[] = [
   },
   {
     id: "grow-tsx",
-    title: "Flex.tsx — grow",
+    title: "Column 3 grows",
     kind: "content",
     bullets: [
       "`flex-grow: 1` lets the last column stretch to fill room the others do not use.",
@@ -149,12 +149,12 @@ export const CSS_FLEX_SLIDES: LectureSlide[] = [
   },
   {
     id: "pin-tsx",
-    title: "Flex.tsx — pin",
+    title: "Pin column 1",
     kind: "content",
     bullets: [
       "Pin the first column to a fixed width and let the last column absorb what is left.",
       "Column 1 gains `wd-width-75px`. Column 3 keeps `wd-flex-grow-1`",
-      "This is the book’s final `Flex.tsx`",
+      "This is the finished `Flex.tsx`",
     ],
     code: `import "./index.css";
 
