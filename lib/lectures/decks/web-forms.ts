@@ -308,7 +308,7 @@ Tenured:
     title: "defaultValue, not value",
     kind: "content",
     bullets: [
-      "Drive samples often write `value=`. In React Lab 1 use **`defaultValue`**",
+      "HTML samples often write `value=`. In React Lab 1 use **`defaultValue`**",
       "`value` without `onChange` + state **freezes** the field",
       "Lab 1 stays **uncontrolled**. Controlled inputs return when you learn `useState`",
     ],

@@ -181,7 +181,7 @@ XAI_API_KEY=YOUR_XAI_API_KEY`,
     codeFile: "webdev-server/.env",
     codeAddedLines: [[1, 2]],
     interactiveHint:
-      "Jose's Drive deck includes a live-looking secret. Do not copy any real key into the repo.",
+      "Do not copy any real API key into the repo.",
   },
   {
     id: "meaning",

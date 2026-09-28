@@ -322,7 +322,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "Paste the TSX below inside `#wd-css-positions`, after the previous section.",
-      "This embed contains the square so it does not escape the slide",
+      "The preview keeps the square inside the frame. In Lab 2 it sticks to the browser window",
     ],
     code: `<div id="wd-css-position-fixed">
   <h2>Fixed position</h2>
@@ -341,7 +341,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
     title: "Live fixed position",
     kind: "demo",
     bullets: [
-      "The blue square is fixed to this figure, not the browser window",
+      "In this preview the square stays inside the frame",
       "In Lab 2 the same class sticks to the viewport",
     ],
     embed: "css-position-fixed",

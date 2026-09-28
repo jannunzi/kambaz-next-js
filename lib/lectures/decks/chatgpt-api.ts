@@ -60,7 +60,7 @@ export const CHATGPT_API_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "[platform.openai.com/docs/models](https://platform.openai.com/docs/models)",
-      "This deck uses **`gpt-4o`** — Jose’s hello-world model",
+      "These examples use **`gpt-4o`** for the hello-world call",
       "Mini / reasoning models trade **speed, cost, and intelligence**",
       "Cookbooks: [cookbook.openai.com](https://cookbook.openai.com/)",
     ],
@@ -133,7 +133,7 @@ OPENAI_API_KEY=your-api-key-here`,
     codeFile: "webdev-server/.env",
     codeAddedLines: [[1, 2]],
     interactiveHint:
-      "Jose's Drive deck includes a live-looking secret. Do not copy any real key into the repo.",
+      "Do not copy any real API key into the repo.",
   },
   {
     id: "hello",

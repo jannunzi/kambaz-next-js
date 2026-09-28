@@ -59,7 +59,7 @@ cd webdev-server
 npm init`,
     codeLanguage: "bash",
     interactiveHint:
-      "This book already ships webdev-server/ at the repo root for LiveDemos. Students still create their own sibling folder.",
+      "This repo already includes `webdev-server/` so the demos can run. You still create that sibling folder yourself.",
   },
   {
     id: "hello-js",

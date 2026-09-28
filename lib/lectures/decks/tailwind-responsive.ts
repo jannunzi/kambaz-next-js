@@ -117,11 +117,11 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     kind: "demo",
     bullets: [
       "Widen the window (or Present on a desktop): the image moves beside the text",
-      "The figure is only a preview — prefixes watch the **viewport**, like `@media`",
+      "Prefixes watch the **browser window**, like `@media`, not the width of this preview",
     ],
     embed: "tw-responsive",
     interactiveHint:
-      "md: utilities use the window width. A phone-sized window stays stacked; a wide present stage goes side-by-side.",
+      "md: utilities use the window width. A phone-sized window stays stacked; a wide window goes side-by-side.",
   },
   {
     id: "vs-media",

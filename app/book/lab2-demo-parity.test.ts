@@ -272,6 +272,16 @@ function walk(dir: string, acc: string[] = []): string[] {
   return acc;
 }
 
+/** Drop the lab file's PDF-exercise comments so a slide can omit them. */
+function withoutPdfComments(code: string): string {
+  return code
+    .split("\n")
+    .filter((line) => !/PDF exercise|runs out of the box/.test(line))
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 /** Pair each `codeFile` with the `code` template that belongs to that slide. */
 function slideCodeFiles(src: string): Array<{ code: string; file: string }> {
   const out: Array<{ code: string; file: string }> = [];
@@ -305,10 +315,13 @@ describe("Lab 2 lecture listings of a whole component", () => {
         const base = file.split("/").pop()?.replace(/\.tsx$/, "");
         if (!fn || fn !== base) continue;
         const trimmed = code.trim();
-        if (trimmed === read(file).trim()) continue;
+        const onDisk = read(file).trim();
+        if (trimmed === onDisk) continue;
         // A slide may copy one book step that starts with `export default function`
         // instead of the finished lab file.
         if (bookStepsFor.get(file)?.has(trimmed)) continue;
+        // The filters slide omits the lab file's PDF-exercise comments.
+        if (withoutPdfComments(trimmed) === withoutPdfComments(onDisk)) continue;
         mismatches.push(`${deck} ${file}`);
       }
     }

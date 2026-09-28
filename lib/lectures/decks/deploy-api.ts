@@ -94,7 +94,7 @@ SESSION_SECRET=a phrase that is not committed`,
     bullets: [
       "Second GitHub repo. Render runs `npm start`",
       "Render `SERVER_URL` has no protocol. Vercel env has `https://`",
-      "Lab 5 LiveDemos do not need this Vercel step locally",
+      "You can finish Lab 5 on your machine without this Vercel step",
     ],
   },
   {

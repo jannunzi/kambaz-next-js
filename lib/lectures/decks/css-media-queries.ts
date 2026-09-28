@@ -161,12 +161,12 @@ export default function MediaQueriesDemo() {
     title: "Resize the window to cycle colors",
     kind: "demo",
     bullets: [
-      "`@media` watches the **viewport**, not this figure’s width",
+      "`@media` watches the **browser window**, not the width of this preview",
       "Shrink or widen the browser (or DevTools device mode) and watch the fill + bold bullet",
     ],
     embed: "css-media-queries",
     interactiveHint:
-      "Queries use the window width. Present mode on a wide display lands on red; a phone-sized window is green.",
+      "Queries use the window width. A wide window lands on red; a phone-sized window is green.",
   },
   {
     id: "later",
