@@ -7,8 +7,7 @@ export default function Lab6IntermediatesIndex() {
       <h2>Lab 6 Intermediate Steps</h2>
       <p>
         Mongoose CRUD against the same-origin <code>/api/lab6</code>{" "}
-        store (in-memory unless a Mongo connection string is set on
-        Express). Run{" "}
+        routes. Run{" "}
         <code>cd webdev-server && npm run dev</code>{" "}
         when you want the sibling server on port 4000.
       </p>

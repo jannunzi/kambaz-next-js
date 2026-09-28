@@ -182,7 +182,7 @@ export default function Intro() {
           describes how to install, configure, and get started using
           MongoDB on your own machine before any Node code talks to it.
           Glance at{" "}
-          <LocalUrl href="/labs/lab6" />{" "}as you go — the LiveDemos
+          <LocalUrl href="/labs/lab6" />{" "}as you go — the interactive demos
           speak the same API the Express DAOs implement once the
           connection string is set.
         </p>

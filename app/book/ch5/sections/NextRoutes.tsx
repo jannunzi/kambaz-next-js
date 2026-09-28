@@ -36,7 +36,7 @@ export default function NextRoutes() {
       </p>
       <p>
         You stay inside the App Router when you do not need an
-        independent API process. These LiveDemos fetch{" "}
+        independent API process. These interactive demos fetch{" "}
         <code>/api/lab5/...</code>{" "}on the Next.js origin — they work
         with only <code>npm run dev</code>. Express Lab 5 still needs
         the companion on 4000. Same-origin{" "}
@@ -71,7 +71,7 @@ export default function NextRoutes() {
         the same way it accepts{" "}
         <code>NextResponse.json</code>{" "}from{" "}
         <code>next/server</code>. To practice the hello route, confirm the
-        LiveDemo below fetches that JSON and prints the message without
+        demo below fetches that JSON and prints the message without
         leaving the Labs page.
       </p>
       <LiveDemo

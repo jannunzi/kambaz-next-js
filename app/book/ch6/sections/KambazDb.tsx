@@ -388,7 +388,7 @@ app.put("/api/courses/:courseId", updateCourse);`}</CodeBlock>
           <code>course</code>{" "}field. Both shapes are valid; pick
           one per project and stick to it. The subsections below show
           the embed schema, then implement the collection-plus-foreign-key
-          DAO that matches the LiveDemo routes.
+          DAO that matches the interactive demo routes.
         </p>
         <ul>
           <li>

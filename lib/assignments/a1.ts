@@ -118,7 +118,7 @@ export const A1_RUBRIC: AssignmentRubric = {
           id: "a1-kambaz-assignments",
           label: "Assignments screen",
           description:
-            "Assignments list matching the book LiveDemo and required ids (On your own).",
+            "Assignments list matching the book demo and required ids (On your own).",
           points: 5,
           bookHref: "/book/ch1#sec-1-4-7",
           bookLabel: "§1.4.7",
@@ -128,7 +128,7 @@ export const A1_RUBRIC: AssignmentRubric = {
           id: "a1-kambaz-editor",
           label: "Assignment Editor",
           description:
-            "Assignment Editor matching the book LiveDemo and required ids (On your own).",
+            "Assignment Editor matching the book demo and required ids (On your own).",
           points: 5,
           bookHref: "/book/ch1#sec-1-4-8",
           bookLabel: "§1.4.8",

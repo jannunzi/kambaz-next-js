@@ -1107,7 +1107,7 @@ export default function Home() {
           from Dashboard, Modules, and Home — no line-by-line walkthrough this
           time. From the Dashboard, open a course, then choose Assignments in
           Course Navigation. The polished target is below; match the plain
-          HTML LiveDemo for this chapter. Exact due dates may differ. Keep the
+          HTML demo for this chapter. Exact due dates may differ. Keep the
           given <code>id</code>{" "}and <code>className</code>{" "}values so later
           chapters and graders can find them.{" "}
           <ChapterLink to={2} />{" "}will style this screen with Tailwind.
@@ -1345,7 +1345,7 @@ export default async function Assignments({
           section where you built the worked example. Build the screens in
           order as you read — this list is for checking coverage, not a
           substitute for the walkthroughs. Assignments and the Assignment
-          Editor stay On your own: match the ids and LiveDemos in those
+          Editor stay On your own: match the ids and interactive demos in those
           sections.
         </p>
         <ol>

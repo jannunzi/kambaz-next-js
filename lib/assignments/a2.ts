@@ -181,7 +181,7 @@ export const A2_RUBRIC: AssignmentRubric = {
           id: "a2-kambaz-editor",
           label: "Assignment Editor",
           description:
-            "Style the Assignment Editor to match the figures and LiveDemo (On your own).",
+            "Style the Assignment Editor to match the figures and interactive demo (On your own).",
           points: 5,
           bookHref: "/book/ch2#sec-2-4-8",
           bookLabel: "§2.4.8",

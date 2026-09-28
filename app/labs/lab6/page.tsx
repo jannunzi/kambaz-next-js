@@ -7,7 +7,7 @@ export default function Lab6() {
     <div id="wd-lab6">
       <h2>Lab 6</h2>
       <p>
-        Programming MongoDB with Mongoose. LiveDemos call same-origin{" "}
+        Programming MongoDB with Mongoose. The demos call same-origin{" "}
         <code>/api/lab6</code> so they render without a local{" "}
         <code>mongod</code>. The sibling Express server implements the
         same routes with Mongoose when{" "}
