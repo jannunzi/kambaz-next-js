@@ -45,7 +45,8 @@ describe("book responsive previews", () => {
     const page = read("app/preview/tailwind-responsive/page.tsx");
     assert.match(book, /<ResponsivePreview/);
     assert.match(book, /src=\{TAILWIND_RESPONSIVE_PREVIEW_SRC\}/);
-    assert.doesNotMatch(book, /<TailwindResponsiveDesign/);
+    const outsideListings = book.replace(/\{`[\s\S]*?`\}/g, "");
+    assert.doesNotMatch(outsideListings, /<TailwindResponsiveDesign/);
     assert.doesNotMatch(book, /defaultWidth/);
     const preview = read("app/book/components/ResponsivePreview.tsx");
     const previewCss = read("app/book/components/responsive-preview.module.css");
@@ -152,7 +153,7 @@ describe("book responsive previews", () => {
         frames: "TAILWIND_GRID_PREVIEW_FRAMES",
         route: "app/preview/tailwind-responsive-grid/page.tsx",
         id: "wd-tailwind-responsive-grid",
-        labels: [/Phone, 375px: 1 column/, /Desktop, 1024px: 4 columns/],
+        labels: [/Phone, 375px: 1 column/, /700px: 2 columns/, /Desktop, 1024px: 4 columns/],
         classes: /grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4/,
       },
       {
@@ -184,6 +185,20 @@ describe("book responsive previews", () => {
     assert.match(section, /64rem \(1024px\)/);
     assert.match(section, /80rem \(1280px\)/);
     assert.match(section, /96rem \(1536px\)/);
+    assert.match(section, /<strong>breakpoint<\/strong>/);
+    assert.match(section, /1rem is the\s+root font size, usually 16px/);
+    assert.match(section, /flex-direction: column/);
+    assert.match(section, /flex-direction: row/);
+    assert.match(section, /CSS Grid/);
+    assert.match(section, /to="2\.3\.6"/);
+    assert.match(section, /object-cover/);
+    assert.match(section, /fixed width of 12rem/);
+    assert.match(section, /minimum height of 14rem/);
+    assert.match(section, /fit="natural"/);
+    assert.doesNotMatch(section, /gutter/);
+    assert.match(read("app/book/components/ResponsivePreview.tsx"), /fit\?: "contain" \| "natural"/);
+    assert.match(read("app/book/components/responsive-preview.module.css"), /overflow-x:\s*auto/);
+    assert.ok(section.includes(lab.trim()));
 
     let labAt = 0;
     let demoAt = 0;
@@ -197,7 +212,10 @@ describe("book responsive previews", () => {
           `src=\\{${demo.src}\\}[\\s\\S]*?frames=\\{${demo.frames}\\}`,
         ),
       );
-      assert.doesNotMatch(book, new RegExp(`<${demo.name}[\\s/>]`));
+      assert.doesNotMatch(
+        book.replace(/\{`[\s\S]*?`\}/g, ""),
+        new RegExp(`<${demo.name}[\\s/>]`),
+      );
       const student = read(`app/labs/lab2/tailwind/${demo.name}.tsx`);
       assert.match(student, new RegExp(`id="${demo.id}"`));
       assert.match(student, demo.classes);

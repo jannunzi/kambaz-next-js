@@ -72,3 +72,28 @@
   transform: scale(calc(100cqw / var(--frame-width)));
   transform-origin: top left;
 }
+
+/* Real CSS pixels. A wide frame scrolls instead of shrinking its type. */
+.naturalPair {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.naturalPane {
+  flex: none;
+  width: 100%;
+}
+
+.naturalScroll {
+  max-width: 100%;
+  overflow-x: auto;
+  border-radius: 0.5rem;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px #d4d4d4;
+}
+
+.naturalFrame {
+  display: block;
+  border: 0;
+  background: #fff;
+}
