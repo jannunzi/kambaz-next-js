@@ -214,6 +214,19 @@ export default function TailwindLab() {
         <LiveDemo mode="styled" name="TailwindSpacing" file="app/labs/lab2/tailwind/TailwindSpacing.tsx">
           <TailwindSpacing />
         </LiveDemo>
+        <p>
+          Add <code>TailwindSpacing</code>{" "}to{" "}
+          <code>app/labs/lab2/tailwind/page.tsx</code>. Put this import with
+          the other imports, and render the component under the heading:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="TailwindLab"
+          file="app/labs/lab2/tailwind/page.tsx"
+        >{`import TailwindSpacing from "./TailwindSpacing";
+
+      <h1 className="text-4xl font-bold mb-8">Tailwind CSS</h1>
+      <TailwindSpacing />`}</CodeBlock>
         <OnYourOwn>
           In <code>TailwindSpacing.tsx</code>, add
           one more box that mixes directional spacing utilities (for example{" "}
@@ -275,6 +288,21 @@ export default function TailwindLab() {
         <LiveDemo mode="styled" name="TailwindTypography" file="app/labs/lab2/tailwind/TailwindTypography.tsx">
           <TailwindTypography />
         </LiveDemo>
+        <p>
+          Add <code>TailwindTypography</code>{" "}to{" "}
+          <code>app/labs/lab2/tailwind/page.tsx</code>. Put this import after{" "}
+          <code>TailwindSpacing</code>, and render the component after that
+          one:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="TailwindLab"
+          file="app/labs/lab2/tailwind/page.tsx"
+        >{`import TailwindTypography from "./TailwindTypography";
+
+      <TailwindSpacing />
+      <hr className="my-8" />
+      <TailwindTypography />`}</CodeBlock>
         <OnYourOwn>
           In <code>TailwindTypography.tsx</code>,
           add a short personal line that pairs a size utility with a weight utility
@@ -326,6 +354,21 @@ export default function TailwindLab() {
         <LiveDemo mode="styled" name="TailwindBackgroundColors" file="app/labs/lab2/tailwind/TailwindBackgroundColors.tsx">
           <TailwindBackgroundColors />
         </LiveDemo>
+        <p>
+          Add <code>TailwindBackgroundColors</code>{" "}to{" "}
+          <code>app/labs/lab2/tailwind/page.tsx</code>. Put this import after{" "}
+          <code>TailwindTypography</code>, and render the component after that
+          one:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="TailwindLab"
+          file="app/labs/lab2/tailwind/page.tsx"
+        >{`import TailwindBackgroundColors from "./TailwindBackgroundColors";
+
+      <TailwindTypography />
+      <hr className="my-8" />
+      <TailwindBackgroundColors />`}</CodeBlock>
         <OnYourOwn>
           In{" "}
           <code>TailwindBackgroundColors.tsx</code>, add another band that uses a
@@ -832,6 +875,21 @@ export default function TailwindLab() {
         <LiveDemo mode="styled" name="TailwindFilters" file="app/labs/lab2/tailwind/TailwindFilters.tsx">
           <TailwindFilters />
         </LiveDemo>
+        <p>
+          Add <code>TailwindFilters</code>{" "}to{" "}
+          <code>app/labs/lab2/tailwind/page.tsx</code>. Put this import after{" "}
+          <code>TailwindResponsiveDesign</code>, and render the component
+          after that one:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="TailwindLab"
+          file="app/labs/lab2/tailwind/page.tsx"
+        >{`import TailwindFilters from "./TailwindFilters";
+
+      <TailwindResponsiveDesign />
+      <hr className="my-8" />
+      <TailwindFilters />`}</CodeBlock>
         <OnYourOwn>
           In <code>TailwindFilters.tsx</code>, add a
           second row that demos a different filter family — for example{" "}
@@ -1021,6 +1079,21 @@ export default function TailwindLab() {
         <LiveDemo mode="styled" name="TailwindGrids" file="app/labs/lab2/tailwind/TailwindGrids.tsx">
           <TailwindGrids />
         </LiveDemo>
+        <p>
+          Add <code>TailwindGrids</code>{" "}to{" "}
+          <code>app/labs/lab2/tailwind/page.tsx</code>. Put this import after{" "}
+          <code>TailwindFilters</code>, and render the component after that
+          one:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="TailwindLab"
+          file="app/labs/lab2/tailwind/page.tsx"
+        >{`import TailwindGrids from "./TailwindGrids";
+
+      <TailwindFilters />
+      <hr className="my-8" />
+      <TailwindGrids />`}</CodeBlock>
         <OnYourOwn>
           In <code>TailwindGrids.tsx</code>, add one
           more grid row that uses <code>col-span-*</code>{" "}in a layout you have not
