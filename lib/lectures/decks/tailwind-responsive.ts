@@ -25,8 +25,8 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     title: "Five min-width prefixes",
     kind: "content",
     bullets: [
-      "Tailwind is **mobile-first**: an unprefixed class applies at every width, and a prefixed class applies from that breakpoint up",
-      "As in §2.1.17, widths are in **rem** (1rem is usually 16px, so 48rem is 768px)",
+      "Tailwind is **mobile-first**: no prefix means every width, and a prefix applies from that breakpoint up",
+      "§2.1.17: 1rem is usually 16px, so 48rem is 768px",
       "`sm:` 40rem (640px)",
       "`md:` 48rem (768px)",
       "`lg:` 64rem (1024px)",
