@@ -300,6 +300,56 @@ describe("Tailwind lab page listing", () => {
     assert.ok(disk.indexOf("import TailwindFilters") > disk.indexOf("import TailwindResponsiveDesign"));
     assert.ok(disk.indexOf("<TailwindFilters />") > disk.indexOf("<TailwindResponsiveDesign />"));
   });
+
+  it("shows an add-to-page step for every Tailwind component, in file order", () => {
+    const book = read("app/book/ch2/sections/IconsAndTailwind.tsx");
+    const disk = read("app/labs/lab2/tailwind/page.tsx");
+    const steps = bookSteps("app/book/ch2/sections/IconsAndTailwind.tsx").filter(
+      (step) => step.file === "app/labs/lab2/tailwind/page.tsx",
+    );
+    const names = [...disk.matchAll(/^import (Tailwind\w+) from/gm)].map((match) => match[1]);
+    const rendered = [...disk.matchAll(/<(Tailwind\w+) \/>/g)].map((match) => match[1]);
+    assert.deepEqual(rendered, names);
+    const bounds: Record<string, [string, string]> = {
+      TailwindSpacing: ["2.3.1 Spacing", "2.3.2 Typography"],
+      TailwindTypography: ["2.3.2 Typography", "2.3.3 Background Colors"],
+      TailwindBackgroundColors: ["2.3.3 Background Colors", "2.3.4 Responsive Design"],
+      TailwindResponsiveBreakpoint: ["2.3.4 Responsive Design", "2.3.5 Filters"],
+      TailwindResponsiveShowHide: ["2.3.4 Responsive Design", "2.3.5 Filters"],
+      TailwindResponsiveFlex: ["2.3.4 Responsive Design", "2.3.5 Filters"],
+      TailwindResponsiveGrid: ["2.3.4 Responsive Design", "2.3.5 Filters"],
+      TailwindResponsiveSpacingText: ["2.3.4 Responsive Design", "2.3.5 Filters"],
+      TailwindResponsiveDesign: ["2.3.4 Responsive Design", "2.3.5 Filters"],
+      TailwindFilters: ["2.3.5 Filters", "2.3.6 CSS Grid Layout"],
+      TailwindGrids: ["2.3.6 CSS Grid Layout", "2.3.7 Exercises"],
+    };
+    let previous: string | null = null;
+    let importAt = -1;
+    for (const name of names) {
+      const [start, end] = bounds[name];
+      const section = book.slice(book.indexOf(start), book.indexOf(end));
+      const importLine = `import ${name} from "./${name}";`;
+      const renderEnd = disk.indexOf(`<${name} />`) + `<${name} />`.length;
+      const renderStart = previous ? disk.indexOf(`<${previous} />`) : disk.indexOf("<h1");
+      const renderSlice = disk.slice(renderStart, renderEnd);
+      assert.ok(section.includes(importLine), importLine);
+      assert.ok(section.includes(renderSlice), name);
+      assert.ok(
+        steps.some(
+          (step) => step.code.includes(importLine) && step.code.includes(renderSlice),
+        ),
+        name,
+      );
+      const at = book.indexOf(importLine);
+      assert.ok(at > importAt, name);
+      importAt = at;
+      previous = name;
+    }
+    assert.doesNotMatch(
+      book.slice(book.indexOf("2.3.4 Responsive Design"), book.indexOf("2.3.5 Filters")),
+      /import TailwindFilters|import TailwindGrids/,
+    );
+  });
 });
 
 describe("TailwindGrids", () => {
