@@ -48,6 +48,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
     title: "Dimensions.tsx",
     kind: "content",
     bullets: [
+      "Block elements stretch to the parent's full width until `width` and `height` override that.",
       "Wrapper id `wd-css-dimensions`",
       "Yellow portrait, blue landscape, red square — same classes the later demos reuse",
     ],
@@ -197,6 +198,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
     title: "Positions.tsx — relative",
     kind: "content",
     bullets: [
+      "`position: relative` nudges an element but leaves its original space, so neighbors do not shift.",
       "The file’s root is `#wd-css-positions`. The relative section sits inside it",
       "Portrait nudges down-right. Landscape nudges up-right. Square stays put",
     ],
@@ -292,6 +294,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
     title: "Live absolute position",
     kind: "demo",
     bullets: [
+      "`position: absolute` anchors to the nearest positioned ancestor, or to the page if none exists.",
       "Three boxes overlap inside the 150px relative frame",
       "The red square uses `.wd-pos-absolute-120-20`",
     ],
@@ -419,6 +422,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
     title: "Zindex.tsx",
     kind: "content",
     bullets: [
+      "Later elements render on top by default, and a higher `z-index` renders above a lower one.",
       "Wrapper id `wd-z-index`. Same three absolute classes as the red/yellow/blue stack",
       "Landscape carries `wd-zindex-bring-to-front`",
     ],

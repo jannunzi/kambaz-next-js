@@ -48,6 +48,7 @@ export const TAILWIND_COLORS_SLIDES: LectureSlide[] = [
     title: "Live color bands",
     kind: "demo",
     bullets: [
+      "Backgrounds follow `bg-{color}-{shade}`, paired with a contrasting text color so content stays readable.",
       "Same `-500` shade, four hues",
       "On your own: add a non-500 shade (`bg-indigo-700`) and a contrasting `text-*`",
     ],

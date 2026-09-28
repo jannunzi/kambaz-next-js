@@ -26,6 +26,7 @@ export const TAILWIND_TYPOGRAPHY_SLIDES: LectureSlide[] = [
     title: "TailwindTypography.tsx",
     kind: "content",
     bullets: [
+      "Typography utilities cover font size and weight with the same predictable naming.",
       "The listing is the whole scale, and that is what the live demo renders",
       "`text-3xl` on the heading is the same utility as on the last size line",
     ],

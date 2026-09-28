@@ -46,6 +46,7 @@ export const CSS_FLEX_SLIDES: LectureSlide[] = [
     title: "Flex.tsx",
     kind: "content",
     bullets: [
+      "`display: flex` lines children up in a row with no floats, clearing, or percentage math.",
       "The book’s first `Flex.tsx` is this row — yellow, blue, red, no extra classes",
       "The next steps add `wd-flex-grow-1`, then `wd-width-75px`, and reprint the file",
     ],
@@ -95,6 +96,7 @@ export const CSS_FLEX_SLIDES: LectureSlide[] = [
     title: "Flex.tsx — grow",
     kind: "content",
     bullets: [
+      "`flex-grow: 1` lets the last column stretch to fill room the others do not use.",
       "Same file. Column 3’s `className` gains `wd-flex-grow-1`",
       "Columns 1 and 2 stay as wide as their text",
     ],
@@ -121,6 +123,7 @@ export const CSS_FLEX_SLIDES: LectureSlide[] = [
     title: "Live flex-grow",
     kind: "demo",
     bullets: [
+      "Flex children can grow to absorb leftover space; only the column with `flex-grow: 1` stretches.",
       "Columns 1 and 2 stay text-sized",
       "The `Flex.tsx` you just pasted: Column 3 carries `wd-flex-grow-1`",
     ],
@@ -149,6 +152,7 @@ export const CSS_FLEX_SLIDES: LectureSlide[] = [
     title: "Flex.tsx — pin",
     kind: "content",
     bullets: [
+      "Pin the first column to a fixed width and let the last column absorb what is left.",
       "Column 1 gains `wd-width-75px`. Column 3 keeps `wd-flex-grow-1`",
       "This is the book’s final `Flex.tsx`",
     ],

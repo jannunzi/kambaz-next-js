@@ -34,6 +34,7 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
     title: "TailwindFilters.tsx",
     kind: "content",
     bullets: [
+      "Filter utilities apply visual effects like blur straight onto an image or element.",
       "Four copies of the same image, blur growing from none to `2xl`",
       "The book’s PDF used Angel Falls; `reactjs.jpg` is enough to see the effect",
     ],
@@ -61,6 +62,7 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
     title: "Live blur row",
     kind: "demo",
     bullets: [
+      "Each blur level is one utility class swapped for another.",
       "`w-1/4` plus `flex` puts four images in one row",
       "On your own: a second row with `grayscale` or `brightness-*`",
     ],
@@ -100,6 +102,7 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
     title: "Paste the 3 Columns Grid",
     kind: "content",
     bullets: [
+      "`col-span` lets one cell stretch across several grid tracks without changing the column count.",
       "Paste the TSX below after the 4 Columns Grid",
       "`col-span-2` makes two of the cells twice as wide",
     ],
@@ -123,6 +126,7 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
     title: "Paste the grid system",
     kind: "content",
     bullets: [
+      "A twelve-column grid is the sweet spot because twelve divides evenly by two, three, four, and six.",
       "Paste the TSX below after the 3 Columns Grid",
       "Twelve columns: `col-span-4` + `col-span-8`, then `2 / 8 / 2`",
     ],
