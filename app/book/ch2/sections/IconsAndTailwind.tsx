@@ -348,12 +348,13 @@ export default function TailwindLab() {
         </h3>
         <p>
           A <strong>responsive</strong>{" "}page changes as the viewport gets
-          wider. A <strong>breakpoint</strong>{" "}is a width where the layout
-          is allowed to change. Tailwind names the common widths and lets you
-          prefix a class with one of them. The five components below each
-          teach one prefix. The card at the end combines them. Each figure is
-          its own page at a fixed width, so a prefix follows that frame, not
-          the width of this column.
+          wider. A <strong>breakpoint</strong>{" "}(<SectionLink to="2.1.20" />) is
+          a viewport width at which styles change. Tailwind names the common
+          widths and lets you prefix a
+          class with one of them. The five components below each teach one
+          prefix. The card at the end combines them. Each figure is its own
+          page at a fixed width, so a prefix follows that frame, not the
+          width of this column.
         </p>
 
         <h4
@@ -365,8 +366,8 @@ export default function TailwindLab() {
         <p>
           Tailwind is <strong>mobile-first</strong>. An unprefixed class
           applies at every width. A prefixed class applies at that breakpoint
-          and up. Widths are written in <strong>rem</strong>. 1rem is the
-          root font size, usually 16px, so 48rem is 768px.{" "}
+          and up. As in <SectionLink to="2.1.17" />, widths are in{" "}
+          <strong>rem</strong>{" "}(1rem is usually 16px, so 48rem is 768px).{" "}
           <code>md:</code>{" "}starts at 48rem (768px). This box is{" "}
           <code>bg-red-500</code>{" "}at every width, and{" "}
           <code>md:bg-green-500</code>{" "}replaces the red from 768px up:
@@ -734,10 +735,9 @@ export default function TailwindLab() {
           Import each responsive component into{" "}
           <code>app/labs/lab2/tailwind/page.tsx</code>{" "}and render it there.
           The five small demos come first, then{" "}
-          <code>TailwindResponsiveDesign</code>. The finished page also keeps
-          the spacing, typography, and background samples above them, and the
-          filter and grid samples from <SectionLink to="2.3.5" />{" "}and{" "}
-          <SectionLink to="2.3.6" />:
+          <code>TailwindResponsiveDesign</code>. This is the page at the end
+          of this section: the spacing, typography, and background samples
+          stay above the responsive demos.
         </p>
         <CodeBlock
           language="tsx"
@@ -753,8 +753,6 @@ import TailwindResponsiveFlex from "./TailwindResponsiveFlex";
 import TailwindResponsiveGrid from "./TailwindResponsiveGrid";
 import TailwindResponsiveSpacingText from "./TailwindResponsiveSpacingText";
 import TailwindResponsiveDesign from "./TailwindResponsiveDesign";
-import TailwindFilters from "./TailwindFilters";
-import TailwindGrids from "./TailwindGrids";
 
 export default function TailwindLab() {
   return (
@@ -777,10 +775,6 @@ export default function TailwindLab() {
       <TailwindResponsiveSpacingText />
       <hr className="my-8" />
       <TailwindResponsiveDesign />
-      <hr className="my-8" />
-      <TailwindFilters />
-      <hr className="my-8" />
-      <TailwindGrids />
     </div>
   );
 }`}</CodeBlock>

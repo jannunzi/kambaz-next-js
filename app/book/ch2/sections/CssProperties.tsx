@@ -1128,7 +1128,9 @@ export default function Lab2() {
           around it — the classic technique for flowing paragraphs of text
           around an image. Because floated elements leave the normal flow, a
           following element with <code>clear: both</code>{" "}is needed to stop
-          the wrapping and resume normal stacking:
+          the wrapping and resume normal stacking. A length in{" "}
+          <strong>rem</strong>{" "}is relative to the root font size, usually
+          16px, so 2rem = 32px:
         </p>
         <CodeBlock
           language="css"
@@ -1573,8 +1575,10 @@ export default function MediaQueriesDemo() {
         <p>
           Notice that only the last <code>@media</code>{" "}block has no{" "}
           <code>max-width</code>, so it matches every width from 1250px
-          upward. The matching bullet is bold and underlined so you can see
-          which rule is active. The phone frame is 375px, so the default green
+          upward. A <strong>breakpoint</strong>{" "}is a viewport width at
+          which styles change, for example through a media query. The
+          matching bullet is bold and underlined so you can see which rule
+          is active. The phone frame is 375px, so the default green
           rule is showing. The desktop frame is 1024px, inside the blue
           1000–1250 range, and it is drawn smaller so it fits this column.
           Each frame is its own page, so the queries follow that frame:
