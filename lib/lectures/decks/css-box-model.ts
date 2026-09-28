@@ -200,7 +200,7 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
     bullets: [
       "Padding, border, and margin stack on one box: content inside, padding between content and border, margin outside",
       "Background fills the content and the padding. Margin does not paint — you see the parent behind the gap",
-      "`content-box` adds padding and border onto `width` and `height` (260×240). `border-box` keeps that yellow box 200×180",
+      "`content-box` adds padding and border onto `width` and `height` (260×240). `border-box` keeps that yellow box 200×180. Layout math is much easier with `border-box`.",
     ],
     code: `.wd-box-model-parent {
   display: flow-root;

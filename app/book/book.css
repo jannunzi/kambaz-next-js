@@ -689,6 +689,14 @@ code.quiz-prompt-code {
   box-sizing: border-box;
 }
 
+/* Demo-stage fields use the same content-box min size as main. border-box
+ * folds the padding into that minimum and shrinks 373×47 inputs to 352×31.
+ * Chat fields stay border-box so width:100% does not stick out of the frame. */
+.lecture-slide[data-demo-stage="true"] .lecture-demo-frame-body input,
+.lecture-slide[data-demo-stage="true"] .lecture-demo-frame-body textarea {
+  box-sizing: content-box;
+}
+
 /* Inline images sit on the text baseline and leave a gap the frame then
  * clips. Block layout keeps the image's margin edge inside the card. */
 .lecture-slide .lecture-demo-frame img {
@@ -749,12 +757,6 @@ code.quiz-prompt-code {
 
 .lecture-slide[data-demo-stage="true"] .lecture-demo-frame-body input,
 .lecture-slide[data-demo-stage="true"] .lecture-demo-frame-body select,
-.lecture-slide .lecture-demo-frame-body textarea {
-  /* Fit the text. A rows height plus the larger lecture type clips the
-   * last line inside the control. */
-  field-sizing: content;
-}
-
 .lecture-slide[data-demo-stage="true"] .lecture-demo-frame-body textarea {
   padding: 0.45em 0.65em;
   min-height: 2.35em;
