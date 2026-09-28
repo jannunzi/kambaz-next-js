@@ -2362,7 +2362,7 @@ describe("lecture decks", () => {
     assert.match(introBullets, /md:bg-green-500/);
     assert.match(introBullets, /green background at 768px and up/);
     const prefixBullets = findSlide("tailwind-responsive", "prefixes").bullets?.join("\n") ?? "";
-    assert.match(prefixBullets, /min-width prefix applies when the viewport is at least that wide/i);
+    assert.match(prefixBullets, /\*{0,2}min-width\*{0,2} prefix applies when the viewport is at least that wide/i);
     assert.match(prefixBullets, /before a class name with a colon/);
     assert.match(prefixBullets, /CSS length unit relative to the root font size/);
     assert.ok(responsiveIds.indexOf("intro") < responsiveIds.indexOf("breakpoint-tsx"));
