@@ -160,8 +160,8 @@ app.listen(4000);`}</CodeBlock>
           <code>process.env.NEXT_PUBLIC_HTTP_SERVER</code>.
         </p>
         <p>
-          The PDF name is{" "}
-          <code>NEXT_PUBLIC_HTTP_SERVER</code>. This book wraps it in{" "}
+          The variable is{" "}
+          <code>NEXT_PUBLIC_HTTP_SERVER</code>. Wrap it in{" "}
           <code>httpServer()</code>{" "}so every Express LiveDemo uses
           the same client code — locally{" "}
           <code>http://localhost:4000</code>, and later whatever origin
@@ -369,10 +369,7 @@ export default function Lab5(app) {
             implemented earlier. Import the new component in your Lab
             5 component and confirm that clicking the links generates
             the expected response. Use Tailwind inputs and colored
-            buttons — the PDF used Bootstrap{" "}
-            <code>FormControl</code>{" "}and{" "}
-            <code>btn-primary</code>; the live sample uses rounded
-            borders and{" "}
+            buttons: rounded borders and{" "}
             <code>bg-blue-600</code>.
           </p>
           <CodeBlock
@@ -1831,8 +1828,7 @@ const updateTodo = (req, res) => {
             <code>errorMessage</code>{" "}state variable that we
             populate with the error from the server if an error
             occurs. The error is rendered as a red alert box using
-            Tailwind — the PDF used Bootstrap{" "}
-            <code>alert-danger</code>; the live sample uses{" "}
+            Tailwind:{" "}
             <code>bg-red-100</code>{" "}and{" "}
             <code>text-red-800</code>. To test, remove an item using
             the{" "}

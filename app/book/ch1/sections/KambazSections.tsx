@@ -811,7 +811,8 @@ export default function CourseNavigation({ cid }: { cid: string }) {
           Router, layouts (and some pages) receive the dynamic segment through a{" "}
           <code>params</code>{" "}prop that is a Promise — so the function is marked{" "}
           <code>async</code>{" "}and you <code>await params</code>{" "}before reading{" "}
-          <code>cid</code>. Copy this shape for now; Chapter 3 explains{" "}
+          <code>cid</code>. Copy this shape for now;{" "}
+          <SectionLink to="6.2.6.1" />{" "}explains{" "}
           <code>async</code>/<code>await</code>{" "}more carefully:
         </p>
         <CodeBlock
@@ -1160,7 +1161,8 @@ export default function Home() {
           <li>
             The page needs <code>cid</code>{" "}from the URL for those links — use
             the same <code>async</code> / <code>await params</code>{" "}shape as the
-            courses layout (copy for now; Chapter 3 explains it)
+            courses layout (copy for now; <SectionLink to="6.2.6.1" />{" "}
+            explains <code>async</code>/<code>await</code>)
           </li>
         </ul>
         <p>Start from these stubs and fill them in:</p>

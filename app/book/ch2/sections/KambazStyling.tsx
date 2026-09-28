@@ -861,7 +861,7 @@ export default function CourseStatus() {
         <code>flex</code>{" "}divs. On a wide
         screen the result is four columns — Kambaz Navigation, Course Navigation,
         Modules, and Course Status. As the window narrows, columns hide in this
-        order (matching the PDF figures):
+        order:
       </p>
       <ul>
         <li>

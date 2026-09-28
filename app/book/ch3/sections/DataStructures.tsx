@@ -888,8 +888,8 @@ export default function DataStructures() {
           into a new object or array, the <strong>destructing</strong>{" "}
           operator unpacks values from arrays, or properties from objects,
           into distinct variables. The lab file is named{" "}
-          <code>Destructing.tsx</code>{" "}— the spelling used in the original
-          assignment — but the operation in prose is destructuring. In the
+          <code>Destructing.tsx</code>, but the operation in prose is
+          destructuring. In the
           example below we declare object <code>person</code>{" "}and array{" "}
           <code>numbers</code>. These can be unpacked, or destructed, into
           new variables or constants by an object&apos;s property name or

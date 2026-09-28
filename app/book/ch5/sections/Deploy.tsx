@@ -257,11 +257,9 @@ git push -u origin main`}</CodeBlock>
           Using the Network tab in the Inspector in the Development
           Tools of the browser, make sure that none of the API calls
           still use{" "}
-          <code>http://localhost:4000</code>{" "}on the live site — the
-          PDF also mentioned{" "}
-          <code>localhost:3000</code>; the Express companion is 4000,
-          and that is the origin that must disappear from production
-          requests. Locally keep{" "}
+          <code>http://localhost:4000</code>{" "}on the live site. The
+          Express companion is 4000, and that is the origin that must
+          disappear from production requests. Locally keep{" "}
           <code>.env.development</code>{" "}at{" "}
           <code>http://localhost:4000</code>{" "}so{" "}
           <SectionLink to="5.2" />{" "}LiveDemos stay on the companion

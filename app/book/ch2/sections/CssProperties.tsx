@@ -369,9 +369,8 @@ export default function Lab2() {
           The figure is that box the way DevTools draws it in the Computed
           pane: a tan margin (<code>#F9CC9D</code>), a yellow border (<code>#FDDD9B</code>), a green padding ring (<code>#C3D08B</code>),
           and a blue content box (<code>#8CB6C0</code>). It illustrates the
-          content-box sample in the exercise below. It is a picture to study
-          in the book and on the slides. The Lab 2 files you copy come after
-          it.
+          content-box sample in the exercise below. Study the picture, then
+          copy the Lab 2 files that follow.
         </p>
         <BoxModelDiagram />
         <p>

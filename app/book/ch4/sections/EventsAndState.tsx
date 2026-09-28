@@ -92,7 +92,7 @@ export default function ClickEvent() {
           <code>hello</code>{" "}while React is rendering, before anyone
           clicks, and the alert would fire as soon as the page loaded.
           Passing the function by name tells React to invoke it later,
-          when the click actually happens. The PDF also shows wrapping
+          when the click actually happens. You can also wrap
           several statements in an arrow when one click should call more
           than one function —{" "}
           <code>{`onClick={() => { hello(); lifeIs("Great!"); }}`}</code>{" "}
