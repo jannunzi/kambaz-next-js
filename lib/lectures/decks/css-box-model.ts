@@ -198,9 +198,9 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
     title: "content-box vs border-box",
     kind: "content",
     bullets: [
-      "One box inside a gray parent: a 20px margin gap, a red border, light-blue padding, and green content, each with its label",
-      "Default `content-box`: `width: 200px` sizes **only** the content, so that yellow box measures 260×240",
-      "`border-box` keeps the same yellow box 200×180. The DevTools figure is an illustration, not this CSS",
+      "Padding, border, and margin stack on one box: content inside, padding between content and border, margin outside",
+      "Background fills the content and the padding. Margin does not paint — you see the parent behind the gap",
+      "`content-box` adds padding and border onto `width` and `height` (260×240). `border-box` keeps that yellow box 200×180",
     ],
     code: `.wd-box-model-parent {
   display: flow-root;
@@ -268,9 +268,9 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
     title: "BoxModel.tsx",
     kind: "content",
     bullets: [
-      "A gray parent, a margin gap, a red border, light-blue padding, and green content, each labeled on the box",
-      "The margin label sits in the bottom gray gap. The red words sit in the top margin",
-      "Two yellow boxes share width 200, height 180, padding 20, and a 10px border. Only `box-sizing` differs",
+      "One component stacks the four layers on a single element, instead of three separate demos",
+      "The margin stays empty, so the gray parent shows through — the same outside gap as the margin slides",
+      "Both yellow boxes declare the same size. `border-box` is the one that stays that size on screen",
     ],
     code: `export default function BoxModel() {
   return (
