@@ -162,7 +162,7 @@ const CONNECTION_STRING =
   "mongodb://127.0.0.1:27017/kambaz";
 mongoose.connect(CONNECTION_STRING);`}</CodeBlock>
         <p>
-          The PDF name is <code>DATABASE_CONNECTION_STRING</code>. This
+          Use <code>DATABASE_CONNECTION_STRING</code>. This
           repo also accepts <code>MONGO_CONNECTION_STRING</code>. If
           neither is set, DAOs stay in memory and{" "}
           <code>/lab6/status</code>{" "}reports{" "}
@@ -187,7 +187,7 @@ mongoose.connect(CONNECTION_STRING);`}</CodeBlock>
           Express is up — or keep using the book store for now.
         </OnYourOwn>
         <WithAI
-          prompt={`In webdev-server/.env.example, keep DATABASE_CONNECTION_STRING as the PDF name and mention MONGO_CONNECTION_STRING as an alias. Do not put a real Atlas password in any committed file.`}
+          prompt={`In webdev-server/.env.example, keep DATABASE_CONNECTION_STRING and mention MONGO_CONNECTION_STRING as an alias. Do not put a real Atlas password in any committed file.`}
         >
           Ask the assistant to keep the env names straight:
         </WithAI>

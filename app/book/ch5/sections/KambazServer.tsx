@@ -152,13 +152,11 @@ export default function UsersDao(db) {
           <code>/profile</code>,{" "}
           and{" "}
           <code>/signout</code>. The React client posts credentials
-          with axios and then stores the returned user. This app uses{" "}
-          <code>AccountContext</code>{" "}from{" "}
-          <ChapterLink to={4} />{" "}rather than a Redux slice — the PDF
-          dispatched <code>setCurrentUser</code>{" "}into an{" "}
-          <code>accountReducer</code>; here you call{" "}
+          with axios and then stores the returned user. Call{" "}
           <code>setCurrentUser</code>{" "}from{" "}
-          <code>useAccountContext()</code>.
+          <code>useAccountContext()</code>{" "}— the{" "}
+          <code>AccountContext</code>{" "}from{" "}
+          <ChapterLink to={4} />.
         </p>
 
         <Section
@@ -289,9 +287,9 @@ export const signin = async (credentials: { username: string; password: string }
             stored with{" "}
             <code>setCurrentUser</code>{" "}from{" "}
             <code>AccountContext</code>{" "}and you navigate to the
-            Profile screen implemented in a later section. The PDF
-            called <code>dispatch(setCurrentUser(user))</code>; this
-            book&apos;s account state is Context, not a Redux slice.
+            Profile screen implemented in a later section. Account
+            state is Context: call <code>setCurrentUser(user)</code>,
+            not a Redux dispatch.
           </p>
           <CodeBlock
             language="tsx"
@@ -466,10 +464,8 @@ app.post("/api/users/profile", profile);`}</CodeBlock>
             Session-style fetch that runs when Kambaz first loads —
             call <code>client.profile()</code>, then{" "}
             <code>setCurrentUser</code>{" "}from{" "}
-            <code>AccountContext</code>. The PDF wrapped the app in a
-            Redux <code>Session</code>{" "}component that dispatched{" "}
-            <code>setCurrentUser</code>; this book already wraps
-            Kambaz with{" "}
+            <code>AccountContext</code>. Kambaz is already wrapped
+            with{" "}
             <code>AccountProvider</code>{" "}in{" "}
             <code>app/(kambaz)/layout.tsx</code>. You can fetch the
             profile from a small client component under that provider,
@@ -726,10 +722,8 @@ export const profile = async () => {
           belong.
         </p>
         <p>
-          The PDF stored the course list in a Redux{" "}
-          <code>coursesReducer</code>.{" "}
-          <ChapterLink to={4} />{" "}already used a Zustand{" "}
-          <code>useCoursesStore</code>{" "}for the same list. Once
+          <ChapterLink to={4} />{" "}kept the course list in a Zustand{" "}
+          <code>useCoursesStore</code>. Once
           Express owns the data, Dashboard fetches on load with axios
           and keeps the result in component state — the Zustand seed
           from Chapter 4 is no longer the source of truth. The signed-in
@@ -1044,12 +1038,9 @@ app.post("/api/users/current/courses", createCourse);`}</CodeBlock>
           <code>PUT/DELETE /api/modules/:moduleId</code>.
         </p>
         <p>
-          The PDF updated a Redux{" "}
-          <code>modulesReducer</code>{" "}with{" "}
-          <code>setModules</code>. This book&apos;s Modules screen
-          fetches into component state with the same client functions;
-          Chapter 4&apos;s Zustand module store is no longer the
-          source of truth once Express is wired.
+          The Modules screen fetches into component state with the
+          same client functions. Chapter 4&apos;s Zustand module store
+          is no longer the source of truth once Express is wired.
         </p>
 
         <Section

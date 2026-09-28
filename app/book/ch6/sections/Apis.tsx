@@ -205,9 +205,10 @@ app.get("/api/users", findAllUsers);`}</CodeBlock>
           screen will pass every user, and the course People page in{" "}
           <SectionLink to="6.4.3.5" />{" "}will pass only the students
           enrolled in that course. Style the table with Tailwind
-          utility classes rather than Bootstrap&apos;s{" "}
-          <code>table table-striped</code>{" "}— a full-width collapsed
-          table with a light border and striped odd rows is enough.
+          utility classes: a full-width collapsed
+          table with a light border and striped odd rows (
+          <code>w-full border-collapse</code>, a light border, and{" "}
+          <code>odd:</code>{" "}row backgrounds).
         </p>
         <CodeBlock
           language="tsx"
@@ -465,8 +466,9 @@ export const findUsersByPartialName = async (name: string) => {
           and calls <code>fetchUsers</code>{" "}again. Confirm that
           selecting various roles actually filters the users by their
           role. Style the select with Tailwind — a bordered control
-          about a quarter of the width — rather than Bootstrap&apos;s{" "}
-          <code>form-select</code>.
+          about a quarter of the width (
+          <code>w-1/4 rounded border</code>
+          ).
         </p>
         <CodeBlock
           language="tsx"
@@ -591,9 +593,8 @@ app.get("/api/users/:userId", findUserById);`}</CodeBlock>
           <code>uid</code>{" "}as a dependency so that the component
           re-renders if you click on another user while the component
           is still displaying. The panel is a fixed column on the
-          right — Tailwind <code>fixed top-0 end-0 bottom-0</code>{" "}
-          with a white background and a shadow — rather than a
-          Bootstrap offcanvas.
+          right: Tailwind <code>fixed top-0 end-0 bottom-0</code>{" "}
+          with a white background and a shadow.
         </p>
         <CodeBlock
           language="tsx"

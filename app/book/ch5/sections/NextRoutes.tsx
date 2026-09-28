@@ -65,12 +65,12 @@ export default function NextRoutes() {
         <code>GET</code>{" "}is how the App Router maps the HTTP method
         to the file.{" "}
         <code>Response.json</code>{" "}sets the{" "}
-        <code>Content-Type</code>{" "}and serializes the object. Older
-        PDF listings used{" "}
+        <code>Content-Type</code>{" "}and serializes the object. The
+        live sample uses the Web{" "}
+        <code>Response</code>{" "}constructor. Next.js 16 accepts that
+        the same way it accepts{" "}
         <code>NextResponse.json</code>{" "}from{" "}
-        <code>next/server</code>; the live sample uses the Web{" "}
-        <code>Response</code>{" "}constructor, which Next.js 16 accepts
-        the same way. To practice the hello route, confirm the
+        <code>next/server</code>. To practice the hello route, confirm the
         LiveDemo below fetches that JSON and prints the message without
         leaving the Labs page.
       </p>
@@ -170,9 +170,7 @@ export default function NextRoutes() {
           button. Parameters are encoded as query parameters. JSON
           responses are parsed and displayed as formatted output such as{" "}
           <code>3 + 5 = 8</code>{" "}in a read-only field. Tailwind
-          classes style the inputs — the PDF used Bootstrap{" "}
-          <code>form-control</code>{" "}and{" "}
-          <code>btn-primary</code>; the live sample uses rounded
+          classes style the inputs: rounded
           borders and a blue button so it matches the rest of Lab 5.
         </p>
         <p>

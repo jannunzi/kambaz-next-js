@@ -529,7 +529,7 @@ export default function Highlight({ children }: { children: ReactNode }) {
             contents is already a client component: it maps a{" "}
             <code>LINKS</code>{" "}array and applies Tailwind classes when a
             link&apos;s <code>match</code>{" "}function says the pathname
-            belongs to that lab — no Bootstrap <code>Nav</code>{" "}pills. Read
+            belongs to that lab. Read
             the file you already maintain:
           </p>
           <CodeBlock

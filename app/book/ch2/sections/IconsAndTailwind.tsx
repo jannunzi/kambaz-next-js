@@ -438,11 +438,9 @@ export default function TailwindLab() {
         </h3>
         <p>
           Filter utilities apply visual effects — blur, brightness, contrast,
-          grayscale, and more — straight onto an image or element. The
-          original exercise blurs a photo of Angel Falls at four increasing
-          strengths; if you do not have that image handy, any photo under{" "}
-          <code>public/images</code>{" "}works just as well to see the effect —
-          the sample below reuses{" "}
+          grayscale, and more — straight onto an image or element. Blur a
+          photo at four increasing strengths. Any photo under{" "}
+          <code>public/images</code>{" "}works; the sample below reuses{" "}
           <code>reactjs.jpg</code>:
         </p>
         <CodeBlock
@@ -450,7 +448,6 @@ export default function TailwindLab() {
           name="TailwindFilters"
           file="app/labs/lab2/tailwind/TailwindFilters.tsx"
         >{`export default function TailwindFilters() {
-  // Download angel-falls.jpg into public/images for the PDF exercise;
   // reactjs.jpg is used here so the lab runs out of the box.
   const src = "/images/reactjs.jpg";
   return (
