@@ -1,6 +1,6 @@
-import type { LectureSlide } from "../types";
+import { createBlockSlide, createBulletsBlock, type AuthoredSlide } from "../blocks";
 
-export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
+export const TAILWIND_RESPONSIVE_SLIDES: AuthoredSlide[] = [
   {
     id: "title",
     title: "WEB DEV",
@@ -18,24 +18,35 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
       "A **responsive** page changes as the viewport — the browser window — gets wider",
       "As in §2.1.20, a **breakpoint** is a viewport width at which styles change. Tailwind names five of those widths",
       "A prefix goes before a class name with a colon. `md:bg-green-500` is a green background at 768px and up",
+      "A **min-width** prefix applies at that width and up",
       "Five small components each teach one idea. The card at the end combines them",
     ],
   },
-  {
+  createBlockSlide({
     id: "prefixes",
     title: "Five min-width prefixes",
     kind: "content",
-    bullets: [
-      "A **min-width** prefix applies when the viewport is at least that wide. It is written before a class name with a colon, like `md:bg-green-500`",
-      "Tailwind is **mobile-first**: no prefix means every width, and a prefix applies from that breakpoint up",
-      "A **rem** is a CSS length unit relative to the root font size. 1rem is usually 16px, so 48rem is 768px",
-      "`sm:` 40rem (640px)",
-      "`md:` 48rem (768px)",
-      "`lg:` 64rem (1024px)",
-      "`xl:` 80rem (1280px)",
-      "`2xl:` 96rem (1536px)",
+    blocks: [
+      createBulletsBlock({
+        id: "prefixes-defs",
+        items: [
+          "Tailwind is **mobile-first**: no prefix means every width, and a prefix applies from that breakpoint up",
+          "A **rem** is relative to the root font size, usually 16px",
+        ],
+      }),
+      createBulletsBlock({
+        id: "prefixes-scale",
+        columns: 2,
+        items: [
+          "`sm:` 40rem (640px)",
+          "`md:` 48rem (768px)",
+          "`lg:` 64rem (1024px)",
+          "`xl:` 80rem (1280px)",
+          "`2xl:` 96rem (1536px)",
+        ],
+      }),
     ],
-  },
+  }),
   {
     id: "prefix-ruler",
     title: "Where each prefix starts",

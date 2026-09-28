@@ -2347,7 +2347,8 @@ describe("lecture decks", () => {
     assert.match(responsive, /md:shrink-0/);
     assert.match(responsive, /flex-direction/);
     assert.match(responsive, /CSS Grid/);
-    assert.match(responsive, /usually 16px, so 48rem is 768px/);
+    assert.match(responsive, /relative to the root font size, usually 16px/);
+    assert.match(responsive, /48rem \(768px\)/);
     assert.match(responsive, /As in §2\.1\.20/);
     assert.match(responsive, /viewport width at which styles change/);
     assert.doesNotMatch(responsive, /for example through a media query/);
@@ -2361,10 +2362,17 @@ describe("lecture decks", () => {
     assert.match(introBullets, /prefix goes before a class name with a colon/);
     assert.match(introBullets, /md:bg-green-500/);
     assert.match(introBullets, /green background at 768px and up/);
-    const prefixBullets = findSlide("tailwind-responsive", "prefixes").bullets?.join("\n") ?? "";
-    assert.match(prefixBullets, /\*{0,2}min-width\*{0,2} prefix applies when the viewport is at least that wide/i);
-    assert.match(prefixBullets, /before a class name with a colon/);
-    assert.match(prefixBullets, /CSS length unit relative to the root font size/);
+    assert.match(introBullets, /\*{0,2}min-width\*{0,2} prefix applies at that width and up/i);
+    const prefixSlide = findSlide("tailwind-responsive", "prefixes");
+    assert.ok(isBlockSlide(prefixSlide));
+    const prefixBullets = authoredSlideBullets(prefixSlide).join("\n");
+    assert.match(prefixBullets, /mobile-first/i);
+    assert.match(prefixBullets, /relative to the root font size, usually 16px/);
+    assert.doesNotMatch(prefixBullets, /before a class name with a colon/);
+    assert.equal(
+      prefixSlide.blocks.find((block) => block.type === "bullets" && block.columns === 2)?.items.length,
+      5,
+    );
     assert.ok(responsiveIds.indexOf("intro") < responsiveIds.indexOf("breakpoint-tsx"));
     assert.doesNotMatch(
       findSlide("tailwind-responsive", "widths").bullets?.join("\n") ?? "",

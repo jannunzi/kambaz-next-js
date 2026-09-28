@@ -543,6 +543,19 @@ code.quiz-prompt-code {
   margin-top: 0.65rem;
 }
 
+/* Same bullet type, two columns, so a short scale can sit beside itself. */
+.lecture-slide-bullets-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 2rem;
+  row-gap: 0.85rem;
+}
+
+.lecture-slide-spacious .lecture-slide-bullets-cols > li + li,
+.lecture-slide-dense .lecture-slide-bullets-cols > li + li {
+  margin-top: 0;
+}
+
 @media (min-width: 640px) {
   .lecture-slide-spacious .lecture-slide-bullets {
     font-size: calc(2.75rem * var(--lecture-block-font-scale, 1));

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { describe, it } from "node:test";
+import { authoredSlideBullets } from "./lectures/blocks.ts";
 import { getLectureDeck, listLectureSlugs } from "./lectures/catalog.ts";
 import { slideTextToHtml } from "./lectures/slide-markup.ts";
 import { gluedLinkBoundaries } from "./link-spacing.ts";
@@ -122,7 +123,12 @@ describe("JSX link spacing", () => {
       const deck = getLectureDeck(slug);
       if (!deck) continue;
       for (const slide of deck.slides) {
-        const bits = [slide.title, ...(slide.bullets ?? []), slide.interactiveHint, slide.imageCaption];
+        const bits = [
+          slide.title,
+          ...authoredSlideBullets(slide),
+          slide.interactiveHint,
+          slide.imageCaption,
+        ];
         for (const bit of bits) {
           if (!bit) continue;
           for (const hit of gluedLinkBoundaries(`<p>${slideTextToHtml(bit)}</p>`)) {

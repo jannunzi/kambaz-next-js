@@ -25,6 +25,8 @@ export type BulletsBlock = {
   type: "bullets";
   title?: string;
   items: string[];
+  /** Two columns of the same bullet type, for a short side-by-side list. */
+  columns?: 2;
   fontSize?: BlockFontSize;
 };
 
@@ -89,6 +91,7 @@ export function createBulletsBlock(
     type: "bullets",
     title: partial?.title,
     items: partial?.items ?? ["New talking point"],
+    columns: partial?.columns,
     fontSize: partial?.fontSize,
   };
 }
