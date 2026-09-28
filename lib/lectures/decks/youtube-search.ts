@@ -151,7 +151,7 @@ export default function YouTubeSearch() {
     kind: "demo",
     bullets: [
       "Controlled input. Button calls **`searchVideos`**",
-      "Tailwind instead of Bootstrap `form-control`",
+      "A rounded bordered input and a blue `bg-blue-600` Search button",
     ],
     code: `return (
   <div>

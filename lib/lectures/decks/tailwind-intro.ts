@@ -97,14 +97,14 @@ export default function TailwindLab() {
     codeAddedLines: [1],
   },
   {
-    id: "not-bootstrap",
-    title: "Bootstrap is optional history",
+    id: "tailwind-and-icons",
+    title: "Tailwind and React Icons",
     kind: "content",
     bullets: [
-      "Drive A2 used React-Bootstrap (`d-flex`, `ListGroup`, `Card`). This course does not",
-      "Book path: **Tailwind + React Icons** — `/book/ch2` and `/labs/lab2/tailwind`",
-      "If you see those names: `d-flex` → `flex`, `col-md-6` → `md:col-span-6`",
-      "A Kambaz “list group” is CSS you write in `kambaz.css` — not a kit import",
+      "This course styles screens with **Tailwind** utilities and **React Icons**",
+      "Follow `/book/ch2` and build along `/labs/lab2/tailwind`",
+      "`flex` lines children up in a row. `md:col-span-6` spans six of twelve columns from the `md` breakpoint",
+      "Course Navigation’s list group is CSS you write in `kambaz.css`",
     ],
   },
   {

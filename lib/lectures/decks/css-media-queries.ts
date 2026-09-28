@@ -17,7 +17,7 @@ export const CSS_MEDIA_QUERIES_SLIDES: LectureSlide[] = [
     bullets: [
       "**Media queries** apply a CSS block only when the browser matches a condition",
       "Most common condition: a viewport **width** range — the foundation of responsive design",
-      "This deck uses Lab 2’s own breakpoints (750 / 1000 / 1250). Not Bootstrap’s grid",
+      "Lab 2’s demo uses its own width breakpoints: 750px, 1000px, and 1250px",
       "Tailwind later wraps the same idea as `md:` / `lg:` utilities. Learn the CSS first",
     ],
   },
