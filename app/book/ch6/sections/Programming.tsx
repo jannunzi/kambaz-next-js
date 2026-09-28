@@ -107,8 +107,7 @@ const app = express();
           <code>index.js</code>{" "}so the connection is established
           before any route handler tries to run a query. Wrap that
           call in <code>connectDatabase()</code>{" "}so a missing or
-          bad URI doesn&apos;t crash the app. The string you write
-          as a student is the one above. If{" "}
+          bad URI doesn&apos;t crash the app. If{" "}
           <code>mongod</code>{" "}is not running, Mongoose will retry
           and then fail; start the service or the command-line process
           from <SectionLink to="6.1.1" />{" "}before you start{" "}
@@ -162,7 +161,7 @@ const CONNECTION_STRING =
   "mongodb://127.0.0.1:27017/kambaz";
 mongoose.connect(CONNECTION_STRING);`}</CodeBlock>
         <p>
-          The PDF name is <code>DATABASE_CONNECTION_STRING</code>. This
+          Use <code>DATABASE_CONNECTION_STRING</code>. This
           repo also accepts <code>MONGO_CONNECTION_STRING</code>. If
           neither is set, DAOs stay in memory and{" "}
           <code>/lab6/status</code>{" "}reports{" "}
@@ -187,7 +186,7 @@ mongoose.connect(CONNECTION_STRING);`}</CodeBlock>
           Express is up — or keep using the book store for now.
         </OnYourOwn>
         <WithAI
-          prompt={`In webdev-server/.env.example, keep DATABASE_CONNECTION_STRING as the PDF name and mention MONGO_CONNECTION_STRING as an alias. Do not put a real Atlas password in any committed file.`}
+          prompt={`In webdev-server/.env.example, keep DATABASE_CONNECTION_STRING and mention MONGO_CONNECTION_STRING as an alias. Do not put a real Atlas password in any committed file.`}
         >
           Ask the assistant to keep the env names straight:
         </WithAI>

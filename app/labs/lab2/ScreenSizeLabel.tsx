@@ -1,6 +1,6 @@
 import "@/app/labs/lab2/tailwind/utilities.css";
 
-/** Tailwind responsive show/hide — replaces Bootstrap display utilities */
+/** Tailwind responsive show/hide for the screen-size label. */
 export default function ScreenSizeLabel() {
   return (
     <div

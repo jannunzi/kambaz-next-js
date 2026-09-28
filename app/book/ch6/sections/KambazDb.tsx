@@ -361,7 +361,7 @@ app.put("/api/courses/:courseId", updateCourse);`}</CodeBlock>
           <code>courseId</code>) whose value is the{" "}
           <code>_id</code>{" "}of some course document the module
           belongs to. That is what Chapter 5 already did in JSON, and
-          it is the shape this book&apos;s{" "}
+          it is the shape the{" "}
           <code>modules</code>{" "}collection keeps so the existing{" "}
           <code>/api/courses/:courseId/modules</code>{" "}routes stay
           stable.
@@ -382,21 +382,20 @@ app.put("/api/courses/:courseId", updateCourse);`}</CodeBlock>
           the documents would instead be embedded in the
           corresponding parent course document in a{" "}
           <code>modules</code>{" "}array. Because modules are not
-          expected to be fetched outside a course, the original
-          chapter embeds them on the course schema. This book also
-          keeps a <code>modules</code>{" "}collection with a{" "}
+          expected to be fetched outside a course, one design embeds
+          them on the course schema. You can also keep a{" "}
+          <code>modules</code>{" "}collection with a{" "}
           <code>course</code>{" "}field. Both shapes are valid; pick
           one per project and stick to it. The subsections below show
-          the embed schema so you can read the original design, then
-          implement the collection-plus-foreign-key DAO that matches
-          the LiveDemo routes.
+          the embed schema, then implement the collection-plus-foreign-key
+          DAO that matches the LiveDemo routes.
         </p>
         <ul>
           <li>
             A foreign key on the child: each module has{" "}
             <code>course</code>{" "}equal to the course{" "}
             <code>_id</code>{" "}(what Chapter 5 already did in JSON,
-            and what this book&apos;s collection uses).
+            and what the modules collection uses).
           </li>
           <li>
             An array of child ids on the parent.
@@ -415,7 +414,7 @@ app.put("/api/courses/:courseId", updateCourse);`}</CodeBlock>
         >
           <p>
             Since modules are not expected to be accessible outside
-            their course, the original design embeds the module
+            their course, the embed design puts the module
             documents in a new <code>modules</code>{" "}property in the
             course schema. To demonstrate, create the schema file
             below that describes the data structure of module
@@ -652,11 +651,10 @@ app.get("/api/courses/:courseId/modules", findModulesForCourse);`}</CodeBlock>
   );
 }`}</CodeBlock>
           <p>
-            This book&apos;s client keeps the Chapter 5 URL{" "}
+            Keep the Chapter 5 URL{" "}
             <code>DELETE /api/modules/:moduleId</code>{" "}because the
             collection already stores the foreign key. If you embed,
-            switch the client to encode the course id as shown in the
-            original chapter —{" "}
+            switch the client to encode the course id —{" "}
             <code>/api/courses/:courseId/modules/:moduleId</code> —
             and pass <code>cid</code>{" "}from the Modules page into{" "}
             <code>onRemoveModule</code>.
@@ -1123,8 +1121,8 @@ app.get("/api/courses/:cid/users", findUsersForCourse);`}</CodeBlock>
           assignments — the same one-to-many relationship you just
           implemented for modules. You can store assignments in their
           own collection with a <code>course</code>{" "}foreign key, which
-          is what this book does, or embed them on the course the way
-          the original chapter embedded modules. Mirror the modules
+          is the collection-plus-foreign-key shape, or embed them on the
+          course the way the embed schema does for modules. Mirror the modules
           DAO: <code>findAssignmentsForCourse</code>,{" "}
           <code>createAssignment</code>,{" "}
           <code>updateAssignment</code>,{" "}

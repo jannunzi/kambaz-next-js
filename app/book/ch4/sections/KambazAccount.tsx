@@ -35,11 +35,10 @@ export default function KambazAccount() {
           rarely, so Context is a fair fit, and it lets you practice the
           provider you already built in the lab. Local{" "}
           <code>useState</code>{" "}plus Zustand for everything shared
-          would have worked, and would even have been simpler. The PDF
-          kept <code>currentUser</code>{" "}in an account reducer next to
-          the course and module lists; this book uses{" "}
-          <code>AccountContext</code>{" "}for that one value and leaves
-          the lists in Zustand.
+          would have worked, and would even have been simpler. Keep{" "}
+          <code>currentUser</code>{" "}in{" "}
+          <code>AccountContext</code>{" "}and leave the course and module
+          lists in Zustand.
         </p>
 
         <Section
@@ -277,8 +276,7 @@ const visibleCourses = currentUser
             <code>nick_fury</code>{" "}/ <code>fury123</code>{" "}and
             compare. A course you Add while signed in will not appear
             until you enroll in it — that is the{" "}
-            <SectionLink to="4.10.7" />{" "}exercise, the same limitation
-            the original chapter called out.
+            <SectionLink to="4.10.7" />{" "}exercise.
           </p>
         </Section>
 
@@ -471,8 +469,7 @@ export default function Profile() {
           same path you used for modules: seed a Zustand store from{" "}
           <code>assignments.json</code>, filter the list by the current{" "}
           <code>cid</code>, and let the editor create or update a row
-          before navigating back to the list. The PDF implemented this
-          list as an assignments reducer; use an{" "}
+          before navigating back to the list. Use an{" "}
           <code>assignmentsStore</code>{" "}the same way you used{" "}
           <code>modulesStore</code>. The list target looks like{" "}
           <FigureLink to="4.10.6" />; the editor looks like{" "}
@@ -604,8 +601,7 @@ export default function Profile() {
           in. Refactor Dashboard so that there is a new blue Enrollments
           button at the top right of the screen. Clicking Enrollments
           displays all the courses. Clicking it again only shows the
-          courses the user is enrolled in. The PDF used a Redux
-          enrollment list for the same toggle; implement{" "}
+          courses the user is enrolled in. Implement{" "}
           <code>app/(kambaz)/store/enrollmentsStore.ts</code>{" "}seeded
           from <code>enrollments.json</code>{" "}with{" "}
           <code>enroll</code>{" "}and <code>unenroll</code>{" "}functions,

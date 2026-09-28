@@ -93,8 +93,7 @@ git push -u origin a5`}</CodeBlock>
             The Labs TOC still lists every lab, your full name,{" "}
             <code>wd-github</code>{" "}to the Next.js repo, plus links to
             the Node GitHub repo and the Render (or Heroku) root URL.
-            Style those links with the existing Tailwind Labs TOC — not
-            Bootstrap pills.
+            Style those links with the existing Tailwind Labs TOC.
           </li>
           <li>
             Disable Vercel Deployment Protection so graders can open

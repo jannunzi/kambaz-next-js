@@ -21,9 +21,8 @@ export default function KambazModules() {
         though Home already embeds that page and should show the same
         list. Instead of moving the modules array and functions to a
         shared parent, we will put them in a Zustand store so the list is
-        available throughout the application. The PDF used a modules
-        reducer for the same array; the screens, dialog, trash can, and
-        pencil below are what you will add.
+        available throughout the application. The screens, dialog, trash
+        can, and pencil below are what you will add.
       </p>
       <p>
         The walkthrough starts from the list you already have, adds a
@@ -415,10 +414,8 @@ export default function ModuleControlButtons({
           state variables and functions to a higher-level component that
           could share the state. Instead we will use a Zustand store so
           you practice application-level state the same way courses
-          moved in <SectionLink to="4.10.1" />. The PDF implemented
-          these four functions as a modules reducer and then wrapped
-          every call with <code>dispatch</code>; the store below keeps
-          the same operations as named functions on the hook.
+          moved in <SectionLink to="4.10.1" />. The store below keeps
+          add, delete, update, and edit as named functions on the hook.
         </p>
         <p>
           Seed from <code>modules.json</code>. Export{" "}

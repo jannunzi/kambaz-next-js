@@ -218,7 +218,7 @@ export default function ContextExamples() {
             create a Todo List component like the one you will later
             create with Redux and Zustand. The component should allow
             creating new todo items, updating their title, and deleting
-            the todos. The PDF asks you to rebuild that list with Context
+            the todos. Rebuild that list with Context
             so you can feel the difference: a{" "}
             <code>todosContext</code>{" "}holds the array and the add /
             update / delete functions, and a{" "}
@@ -378,8 +378,7 @@ export default function ZustandCounter() {
             a Todo List component like the one you will also build with
             Redux as literacy. The component should allow creating new
             todo items, updating their title, and deleting the todos. The
-            PDF leaves this as an on-your-own rebuild; this book walks
-            through a worked example so the same CRUD is in front of you
+            worked example below puts the same CRUD in front of you
             before Kambaz uses it for courses. The list is an array in
             the store, a draft object for the form, and functions that
             add, update, and delete.{" "}
@@ -616,16 +615,15 @@ export default function ZustandExamples() {
 
       <Section id="sec-4-6" title="4.6 Redux Toolkit">
         <p>
-          The PDF&apos;s 4.3 is <strong>Managing Application State
-          with Redux</strong>: install, a Hello reducer, a counter that
+          <strong>Managing Application State
+          with Redux</strong> covers install, a Hello reducer, a counter that
           dispatches events, passing data to a reducer, then a todo
           list split into form / item / list. Those labs are here so
-          the spine is complete. You will not port Kambaz to Redux —
+          you can read a slice when you meet one. You will not port Kambaz to Redux —
           Zustand holds courses and modules, Context holds who is
-          signed in — but you should be able to read a slice when you
-          meet one. The PDF implements Kambaz courses, modules, and
-          account as Redux reducers; this book teaches the same screens
-          and CRUD with Zustand stores and an Account Context.
+          signed in. Kambaz courses, modules, and
+          account use Zustand stores and an Account Context for the same
+          screens and CRUD.
         </p>
         <p>
           The <code>useState</code>{" "}hook is used to maintain the state
@@ -1023,7 +1021,7 @@ export default function AddRedux() {
             would limit the todos to only being available within the
             Todo List. We will then add application state support to
             demonstrate how the todos can be shared with any component
-            or screen in the application. The PDF builds that path in
+            or screen in the application. Build that path in
             three steps: a single <code>TodoList</code>{" "}with{" "}
             <code>useState</code>, then a split into{" "}
             <code>TodoForm</code>{" "}and <code>TodoItem</code>, then a{" "}
@@ -1051,7 +1049,7 @@ export default function AddRedux() {
             all you need if the list never leaves this screen.
           </p>
           <p>
-            The next PDF step, 4.3.5.1 Breaking up Large Components,
+            The next step, Breaking up Large Components,
             splits that one file into <code>TodoItem</code>{" "}and{" "}
             <code>TodoForm</code>. The item accepts references to the
             todo object as well as <code>deleteTodo</code>{" "}and{" "}
@@ -1258,17 +1256,16 @@ export default function ReduxExamples() {
           <p>
             Hello, counter, add-with-payload, and todos share one
             store and one <code>Provider</code>. Now the todos are
-            available to any component in the body of that Provider. The
-            PDF illustrates the point by selecting the same{" "}
+            available to any component in the body of that Provider.
+            You can illustrate the point by selecting the same{" "}
             <code>todos</code>{" "}from inside the Lab 4{" "}
             <code>ArrayStateVariable</code>{" "}component so the titles
-            appear under the integer list. You can try that as an
+            appear under the integer list. Try that as an
             extra: import <code>useSelector</code>, read{" "}
             <code>state.todosReducer.todos</code>, and render the
             titles — but only if you also wrap that part of the tree in
-            the same Provider. That extra setup is why this course puts
-            Kambaz on Zustand. The PDF used Redux reducers for the same
-            Kambaz lists; you will implement those screens with Zustand
+            the same Provider. That extra setup is why Kambaz uses
+            Zustand. You will implement those screens with Zustand
             in <SectionLink to="4.10" />. The{" "}
             <OfficialLink href="https://redux-toolkit.js.org/">
               Redux Toolkit
@@ -1277,7 +1274,7 @@ export default function ReduxExamples() {
           </p>
           <OnYourOwn>
             Split <code>ReduxTodos</code> into a form component and
-            an item component, as the PDF does in 4.3.5.1.
+            an item component.
           </OnYourOwn>
         </Section>
       </Section>

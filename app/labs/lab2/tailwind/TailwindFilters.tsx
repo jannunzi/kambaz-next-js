@@ -1,5 +1,4 @@
 export default function TailwindFilters() {
-  // Download angel-falls.jpg into public/images for the PDF exercise;
   // reactjs.jpg is used here so the lab runs out of the box.
   const src = "/images/reactjs.jpg";
   return (

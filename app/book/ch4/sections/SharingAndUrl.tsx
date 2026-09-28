@@ -17,10 +17,9 @@ export default function SharingAndUrl() {
     >
       <p>
         State can be shared between components by passing references to
-        state variables and the functions that update them. The PDF
-        places sharing state at 4.2.2.8 and URL encoding at 4.2.3, first
-        query parameters and then path parameters. Those labs are here as
-        their own section so the problem is visible before Redux, Context,
+        state variables and the functions that update them. This section
+        covers sharing state, then URL encoding with query parameters and
+        then path parameters, so the problem is visible before Redux, Context,
         and Zustand offer to solve it.
       </p>
       <p>

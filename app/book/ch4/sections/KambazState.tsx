@@ -61,11 +61,9 @@ export default function KambazState() {
         the arrays can grow, shrink, and rename as the user interacts with
         the application. The labs gave you a chance to learn those skills
         one at a time, and now they go together so you can actually build
-        something: a Kambaz that changes as the user works. The PDF
-        implements these lists as Redux reducers. This book puts the same
+        something: a Kambaz that changes as the user works. Put these
         arrays in Zustand so any Client Component can subscribe without a
-        provider around the tree. The screens and buttons are the ones in
-        the PDF. A coverage checklist is in{" "}
+        provider around the tree. A coverage checklist is in{" "}
         <SectionLink to="4.11" /> — work through each screen as you read,
         then use the list to confirm you did everything. It is a recap,
         not a reason to skip ahead.
@@ -199,10 +197,8 @@ export default function KambazState() {
           just created would not have a name when you opened it. To share
           the list we need either a parent that owns the array for both
           Dashboard and Courses, or a store that any Client Component can
-          import. We will use Zustand. The PDF solved the same sharing
-          problem with a <code>coursesReducer</code>{" "}and a Redux{" "}
-          <code>Provider</code>; the functions below do the same work
-          without a provider around the tree.
+          import. We will use Zustand. The functions below share the
+          list without a provider around the tree.
         </p>
         <p>
           Start the store from the same JSON{" "}
