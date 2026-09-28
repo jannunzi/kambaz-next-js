@@ -971,7 +971,7 @@ export default async function PeopleTable({
           back to the section where you wired the worked example. Build in
           order as you read — this list is for checking coverage, not a
           substitute for the walkthroughs. Course Navigation, Assignments,
-          and the Assignment Editor stay On your own: match the ids and
+          and the Assignment Editor stay <strong>On your own</strong>: match the ids and
           LiveDemos in those sections. Each screen is listed once, with
           Lab, <strong>On your own</strong>, and <strong>With AI</strong>{" "}
           nested as a/b/c.

@@ -644,7 +644,7 @@ export default function Profile() {
           you read — this list is for checking coverage, not a
           substitute for the walkthroughs. Create the store, click the
           buttons, and confirm the browser before you tick a line.
-          Assignments and enrollments stay On your own: match the ids,
+          Assignments and enrollments stay <strong>On your own</strong>: match the ids,
           figures, and steps in those sections. Each screen is listed
           once, with Lab, <strong>On your own</strong>, and{" "}
           <strong>With AI</strong>{" "}nested as a/b/c when those blocks

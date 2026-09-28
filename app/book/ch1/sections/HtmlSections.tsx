@@ -199,7 +199,7 @@ export default function HtmlSections() {
           you can see the six sizes. Leave the sample <code>h4</code>{" "}and its
           paragraph in place. Add this practice block before{" "}
           <strong>With AI</strong>. That later prompt refers to these practice
-          headings. Your personal <code>h4</code>{" "}in On your own stays in its
+          headings. Your personal <code>h4</code>{" "}in <strong>On your own</strong> stays in its
           own section:
         </p>
         <CodeBlock language="tsx">{`<h1>h1</h1>
@@ -269,7 +269,7 @@ export default function Lab1() {
         >
           Add the practice <code>h1</code>–<code>h6</code>{" "}headings before
           this step. If that block is still missing, add it first; your
-          personal <code>h4</code>{" "}from On your own stays in its own section.
+          personal <code>h4</code>{" "}from <strong>On your own</strong> stays in its own section.
           Then ask the assistant to add a second sample outline after the
           practice <code>h1</code>–<code>h6</code>{" "}headings you added. Keep
           the book sample (the <code>h4</code>{" "}and its paragraph) and your
@@ -2446,7 +2446,8 @@ export default function LabsLayout({
         <A1LabExerciseList />
         <p>
           When the checklist is done, Lab 1 should match the core HTML examples
-          below. Your On your own additions and With AI extras appear in the
+          below. Your <strong>On your own</strong> additions and{" "}
+          <strong>With AI</strong> extras appear in the
           same page (and Labs chrome) beyond what this demo shows. Delivery
           (Vercel, name, GitHub) and Kambaz screens stay on the A1 page — see{" "}
           <SectionLink to="1.4.9" />{" "}for the Kambaz recap.

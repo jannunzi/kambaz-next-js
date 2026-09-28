@@ -1345,7 +1345,7 @@ export default async function Assignments({
           section where you built the worked example. Build the screens in
           order as you read — this list is for checking coverage, not a
           substitute for the walkthroughs. Assignments and the Assignment
-          Editor stay On your own: match the ids and LiveDemos in those
+          Editor stay <strong>On your own</strong>: match the ids and LiveDemos in those
           sections.
         </p>
         <ol>
