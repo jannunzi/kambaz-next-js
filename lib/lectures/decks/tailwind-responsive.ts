@@ -7,38 +7,193 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     kind: "title",
     bullets: [
       "Chapter 2 · Tailwind Responsive",
-      "§2.3.4 · `TailwindResponsiveDesign.tsx` — mobile-first prefixes",
+      "§2.3.4 · five small ideas, then the card",
     ],
   },
   {
-    id: "purpose",
-    title: "Unprefixed first, then md:",
+    id: "intro",
+    title: "Responsive Design",
     kind: "content",
     bullets: [
-      "Tailwind is **mobile-first**: a bare class applies at every width",
-      "A prefix like `md:` applies from that breakpoint **and up**",
-      "§2.1’s `@media` demo watched the viewport. Same idea, shorter spelling",
-      "`md:flex` is `display: flex` inside `@media (min-width: 48rem)`",
+      "A **responsive** page changes as the viewport — the browser window — gets wider",
+      "A **breakpoint prefix** is a width name, a colon, and a class, such as `md:bg-green-500`",
+      "`rem` follows the root font size. `1rem` is 16px by default",
+      "Five small components each teach one idea. The card at the end combines them",
     ],
   },
   {
-    id: "breakpoints",
-    title: "Common prefixes",
+    id: "breakpoint-tsx",
+    title: "One breakpoint",
     kind: "content",
     bullets: [
-      "`sm:` ~40rem · `md:` ~48rem · `lg:` ~64rem · `xl:` · `2xl:`",
-      "Kambaz later: `hidden md:block` on sidebars, `hidden lg:block` on Course Status",
-      "Dashboard cards: `grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4`",
+      "Tailwind is **mobile-first**: an unprefixed class applies at every width, and `md:` applies from 48rem (768px) up",
     ],
+    code: `export default function TailwindResponsiveBreakpoint() {
+  return (
+    <div
+      id="wd-tailwind-responsive-breakpoint"
+      className="bg-red-500 md:bg-green-500 p-4 text-white"
+    >
+      Red below md, green at md and up.
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/tailwind/TailwindResponsiveBreakpoint.tsx",
+  },
+  {
+    id: "breakpoint-demo",
+    title: "Red, then green",
+    kind: "demo",
+    bullets: [
+      "Below 768px the box is red. At `md` and wider it is green",
+    ],
+    embed: "tw-responsive-breakpoint",
+  },
+  {
+    id: "show-hide-tsx",
+    title: "Show and hide by width",
+    kind: "content",
+    bullets: [
+      "`hidden` sets `display: none` and `block` shows the element. `block md:hidden` is the small-screen line until `md`; `hidden md:block` is the large-screen line from `md` up",
+    ],
+    code: `export default function TailwindResponsiveShowHide() {
+  return (
+    <div id="wd-tailwind-responsive-show-hide">
+      <p className="block md:hidden bg-red-200 p-2">small screen</p>
+      <p className="hidden md:block bg-green-200 p-2">large screen</p>
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/tailwind/TailwindResponsiveShowHide.tsx",
+  },
+  {
+    id: "show-hide-demo",
+    title: "Small line, then large",
+    kind: "demo",
+    bullets: [
+      "Below `md` the red line shows. At `md` and up the green line shows",
+    ],
+    embed: "tw-responsive-show-hide",
+  },
+  {
+    id: "flex-tsx",
+    title: "Stack, then side by side",
+    kind: "content",
+    bullets: [
+      "`flex flex-col` stacks the boxes. `md:flex-row` lays them side by side from 768px up. Unprefixed `gap-4` keeps the gutter in both layouts",
+    ],
+    code: `export default function TailwindResponsiveFlex() {
+  return (
+    <div
+      id="wd-tailwind-responsive-flex"
+      className="flex flex-col md:flex-row gap-4"
+    >
+      <div className="bg-red-500 p-4 text-white">One</div>
+      <div className="bg-green-500 p-4 text-white">Two</div>
+      <div className="bg-blue-500 p-4 text-white">Three</div>
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/tailwind/TailwindResponsiveFlex.tsx",
+  },
+  {
+    id: "flex-demo",
+    title: "Live stacked row",
+    kind: "demo",
+    bullets: [
+      "Below `md` the boxes stack. At `md` they sit in a row",
+    ],
+    embed: "tw-responsive-flex",
+  },
+  {
+    id: "widths",
+    title: "Prefix minimum widths",
+    kind: "content",
+    bullets: [
+      "Once a prefix applies, it keeps applying at larger widths until a later prefix overrides it",
+      "`sm` 40rem (640px)",
+      "`md` 48rem (768px)",
+      "`lg` 64rem (1024px)",
+      "`xl` 80rem (1280px)",
+      "`2xl` 96rem (1536px)",
+    ],
+  },
+  {
+    id: "grid-tsx",
+    title: "Grid columns by breakpoint",
+    kind: "content",
+    bullets: [
+      "One column below 640px, two from `sm` until `lg`, and four from 1024px up",
+    ],
+    code: `export default function TailwindResponsiveGrid() {
+  return (
+    <div
+      id="wd-tailwind-responsive-grid"
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+    >
+      <div className="text-center bg-blue-300 p-3">01</div>
+      <div className="text-center bg-blue-300 p-3">02</div>
+      <div className="text-center bg-blue-300 p-3">03</div>
+      <div className="text-center bg-blue-300 p-3">04</div>
+      <div className="text-center bg-blue-300 p-3">05</div>
+      <div className="text-center bg-blue-300 p-3">06</div>
+      <div className="text-center bg-blue-300 p-3">07</div>
+      <div className="text-center bg-blue-300 p-3">08</div>
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/tailwind/TailwindResponsiveGrid.tsx",
+  },
+  {
+    id: "grid-demo",
+    title: "Live grid columns",
+    kind: "demo",
+    bullets: [
+      "Below 640px there is one column. At `lg` (1024px) there are four",
+    ],
+    embed: "tw-responsive-grid",
+  },
+  {
+    id: "spacing-tsx",
+    title: "Spacing and text size",
+    kind: "content",
+    bullets: [
+      "`p-2` and `text-base` apply at every width. `md:p-8` and `md:text-2xl` grow the padding and the type from 768px up",
+    ],
+    code: `export default function TailwindResponsiveSpacingText() {
+  return (
+    <div id="wd-tailwind-responsive-spacing-text">
+      <h2 className="bg-yellow-200 p-2 text-base md:p-8 md:text-2xl">
+        Spacing and text size
+      </h2>
+      <p className="bg-yellow-100 p-2 text-base md:p-8 md:text-2xl">
+        Padding and the font size grow at md.
+      </p>
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/tailwind/TailwindResponsiveSpacingText.tsx",
+  },
+  {
+    id: "spacing-demo",
+    title: "Live spacing and type",
+    kind: "demo",
+    bullets: [
+      "Below `md` the type is compact. At `md` the padding and the type grow",
+    ],
+    embed: "tw-responsive-spacing",
   },
   {
     id: "tsx",
-    title: "A card that stacks, then rows",
+    title: "A responsive card",
     kind: "content",
     bullets: [
-      "Narrow: a tall `h-56` image on top, text below — a single column",
-      "At `md`: `md:flex` puts the image beside the copy at full height",
-      "`md:w-48 md:h-full` pins the image; `md:max-w-2xl` widens the card",
+      "The card combines those ideas, and also uses `md:max-w-2xl` to widen it, `md:flex` to start the row without `flex-col`, and `md:w-48`, `md:shrink-0`, `md:h-full`, and `md:min-h-56` to size the image",
     ],
     code: `export default function TailwindResponsiveDesign() {
   return (
@@ -104,24 +259,21 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
   },
   {
     id: "demo",
-    title: "Resize to swap the layout",
+    title: "Image beside the text",
     kind: "demo",
     bullets: [
-      "Widen the window (or Present on a desktop): the image moves beside the text",
-      "The figure is only a preview — prefixes watch the **viewport**, like `@media`",
+      "Below `md` the image sits on the text. At `md`, `md:flex` puts it beside the text",
     ],
     embed: "tw-responsive",
-    interactiveHint:
-      "md: utilities use the window width. A phone-sized window stays stacked; a wide present stage goes side-by-side.",
   },
   {
     id: "vs-media",
     title: "Prefixes compile to @media",
     kind: "content",
     bullets: [
-      "You already know why a layout can change at a width",
-      "`md:` is not a different language — it is a media query with a name",
-      "Use a raw `@media` file when the condition is not a Tailwind breakpoint",
+      "A **media query** applies CSS only when the viewport matches a width",
+      "`md:` is that query with a name: `@media (min-width: 48rem)`",
+      "Use a raw `@media` file when the condition is not one of these prefixes",
     ],
   },
   {
@@ -129,7 +281,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     title: "Next: filters",
     kind: "title",
     bullets: [
-      "You can stack on phones and row at `md` with prefix utilities",
+      "You can change color, visibility, direction, columns, spacing, and type with a prefix",
       "§2.3.5: `blur-*` on an image, then §2.3.6 grid",
     ],
   },

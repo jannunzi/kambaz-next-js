@@ -512,7 +512,7 @@ const LECTURE_SUMMARIES: Record<
   "tailwind-responsive": {
     title: "Tailwind Responsive",
     summary:
-      "Mobile-first md: prefixes on the Lab 2 card — stacked on phones, row at md — §2.3.4.",
+      "Five small responsive demos, then the Lab 2 card — color, show/hide, row, grid, spacing — §2.3.4.",
     chapter: 2,
     canvasLecture: 6,
     topicId: "tailwind",

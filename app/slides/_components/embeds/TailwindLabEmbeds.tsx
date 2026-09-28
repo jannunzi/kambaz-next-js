@@ -2,7 +2,12 @@ import ReactIconsSampler from "@/app/labs/lab2/ReactIconsSampler";
 import TailwindBackgroundColors from "@/app/labs/lab2/tailwind/TailwindBackgroundColors";
 import TailwindFilters from "@/app/labs/lab2/tailwind/TailwindFilters";
 import TailwindGrids from "@/app/labs/lab2/tailwind/TailwindGrids";
+import TailwindResponsiveBreakpoint from "@/app/labs/lab2/tailwind/TailwindResponsiveBreakpoint";
 import TailwindResponsiveDesign from "@/app/labs/lab2/tailwind/TailwindResponsiveDesign";
+import TailwindResponsiveFlex from "@/app/labs/lab2/tailwind/TailwindResponsiveFlex";
+import TailwindResponsiveGrid from "@/app/labs/lab2/tailwind/TailwindResponsiveGrid";
+import TailwindResponsiveShowHide from "@/app/labs/lab2/tailwind/TailwindResponsiveShowHide";
+import TailwindResponsiveSpacingText from "@/app/labs/lab2/tailwind/TailwindResponsiveSpacingText";
 import TailwindSpacing from "@/app/labs/lab2/tailwind/TailwindSpacing";
 import TailwindTypography from "@/app/labs/lab2/tailwind/TailwindTypography";
 import type { ReactNode } from "react";
@@ -86,9 +91,49 @@ export function TailwindGridsEmbed() {
   );
 }
 
+export function TailwindResponsiveBreakpointEmbed() {
+  return (
+    <TailwindDemo label="One breakpoint">
+      <TailwindResponsiveBreakpoint />
+    </TailwindDemo>
+  );
+}
+
+export function TailwindResponsiveShowHideEmbed() {
+  return (
+    <TailwindDemo label="Show and hide by width">
+      <TailwindResponsiveShowHide />
+    </TailwindDemo>
+  );
+}
+
+export function TailwindResponsiveFlexEmbed() {
+  return (
+    <TailwindDemo label="Stack, then side by side">
+      <TailwindResponsiveFlex />
+    </TailwindDemo>
+  );
+}
+
+export function TailwindResponsiveGridEmbed() {
+  return (
+    <TailwindDemo label="Grid columns by breakpoint">
+      <TailwindResponsiveGrid />
+    </TailwindDemo>
+  );
+}
+
+export function TailwindResponsiveSpacingEmbed() {
+  return (
+    <TailwindDemo label="Spacing and text size">
+      <TailwindResponsiveSpacingText />
+    </TailwindDemo>
+  );
+}
+
 export function TailwindResponsiveEmbed() {
   return (
-    <TailwindDemo label="TailwindResponsiveDesign.tsx">
+    <TailwindDemo label="A responsive card">
       <TailwindResponsiveDesign />
     </TailwindDemo>
   );

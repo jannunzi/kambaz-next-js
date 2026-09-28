@@ -1219,7 +1219,7 @@ describe("lecture decks", () => {
     assert.equal(counts["tailwind-typography"], 6);
     assert.equal(counts["tailwind-colors"], 5);
     assert.equal(counts["tailwind-filters-and-grid"], 13);
-    assert.equal(counts["tailwind-responsive"], 7);
+    assert.equal(counts["tailwind-responsive"], 17);
     assert.equal(counts["kambaz-styling"], 8);
     assert.equal(counts["kambaz-nav-styling"], 7);
     assert.equal(counts["kambaz-dashboard-styling"], 7);
@@ -1664,7 +1664,14 @@ describe("lecture decks", () => {
         "flex-demo": "tw-flex",
         "grid-demo": "tw-grids",
       },
-      "tailwind-responsive": { demo: "tw-responsive" },
+      "tailwind-responsive": {
+        "breakpoint-demo": "tw-responsive-breakpoint",
+        "show-hide-demo": "tw-responsive-show-hide",
+        "flex-demo": "tw-responsive-flex",
+        "grid-demo": "tw-responsive-grid",
+        "spacing-demo": "tw-responsive-spacing",
+        demo: "tw-responsive",
+      },
       "kambaz-nav-styling": { demo: "kambaz-styled-nav" },
       "kambaz-dashboard-styling": { demo: "kambaz-styled-dashboard" },
       "kambaz-courses-styling": {
@@ -2296,7 +2303,17 @@ describe("lecture decks", () => {
     const responsive = slideText("tailwind-responsive");
     assert.match(responsive, /md:flex/);
     assert.match(responsive, /TailwindResponsiveDesign/);
+    assert.match(responsive, /TailwindResponsiveBreakpoint/);
+    assert.match(responsive, /TailwindResponsiveShowHide/);
+    assert.match(responsive, /TailwindResponsiveFlex/);
+    assert.match(responsive, /TailwindResponsiveGrid/);
+    assert.match(responsive, /TailwindResponsiveSpacingText/);
     assert.match(responsive, /mobile-first/i);
+    assert.match(responsive, /40rem \(640px\)/);
+    assert.match(responsive, /96rem \(1536px\)/);
+    assert.match(responsive, /md:max-w-2xl/);
+    assert.match(responsive, /md:shrink-0/);
+    assert.doesNotMatch(responsive, /Bootstrap/);
 
     const shell = slideText("kambaz-styling");
     assert.match(shell, /tailwindcss\/theme/);
