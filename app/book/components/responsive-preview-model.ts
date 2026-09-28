@@ -51,6 +51,16 @@ export const MEDIA_QUERY_BREAKPOINTS: Breakpoint[] = [
 ];
 
 export const TAILWIND_RESPONSIVE_PREVIEW_SRC = "/preview/tailwind-responsive";
+export const TAILWIND_RESPONSIVE_BREAKPOINT_PREVIEW_SRC =
+  "/preview/tailwind-responsive-breakpoint";
+export const TAILWIND_RESPONSIVE_SHOW_HIDE_PREVIEW_SRC =
+  "/preview/tailwind-responsive-show-hide";
+export const TAILWIND_RESPONSIVE_FLEX_PREVIEW_SRC =
+  "/preview/tailwind-responsive-flex";
+export const TAILWIND_RESPONSIVE_GRID_PREVIEW_SRC =
+  "/preview/tailwind-responsive-grid";
+export const TAILWIND_RESPONSIVE_SPACING_TEXT_PREVIEW_SRC =
+  "/preview/tailwind-responsive-spacing-text";
 export const MEDIA_QUERIES_PREVIEW_SRC = "/preview/media-queries";
 
 /** One static iframe. `width` is the iframe viewport, not the painted size. */
@@ -71,6 +81,76 @@ export const TAILWIND_PREVIEW_FRAMES: PreviewFrame[] = [
     width: 1024,
     label: "Desktop, 1024px: side by side",
     title: "Desktop preview, side-by-side card",
+  },
+];
+
+/** Phone stays below `md`. Desktop is `lg`, so `md:` applies. */
+export const TAILWIND_BREAKPOINT_PREVIEW_FRAMES: PreviewFrame[] = [
+  {
+    width: 375,
+    label: "Phone, 375px: red",
+    title: "Phone preview, red box",
+  },
+  {
+    width: 1024,
+    label: "Desktop, 1024px: green",
+    title: "Desktop preview, green box",
+  },
+];
+
+/** Phone stays below `md`. Desktop is `lg`, so `md:` applies. */
+export const TAILWIND_SHOW_HIDE_PREVIEW_FRAMES: PreviewFrame[] = [
+  {
+    width: 375,
+    label: "Phone, 375px: small screen",
+    title: "Phone preview, small screen line",
+  },
+  {
+    width: 1024,
+    label: "Desktop, 1024px: large screen",
+    title: "Desktop preview, large screen line",
+  },
+];
+
+/** Phone stays below `md`. Desktop is `lg`, so `md:flex-row` applies. */
+export const TAILWIND_FLEX_PREVIEW_FRAMES: PreviewFrame[] = [
+  {
+    width: 375,
+    label: "Phone, 375px: stacked",
+    title: "Phone preview, stacked boxes",
+  },
+  {
+    width: 1024,
+    label: "Desktop, 1024px: side by side",
+    title: "Desktop preview, boxes in a row",
+  },
+];
+
+/** Phone is below `sm` (1 column). Desktop is `lg` (4 columns). */
+export const TAILWIND_GRID_PREVIEW_FRAMES: PreviewFrame[] = [
+  {
+    width: 375,
+    label: "Phone, 375px: 1 column",
+    title: "Phone preview, one column",
+  },
+  {
+    width: 1024,
+    label: "Desktop, 1024px: 4 columns",
+    title: "Desktop preview, four columns",
+  },
+];
+
+/** Phone stays below `md`. Desktop is `lg`, so `md:p-8` and `md:text-2xl` apply. */
+export const TAILWIND_SPACING_TEXT_PREVIEW_FRAMES: PreviewFrame[] = [
+  {
+    width: 375,
+    label: "Phone, 375px: compact",
+    title: "Phone preview, compact padding and text",
+  },
+  {
+    width: 1024,
+    label: "Desktop, 1024px: larger type",
+    title: "Desktop preview, larger padding and text",
   },
 ];
 
