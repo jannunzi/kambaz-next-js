@@ -681,20 +681,10 @@ code.quiz-prompt-code {
   box-sizing: border-box;
 }
 
-/* Book CSS does not load Tailwind preflight, so width:100% is content-box
- * unless we set this. Otherwise padded inputs stick out of the frame. */
-.lecture-slide .lecture-demo-frame *,
-.lecture-slide .lecture-demo-frame *::before,
-.lecture-slide .lecture-demo-frame *::after {
+/* Chat fields use width:100% plus padding. Content-box adds that padding
+ * outside the frame. Other controls stay content-box, matching main. */
+.lecture-slide .lecture-chat-field {
   box-sizing: border-box;
-}
-
-/* Demo-stage fields use the same content-box min size as main. border-box
- * folds the padding into that minimum and shrinks 373×47 inputs to 352×31.
- * Chat fields stay border-box so width:100% does not stick out of the frame. */
-.lecture-slide[data-demo-stage="true"] .lecture-demo-frame-body input,
-.lecture-slide[data-demo-stage="true"] .lecture-demo-frame-body textarea {
-  box-sizing: content-box;
 }
 
 /* Inline images sit on the text baseline and leave a gap the frame then

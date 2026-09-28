@@ -172,7 +172,7 @@ export function OpenAIChatEmbed() {
             <textarea
               value={input}
               onChange={(event) => setInput(event.target.value)}
-              className="w-full rounded border px-3 py-2"
+              className="lecture-chat-field w-full rounded border px-3 py-2"
               rows={2}
               aria-label="Chat message"
             />
@@ -197,7 +197,7 @@ export function OpenAIImagesEmbed() {
         <textarea
           value={prompt}
           onChange={(event) => setPrompt(event.target.value)}
-          className="mb-2 w-full rounded border px-3 py-2"
+          className="lecture-chat-field mb-2 w-full rounded border px-3 py-2"
           placeholder="Describe the image to generate"
         />
         <select
@@ -229,7 +229,7 @@ export function OpenAIVisionEmbed() {
           <input
             value={imageUrl}
             onChange={(event) => setImageUrl(event.target.value)}
-            className="flex-1 rounded border px-3 py-2"
+            className="lecture-chat-field flex-1 rounded border px-3 py-2"
             aria-label="Image URL"
           />
           <button
@@ -248,7 +248,7 @@ export function OpenAIVisionEmbed() {
           readOnly
           value={description}
           rows={3}
-          className="mb-2 w-full rounded border px-3 py-2"
+          className="lecture-chat-field mb-2 w-full rounded border px-3 py-2"
           aria-label="Description"
         />
         {/* eslint-disable-next-line @next/next/no-img-element */}
