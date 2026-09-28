@@ -68,7 +68,7 @@ export const TAILWIND_COLORS_SLIDES: LectureSlide[] = [
       <TailwindBackgroundColors />`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/tailwind/page.tsx",
-    codeAddedLines: [1, 5],
+    codeAddedLines: [1, 4, 5],
   },
   {
     id: "next-up",
@@ -76,7 +76,7 @@ export const TAILWIND_COLORS_SLIDES: LectureSlide[] = [
     kind: "title",
     bullets: [
       "You can paint a band with `bg-{color}-{shade}` and a contrasting `text-*`",
-      "§2.3.4: mobile-first `md:` / `lg:` — then filters, then grid",
+      "`md:` applies from 768px up and `lg:` from 1024px up. §2.3.4 uses those mobile-first prefixes, then filters, then grid",
     ],
   },
 ];

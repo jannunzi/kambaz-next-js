@@ -16,7 +16,10 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "§2.3.5: `blur-*`, `grayscale`, `brightness-*`, `contrast-*` on the element",
-      "§2.3.6: `grid grid-cols-4 gap-4`, then `col-span-*` on a 12-column page",
+      "**CSS Grid** places children into columns. `grid` turns the grid on and `grid-cols-*` sets how many columns",
+      "`gap` is the gutter, the space between those cells",
+      "`col-span-*` stretches one cell across that many columns",
+      "A **12-column grid** divides the page into twelve columns, because twelve divides evenly by two, three, four, and six",
       "The last slides spell the §2.1.19 flex row with Tailwind utilities",
     ],
   },
@@ -80,7 +83,7 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
       <TailwindFilters />`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/tailwind/page.tsx",
-    codeAddedLines: [1, 5],
+    codeAddedLines: [1, 4, 5],
   },
   {
     id: "grid-four",
@@ -272,7 +275,7 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
       <TailwindGrids />`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/tailwind/page.tsx",
-    codeAddedLines: [1, 5],
+    codeAddedLines: [1, 4, 5],
   },
   {
     id: "flex-map",

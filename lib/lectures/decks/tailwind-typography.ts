@@ -79,7 +79,7 @@ export const TAILWIND_TYPOGRAPHY_SLIDES: LectureSlide[] = [
       <TailwindTypography />`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/tailwind/page.tsx",
-    codeAddedLines: [1, 5],
+    codeAddedLines: [1, 4, 5],
   },
   {
     id: "pair",

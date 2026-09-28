@@ -193,6 +193,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     title: "A responsive card",
     kind: "content",
     bullets: [
+      "`h-56` sets a height of 14rem. `max-w-md` caps the width at 28rem. `hover:underline` underlines the link only while the pointer is over it",
       "The card combines those ideas. `md:max-w-2xl` widens the card. `md:flex` turns the row on without a `flex-col` first. On the image, `md:w-48` sets a fixed width of 12rem, `md:shrink-0` stops flex from shrinking that width, `md:h-full` fills the card's height, and `md:min-h-56` keeps a minimum height of 14rem. `object-cover` crops the picture so it fills that box without stretching",
     ],
     code: `export default function TailwindResponsiveDesign() {
@@ -310,7 +311,7 @@ export default function TailwindLab() {
 }`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/tailwind/page.tsx",
-    codeAddedLines: [[5, 10], 22, 24, 26, 28, 30, 32],
+    codeAddedLines: [[5, 10], [21, 32]],
   },
   {
     id: "vs-media",

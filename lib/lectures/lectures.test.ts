@@ -1364,6 +1364,14 @@ describe("lecture decks", () => {
     );
     assert.match(
       css,
+      /\.lecture-slide \.lecture-demo-frame-body \.text-base:not\(\[class\*=":text-"\]\)/,
+    );
+    assert.match(
+      css,
+      /\.lecture-slide \.book-code-block-lined \.line \{[^}]*overflow-wrap:\s*anywhere/,
+    );
+    assert.match(
+      css,
       /\.lecture-block-size-lg \{[^}]*max-width:\s*100%/,
     );
     const blocks = readFileSync(
@@ -2339,18 +2347,13 @@ describe("lecture decks", () => {
     assert.match(responsive, /minimum height of 14rem/);
     assert.deepEqual(findSlide("tailwind-responsive", "page").codeAddedLines, [
       [5, 10],
-      22,
-      24,
-      26,
-      28,
-      30,
-      32,
+      [21, 32],
     ]);
     assert.deepEqual(findSlide("tailwind-spacing", "page").codeAddedLines, [1, 4]);
-    assert.deepEqual(findSlide("tailwind-typography", "page").codeAddedLines, [1, 5]);
-    assert.deepEqual(findSlide("tailwind-colors", "page").codeAddedLines, [1, 5]);
-    assert.deepEqual(findSlide("tailwind-filters-and-grid", "filters-page").codeAddedLines, [1, 5]);
-    assert.deepEqual(findSlide("tailwind-filters-and-grid", "grids-page").codeAddedLines, [1, 5]);
+    assert.deepEqual(findSlide("tailwind-typography", "page").codeAddedLines, [1, 4, 5]);
+    assert.deepEqual(findSlide("tailwind-colors", "page").codeAddedLines, [1, 4, 5]);
+    assert.deepEqual(findSlide("tailwind-filters-and-grid", "filters-page").codeAddedLines, [1, 4, 5]);
+    assert.deepEqual(findSlide("tailwind-filters-and-grid", "grids-page").codeAddedLines, [1, 4, 5]);
     assert.doesNotMatch(responsive, /TailwindFilters|TailwindGrids/);
     assert.doesNotMatch(responsive, /gutter/i);
     assert.doesNotMatch(responsive, /Bootstrap/);

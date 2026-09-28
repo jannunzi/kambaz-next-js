@@ -651,6 +651,24 @@ code.quiz-prompt-code {
 .lecture-slide .book-code-block-body pre {
   font-size: inherit;
   line-height: inherit;
+  max-width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* A one-column grid sizes to the longest token. minmax(0, 1fr) lets long
+ * class strings wrap inside the slide instead of scrolling sideways. */
+.lecture-slide .book-code-block-body code {
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.lecture-slide .book-code-block-lined .line {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .lecture-slide .book-code-block-lined .line::before {
@@ -712,19 +730,21 @@ code.quiz-prompt-code {
   overflow: visible;
 }
 
-.lecture-slide .lecture-demo-frame-body .text-xs {
+/* Bump a lone size utility so a demo reads from the back. Skip the bump when
+ * a breakpoint prefix sets the size, so md:text-2xl and the rest stay real. */
+.lecture-slide .lecture-demo-frame-body .text-xs:not([class*=":text-"]) {
   font-size: 0.9375rem;
 }
 
-.lecture-slide .lecture-demo-frame-body .text-sm {
+.lecture-slide .lecture-demo-frame-body .text-sm:not([class*=":text-"]) {
   font-size: 1.09375rem;
 }
 
-.lecture-slide .lecture-demo-frame-body .text-base {
+.lecture-slide .lecture-demo-frame-body .text-base:not([class*=":text-"]) {
   font-size: 1.25rem;
 }
 
-.lecture-slide .lecture-demo-frame-body .text-lg {
+.lecture-slide .lecture-demo-frame-body .text-lg:not([class*=":text-"]) {
   font-size: 1.40625rem;
 }
 

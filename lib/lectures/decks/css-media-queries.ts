@@ -19,7 +19,7 @@ export const CSS_MEDIA_QUERIES_SLIDES: LectureSlide[] = [
       "Most common condition: a viewport **width** range — the foundation of responsive design",
       "A **breakpoint** is a viewport width at which styles change, for example through a media query.",
       "Lab 2’s demo uses its own width breakpoints: 750px, 1000px, and 1250px",
-      "Tailwind later wraps the same idea as `md:` / `lg:` utilities. Learn the CSS first",
+      "`md:` applies from 768px up and `lg:` from 1024px up. Tailwind later uses those prefixes for this same job. Learn the CSS first",
     ],
   },
   {
@@ -27,6 +27,7 @@ export const CSS_MEDIA_QUERIES_SLIDES: LectureSlide[] = [
     title: "Width range rules",
     kind: "content",
     bullets: [
+      "A length in **rem** is relative to the root font size, usually 16px, so 2rem = 32px.",
       "`@media (min-width: 750px) and (max-width: 1000px) { … }`",
       "Rules inside only apply while the viewport stays in that range",
       "Each breakpoint resets the previous `li` highlight, then bolds the matching one",
@@ -175,7 +176,7 @@ export default function MediaQueriesDemo() {
     kind: "content",
     bullets: [
       "You now know why a layout can change at a breakpoint",
-      "Chapter 2 later uses Tailwind `sm:` / `md:` / `lg:` for the same job",
+      "`sm:` applies from 640px up. Chapter 2 later uses Tailwind `sm:` / `md:` / `lg:` for the same job",
       "Those prefixes compile down to `@media` — they are not a different language",
     ],
   },
