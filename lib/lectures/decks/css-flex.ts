@@ -43,7 +43,7 @@ export const CSS_FLEX_SLIDES: LectureSlide[] = [
   },
   {
     id: "tsx",
-    title: "Three columns in a row",
+    title: "First version of Flex.tsx is just the row",
     kind: "content",
     bullets: [
       "`display: flex` lines children up in a row with no floats, clearing, or percentage math.",

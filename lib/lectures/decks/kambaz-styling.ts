@@ -104,7 +104,7 @@ export default function KambazLayout({
     bullets: [
       "Navigation, Dashboard, Course Nav, Modules, Home, People, Assignments",
       "Assignment Editor and Account stay **On your own** — match the figures",
-      "Use the book checklist after you restyle, not instead of walking the screens",
+      "Walk those screens after you restyle.",
     ],
   },
   {

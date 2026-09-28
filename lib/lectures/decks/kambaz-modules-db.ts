@@ -25,7 +25,7 @@ export const KAMBAZ_MODULES_DB_SLIDES: LectureSlide[] = [
     title: "Three ways to model 1:N",
     kind: "content",
     bullets: [
-      "Foreign key on the child — `module.course === course._id` (this book)",
+      "Foreign key on the child — `module.course === course._id`",
       "Array of child ids on the parent — `course.moduleIds`",
       "Embed children in the parent — a `modules` array, no second collection",
       "Pick one per project. Do not insert the same module in two places",
@@ -37,7 +37,7 @@ export const KAMBAZ_MODULES_DB_SLIDES: LectureSlide[] = [
     kind: "demo",
     bullets: [
       "The running server keeps modules in their own collection",
-      "Embed schema is shown in the book so you can read the original design",
+      "You can also embed modules inside the course document. This server uses a separate collection",
       "`CourseModel` is still what enrollments `ref`",
     ],
     code: `import mongoose from "mongoose";
@@ -115,7 +115,7 @@ function updateModule(moduleId, moduleUpdates) {
     title: "Modules 1:N recap",
     kind: "content",
     bullets: [
-      "This book: `modules` collection + `course` foreign key",
+      "`modules` collection + `course` foreign key",
       "`find({ course })`, create with uuid, `deleteOne`, `$set`",
       "Create and rename a module, then confirm Compass updates",
     ],

@@ -27,6 +27,7 @@ export const TAILWIND_INTRO_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "A class is a tiny CSS rule Tailwind already wrote",
+      "A length in **rem** is relative to the root font size, usually 16px, so 2rem = 32px.",
       "`flex gap-3 text-3xl` = display flex + 0.75rem gap + large type",
       "You are not inventing selector names. You are picking utilities",
       "Plain CSS from §2.1 still matters — utilities compile down to the same properties",
@@ -103,6 +104,7 @@ export default function TailwindLab() {
     bullets: [
       "This course styles screens with **Tailwind** utilities and **React Icons**",
       "Follow `/book/ch2` and build along `/labs/lab2/tailwind`",
+      "A **breakpoint** is a viewport width at which styles change, for example through a media query.",
       "`flex` lines children up in a row. `md:col-span-6` spans six of twelve columns from the `md` breakpoint",
       "Course Navigation’s list group is CSS you write in `kambaz.css`",
     ],

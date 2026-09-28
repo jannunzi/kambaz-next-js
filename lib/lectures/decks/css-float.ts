@@ -63,7 +63,7 @@ img.wd-float-right {
     kind: "content",
     bullets: [
       "`float` pulls an element to one edge so content wraps around it, and `clear: both` stops that wrap.",
-      "The book defines `STARSHIP` and `LOREM`, then floats the photo right and left",
+      "`STARSHIP` is the photo URL and `LOREM` is the wrapping paragraph. Float the photo right, then left",
       "The second block floats three colored boxes and one more image, then `wd-float-done`",
     ],
     code: `import "./index.css";

@@ -176,7 +176,7 @@ function updateCourse(courseId, courseUpdates) {
     kind: "title",
     bullets: [
       "A course has many modules — foreign key, id array, or embed",
-      "§6.4.2: this book keeps a `modules` collection with `course`",
+      "§6.4.2: keep a `modules` collection with `course`",
     ],
   },
 ];

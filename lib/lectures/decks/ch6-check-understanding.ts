@@ -58,7 +58,7 @@ export const CH6_CHECK_UNDERSTANDING_SLIDES: LectureSlide[] = [
     bullets: [
       "Local Mongo, Mongoose connect, User schema and DAO",
       "Async account routes, ADMIN Users, filter and CRUD",
-      "Atlas next already done? Then courses, modules, enrollments",
+      "Is Atlas already connected? Then add courses, modules, and enrollments",
     ],
   },
   {

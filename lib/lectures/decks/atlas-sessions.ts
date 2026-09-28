@@ -28,7 +28,7 @@ export const ATLAS_SESSIONS_SLIDES: LectureSlide[] = [
     bullets: [
       "Use these **keys**. Do not copy the sample values",
       "`SERVER_URL` must **not** start with `https://`",
-      "`SESSION_SECRET` is a long random phrase — not the notes sample",
+      "`SESSION_SECRET` is a long random phrase you choose",
     ],
     code: `DATABASE_CONNECTION_STRING=mongodb+srv://USER:PASSWORD@cluster/kambaz?retryWrites=true&w=majority
 CLIENT_URL=https://your-a6-preview.vercel.app
@@ -116,7 +116,7 @@ SESSION_SECRET=a long random phrase`,
     bullets: [
       "Atlas credentials live on Render — never in `NEXT_PUBLIC_*`",
       "The browser talks to Express. Express talks to Atlas",
-      "Do not commit `.env` or paste the password into the book",
+      "Do not commit `.env`, and never paste the password into code or a commit",
     ],
   },
   {

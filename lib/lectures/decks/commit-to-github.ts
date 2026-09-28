@@ -5,9 +5,6 @@ export const COMMIT_TO_GITHUB_SLIDES: LectureSlide[] = [
     id: "title",
     title: "GITHUB",
     kind: "title",
-    bullets: [
-      "Jose Annunziato",
-    ],
   },
   {
     id: "install-git",

@@ -65,7 +65,7 @@ git push -u origin main`,
     kind: "demo",
     bullets: [
       "`CLIENT_URL` is your Vercel origin — no trailing slash",
-      "`SESSION_SECRET` is not the sample phrase from the notes",
+      "`SESSION_SECRET` is a long random phrase you choose",
     ],
     code: `SERVER_ENV=production
 CLIENT_URL=https://your-app.vercel.app
