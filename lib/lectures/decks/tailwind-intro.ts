@@ -83,7 +83,7 @@ export default function TailwindLab() {
     title: "Link it from Lab 2",
     kind: "content",
     bullets: [
-      "The book says this in prose: link `/labs/lab2/tailwind` from the Lab 2 page",
+      "Link to `/labs/lab2/tailwind` from the main Lab 2 page so both are reachable from the Labs table of contents",
       "Both routes stay in the Labs TOC — CSS first, then utilities",
       "Work through spacing, type, color, responsive, filters, and grid one component at a time",
     ],
