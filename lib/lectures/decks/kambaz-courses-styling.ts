@@ -109,6 +109,7 @@ export default function CourseNavigation({ cid }: { cid: string }) {
     title: "Live Course Navigation",
     kind: "demo",
     bullets: [
+      "A narrow list group uses red idle links and a black left border on the active route.",
       "Home is active on this figure (the lecture route is not a course path)",
       "Clicking a link leaves the deck and opens the real course screen",
     ],
@@ -143,6 +144,7 @@ export default function GreenCheckmark() {
     title: "Module.tsx",
     kind: "content",
     bullets: [
+      "Modules and Home share this list, styled once with a gray header and a checkmark.",
       "Gray `bg-neutral-200` title bar, checkmark on the right",
       "Import `GreenCheckmark` — it is new in Chapter 2, so the JSX alone will not compile",
     ],
@@ -175,6 +177,7 @@ export default function Module({
     title: "Lesson.tsx",
     kind: "content",
     bullets: [
+      "Lessons get a checkmark on the right and a green left border.",
       "Same imports as `Module` — `GreenCheckmark` is new in Chapter 2",
       "`border-l-[3px] border-green-600` is the accent Assignments reuse",
     ],
@@ -256,6 +259,7 @@ export default function Lesson({
     title: "Course Status button stack",
     kind: "content",
     bullets: [
+      "Home already shows the styled Modules list, so only the Course Status column remains.",
       "Unpublish / Publish share a two-column `flex` row",
       "The rest are full-width bordered buttons with React Icons",
     ],
@@ -332,6 +336,7 @@ export default function CourseStatus() {
     title: "Live Home chrome",
     kind: "demo",
     bullets: [
+      "On a wide screen four columns sit side by side, then Status hides before both sidebars.",
       "Course Nav + Modules + Status (Status needs a wide viewport / `lg`)",
       "Four columns on a wide stage: Kambaz nav, Course nav, Modules, Status",
     ],

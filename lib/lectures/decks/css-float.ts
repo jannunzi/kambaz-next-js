@@ -61,6 +61,7 @@ img.wd-float-right {
     title: "Float.tsx",
     kind: "content",
     bullets: [
+      "`float` pulls an element to one edge so content wraps around it, and `clear: both` stops that wrap.",
       "The book defines `STARSHIP` and `LOREM`, then floats the photo right and left",
       "The second block floats three colored boxes and one more image, then `wd-float-done`",
     ],
@@ -142,6 +143,7 @@ export default function Float() {
     title: "GridLayout.tsx",
     kind: "content",
     bullets: [
+      "`float: left` plus percentage widths puts columns side by side, and each row needs `clear: both`.",
       "Row 1: `wd-grid-col-half-page` twice",
       "Row 2: 20% / 60% / 20% — sidebar, main, sidebar",
     ],

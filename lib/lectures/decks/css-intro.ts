@@ -301,6 +301,7 @@ p#wd-id-selector-2 {
     title: "Nest four document selectors",
     kind: "content",
     bullets: [
+      "Selectors can be combined to target tags by their position in the document tree.",
       "Markup first, in `page.tsx`, id `wd-css-document-structure`",
       "`.wd-selector-1` wraps `.wd-selector-2`, which wraps `.wd-selector-3`, which wraps `.wd-selector-4`",
     ],

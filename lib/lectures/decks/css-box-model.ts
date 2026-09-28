@@ -103,6 +103,7 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
     title: "Padding.tsx",
     kind: "content",
     bullets: [
+      "Padding is the space between an element's content and its border.",
       "Wrapper id `wd-css-paddings`",
       "Three boxes: top-left, bottom-right, and a fat pad on every side",
     ],
@@ -308,6 +309,7 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
     title: "Live BoxModel.tsx",
     kind: "demo",
     bullets: [
+      "`border-box` counts padding and border inside the 200px, so the box stays 200px wide.",
       "Gray parent, margin gap, red ring, light-blue padding, green content — plus the two yellow boxes",
       "`border-box` stays 200×180. `content-box` measures 260×240. The DevTools figure is only an illustration",
     ],
@@ -374,6 +376,7 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
     title: "Live Corners.tsx",
     kind: "demo",
     bullets: [
+      "`border-radius` rounds corners by setting all four, listing four values, or targeting one.",
       "Top only, bottom only, all four, then four different radii",
       "`.wd-rounded-corners-bottom` is the second paragraph",
     ],

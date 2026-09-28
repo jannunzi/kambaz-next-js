@@ -25,6 +25,7 @@ export const KAMBAZ_ASSIGNMENTS_STYLING_SLIDES: LectureSlide[] = [
     title: "People is a styled table",
     kind: "content",
     bullets: [
+      "People lists the students, teaching assistants, and faculty in a course as a table.",
       "`w-full border-collapse text-left text-sm`",
       "`odd:bg-neutral-50` for alternating rows",
       "`FaUserCircle` beside each name — `text-4xl text-neutral-500`",
@@ -71,6 +72,7 @@ export default function PeopleTable() {
     title: "Live People roster",
     kind: "demo",
     bullets: [
+      "Style a plain HTML `table` with Tailwind so each person gets one row.",
       "Four sample rows — names, login ids, roles, activity",
       "The People link in Course Navigation should open this table",
     ],
@@ -81,6 +83,7 @@ export default function PeopleTable() {
     title: "AssignmentItem, lesson borders",
     kind: "content",
     bullets: [
+      "As with Dashboard and Modules, the plain `AssignmentItem` stays and gains Tailwind and React Icons.",
       "Green left border matches `Lesson`",
       "`FaFileAlt` on the left. Title is a `Link` to the editor",
       "Muted details line under the title",
@@ -191,6 +194,7 @@ export default async function Assignments({
     title: "Live Assignments screen",
     kind: "demo",
     bullets: [
+      "Each row and the search toolbar get Tailwind and React Icons while the plain HTML stays.",
       "`wd-search-assignment`, `wd-assignment-link`, green left borders",
       "Exact due dates may differ. Keep the ids",
     ],

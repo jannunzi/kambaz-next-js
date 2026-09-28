@@ -61,6 +61,7 @@ export const KAMBAZ_ACCOUNT_STYLING_SLIDES: LectureSlide[] = [
     title: "Live styled Sign in",
     kind: "demo",
     bullets: [
+      "Start with Sign in, then reuse its form and button patterns on Sign up and Profile.",
       "This figure uses the book snippet — wire the same classes on your file",
       "Keep `wd-signin-screen`, `wd-username`, `wd-password`, `wd-signin-btn`",
     ],
