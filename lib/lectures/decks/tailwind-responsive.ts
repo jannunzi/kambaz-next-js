@@ -16,16 +16,36 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "A **responsive** page changes as the viewport — the browser window — gets wider",
-      "As in §2.1.20, a **breakpoint** is a viewport width at which styles change. Tailwind names the common widths and lets you prefix a class with one of them, such as `md:bg-green-500`",
+      "As in §2.1.20, a **breakpoint** is a viewport width at which styles change. Tailwind names five of those widths",
       "Five small components each teach one idea. The card at the end combines them",
     ],
+  },
+  {
+    id: "prefixes",
+    title: "Five min-width prefixes",
+    kind: "content",
+    bullets: [
+      "Tailwind is **mobile-first**: no prefix means every width, and a prefix applies from that breakpoint up",
+      "§2.1.17: 1rem is usually 16px, so 48rem is 768px",
+      "`sm:` 40rem (640px)",
+      "`md:` 48rem (768px)",
+      "`lg:` 64rem (1024px)",
+      "`xl:` 80rem (1280px)",
+      "`2xl:` 96rem (1536px)",
+    ],
+  },
+  {
+    id: "prefix-ruler",
+    title: "Where each prefix starts",
+    kind: "content",
+    diagram: "tailwind-breakpoints",
   },
   {
     id: "breakpoint-tsx",
     title: "One breakpoint",
     kind: "content",
     bullets: [
-      "Tailwind is **mobile-first**: an unprefixed class applies at every width, and a prefixed class applies at that breakpoint and up. As in §2.1.17, widths are in **rem** (1rem is usually 16px, so 48rem is 768px). `md:` starts at 48rem (768px)",
+      "This box is `bg-red-500` at every width. `md:bg-green-500` replaces the red from `md` up",
     ],
     code: `export default function TailwindResponsiveBreakpoint() {
   return (
@@ -45,7 +65,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     title: "Red, then green",
     kind: "demo",
     bullets: [
-      "Below 768px the box is red. At `md` and wider it is green",
+      "Below `md` the box is red. At `md` and wider it is green",
     ],
     embed: "tw-responsive-breakpoint",
   },
@@ -81,7 +101,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     title: "Stack, then side by side",
     kind: "content",
     bullets: [
-      "CSS flex lines boxes up along one direction. `flex-direction: column` stacks them, and `flex-direction: row` places them side by side. Tailwind writes those as `flex-col` and `flex-row`. `flex flex-col` stacks the three boxes at every width. `md:flex-row` lays them side by side from 768px up. `gap-4` is the space between the boxes. It is unprefixed, so that space stays in both layouts",
+      "CSS flex lines boxes up along one direction. `flex-direction: column` stacks them, and `flex-direction: row` places them side by side. Tailwind writes those as `flex-col` and `flex-row`. `flex flex-col` stacks the three boxes at every width. `md:flex-row` lays them side by side from `md` up. `gap-4` is the space between the boxes. It is unprefixed, so that space stays in both layouts",
     ],
     code: `export default function TailwindResponsiveFlex() {
   return (
@@ -109,16 +129,11 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
   },
   {
     id: "widths",
-    title: "Prefix minimum widths",
+    title: "Grid uses the prefixes",
     kind: "content",
     bullets: [
       "**CSS Grid** places children into columns, with a gap between the cells. `grid` turns the grid on, `grid-cols-*` sets how many columns, and `gap-4` sets that gap. §2.3.6 goes further with grid utilities",
-      "Once a prefix applies, it keeps applying at larger widths until a later prefix overrides it",
-      "`sm` 40rem (640px)",
-      "`md` 48rem (768px)",
-      "`lg` 64rem (1024px)",
-      "`xl` 80rem (1280px)",
-      "`2xl` 96rem (1536px)",
+      "Column count uses those same prefixes. A later prefix overrides an earlier one from its width up",
     ],
   },
   {
@@ -126,7 +141,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     title: "Grid columns by breakpoint",
     kind: "content",
     bullets: [
-      "One column below 640px, two from `sm` until `lg`, and four from 1024px up",
+      "One column below `sm`, two from `sm` until `lg`, and four from `lg` up",
     ],
     code: `export default function TailwindResponsiveGrid() {
   return (
@@ -153,7 +168,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     title: "Live grid columns",
     kind: "demo",
     bullets: [
-      "Below 640px there is one column. At `lg` (1024px) there are four",
+      "Below `sm` there is one column. At `lg` there are four",
     ],
     embed: "tw-responsive-grid",
   },
@@ -162,7 +177,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     title: "Spacing and text size",
     kind: "content",
     bullets: [
-      "`p-2` and `text-base` apply at every width. `md:p-8` and `md:text-2xl` grow the padding and the type from 768px up",
+      "`p-2` and `text-base` apply at every width. `md:p-8` and `md:text-2xl` grow the padding and the type from `md` up",
     ],
     code: `export default function TailwindResponsiveSpacingText() {
   return (
@@ -194,15 +209,28 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "`h-56` sets a height of 14rem. `max-w-md` caps the width at 28rem. `hover:underline` underlines the link only while the pointer is over it",
-      "The card combines those ideas. `md:max-w-2xl` widens the card. `md:flex` turns the row on without a `flex-col` first. On the image, `md:w-48` sets a fixed width of 12rem, `md:shrink-0` stops flex from shrinking that width, `md:h-full` fills the card's height, and `md:min-h-56` keeps a minimum height of 14rem. `object-cover` crops the picture so it fills that box without stretching",
+      "`md:max-w-2xl` widens the card. `md:flex` turns the row on without a `flex-col` first. On the image, `md:w-48` sets a fixed width of 12rem, `md:shrink-0` stops flex from shrinking that width, `md:h-full` fills the card's height, and `md:min-h-56` keeps a minimum height of 14rem. `object-cover` crops the picture to fill that box",
     ],
+  },
+  {
+    id: "card-frame",
+    title: "The card frame (part 1 of 3)",
+    kind: "content",
     code: `export default function TailwindResponsiveDesign() {
   return (
     <div className="font-sans">
       <h2 className="text-3xl font-bold mb-4">Responsive Design</h2>
       <div className="mx-auto w-full max-w-md overflow-hidden rounded-xl bg-white shadow-md md:max-w-2xl">
-        <div className="md:flex">
-          <div className="relative md:w-48 md:shrink-0">
+        <div className="md:flex">`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/tailwind/TailwindResponsiveDesign.tsx",
+    codeHighlightLines: [5, 6],
+  },
+  {
+    id: "card-image",
+    title: "The image column (part 2 of 3)",
+    kind: "content",
+    code: `          <div className="relative md:w-48 md:shrink-0">
             <img
               className="h-56 w-full object-cover md:h-full md:min-h-56 md:w-48"
               src="/images/reactjs.jpg"
@@ -235,8 +263,16 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
               </svg>
               <div className="mt-2 text-2xl font-semibold">React JS</div>
             </div>
-          </div>
-          <div className="min-w-0 p-8">
+          </div>`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/tailwind/TailwindResponsiveDesign.tsx",
+    codeHighlightLines: [1, 3],
+  },
+  {
+    id: "card-text",
+    title: "The text column (part 3 of 3)",
+    kind: "content",
+    code: `          <div className="min-w-0 p-8">
             <div className="text-sm font-semibold tracking-wide text-indigo-500 uppercase">
               Professional Courses
             </div>
@@ -257,6 +293,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
 }`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/tailwind/TailwindResponsiveDesign.tsx",
+    codeHighlightLines: [7],
   },
   {
     id: "demo",

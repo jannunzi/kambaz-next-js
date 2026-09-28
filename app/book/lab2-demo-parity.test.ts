@@ -423,6 +423,11 @@ describe("Lab 2 lecture listings of a whole component", () => {
         // A slide may copy one book step that starts with `export default function`
         // instead of the finished lab file.
         if (bookStepsFor.get(file)?.has(trimmed)) continue;
+        // A deck may split one listing across slides. Each fragment stays a
+        // contiguous excerpt of the lab file, or of the same book step.
+        if (onDisk.includes(trimmed)) continue;
+        const bookSteps = bookStepsFor.get(file);
+        if (bookSteps && [...bookSteps].some((step) => step.includes(trimmed))) continue;
         mismatches.push(`${deck} ${file}`);
       }
     }

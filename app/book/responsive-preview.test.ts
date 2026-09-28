@@ -64,7 +64,16 @@ describe("book responsive previews", () => {
     assert.match(student, /\/images\/reactjs\.jpg/);
     const source = student.trim();
     assert.ok(book.includes(source));
-    assert.ok(read("lib/lectures/decks/tailwind-responsive.ts").includes(source));
+    const deck = read("lib/lectures/decks/tailwind-responsive.ts");
+    const cardIds = ["card-frame", "card-image", "card-text"];
+    const cardParts = cardIds.map((id) => {
+      const at = deck.indexOf(`id: "${id}"`);
+      const slice = deck.slice(at, deck.indexOf("codeFile:", at));
+      const open = slice.indexOf("code: `");
+      const close = slice.indexOf("`,", open);
+      return slice.slice(open + "code: `".length, close);
+    });
+    assert.equal(cardParts.join("\n").trim(), source);
     assert.doesNotMatch(student, /ResponsivePreview|@container|iframe/);
     assert.match(page, /TailwindResponsiveDesign/);
   });

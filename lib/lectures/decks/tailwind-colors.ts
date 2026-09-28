@@ -16,7 +16,7 @@ export const TAILWIND_COLORS_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "Background utilities: `bg-{color}-{shade}`",
-      "Shade is 50 (lightest) to 950 (darkest), steps of 100",
+      "Shades: 50, 100, 200 … 900, 950 (lightest to darkest)",
       "`-500` is the middle swatch — Lab 2 starts there",
       "Pair a fill with a contrasting `text-*` so the copy stays readable",
     ],

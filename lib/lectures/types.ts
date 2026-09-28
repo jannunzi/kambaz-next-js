@@ -655,6 +655,7 @@ export const LECTURE_DIAGRAM_IDS = [
   "vercel-protect-mock",
   "vercel-auth-mock",
   "box-model",
+  "tailwind-breakpoints",
   "google-cloud-key-mock",
   "youtube-enable-api-mock",
   "youtube-search-flow",
