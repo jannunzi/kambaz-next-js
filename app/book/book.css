@@ -681,12 +681,37 @@ code.quiz-prompt-code {
   box-sizing: border-box;
 }
 
+/* Book CSS does not load Tailwind preflight, so width:100% is content-box
+ * unless we set this. Otherwise padded inputs stick out of the frame. */
+.lecture-slide .lecture-demo-frame *,
+.lecture-slide .lecture-demo-frame *::before,
+.lecture-slide .lecture-demo-frame *::after {
+  box-sizing: border-box;
+}
+
+/* Inline images sit on the text baseline and leave a gap the frame then
+ * clips. Block layout keeps the image's margin edge inside the card. */
+.lecture-slide .lecture-demo-frame img {
+  display: block;
+}
+
 .lecture-slide .lecture-demo-frame-caption {
   font-size: calc(1.1rem * var(--lecture-block-font-scale, 1));
 }
 
 .lecture-slide .lecture-demo-frame-body {
+  /* Grow to the demo. flow-root keeps the last child's margin inside the
+   * frame so a border or padding band is not clipped. The slide pane
+   * scrolls when the result is taller than the viewport. */
+  display: flow-root;
+  max-height: none;
+  overflow: visible;
   font-size: calc(1.25rem * var(--lecture-block-font-scale, 1));
+}
+
+.lecture-slide .lecture-demo-frame-body > * {
+  max-height: none;
+  overflow: visible;
 }
 
 .lecture-slide .lecture-demo-frame-body .text-xs {
@@ -724,6 +749,12 @@ code.quiz-prompt-code {
 
 .lecture-slide[data-demo-stage="true"] .lecture-demo-frame-body input,
 .lecture-slide[data-demo-stage="true"] .lecture-demo-frame-body select,
+.lecture-slide .lecture-demo-frame-body textarea {
+  /* Fit the text. A rows height plus the larger lecture type clips the
+   * last line inside the control. */
+  field-sizing: content;
+}
+
 .lecture-slide[data-demo-stage="true"] .lecture-demo-frame-body textarea {
   padding: 0.45em 0.65em;
   min-height: 2.35em;

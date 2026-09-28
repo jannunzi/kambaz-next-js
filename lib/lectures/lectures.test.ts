@@ -1373,6 +1373,28 @@ describe("lecture decks", () => {
     assert.doesNotMatch(blocks, /lecture-block-size-md"/);
   });
 
+  it("lets live-demo frames grow instead of clipping on a max height", () => {
+    const css = readFileSync(join(process.cwd(), "app/book/book.css"), "utf8");
+    assert.match(
+      css,
+      /\.lecture-slide \.lecture-demo-frame-body \{[^}]*display:\s*flow-root/,
+    );
+    assert.match(
+      css,
+      /\.lecture-slide \.lecture-demo-frame-body > \* \{[^}]*max-height:\s*none/,
+    );
+    const embedDir = join(process.cwd(), "app/slides/_components/embeds");
+    for (const name of readdirSync(embedDir)) {
+      if (!name.endsWith(".tsx")) continue;
+      const source = readFileSync(join(embedDir, name), "utf8");
+      assert.doesNotMatch(
+        source,
+        /max-h-\d+/,
+        `${name} caps a live demo and clips content`,
+      );
+    }
+  });
+
   it("gives every lecture code block a one-click Copy overlay", () => {
     const codeBlock = readFileSync(
       join(process.cwd(), "app/slides/_components/LectureCodeBlock.tsx"),

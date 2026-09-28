@@ -15,7 +15,7 @@ function Lab5Demo({
 }) {
   return (
     <LectureDemoFrame label={label} url="/labs/lab5">
-      <div className="max-h-72 overflow-auto font-sans text-base [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h5]:mt-2">
+      <div className="font-sans text-base [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h5]:mt-2">
         {children}
       </div>
     </LectureDemoFrame>
