@@ -10,6 +10,7 @@ import {
   toBlockSlide,
   toBlockSlides,
 } from "./blocks";
+import { demoFrameClips, MARGINS_LIVE_CLIP_BEFORE } from "./demo-clip";
 import {
   COURSE_SITE_ORIGIN,
   adjacentLectureSlugs,
@@ -1371,6 +1372,72 @@ describe("lecture decks", () => {
     );
     assert.match(blocks, /blockFrameClass/);
     assert.doesNotMatch(blocks, /lecture-block-size-md"/);
+  });
+
+  it("lets live-demo frames grow instead of clipping on a max height", () => {
+    const css = readFileSync(join(process.cwd(), "app/book/book.css"), "utf8");
+    assert.match(
+      css,
+      /\.lecture-slide \.lecture-demo-frame-body \{[^}]*display:\s*flow-root/,
+    );
+    assert.match(
+      css,
+      /\.lecture-slide \.lecture-demo-frame-body > \* \{[^}]*max-height:\s*none/,
+    );
+    const embedDir = join(process.cwd(), "app/slides/_components/embeds");
+    for (const name of readdirSync(embedDir)) {
+      if (!name.endsWith(".tsx")) continue;
+      const source = readFileSync(join(embedDir, name), "utf8");
+      assert.doesNotMatch(
+        source,
+        /max-h-\d+/,
+        `${name} caps a live demo and clips content`,
+      );
+    }
+
+    const deck = getLectureDeck("css-box-model");
+    assert.ok(deck);
+    const margins = deck.slides[MARGINS_LIVE_CLIP_BEFORE.slide - 1];
+    assert.equal(margins?.id, MARGINS_LIVE_CLIP_BEFORE.id);
+    assert.equal(margins?.embed, MARGINS_LIVE_CLIP_BEFORE.embed);
+    const embeds = readFileSync(
+      join(embedDir, "CssLabEmbeds.tsx"),
+      "utf8",
+    );
+    assert.match(embeds, /function CssMarginsEmbed\(\)[\s\S]*<Margins \/>/);
+    assert.doesNotMatch(embeds, /function CssMarginsEmbed\(\)[\s\S]*max-h-/);
+    assert.match(
+      embeds,
+      /function CssRotateEmbed\(\)[\s\S]*px-8 py-8/,
+      "rotated cards need room inside the frame",
+    );
+    const styling = readFileSync(join(embedDir, "KambazStylingEmbeds.tsx"), "utf8");
+    assert.match(
+      styling,
+      /function KambazStyledNavEmbed\(\)[\s\S]*<ContainFixed height="auto">/,
+      "the fixed sidebar needs a frame tall enough to show Courses",
+    );
+
+    // Known positive: the pre-fix Live Margins.tsx frame. If this stays
+    // quiet, the clip check is not actually looking for a scroller or a
+    // box past the frame.
+    assert.equal(demoFrameClips(MARGINS_LIVE_CLIP_BEFORE), true);
+    assert.equal(
+      demoFrameClips({
+        scrolls: [
+          {
+            scrollHeight: 590,
+            clientHeight: 590,
+            scrollWidth: 1178,
+            clientWidth: 1178,
+            overflowX: "visible",
+            overflowY: "visible",
+          },
+        ],
+        boxes: [{ top: -4, right: -8, bottom: -30, left: -8 }],
+      }),
+      false,
+    );
   });
 
   it("gives every lecture code block a one-click Copy overlay", () => {

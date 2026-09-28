@@ -35,7 +35,7 @@ function CssDemo({
 }) {
   return (
     <LectureDemoFrame label={label} url="/labs/lab2">
-      <div className="max-h-72 overflow-auto font-sans text-base [&_h2]:mt-0 [&_h3]:mt-2">
+      <div className="font-sans text-base [&_h2]:mt-0 [&_h3]:mt-2">
         {children}
       </div>
     </LectureDemoFrame>
@@ -249,7 +249,9 @@ export function CssMediaQueriesEmbed() {
 export function CssRotateEmbed() {
   return (
     <CssDemo label="transform: rotate">
-      <div className="flex flex-wrap items-center gap-10 py-6">
+      {/* rotate() does not grow the layout box. The 12deg card overhangs
+          about 13px; this padding keeps that paint inside the frame. */}
+      <div className="flex flex-wrap items-center gap-10 px-8 py-8">
         <div
           className="flex items-center justify-center rounded-md px-4 py-6 font-semibold text-white"
           style={{

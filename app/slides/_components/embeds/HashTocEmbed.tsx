@@ -3,7 +3,7 @@ import LectureDemoFrame from "./LectureDemoFrame";
 export default function HashTocEmbed() {
   return (
     <LectureDemoFrame label="Wikipedia-style #hash TOC">
-      <div className="max-h-64 overflow-auto font-sans text-lg [&_a]:underline">
+      <div className="font-sans text-lg [&_a]:underline">
         <p className="mt-0 mb-2 font-semibold">On this page</p>
         <ul className="mb-6 mt-0">
           <li>

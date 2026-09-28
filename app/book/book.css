@@ -681,12 +681,35 @@ code.quiz-prompt-code {
   box-sizing: border-box;
 }
 
+/* Chat fields use width:100% plus padding. Content-box adds that padding
+ * outside the frame. Other controls stay content-box, matching main. */
+.lecture-slide .lecture-chat-field {
+  box-sizing: border-box;
+}
+
+/* Inline images sit on the text baseline and leave a gap the frame then
+ * clips. Block layout keeps the image's margin edge inside the card. */
+.lecture-slide .lecture-demo-frame img {
+  display: block;
+}
+
 .lecture-slide .lecture-demo-frame-caption {
   font-size: calc(1.1rem * var(--lecture-block-font-scale, 1));
 }
 
 .lecture-slide .lecture-demo-frame-body {
+  /* Grow to the demo. flow-root keeps the last child's margin inside the
+   * frame so a border or padding band is not clipped. The slide pane
+   * scrolls when the result is taller than the viewport. */
+  display: flow-root;
+  max-height: none;
+  overflow: visible;
   font-size: calc(1.25rem * var(--lecture-block-font-scale, 1));
+}
+
+.lecture-slide .lecture-demo-frame-body > * {
+  max-height: none;
+  overflow: visible;
 }
 
 .lecture-slide .lecture-demo-frame-body .text-xs {

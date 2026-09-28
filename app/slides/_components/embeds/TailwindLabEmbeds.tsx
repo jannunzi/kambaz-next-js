@@ -19,7 +19,7 @@ function TailwindDemo({
 }) {
   return (
     <LectureDemoFrame label={label} url={url}>
-      <div className="max-h-72 overflow-auto font-sans text-base [&_h2]:mt-0 [&_h3]:mt-2">
+      <div className="font-sans text-base [&_h2]:mt-0 [&_h3]:mt-2">
         {children}
       </div>
     </LectureDemoFrame>
