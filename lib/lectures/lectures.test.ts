@@ -1896,7 +1896,7 @@ describe("lecture decks", () => {
     assert.doesNotMatch(text, /kambaz-next-js/);
     assert.match(text, /OFFICE HOURS/);
     assert.match(text, /BREAK/);
-    assert.doesNotMatch(text, /Jose Annunziato/);
+    assert.match(text, /Jose Annunziato/);
     assert.doesNotMatch(text, /netlify\.com/i);
     assert.doesNotMatch(text, /Netlify/);
     assert.doesNotMatch(text, /Deploy to Netlify/);
@@ -2683,15 +2683,20 @@ describe("lecture decks", () => {
     assert.doesNotMatch(atlas, /netlify\.com/i);
     assert.doesNotMatch(atlas, /OMDb|omdb/i);
     assert.doesNotMatch(atlas, /napster/i);
-    assert.doesNotMatch(atlas, /supersecretpassword/);
-    assert.match(atlas, /<password>/);
+    assert.match(
+      atlas,
+      /mongodb\+srv:\/\/giuseppi:supersecretpassword@kambaz\.jxui0bc\.mongodb\.net\//,
+    );
 
     const compass = slideText("atlas-compass");
     assert.match(compass, /mongodb\+srv/);
     assert.match(compass, /New Window|new window/i);
     assert.match(compass, /users|courses|modules/);
     assert.doesNotMatch(compass, /netlify\.com/i);
-    assert.doesNotMatch(compass, /supersecretpassword/);
+    assert.match(
+      compass,
+      /mongodb\+srv:\/\/giuseppi:supersecretpassword@kambaz\.jxui0bc\.mongodb\.net\//,
+    );
 
     const node = slideText("atlas-node");
     assert.match(node, /0\.0\.0\.0\/0/);

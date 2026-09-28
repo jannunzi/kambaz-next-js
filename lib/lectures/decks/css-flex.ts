@@ -47,7 +47,6 @@ export const CSS_FLEX_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "`display: flex` lines children up in a row with no floats, clearing, or percentage math.",
-      "This first `Flex.tsx` is the row — yellow, blue, red, no extra classes",
       "The next steps add `wd-flex-grow-1`, then `wd-width-75px`, and reprint the file",
     ],
     code: `export default function Flex() {

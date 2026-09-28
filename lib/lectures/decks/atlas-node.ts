@@ -43,7 +43,7 @@ export const ATLAS_NODE_SLIDES: LectureSlide[] = [
       "`kambaz` must sit between the last `/` and the `?`",
       "Replace `<password>`. Do not commit the completed URI",
     ],
-    code: `mongodb+srv://dbuser:<password>@kambaz.jxui0bc.mongodb.net/kambaz?retryWrites=true&w=majority&appName=Kambaz`,
+    code: `mongodb+srv://giuseppi:<password>@kambaz.jxui0bc.mongodb.net/kambaz?retryWrites=true&w=majority&appName=Kambaz`,
     codeLanguage: "text",
     codeHighlightLines: [1],
     interactiveHint:

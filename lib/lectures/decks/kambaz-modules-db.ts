@@ -37,7 +37,7 @@ export const KAMBAZ_MODULES_DB_SLIDES: LectureSlide[] = [
     kind: "demo",
     bullets: [
       "The running server keeps modules in their own collection",
-      "You can also embed modules inside the course document. This server uses a separate collection",
+      "You can also embed modules inside the course document",
       "`CourseModel` is still what enrollments `ref`",
     ],
     code: `import mongoose from "mongoose";

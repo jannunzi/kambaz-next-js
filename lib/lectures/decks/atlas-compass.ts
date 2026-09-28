@@ -29,7 +29,7 @@ export const ATLAS_COMPASS_SLIDES: LectureSlide[] = [
       "Copy the string from **Access your data through tools**",
       "The host will differ. Scheme, username, password, and hostname matter",
     ],
-    code: `mongodb+srv://dbuser:<password>@kambaz.jxui0bc.mongodb.net/`,
+    code: `mongodb+srv://giuseppi:supersecretpassword@kambaz.jxui0bc.mongodb.net/`,
     codeLanguage: "text",
     interactiveHint:
       "This is the Compass string. The Drivers string later adds `/kambaz?`.",
@@ -84,7 +84,7 @@ export const ATLAS_COMPASS_SLIDES: LectureSlide[] = [
       {
         file: "Atlas / Compass",
         language: "text",
-        code: `mongodb+srv://dbuser:<password>@kambaz.jxui0bc.mongodb.net/`,
+        code: `mongodb+srv://giuseppi:supersecretpassword@kambaz.jxui0bc.mongodb.net/`,
         addedLines: [1],
       },
     ],
