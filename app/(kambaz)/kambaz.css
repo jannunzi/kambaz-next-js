@@ -22,7 +22,7 @@
   }
 }
 
-/* Course Navigation — Canvas-like list (overrides generic list-group look) */
+/* Course Navigation — Canvas-like list */
 .list-group.wd {
   display: flex;
   flex-direction: column;
