@@ -24,9 +24,10 @@ export default function Lab6(app) {
   };
 
   app.get("/lab6/status", (req, res) => {
+    const enabled = isMongoEnabled();
     res.json({
-      mongo: isMongoEnabled(),
-      store: isMongoEnabled() ? "mongoose" : "memory",
+      mongo: enabled,
+      database: enabled ? "configured" : "not configured",
     });
   });
 

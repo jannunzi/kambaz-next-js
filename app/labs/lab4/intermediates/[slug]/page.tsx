@@ -1,7 +1,7 @@
 import type { ComponentType } from "react";
 import ClickEvent from "../../ClickEvent";
 import PassingDataOnEvent from "../../PassingDataOnEvent";
-import PassingFunctions from "../../PassingFunctions";
+import PassingFunctionsDemo from "../../PassingFunctionsDemo";
 import CounterBroken from "../../CounterBroken";
 import Counter from "../../Counter";
 import BooleanStateVariables from "../../BooleanStateVariables";
@@ -17,16 +17,6 @@ import ContextExamples from "../../context/ContextExamples";
 import ZustandExamples from "../../zustand/ZustandExamples";
 import ReduxExamples from "../../redux/ReduxExamples";
 import { notFound } from "next/navigation";
-
-function PassingFunctionsDemo() {
-  return (
-    <PassingFunctions
-      theFunction={() => {
-        alert("Hello from Lab 4");
-      }}
-    />
-  );
-}
 
 const STEPS: Record<string, ComponentType> = {
   ClickEvent,

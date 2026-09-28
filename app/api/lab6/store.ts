@@ -64,9 +64,9 @@ export function mongoStatus() {
     "";
   return {
     mongo: Boolean(uri),
-    store: uri ? "env-configured" : "memory",
+    database: uri ? "configured" : "not configured",
     note: uri
       ? "Connection string is set. Express DAOs use Mongoose when mongod/Atlas is reachable."
-      : "DATABASE_CONNECTION_STRING is not set",
+      : "DATABASE_CONNECTION_STRING is not set.",
   };
 }
