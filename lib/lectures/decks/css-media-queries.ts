@@ -23,7 +23,7 @@ export const CSS_MEDIA_QUERIES_SLIDES: LectureSlide[] = [
   },
   {
     id: "syntax",
-    title: "MediaQueriesDemo.css",
+    title: "Width range rules",
     kind: "content",
     bullets: [
       "`@media (min-width: 750px) and (max-width: 1000px) { … }`",
@@ -121,7 +121,7 @@ export const CSS_MEDIA_QUERIES_SLIDES: LectureSlide[] = [
   },
   {
     id: "tsx",
-    title: "MediaQueriesDemo.tsx",
+    title: "The four color rules",
     kind: "content",
     bullets: [
       "Import the CSS, then list the four promises as `li` tags",

@@ -31,7 +31,7 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
   },
   {
     id: "filters-tsx",
-    title: "TailwindFilters.tsx",
+    title: "Blur utilities",
     kind: "content",
     bullets: [
       "Filter utilities apply visual effects like blur straight onto an image or element.",

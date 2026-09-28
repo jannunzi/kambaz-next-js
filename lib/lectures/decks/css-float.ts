@@ -58,7 +58,7 @@ img.wd-float-right {
   },
   {
     id: "float-tsx",
-    title: "Float.tsx",
+    title: "Float right, then left",
     kind: "content",
     bullets: [
       "`float` pulls an element to one edge so content wraps around it, and `clear: both` stops that wrap.",
@@ -109,7 +109,7 @@ export default function Float() {
   },
   {
     id: "float-demo",
-    title: "Live Float.tsx",
+    title: "Live float",
     kind: "demo",
     bullets: [
       "Text wraps the Starship photo on the right, then on the left",
@@ -140,7 +140,7 @@ export default function Float() {
   },
   {
     id: "halves",
-    title: "GridLayout.tsx",
+    title: "Percentage float columns",
     kind: "content",
     bullets: [
       "`float: left` plus percentage widths puts columns side by side, and each row needs `clear: both`.",
@@ -179,7 +179,7 @@ export default function Float() {
   },
   {
     id: "grid-demo",
-    title: "Live GridLayout.tsx",
+    title: "Live float columns",
     kind: "demo",
     bullets: [
       "Two rows, no flex, no CSS Grid module",

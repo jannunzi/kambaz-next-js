@@ -43,7 +43,7 @@ export const CSS_FLEX_SLIDES: LectureSlide[] = [
   },
   {
     id: "tsx",
-    title: "Flex.tsx",
+    title: "Three columns in a row",
     kind: "content",
     bullets: [
       "`display: flex` lines children up in a row with no floats, clearing, or percentage math.",
@@ -93,7 +93,7 @@ export const CSS_FLEX_SLIDES: LectureSlide[] = [
   },
   {
     id: "grow-tsx",
-    title: "Flex.tsx — grow",
+    title: "Column 3 grows",
     kind: "content",
     bullets: [
       "`flex-grow: 1` lets the last column stretch to fill room the others do not use.",
@@ -149,7 +149,7 @@ export const CSS_FLEX_SLIDES: LectureSlide[] = [
   },
   {
     id: "pin-tsx",
-    title: "Flex.tsx — pin",
+    title: "Pin column 1",
     kind: "content",
     bullets: [
       "Pin the first column to a fixed width and let the last column absorb what is left.",

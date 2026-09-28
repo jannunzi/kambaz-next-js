@@ -46,7 +46,7 @@ export const HTML_AND_DOM_SLIDES: LectureSlide[] = [
   },
   {
     id: "hello-html",
-    title: "hello.html",
+    title: "A minimal HTML page",
     kind: "demo",
     bullets: [
       "The smallest useful page: a document type, an `html` root, a `head`, and a `body`",

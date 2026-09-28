@@ -141,7 +141,7 @@ export default function GreenCheckmark() {
   },
   {
     id: "module-lesson",
-    title: "Module.tsx",
+    title: "A module with a checkmark",
     kind: "content",
     bullets: [
       "Modules and Home share this list, styled once with a gray header and a checkmark.",
@@ -174,7 +174,7 @@ export default function Module({
   },
   {
     id: "lesson",
-    title: "Lesson.tsx",
+    title: "A lesson with a green edge",
     kind: "content",
     bullets: [
       "Lesson reuses Module's checkmark control and adds the green lesson border.",
