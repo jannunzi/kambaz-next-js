@@ -1215,10 +1215,10 @@ describe("lecture decks", () => {
     assert.equal(counts["css-rotation"], 6);
     assert.equal(counts["react-icons"], 9);
     assert.equal(counts["tailwind-intro"], 9);
-    assert.equal(counts["tailwind-spacing"], 7);
-    assert.equal(counts["tailwind-typography"], 6);
-    assert.equal(counts["tailwind-colors"], 5);
-    assert.equal(counts["tailwind-filters-and-grid"], 13);
+    assert.equal(counts["tailwind-spacing"], 8);
+    assert.equal(counts["tailwind-typography"], 7);
+    assert.equal(counts["tailwind-colors"], 6);
+    assert.equal(counts["tailwind-filters-and-grid"], 15);
     assert.equal(counts["tailwind-responsive"], 18);
     assert.equal(counts["kambaz-styling"], 8);
     assert.equal(counts["kambaz-nav-styling"], 7);
@@ -2229,6 +2229,10 @@ describe("lecture decks", () => {
     assert.match(size, /wd-zindex-bring-to-front/);
 
     const mq = slideText("css-media-queries");
+    assert.equal(
+      findSlide("css-media-queries", "purpose").bullets?.[2],
+      "A **breakpoint** is a viewport width at which styles change, for example through a media query.",
+    );
     assert.match(mq, /@media/);
     assert.match(mq, /750px/);
     assert.match(mq, /MediaQueriesDemo\.tsx/);
@@ -2237,6 +2241,10 @@ describe("lecture decks", () => {
     assert.doesNotMatch(mq, /min-width: 576px/);
 
     const float = slideText("css-float");
+    assert.equal(
+      findSlide("css-float", "classes").bullets?.[0],
+      "A length in **rem** is relative to the root font size, usually 16px, so 2rem = 32px.",
+    );
     assert.match(float, /wd-float-left/);
     assert.match(float, /wd-float-done/);
     assert.match(float, /wd-float-divs/);
@@ -2280,15 +2288,20 @@ describe("lecture decks", () => {
     assert.match(spacing, /TailwindSpacing/);
     assert.match(spacing, /mb-4/);
     assert.match(spacing, /ms-4 me-8/);
+    assert.match(spacing, /import TailwindSpacing from "\.\/TailwindSpacing"/);
+    assert.match(spacing, /render the component under the heading/);
 
     const type = slideText("tailwind-typography");
     assert.match(type, /TailwindTypography/);
     assert.match(type, /text-sm/);
     assert.match(type, /font-black/);
+    assert.match(type, /import TailwindTypography from "\.\/TailwindTypography"/);
+    assert.match(type, /after `TailwindSpacing`/);
 
     const colors = slideText("tailwind-colors");
     assert.match(colors, /bg-red-500/);
     assert.match(colors, /yellow-500/);
+    assert.match(colors, /import TailwindBackgroundColors from "\.\/TailwindBackgroundColors"/);
     assert.doesNotMatch(colors, /TailwindFilters/);
 
     const flexGrid = slideText("tailwind-filters-and-grid");
@@ -2298,6 +2311,10 @@ describe("lecture decks", () => {
     assert.match(flexGrid, /grid-cols-4/);
     assert.match(flexGrid, /col-span-4/);
     assert.match(flexGrid, /wd-tailwind-grid-system/);
+    assert.match(flexGrid, /import TailwindFilters from "\.\/TailwindFilters"/);
+    assert.match(flexGrid, /after `TailwindResponsiveDesign`/);
+    assert.match(flexGrid, /import TailwindGrids from "\.\/TailwindGrids"/);
+    assert.match(flexGrid, /after `TailwindFilters`/);
     assert.doesNotMatch(flexGrid, /wd-flex-row-container/);
 
     const responsive = slideText("tailwind-responsive");
@@ -2316,8 +2333,24 @@ describe("lecture decks", () => {
     assert.match(responsive, /flex-direction/);
     assert.match(responsive, /CSS Grid/);
     assert.match(responsive, /usually 16px, so 48rem is 768px/);
+    assert.match(responsive, /As in §2\.1\.20/);
     assert.match(responsive, /viewport width at which styles change/);
+    assert.doesNotMatch(responsive, /for example through a media query/);
     assert.match(responsive, /minimum height of 14rem/);
+    assert.deepEqual(findSlide("tailwind-responsive", "page").codeAddedLines, [
+      [5, 10],
+      22,
+      24,
+      26,
+      28,
+      30,
+      32,
+    ]);
+    assert.deepEqual(findSlide("tailwind-spacing", "page").codeAddedLines, [1, 4]);
+    assert.deepEqual(findSlide("tailwind-typography", "page").codeAddedLines, [1, 5]);
+    assert.deepEqual(findSlide("tailwind-colors", "page").codeAddedLines, [1, 5]);
+    assert.deepEqual(findSlide("tailwind-filters-and-grid", "filters-page").codeAddedLines, [1, 5]);
+    assert.deepEqual(findSlide("tailwind-filters-and-grid", "grids-page").codeAddedLines, [1, 5]);
     assert.doesNotMatch(responsive, /TailwindFilters|TailwindGrids/);
     assert.doesNotMatch(responsive, /gutter/i);
     assert.doesNotMatch(responsive, /Bootstrap/);

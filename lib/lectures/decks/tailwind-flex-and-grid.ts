@@ -68,6 +68,22 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
     embed: "tw-filters",
   },
   {
+    id: "filters-page",
+    title: "Add filters to the page",
+    kind: "content",
+    bullets: [
+      "Add `TailwindFilters` to the lab page. Put this import after `TailwindResponsiveDesign`, and render the component after that one",
+    ],
+    code: `import TailwindFilters from "./TailwindFilters";
+
+      <TailwindResponsiveDesign />
+      <hr className="my-8" />
+      <TailwindFilters />`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/tailwind/page.tsx",
+    codeAddedLines: [1, 5],
+  },
+  {
     id: "grid-four",
     title: "grid-cols-4 wraps children",
     kind: "content",
@@ -242,6 +258,22 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
       "§2.1’s float “grid” was percentages. This is CSS Grid",
     ],
     embed: "tw-grids",
+  },
+  {
+    id: "grids-page",
+    title: "Add grids to the page",
+    kind: "content",
+    bullets: [
+      "Add `TailwindGrids` to the lab page. Put this import after `TailwindFilters`, and render the component after that one",
+    ],
+    code: `import TailwindGrids from "./TailwindGrids";
+
+      <TailwindFilters />
+      <hr className="my-8" />
+      <TailwindGrids />`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/tailwind/page.tsx",
+    codeAddedLines: [1, 5],
   },
   {
     id: "flex-map",

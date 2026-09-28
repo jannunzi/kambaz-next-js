@@ -16,7 +16,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "A **responsive** page changes as the viewport — the browser window — gets wider",
-      "A **breakpoint** is a viewport width at which styles change. Tailwind names the common widths and lets you prefix a class with one of them, such as `md:bg-green-500`",
+      "As in §2.1.20, a **breakpoint** is a viewport width at which styles change. Tailwind names the common widths and lets you prefix a class with one of them, such as `md:bg-green-500`",
       "Five small components each teach one idea. The card at the end combines them",
     ],
   },
@@ -310,7 +310,7 @@ export default function TailwindLab() {
 }`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/tailwind/page.tsx",
-    codeAddedLines: [[5, 9], 22, 24, 26, 28, 30],
+    codeAddedLines: [[5, 10], 22, 24, 26, 28, 30, 32],
   },
   {
     id: "vs-media",

@@ -55,6 +55,22 @@ export const TAILWIND_COLORS_SLIDES: LectureSlide[] = [
     embed: "tw-backgrounds",
   },
   {
+    id: "page",
+    title: "Add colors to the page",
+    kind: "content",
+    bullets: [
+      "Add `TailwindBackgroundColors` to the lab page. Put this import after `TailwindTypography`, and render the component after that one",
+    ],
+    code: `import TailwindBackgroundColors from "./TailwindBackgroundColors";
+
+      <TailwindTypography />
+      <hr className="my-8" />
+      <TailwindBackgroundColors />`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/tailwind/page.tsx",
+    codeAddedLines: [1, 5],
+  },
+  {
     id: "next-up",
     title: "Next: responsive prefixes",
     kind: "title",
