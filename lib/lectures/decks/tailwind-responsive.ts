@@ -196,13 +196,26 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
       "`h-56` sets a height of 14rem. `max-w-md` caps the width at 28rem. `hover:underline` underlines the link only while the pointer is over it",
       "The card combines those ideas. `md:max-w-2xl` widens the card. `md:flex` turns the row on without a `flex-col` first. On the image, `md:w-48` sets a fixed width of 12rem, `md:shrink-0` stops flex from shrinking that width, `md:h-full` fills the card's height, and `md:min-h-56` keeps a minimum height of 14rem. `object-cover` crops the picture so it fills that box without stretching",
     ],
+  },
+  {
+    id: "card-frame",
+    title: "The card frame (part 1 of 3)",
+    kind: "content",
     code: `export default function TailwindResponsiveDesign() {
   return (
     <div className="font-sans">
       <h2 className="text-3xl font-bold mb-4">Responsive Design</h2>
       <div className="mx-auto w-full max-w-md overflow-hidden rounded-xl bg-white shadow-md md:max-w-2xl">
-        <div className="md:flex">
-          <div className="relative md:w-48 md:shrink-0">
+        <div className="md:flex">`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/tailwind/TailwindResponsiveDesign.tsx",
+    codeHighlightLines: [5, 6],
+  },
+  {
+    id: "card-image",
+    title: "The image column (part 2 of 3)",
+    kind: "content",
+    code: `          <div className="relative md:w-48 md:shrink-0">
             <img
               className="h-56 w-full object-cover md:h-full md:min-h-56 md:w-48"
               src="/images/reactjs.jpg"
@@ -235,8 +248,16 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
               </svg>
               <div className="mt-2 text-2xl font-semibold">React JS</div>
             </div>
-          </div>
-          <div className="min-w-0 p-8">
+          </div>`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/tailwind/TailwindResponsiveDesign.tsx",
+    codeHighlightLines: [1, 3],
+  },
+  {
+    id: "card-text",
+    title: "The text column (part 3 of 3)",
+    kind: "content",
+    code: `          <div className="min-w-0 p-8">
             <div className="text-sm font-semibold tracking-wide text-indigo-500 uppercase">
               Professional Courses
             </div>
@@ -257,6 +278,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
 }`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/tailwind/TailwindResponsiveDesign.tsx",
+    codeHighlightLines: [7],
   },
   {
     id: "demo",

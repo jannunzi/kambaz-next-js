@@ -1219,7 +1219,7 @@ describe("lecture decks", () => {
     assert.equal(counts["tailwind-typography"], 7);
     assert.equal(counts["tailwind-colors"], 6);
     assert.equal(counts["tailwind-filters-and-grid"], 15);
-    assert.equal(counts["tailwind-responsive"], 18);
+    assert.equal(counts["tailwind-responsive"], 21);
     assert.equal(counts["kambaz-styling"], 8);
     assert.equal(counts["kambaz-nav-styling"], 7);
     assert.equal(counts["kambaz-dashboard-styling"], 7);
@@ -2312,6 +2312,8 @@ describe("lecture decks", () => {
     assert.match(type, /after `TailwindSpacing`/);
 
     const colors = slideText("tailwind-colors");
+    assert.match(colors, /Shades: 50, 100, 200 … 900, 950 \(lightest to darkest\)/);
+    assert.doesNotMatch(colors, /steps of 100/);
     assert.match(colors, /bg-red-500/);
     assert.match(colors, /yellow-500/);
     assert.match(colors, /import TailwindBackgroundColors from "\.\/TailwindBackgroundColors"/);
@@ -2350,6 +2352,23 @@ describe("lecture decks", () => {
     assert.match(responsive, /viewport width at which styles change/);
     assert.doesNotMatch(responsive, /for example through a media query/);
     assert.match(responsive, /minimum height of 14rem/);
+    const cardIds = ["tsx", "card-frame", "card-image", "card-text", "demo"];
+    const responsiveIds = getLectureDeck("tailwind-responsive")!.slides.map((slide) => slide.id);
+    const cardAt = responsiveIds.indexOf("tsx");
+    assert.deepEqual(responsiveIds.slice(cardAt, cardAt + cardIds.length), cardIds);
+    assert.equal(findSlide("tailwind-responsive", "tsx").code, undefined);
+    const cardParts = ["card-frame", "card-image", "card-text"].map((id) => {
+      const slide = findSlide("tailwind-responsive", id);
+      assert.equal(slide.codeFile, "app/labs/lab2/tailwind/TailwindResponsiveDesign.tsx");
+      assert.ok(slide.codeHighlightLines?.length);
+      assert.ok(slide.title.length <= 42);
+      return slide.code ?? "";
+    });
+    const cardSource = readFileSync(
+      join(process.cwd(), "app/labs/lab2/tailwind/TailwindResponsiveDesign.tsx"),
+      "utf8",
+    );
+    assert.equal(cardParts.join("\n").trim(), cardSource.trim());
     assert.deepEqual(findSlide("tailwind-responsive", "page").codeAddedLines, [
       [5, 10],
       [21, 32],
