@@ -2315,7 +2315,8 @@ describe("lecture decks", () => {
     assert.match(responsive, /md:shrink-0/);
     assert.match(responsive, /flex-direction/);
     assert.match(responsive, /CSS Grid/);
-    assert.match(responsive, /1rem` is the root font size/);
+    assert.match(responsive, /usually 16px, so 48rem is 768px/);
+    assert.match(responsive, /a width where the layout is allowed to change/);
     assert.match(responsive, /minimum height of 14rem/);
     assert.doesNotMatch(responsive, /gutter/i);
     assert.doesNotMatch(responsive, /Bootstrap/);

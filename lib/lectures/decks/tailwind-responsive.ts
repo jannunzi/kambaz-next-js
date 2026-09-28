@@ -16,8 +16,8 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "A **responsive** page changes as the viewport — the browser window — gets wider",
-      "A **breakpoint** is the screen width where a prefixed class starts applying. The prefix is a width name, a colon, and the class, such as `md:bg-green-500`",
-      "`rem`: `1rem` is the root font size, 16px by default",
+      "A **breakpoint** is a width where the layout is allowed to change. Tailwind names the common widths and lets you prefix a class with one of them, such as `md:bg-green-500`",
+      "Widths are written in **rem**. 1rem is the root font size, usually 16px, so 48rem is 768px",
       "Five small components each teach one idea. The card at the end combines them",
     ],
   },
@@ -82,7 +82,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     title: "Stack, then side by side",
     kind: "content",
     bullets: [
-      "`flex-direction` is the line the boxes follow. `flex-col` stacks them vertically and `flex-row` lays them side by side. `flex flex-col` stacks at every width, and `md:flex-row` switches to a row from 768px up. `gap-4` is the space between the boxes, and with no prefix that space stays in both layouts",
+      "CSS flex lines boxes up along one direction. `flex-direction: column` stacks them, and `flex-direction: row` places them side by side. Tailwind writes those as `flex-col` and `flex-row`. `flex flex-col` stacks the three boxes at every width. `md:flex-row` lays them side by side from 768px up. `gap-4` is the space between the boxes. It is unprefixed, so that space stays in both layouts",
     ],
     code: `export default function TailwindResponsiveFlex() {
   return (
@@ -113,7 +113,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     title: "Prefix minimum widths",
     kind: "content",
     bullets: [
-      "**CSS Grid** places children into columns. `grid` turns it on, `grid-cols-*` sets how many columns, and `gap-*` is the space between the cells. §2.3.6 goes further",
+      "**CSS Grid** places children into columns, with a gap between the cells. `grid` turns the grid on, `grid-cols-*` sets how many columns, and `gap-4` sets that gap. §2.3.6 goes further with grid utilities",
       "Once a prefix applies, it keeps applying at larger widths until a later prefix overrides it",
       "`sm` 40rem (640px)",
       "`md` 48rem (768px)",
@@ -194,7 +194,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     title: "A responsive card",
     kind: "content",
     bullets: [
-      "The card combines those ideas. `md:max-w-2xl` widens it, and `md:flex` starts the row without `flex-col`. On the image, `md:w-48` is a 12rem width, `md:shrink-0` means don't shrink, `md:h-full` is full height, and `md:min-h-56` is a minimum height of 14rem",
+      "The card combines those ideas. `md:max-w-2xl` widens the card. `md:flex` turns the row on without a `flex-col` first. On the image, `md:w-48` sets a fixed width of 12rem, `md:shrink-0` stops flex from shrinking that width, `md:h-full` fills the card's height, and `md:min-h-56` keeps a minimum height of 14rem. `object-cover` crops the picture so it fills that box without stretching",
     ],
     code: `export default function TailwindResponsiveDesign() {
   return (
@@ -272,7 +272,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     title: "Add each demo to the page",
     kind: "content",
     bullets: [
-      "Import each responsive component and render it on the lab page. The five small demos come first, then `TailwindResponsiveDesign`",
+      "Import each responsive component into the lab page and render it there. The five small demos come first, then `TailwindResponsiveDesign`. Spacing, typography, and backgrounds stay above them, and the filter and grid samples from §2.3.5 and §2.3.6 stay below",
     ],
     code: `import "./index.css";
 import TailwindSpacing from "./TailwindSpacing";
@@ -284,6 +284,8 @@ import TailwindResponsiveFlex from "./TailwindResponsiveFlex";
 import TailwindResponsiveGrid from "./TailwindResponsiveGrid";
 import TailwindResponsiveSpacingText from "./TailwindResponsiveSpacingText";
 import TailwindResponsiveDesign from "./TailwindResponsiveDesign";
+import TailwindFilters from "./TailwindFilters";
+import TailwindGrids from "./TailwindGrids";
 
 export default function TailwindLab() {
   return (
@@ -306,12 +308,16 @@ export default function TailwindLab() {
       <TailwindResponsiveSpacingText />
       <hr className="my-8" />
       <TailwindResponsiveDesign />
+      <hr className="my-8" />
+      <TailwindFilters />
+      <hr className="my-8" />
+      <TailwindGrids />
     </div>
   );
 }`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/tailwind/page.tsx",
-    codeAddedLines: [[5, 9], [22, 31]],
+    codeAddedLines: [[5, 9], 24, 26, 28, 30, 32],
   },
   {
     id: "vs-media",
