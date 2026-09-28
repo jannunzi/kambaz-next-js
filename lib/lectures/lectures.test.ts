@@ -2357,10 +2357,15 @@ describe("lecture decks", () => {
     assert.equal(responsiveIds[responsiveIds.indexOf("prefixes") + 1], "prefix-ruler");
     assert.ok(responsiveIds.indexOf("prefix-ruler") < responsiveIds.indexOf("breakpoint-tsx"));
     assert.equal(findSlide("tailwind-responsive", "prefix-ruler").diagram, "tailwind-breakpoints");
-    assert.doesNotMatch(
-      findSlide("tailwind-responsive", "intro").bullets?.join("\n") ?? "",
-      /md:/,
-    );
+    const introBullets = findSlide("tailwind-responsive", "intro").bullets?.join("\n") ?? "";
+    assert.match(introBullets, /prefix goes before a class name with a colon/);
+    assert.match(introBullets, /md:bg-green-500/);
+    assert.match(introBullets, /green background at 768px and up/);
+    const prefixBullets = findSlide("tailwind-responsive", "prefixes").bullets?.join("\n") ?? "";
+    assert.match(prefixBullets, /min-width prefix applies when the viewport is at least that wide/i);
+    assert.match(prefixBullets, /before a class name with a colon/);
+    assert.match(prefixBullets, /CSS length unit relative to the root font size/);
+    assert.ok(responsiveIds.indexOf("intro") < responsiveIds.indexOf("breakpoint-tsx"));
     assert.doesNotMatch(
       findSlide("tailwind-responsive", "widths").bullets?.join("\n") ?? "",
       /40rem \(640px\)/,

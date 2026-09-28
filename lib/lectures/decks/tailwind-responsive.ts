@@ -17,6 +17,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     bullets: [
       "A **responsive** page changes as the viewport — the browser window — gets wider",
       "As in §2.1.20, a **breakpoint** is a viewport width at which styles change. Tailwind names five of those widths",
+      "A prefix goes before a class name with a colon. `md:bg-green-500` is a green background at 768px and up",
       "Five small components each teach one idea. The card at the end combines them",
     ],
   },
@@ -25,8 +26,9 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     title: "Five min-width prefixes",
     kind: "content",
     bullets: [
+      "A **min-width** prefix applies when the viewport is at least that wide. It is written before a class name with a colon, like `md:bg-green-500`",
       "Tailwind is **mobile-first**: no prefix means every width, and a prefix applies from that breakpoint up",
-      "§2.1.17: 1rem is usually 16px, so 48rem is 768px",
+      "A **rem** is a CSS length unit relative to the root font size. 1rem is usually 16px, so 48rem is 768px",
       "`sm:` 40rem (640px)",
       "`md:` 48rem (768px)",
       "`lg:` 64rem (1024px)",
