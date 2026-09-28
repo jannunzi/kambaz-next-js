@@ -1219,7 +1219,7 @@ describe("lecture decks", () => {
     assert.equal(counts["tailwind-typography"], 7);
     assert.equal(counts["tailwind-colors"], 6);
     assert.equal(counts["tailwind-filters-and-grid"], 15);
-    assert.equal(counts["tailwind-responsive"], 21);
+    assert.equal(counts["tailwind-responsive"], 23);
     assert.equal(counts["kambaz-styling"], 8);
     assert.equal(counts["kambaz-nav-styling"], 7);
     assert.equal(counts["kambaz-dashboard-styling"], 7);
@@ -2352,8 +2352,20 @@ describe("lecture decks", () => {
     assert.match(responsive, /viewport width at which styles change/);
     assert.doesNotMatch(responsive, /for example through a media query/);
     assert.match(responsive, /minimum height of 14rem/);
-    const cardIds = ["tsx", "card-frame", "card-image", "card-text", "demo"];
     const responsiveIds = getLectureDeck("tailwind-responsive")!.slides.map((slide) => slide.id);
+    assert.equal(responsiveIds[responsiveIds.indexOf("intro") + 1], "prefixes");
+    assert.equal(responsiveIds[responsiveIds.indexOf("prefixes") + 1], "prefix-ruler");
+    assert.ok(responsiveIds.indexOf("prefix-ruler") < responsiveIds.indexOf("breakpoint-tsx"));
+    assert.equal(findSlide("tailwind-responsive", "prefix-ruler").diagram, "tailwind-breakpoints");
+    assert.doesNotMatch(
+      findSlide("tailwind-responsive", "intro").bullets?.join("\n") ?? "",
+      /md:/,
+    );
+    assert.doesNotMatch(
+      findSlide("tailwind-responsive", "widths").bullets?.join("\n") ?? "",
+      /40rem \(640px\)/,
+    );
+    const cardIds = ["tsx", "card-frame", "card-image", "card-text", "demo"];
     const cardAt = responsiveIds.indexOf("tsx");
     assert.deepEqual(responsiveIds.slice(cardAt, cardAt + cardIds.length), cardIds);
     assert.equal(findSlide("tailwind-responsive", "tsx").code, undefined);
@@ -3106,6 +3118,9 @@ describe("lecture decks", () => {
       },
       "css-box-model": {
         layers: "box-model",
+      },
+      "tailwind-responsive": {
+        "prefix-ruler": "tailwind-breakpoints",
       },
       "youtube-api": {
         credentials: "google-cloud-key-mock",

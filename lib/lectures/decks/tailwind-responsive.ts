@@ -16,16 +16,36 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "A **responsive** page changes as the viewport — the browser window — gets wider",
-      "As in §2.1.20, a **breakpoint** is a viewport width at which styles change. Tailwind names the common widths and lets you prefix a class with one of them, such as `md:bg-green-500`",
+      "As in §2.1.20, a **breakpoint** is a viewport width at which styles change. Tailwind names five of those widths",
       "Five small components each teach one idea. The card at the end combines them",
     ],
+  },
+  {
+    id: "prefixes",
+    title: "Five min-width prefixes",
+    kind: "content",
+    bullets: [
+      "Tailwind is **mobile-first**: an unprefixed class applies at every width, and a prefixed class applies from that breakpoint up",
+      "As in §2.1.17, widths are in **rem** (1rem is usually 16px, so 48rem is 768px)",
+      "`sm:` 40rem (640px)",
+      "`md:` 48rem (768px)",
+      "`lg:` 64rem (1024px)",
+      "`xl:` 80rem (1280px)",
+      "`2xl:` 96rem (1536px)",
+    ],
+  },
+  {
+    id: "prefix-ruler",
+    title: "Where each prefix starts",
+    kind: "content",
+    diagram: "tailwind-breakpoints",
   },
   {
     id: "breakpoint-tsx",
     title: "One breakpoint",
     kind: "content",
     bullets: [
-      "Tailwind is **mobile-first**: an unprefixed class applies at every width, and a prefixed class applies at that breakpoint and up. As in §2.1.17, widths are in **rem** (1rem is usually 16px, so 48rem is 768px). `md:` starts at 48rem (768px)",
+      "This box is `bg-red-500` at every width. `md:bg-green-500` replaces the red from `md` up",
     ],
     code: `export default function TailwindResponsiveBreakpoint() {
   return (
@@ -45,7 +65,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     title: "Red, then green",
     kind: "demo",
     bullets: [
-      "Below 768px the box is red. At `md` and wider it is green",
+      "Below `md` the box is red. At `md` and wider it is green",
     ],
     embed: "tw-responsive-breakpoint",
   },
@@ -81,7 +101,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     title: "Stack, then side by side",
     kind: "content",
     bullets: [
-      "CSS flex lines boxes up along one direction. `flex-direction: column` stacks them, and `flex-direction: row` places them side by side. Tailwind writes those as `flex-col` and `flex-row`. `flex flex-col` stacks the three boxes at every width. `md:flex-row` lays them side by side from 768px up. `gap-4` is the space between the boxes. It is unprefixed, so that space stays in both layouts",
+      "CSS flex lines boxes up along one direction. `flex-direction: column` stacks them, and `flex-direction: row` places them side by side. Tailwind writes those as `flex-col` and `flex-row`. `flex flex-col` stacks the three boxes at every width. `md:flex-row` lays them side by side from `md` up. `gap-4` is the space between the boxes. It is unprefixed, so that space stays in both layouts",
     ],
     code: `export default function TailwindResponsiveFlex() {
   return (
@@ -109,16 +129,11 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
   },
   {
     id: "widths",
-    title: "Prefix minimum widths",
+    title: "Grid uses the prefixes",
     kind: "content",
     bullets: [
       "**CSS Grid** places children into columns, with a gap between the cells. `grid` turns the grid on, `grid-cols-*` sets how many columns, and `gap-4` sets that gap. §2.3.6 goes further with grid utilities",
-      "Once a prefix applies, it keeps applying at larger widths until a later prefix overrides it",
-      "`sm` 40rem (640px)",
-      "`md` 48rem (768px)",
-      "`lg` 64rem (1024px)",
-      "`xl` 80rem (1280px)",
-      "`2xl` 96rem (1536px)",
+      "Column count uses those same prefixes. A later prefix overrides an earlier one from its width up",
     ],
   },
   {
@@ -126,7 +141,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     title: "Grid columns by breakpoint",
     kind: "content",
     bullets: [
-      "One column below 640px, two from `sm` until `lg`, and four from 1024px up",
+      "One column below `sm`, two from `sm` until `lg`, and four from `lg` up",
     ],
     code: `export default function TailwindResponsiveGrid() {
   return (
@@ -153,7 +168,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     title: "Live grid columns",
     kind: "demo",
     bullets: [
-      "Below 640px there is one column. At `lg` (1024px) there are four",
+      "Below `sm` there is one column. At `lg` there are four",
     ],
     embed: "tw-responsive-grid",
   },
@@ -162,7 +177,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     title: "Spacing and text size",
     kind: "content",
     bullets: [
-      "`p-2` and `text-base` apply at every width. `md:p-8` and `md:text-2xl` grow the padding and the type from 768px up",
+      "`p-2` and `text-base` apply at every width. `md:p-8` and `md:text-2xl` grow the padding and the type from `md` up",
     ],
     code: `export default function TailwindResponsiveSpacingText() {
   return (
