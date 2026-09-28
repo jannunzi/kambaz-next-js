@@ -242,8 +242,7 @@ export default function Lab4() {
             Tailwind CSS
           </OfficialLink>{" "}
           classes from{" "}
-          <Link href="/labs/lab2">Lab 2</Link>, not a separate Bootstrap
-          pill bar. Confirm you can reach{" "}
+          <Link href="/labs/lab2">Lab 2</Link>. Confirm you can reach{" "}
           <LocalUrl href="/labs/lab4" />{" "}from the Labs table of contents
           before continuing. A coverage checklist for Lab 4 is in{" "}
           <SectionLink to="4.8" /> — use it after you have walked through

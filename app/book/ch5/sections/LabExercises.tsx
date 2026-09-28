@@ -83,8 +83,7 @@ app.listen(4000);`}</CodeBlock>
         the link navigates to the expected response. Do not hard-code
         the host for long — the next subsection replaces it with an
         environment variable. Style the link with Tailwind — a simple
-        underline or list item — rather than Bootstrap{" "}
-        <code>list-group</code>.
+        underline or list item.
       </p>
       <CodeBlock
         language="tsx"
