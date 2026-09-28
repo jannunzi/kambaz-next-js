@@ -1896,7 +1896,7 @@ describe("lecture decks", () => {
     assert.doesNotMatch(text, /kambaz-next-js/);
     assert.match(text, /OFFICE HOURS/);
     assert.match(text, /BREAK/);
-    assert.match(text, /Jose Annunziato/);
+    assert.doesNotMatch(text, /Jose Annunziato/);
     assert.doesNotMatch(text, /netlify\.com/i);
     assert.doesNotMatch(text, /Netlify/);
     assert.doesNotMatch(text, /Deploy to Netlify/);

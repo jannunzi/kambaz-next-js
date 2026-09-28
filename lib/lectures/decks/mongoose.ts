@@ -17,8 +17,7 @@ export const MONGOOSE_SLIDES: LectureSlide[] = [
     bullets: [
       "Applications need `find`, `create`, `updateOne`, and `deleteOne`",
       "Work on branch `a6` in both `webdev-client` and `webdev-server`",
-      "The Lab 6 pages use `/api/lab6` in memory when Mongo is off",
-      "Student code is the sibling server — set the URI and it uses Mongoose",
+      "Set the connection URI in `webdev-server` and the server uses Mongoose",
     ],
   },
   {
@@ -77,7 +76,6 @@ DATABASE_CONNECTION_STRING=mongodb://127.0.0.1:27017/kambaz`,
     bullets: [
       "`dotenv/config` loads `.env` before other modules read keys",
       "Fallback keeps you on localhost if the line is missing",
-      "This repo also accepts `MONGO_CONNECTION_STRING`",
     ],
     code: `import "dotenv/config";
 import mongoose from "mongoose";

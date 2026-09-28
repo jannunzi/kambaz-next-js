@@ -18,7 +18,7 @@ export const KAMBAZ_ASSIGNMENTS_SLIDES: LectureSlide[] = [
       "Lists assignments students must complete throughout a course",
       "From the Dashboard, open a course, then **Assignments** in Course Navigation",
       "Grouped as ASSIGNMENTS, QUIZZES, EXAMS, and PROJECT",
-      "Match the Assignments screen in the book and the `wd-*` ids",
+      "Match the Assignments screen and the `wd-*` ids",
     ],
   },
   {

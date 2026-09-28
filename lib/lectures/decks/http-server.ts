@@ -40,7 +40,7 @@ export const HTTP_SERVER_SLIDES: LectureSlide[] = [
       "Browser JS cannot open files, sockets, or a database driver",
       "Node is a runtime plus `npm` — V8 with filesystem and network APIs",
       "You already installed it for `next dev`. Confirm with `node -v`",
-      "LTS 20.9+ is enough. 22.x is what the book shows",
+      "LTS 20.9+ is enough. 22.x is fine",
     ],
     code: `node -v
 # v22.11.0`,
@@ -59,7 +59,7 @@ cd webdev-server
 npm init`,
     codeLanguage: "bash",
     interactiveHint:
-      "This repo already includes `webdev-server/` so the demos can run. You still create that sibling folder yourself.",
+      "Create the `webdev-server` folder yourself, as a sibling of the Next.js app.",
   },
   {
     id: "hello-js",

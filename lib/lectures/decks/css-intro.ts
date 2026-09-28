@@ -18,7 +18,7 @@ export const CSS_INTRO_SLIDES: LectureSlide[] = [
       "**CSS** = Cascading Style Sheets — a declarative language for color, space, borders, and layout",
       "HTML says what a node *is*. CSS says how it *looks*",
       "Chapter 1 Kambaz screens were unstyled on purpose. Lab 2 teaches the rules before Tailwind utilities",
-      "Same snippets as the book: `app/labs/lab2/page.tsx` and `index.css`",
+      "The files are `app/labs/lab2/page.tsx` and `index.css`",
     ],
   },
   {

@@ -22,7 +22,7 @@ export const ANCHORS_SLIDES: LectureSlide[] = [
     code: `<a href="https://www.wikipedia.org">Wikipedia</a>
 <a href="https://github.com/jannunzi">GitHub</a>
 <a href="profile.html">See my profile</a>
-<a href="mailto:jannunzi@gmail.com">Jose</a>
+<a href="mailto:jannunzi@gmail.com">Email</a>
 <a href="tel:+123456789">Call me</a>`,
     codeLanguage: "html",
   },
@@ -51,7 +51,7 @@ export const ANCHORS_SLIDES: LectureSlide[] = [
       "`tel:+123456789` opens the phone dialer (or a helper app on a laptop)",
       "These are still `a` tags. The **scheme** in `href` is what changes",
     ],
-    code: `<a href="mailto:jannunzi@gmail.com">Jose</a>
+    code: `<a href="mailto:jannunzi@gmail.com">Email</a>
 <a href="tel:+123456789">Call me</a>`,
     codeLanguage: "html",
     embed: "mailto-tel",

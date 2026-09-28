@@ -73,7 +73,7 @@ export default function CourseNavigation({ cid }: { cid: string }) {
   },
   {
     id: "list-group-css",
-    title: "list-group rules in kambaz.css",
+    title: "Course Navigation rules in kambaz.css",
     kind: "content",
     bullets: [
       "You write these selectors — they are not imported from a CSS kit",

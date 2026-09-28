@@ -55,7 +55,7 @@ export const YOUTUBE_API_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "[console.cloud.google.com/apis/dashboard](https://console.cloud.google.com/apis/dashboard)",
-      "**Create New Project** — Jose’s classroom project is enough",
+      "**Create New Project** — a single class project is enough",
     ],
   },
   {
