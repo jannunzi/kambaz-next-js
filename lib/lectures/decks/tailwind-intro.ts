@@ -37,7 +37,7 @@ export const TAILWIND_INTRO_SLIDES: LectureSlide[] = [
     title: "Full Tailwind includes Preflight",
     kind: "content",
     bullets: [
-      "`@import \"tailwindcss\"` loads **Preflight** — a reset that wipes browser defaults",
+      "`@import \"tailwindcss\"` loads **Preflight**, Tailwind's base reset. It wipes plain HTML defaults",
       "Lab 2’s CSS samples (`p`, headings, lists) would look wrong under that reset",
       "So Lab 2 Tailwind lives on its own route: `app/labs/lab2/tailwind/`",
       "Kambaz later imports **theme + utilities only** — no Preflight",
