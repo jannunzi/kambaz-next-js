@@ -42,20 +42,6 @@ export default function Programming() {
         Node.js projects — <code>webdev-client</code>{" "}and the sibling{" "}
         <code>webdev-server</code>.
       </p>
-      <p>
-        LiveDemos in this book call same-origin{" "}
-        <code>/api/lab6</code>, which implements the Express Lab 6
-        contract with an in-memory store so pages render when{" "}
-        <code>mongod</code>{" "}is not running. The teaching code below
-        is the sibling server. When{" "}
-        <code>DATABASE_CONNECTION_STRING</code>{" "}(or{" "}
-        <code>MONGO_CONNECTION_STRING</code>) is set and reachable,
-        those DAOs use Mongoose; otherwise they keep the{" "}
-        <ChapterLink to={5} />{" "}arrays. The prose is written as if
-        the database is connected — that is the path you will run
-        locally tomorrow and on Atlas after{" "}
-        <SectionLink to="6.3" />.
-      </p>
 
       <Section
         level={3}
