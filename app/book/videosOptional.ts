@@ -8,4 +8,4 @@ export const BOOK_VIDEOS_NOTE =
 export const HOW_TO_USE_THE_BOOK_HEADING = "How to use the book";
 
 export const HOW_TO_USE_THE_BOOK_INTRO =
-  "This website is the companion to Developing Full Stack Next.js Web Applications. CS 4550 and CS 5610 share the same book. Required work is the main book content — the chapter text, labs, and LiveDemos — plus whatever an assignment explicitly names.";
+  "This website is the companion to Developing Full Stack Next.js Web Applications. CS 4550 and CS 5610 share the same book. Required work is the main book content — the chapter text, labs, and interactive demos — plus whatever an assignment explicitly names.";

@@ -67,6 +67,6 @@ export function mongoStatus() {
     store: uri ? "env-configured" : "memory",
     note: uri
       ? "Connection string is set. Express DAOs use Mongoose when mongod/Atlas is reachable."
-      : "No DATABASE_CONNECTION_STRING / MONGO_CONNECTION_STRING — in-memory store (same contract as Express Lab 6).",
+      : "DATABASE_CONNECTION_STRING is not set",
   };
 }

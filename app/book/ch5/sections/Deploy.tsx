@@ -48,7 +48,7 @@ export default function Deploy() {
           the project. It is okay if the repository was already
           initialized. The working source in this book repo is already{" "}
           <code>webdev-server/</code>{" "}at the Next.js root, which is
-          convenient for LiveDemos, but delivery still wants a{" "}
+          convenient for the interactive demos, but delivery still wants a{" "}
           <strong>separate</strong>{" "}GitHub repository so graders can
           open the server history without the Next.js tree. In that
           folder run <code>git init</code>{" "}if you have not already.
@@ -262,9 +262,9 @@ git push -u origin main`}</CodeBlock>
           disappear from production requests. Locally keep{" "}
           <code>.env.development</code>{" "}at{" "}
           <code>http://localhost:4000</code>{" "}so{" "}
-          <SectionLink to="5.2" />{" "}LiveDemos stay on the companion
+          <SectionLink to="5.2" />{" "}demos stay on the companion
           process. Same <code>httpServer()</code>{" "}helper — only the
-          env value changes. Lab 5 LiveDemos do{" "}
+          env value changes. Lab 5 demos do{" "}
           <em>not</em>{" "}need this Vercel step; they already work
           against <code>http://localhost:4000</code>. Route Handler
           demos in{" "}

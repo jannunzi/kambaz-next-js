@@ -136,7 +136,7 @@ license: (ISC)`}</CodeBlock>
           distinctive of Node.js projects, the way a{" "}
           <code>pom.xml</code>{" "}might be distinctive for Java
           projects. This interactive book ships a working copy at the
-          repo root as <code>webdev-server/</code>{" "}so LiveDemos can
+          repo root as <code>webdev-server/</code>{" "}so the interactive demos can
           call <code>http://localhost:4000</code>{" "}without cloning a
           second remote. It is still a{" "}
           <strong>separate project</strong>: own{" "}

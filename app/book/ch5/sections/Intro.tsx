@@ -115,7 +115,7 @@ export default function Intro() {
           <SectionLink to="5.2" />{" "}is the walkthrough, not a skip
           list. Open{" "}
           <LocalUrl href="/labs/lab5" />{" "}once the companion server is
-          running so the LiveDemos can reach{" "}
+          running so the interactive demos can reach{" "}
           <code>http://localhost:4000</code>.
         </p>
       </Section>

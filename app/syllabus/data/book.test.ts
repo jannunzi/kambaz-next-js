@@ -39,7 +39,7 @@ describe("how to use the book / optional videos", () => {
     assert.match(HOW_TO_USE_THE_BOOK_HEADING, /how to use the book/i);
     assert.match(HOW_TO_USE_THE_BOOK_INTRO, /companion/i);
     assert.match(HOW_TO_USE_THE_BOOK_INTRO, /main book content/i);
-    assert.match(HOW_TO_USE_THE_BOOK_INTRO, /chapter text, labs, and LiveDemos/i);
+    assert.match(HOW_TO_USE_THE_BOOK_INTRO, /chapter text, labs, and interactive demos/i);
     assert.match(HOW_TO_USE_THE_BOOK_INTRO, /assignment explicitly names/i);
   });
 

@@ -25,7 +25,7 @@ export default function LabExercises() {
         <strong>two terminals</strong>: one for the Next.js user
         interface on port 3000 and one for the sibling Express server
         on port 4000. Leave both running for the rest of the chapter.
-        Express LiveDemos below call the companion through{" "}
+        The interactive demos below call the companion through{" "}
         <code>httpServer()</code>.{" "}
         <SectionLink to="5.3" />{" "}Route Handler demos stay on
         same-origin <code>/api/...</code>{" "}and do not need port 4000.
@@ -161,11 +161,11 @@ app.listen(4000);`}</CodeBlock>
         <p>
           The variable is{" "}
           <code>NEXT_PUBLIC_HTTP_SERVER</code>. Wrap it in{" "}
-          <code>httpServer()</code>{" "}so every Express LiveDemo uses
+          <code>httpServer()</code>{" "}so every Express demo uses
           the same client code — locally{" "}
           <code>http://localhost:4000</code>, and later whatever origin
           you set for deploy. Unset, the helper still points at the
-          companion on 4000, which is enough for every LiveDemo in this
+          companion on 4000, which is enough for every interactive demo in this
           chapter. <SectionLink to="5.5" />{" "}is when you point the
           same helper at a deployed origin. Do not hard-code the host
           in screens.
@@ -486,7 +486,7 @@ const [b, setB] = useState("23");
             request&apos;s path. Now implement the same operations
             again, multiply and divide on the server and client, but
             multiplying and dividing parameters encoded in the query
-            string. Both pairs of links should appear in the LiveDemos
+            string. Both pairs of links should appear in the demos
             above once you finish — path IDs start with{" "}
             <code>wd-path-parameter-</code>, query IDs with{" "}
             <code>wd-query-parameter-</code>.
@@ -1359,7 +1359,7 @@ useEffect(() => { fetchAssignment(); }, []);`}</CodeBlock>
             as a list of todos when the component loads. Confirm that
             the todos render when the component first loads. Strike
             through completed titles so the list reads like a
-            checklist. The finished LiveDemo for this component waits
+            checklist. The finished interactive demo for this component waits
             until{" "}
             <SectionLink to="5.2.6.4" />, after POST, DELETE, PUT, and
             error handling are on the same screen.

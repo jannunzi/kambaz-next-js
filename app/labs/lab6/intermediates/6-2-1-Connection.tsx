@@ -4,14 +4,13 @@ import { useState } from "react";
 import { fetchLab6Status } from "../client";
 
 export default function ConnectionStatus() {
-  const [status, setStatus] = useState<string>("Click to read the store.");
+  const [status, setStatus] = useState<string>("Click to read the connection status.");
   return (
     <div id="wd-lab6-connection">
       <h3>MongoDB connection</h3>
       <p>
         Students set <code>DATABASE_CONNECTION_STRING</code> on Express.
-        This demo reports the same-origin Lab 6 store the book uses when
-        Mongo is not configured.
+        This demo checks the server&apos;s database connection status.
       </p>
       <button
         type="button"
