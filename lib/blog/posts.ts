@@ -6,6 +6,57 @@ import type { BlogPost } from "./types";
  */
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: "nextjs-16-3-app-like-experiences",
+    title: "Next.js 16.3: Instant Navigations for app-like UX",
+    publishedAt: "2026-09-28T12:00:00.000Z",
+    tags: ["nextjs", "react", "course"],
+    relatedChapters: ["ch1"],
+    intro: [
+      "Next.js published a walkthrough of Instant Navigations in 16.3, built on Cache Components and Partial Prefetching. Cache Components keep a route ready with static, cached, and fallback UI; Partial Prefetching fetches that App Shell for visible Link components before a click. The post demos the pattern in Next Beats, Drop, Flow, and Huddle — music, social, calendar, and chat apps that feel like SPAs while still rendering on the server.",
+      "The guide covers caching with 'use cache' and cacheLife/cacheTag, prefetch={true} for URL-specific content, Client Component islands with shared providers, revalidation via updateTag after Server Actions, experimental offline retry with useOffline, nested Suspense for stable streaming, useTransition/useOptimistic for mutations, and React View Transitions for reveals and route slides. The demos are open source with Playwright tests using the instant() helper.",
+      "That App Router navigation and caching story is the same Next.js path you start from in Chapter 1.",
+    ],
+    source: {
+      title: "Building App-like Experiences with Next.js 16.3",
+      url: "https://nextjs.org/blog/building-app-like-experiences-with-nextjs-16-3",
+      publisher: "Next.js",
+    },
+  },
+  {
+    slug: "state-of-agent-skills-one-million",
+    title: "State of agent skills: 1M skills and 280M installs on skills.sh",
+    publishedAt: "2026-09-28T12:00:00.000Z",
+    tags: ["ai", "course"],
+    relatedChapters: ["ch1"],
+    intro: [
+      "On September 25, 2026, Amelia Charles, Andrew Qu, and Jonathan Hefner reported that Vercel's skills.sh registry reached one million agent skills and nearly 280 million installs in seven months. A skill is reusable instructions that teach an AI agent how a specific person, team, or company does a job — often plain language — so agents stop being generic and start matching local practice.",
+      "Using aggregate registry data, the report finds supply leans technical (software engineering about a quarter of listings) while demand is broader: software engineering leads installs at 18%, then agent workflows at 15%, with business operations and writing near 11% each. Installs are concentrated — the top 375 skills (0.04% of the registry) account for 62% of installs — and seven in eight installs go to cross-industry skills. The authors argue the next wave will encode company-specific judgment, with effectiveness measured by tests rather than popularity alone.",
+      "Agent skills sit next to the same Vercel and Next.js tooling you use in Chapter 1 when you ship full-stack apps.",
+    ],
+    source: {
+      title: "State of agent skills",
+      url: "https://vercel.com/blog/state-of-agent-skills",
+      publisher: "Vercel",
+    },
+  },
+  {
+    slug: "tanstack-query-codegen-supply-chain-worm",
+    title: "TanStack Query OpenAPI codegen hit by npm supply-chain worm",
+    publishedAt: "2026-09-28T12:00:00.000Z",
+    tags: ["security", "react", "course"],
+    relatedChapters: ["ch1", "ch5"],
+    intro: [
+      "On August 28, 2026, Ilyas Makari at Aikido reported that ten versions of @7nohe/openapi-react-query-codegen (a popular generator of type-safe TanStack Query hooks from OpenAPI, 150k+ weekly downloads) were published to npm in about 20 minutes with malware branded Trinitite. Both the npm package and GitHub repo were compromised via a GitHub Actions workflow vulnerability, so releases still carried valid provenance attestations from the official workflow.",
+      "Install-time execution used a binding.gyp Python sandbox escape (and sometimes a preinstall script) to run a multi-megabyte Node payload that harvests GitHub, npm, cloud, and local credentials, exfiltrates encrypted bundles to public GitHub repos, and worms into other packages the stolen tokens can publish. Aikido lists the affected version numbers and file hashes; check whether those versions appear in lockfiles and rotate tokens if they do.",
+      "Dependency hygiene on npm packages is the same Node server and package work as Chapter 5, on the React data-fetching stack you meet alongside Chapter 1.",
+    ],
+    source: {
+      title: "Popular code generator for TanStack Query hit by supply chain worm",
+      url: "https://www.aikido.dev/blog/popular-code-generator-for-tanstack-query-hit-by-supply-chain-worm",
+      publisher: "Aikido",
+    },
+  },
+  {
     slug: "klaviyo-356-internal-apps-vercel",
     title: "Klaviyo: 356 internal apps in two weeks on Vercel",
     publishedAt: "2026-09-25T12:00:00.000Z",
