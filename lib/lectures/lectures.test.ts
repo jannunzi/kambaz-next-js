@@ -1219,7 +1219,7 @@ describe("lecture decks", () => {
     assert.equal(counts["tailwind-typography"], 6);
     assert.equal(counts["tailwind-colors"], 5);
     assert.equal(counts["tailwind-filters-and-grid"], 13);
-    assert.equal(counts["tailwind-responsive"], 17);
+    assert.equal(counts["tailwind-responsive"], 18);
     assert.equal(counts["kambaz-styling"], 8);
     assert.equal(counts["kambaz-nav-styling"], 7);
     assert.equal(counts["kambaz-dashboard-styling"], 7);
@@ -2313,6 +2313,11 @@ describe("lecture decks", () => {
     assert.match(responsive, /96rem \(1536px\)/);
     assert.match(responsive, /md:max-w-2xl/);
     assert.match(responsive, /md:shrink-0/);
+    assert.match(responsive, /flex-direction/);
+    assert.match(responsive, /CSS Grid/);
+    assert.match(responsive, /1rem` is the root font size/);
+    assert.match(responsive, /minimum height of 14rem/);
+    assert.doesNotMatch(responsive, /gutter/i);
     assert.doesNotMatch(responsive, /Bootstrap/);
 
     const shell = slideText("kambaz-styling");

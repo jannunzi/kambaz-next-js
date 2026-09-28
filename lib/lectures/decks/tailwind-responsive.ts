@@ -16,8 +16,8 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "A **responsive** page changes as the viewport — the browser window — gets wider",
-      "A **breakpoint prefix** is a width name, a colon, and a class, such as `md:bg-green-500`",
-      "`rem` follows the root font size. `1rem` is 16px by default",
+      "A **breakpoint** is the screen width where a prefixed class starts applying. The prefix is a width name, a colon, and the class, such as `md:bg-green-500`",
+      "`rem`: `1rem` is the root font size, 16px by default",
       "Five small components each teach one idea. The card at the end combines them",
     ],
   },
@@ -82,7 +82,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     title: "Stack, then side by side",
     kind: "content",
     bullets: [
-      "`flex flex-col` stacks the boxes. `md:flex-row` lays them side by side from 768px up. Unprefixed `gap-4` keeps the gutter in both layouts",
+      "`flex-direction` is the line the boxes follow. `flex-col` stacks them vertically and `flex-row` lays them side by side. `flex flex-col` stacks at every width, and `md:flex-row` switches to a row from 768px up. `gap-4` is the space between the boxes, and with no prefix that space stays in both layouts",
     ],
     code: `export default function TailwindResponsiveFlex() {
   return (
@@ -113,6 +113,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     title: "Prefix minimum widths",
     kind: "content",
     bullets: [
+      "**CSS Grid** places children into columns. `grid` turns it on, `grid-cols-*` sets how many columns, and `gap-*` is the space between the cells. §2.3.6 goes further",
       "Once a prefix applies, it keeps applying at larger widths until a later prefix overrides it",
       "`sm` 40rem (640px)",
       "`md` 48rem (768px)",
@@ -193,7 +194,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     title: "A responsive card",
     kind: "content",
     bullets: [
-      "The card combines those ideas, and also uses `md:max-w-2xl` to widen it, `md:flex` to start the row without `flex-col`, and `md:w-48`, `md:shrink-0`, `md:h-full`, and `md:min-h-56` to size the image",
+      "The card combines those ideas. `md:max-w-2xl` widens it, and `md:flex` starts the row without `flex-col`. On the image, `md:w-48` is a 12rem width, `md:shrink-0` means don't shrink, `md:h-full` is full height, and `md:min-h-56` is a minimum height of 14rem",
     ],
     code: `export default function TailwindResponsiveDesign() {
   return (
@@ -265,6 +266,52 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
       "Below `md` the image sits on the text. At `md`, `md:flex` puts it beside the text",
     ],
     embed: "tw-responsive",
+  },
+  {
+    id: "page",
+    title: "Add each demo to the page",
+    kind: "content",
+    bullets: [
+      "Import each responsive component and render it on the lab page. The five small demos come first, then `TailwindResponsiveDesign`",
+    ],
+    code: `import "./index.css";
+import TailwindSpacing from "./TailwindSpacing";
+import TailwindTypography from "./TailwindTypography";
+import TailwindBackgroundColors from "./TailwindBackgroundColors";
+import TailwindResponsiveBreakpoint from "./TailwindResponsiveBreakpoint";
+import TailwindResponsiveShowHide from "./TailwindResponsiveShowHide";
+import TailwindResponsiveFlex from "./TailwindResponsiveFlex";
+import TailwindResponsiveGrid from "./TailwindResponsiveGrid";
+import TailwindResponsiveSpacingText from "./TailwindResponsiveSpacingText";
+import TailwindResponsiveDesign from "./TailwindResponsiveDesign";
+
+export default function TailwindLab() {
+  return (
+    <div className="p-8">
+      <h1 className="text-4xl font-bold mb-8">Tailwind CSS</h1>
+      <TailwindSpacing />
+      <hr className="my-8" />
+      <TailwindTypography />
+      <hr className="my-8" />
+      <TailwindBackgroundColors />
+      <hr className="my-8" />
+      <TailwindResponsiveBreakpoint />
+      <hr className="my-8" />
+      <TailwindResponsiveShowHide />
+      <hr className="my-8" />
+      <TailwindResponsiveFlex />
+      <hr className="my-8" />
+      <TailwindResponsiveGrid />
+      <hr className="my-8" />
+      <TailwindResponsiveSpacingText />
+      <hr className="my-8" />
+      <TailwindResponsiveDesign />
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/tailwind/page.tsx",
+    codeAddedLines: [[5, 9], [22, 31]],
   },
   {
     id: "vs-media",
