@@ -5,9 +5,7 @@ export const CREATING_A_NEXTJS_REACT_APPLICATION_SLIDES: LectureSlide[] = [
     id: "title",
     title: "NEXT.JS REACT APPLICATIONS",
     kind: "title",
-    bullets: [
-      "Jose Annunziato",
-    ],
+    bullets: ["Jose Annunziato"],
   },
   {
     id: "react-is",

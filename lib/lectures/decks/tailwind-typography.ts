@@ -23,7 +23,7 @@ export const TAILWIND_TYPOGRAPHY_SLIDES: LectureSlide[] = [
   },
   {
     id: "tsx",
-    title: "TailwindTypography.tsx",
+    title: "Font size and weight utilities",
     kind: "content",
     bullets: [
       "Typography utilities cover font size and weight with the same predictable naming.",

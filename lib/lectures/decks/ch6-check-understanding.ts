@@ -36,7 +36,7 @@ export const CH6_CHECK_UNDERSTANDING_SLIDES: LectureSlide[] = [
     title: "Lab 6 before you quiz",
     kind: "content",
     bullets: [
-      "Connection status, todos CRUD, then the Users LiveDemo",
+      "Connection status, todos CRUD, then the Users screen",
       "Sign in as `iron_man`, open Profile, then ADMIN Users as `nick_fury`",
       "Atlas cluster can wait until after the quiz — §6.4 is Kambaz collections",
     ],
@@ -58,7 +58,7 @@ export const CH6_CHECK_UNDERSTANDING_SLIDES: LectureSlide[] = [
     bullets: [
       "Local Mongo, Mongoose connect, User schema and DAO",
       "Async account routes, ADMIN Users, filter and CRUD",
-      "Atlas next already done? Then courses, modules, enrollments",
+      "Is Atlas already connected? Then add courses, modules, and enrollments",
     ],
   },
   {

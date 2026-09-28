@@ -18,7 +18,7 @@ export const VARIABLES_AND_CONSTANTS_SLIDES: LectureSlide[] = [
       "User info, preferences, courses, enrollments — all values in memory",
       "JavaScript offers three declarations. Prefer `let` and `const`",
       "Create `VariablesAndConstants` and import it from Lab 3",
-      "Confirm the browser prints the same numbers as the book",
+      "Confirm the browser prints the numbers from the sample",
     ],
   },
   {

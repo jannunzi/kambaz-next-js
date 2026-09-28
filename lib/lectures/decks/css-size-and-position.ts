@@ -45,7 +45,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
   },
   {
     id: "dimensions-tsx",
-    title: "Dimensions.tsx",
+    title: "Width and height boxes",
     kind: "content",
     bullets: [
       "Block elements stretch to the parent's full width until `width` and `height` override that.",
@@ -71,7 +71,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
   },
   {
     id: "dimensions-live",
-    title: "Live Dimensions.tsx",
+    title: "Live dimensions",
     kind: "demo",
     bullets: [
       "Three different sizes, still one column",
@@ -113,7 +113,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
   },
   {
     id: "display-tsx",
-    title: "Display.tsx",
+    title: "Inline, inline-block, block",
     kind: "content",
     bullets: [
       "Wrapper id `wd-css-display`. Three headings, nine spans",
@@ -159,7 +159,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
   },
   {
     id: "display-demo",
-    title: "Live Display.tsx",
+    title: "Live display",
     kind: "demo",
     bullets: [
       "Row 1 stays text-sized. `width` and `height` do not apply to `inline`",
@@ -195,7 +195,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
   },
   {
     id: "relative-tsx",
-    title: "Positions.tsx — relative",
+    title: "The relative nudge",
     kind: "content",
     bullets: [
       "`position: relative` nudges an element but leaves its original space, so neighbors do not shift.",
@@ -265,7 +265,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
   },
   {
     id: "absolute-tsx",
-    title: "Positions.tsx — absolute",
+    title: "The absolute stack",
     kind: "content",
     bullets: [
       "Paste the TSX below inside `#wd-css-positions`, after the previous section.",
@@ -318,11 +318,11 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
   },
   {
     id: "fixed-tsx",
-    title: "Positions.tsx — fixed",
+    title: "The fixed square",
     kind: "content",
     bullets: [
       "Paste the TSX below inside `#wd-css-positions`, after the previous section.",
-      "This embed contains the square so it does not escape the slide",
+      "The preview keeps the square inside the frame. In Lab 2 it sticks to the browser window",
     ],
     code: `<div id="wd-css-position-fixed">
   <h2>Fixed position</h2>
@@ -341,7 +341,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
     title: "Live fixed position",
     kind: "demo",
     bullets: [
-      "The blue square is fixed to this figure, not the browser window",
+      "In this preview the square stays inside the frame",
       "In Lab 2 the same class sticks to the viewport",
     ],
     embed: "css-position-fixed",
@@ -419,7 +419,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
   },
   {
     id: "zindex-tsx",
-    title: "Zindex.tsx",
+    title: "Bring landscape forward",
     kind: "content",
     bullets: [
       "Later elements render on top by default, and a higher `z-index` renders above a lower one.",
@@ -451,7 +451,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
   },
   {
     id: "zindex-live",
-    title: "Live Zindex.tsx",
+    title: "Live z-index",
     kind: "demo",
     bullets: [
       "Landscape sits above the red square",

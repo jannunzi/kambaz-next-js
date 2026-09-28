@@ -65,7 +65,7 @@ git push -u origin main`,
     kind: "demo",
     bullets: [
       "`CLIENT_URL` is your Vercel origin — no trailing slash",
-      "`SESSION_SECRET` is not the sample phrase from the notes",
+      "`SESSION_SECRET` is a long random phrase you choose",
     ],
     code: `SERVER_ENV=production
 CLIENT_URL=https://your-app.vercel.app
@@ -94,7 +94,7 @@ SESSION_SECRET=a phrase that is not committed`,
     bullets: [
       "Second GitHub repo. Render runs `npm start`",
       "Render `SERVER_URL` has no protocol. Vercel env has `https://`",
-      "Lab 5 LiveDemos do not need this Vercel step locally",
+      "You can finish Lab 5 on your machine without this Vercel step",
     ],
   },
   {

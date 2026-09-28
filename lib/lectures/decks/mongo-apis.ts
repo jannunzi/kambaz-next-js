@@ -107,7 +107,7 @@ app.get("/api/users", findAllUsers);`,
     bullets: [
       "Stop joining enrollments in the browser — the server filters",
       "Users screen passes every user; course People later passes a subset",
-      "Tailwind table, not Bootstrap `table-striped`",
+      "A full-width collapsed table with a light border and striped odd rows",
     ],
     code: `export default function PeopleTable({
   users = [],

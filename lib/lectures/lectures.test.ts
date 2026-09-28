@@ -1219,7 +1219,7 @@ describe("lecture decks", () => {
     assert.equal(counts["tailwind-typography"], 6);
     assert.equal(counts["tailwind-colors"], 5);
     assert.equal(counts["tailwind-filters-and-grid"], 13);
-    assert.equal(counts["tailwind-responsive"], 7);
+    assert.equal(counts["tailwind-responsive"], 8);
     assert.equal(counts["kambaz-styling"], 8);
     assert.equal(counts["kambaz-nav-styling"], 7);
     assert.equal(counts["kambaz-dashboard-styling"], 7);
@@ -2683,15 +2683,20 @@ describe("lecture decks", () => {
     assert.doesNotMatch(atlas, /netlify\.com/i);
     assert.doesNotMatch(atlas, /OMDb|omdb/i);
     assert.doesNotMatch(atlas, /napster/i);
-    assert.doesNotMatch(atlas, /supersecretpassword/);
-    assert.match(atlas, /<password>/);
+    assert.match(
+      atlas,
+      /mongodb\+srv:\/\/giuseppi:supersecretpassword@kambaz\.jxui0bc\.mongodb\.net\//,
+    );
 
     const compass = slideText("atlas-compass");
     assert.match(compass, /mongodb\+srv/);
     assert.match(compass, /New Window|new window/i);
     assert.match(compass, /users|courses|modules/);
     assert.doesNotMatch(compass, /netlify\.com/i);
-    assert.doesNotMatch(compass, /supersecretpassword/);
+    assert.match(
+      compass,
+      /mongodb\+srv:\/\/giuseppi:supersecretpassword@kambaz\.jxui0bc\.mongodb\.net\//,
+    );
 
     const node = slideText("atlas-node");
     assert.match(node, /0\.0\.0\.0\/0/);

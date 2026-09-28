@@ -39,7 +39,7 @@ export const KAMBAZ_ACCOUNT_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "Book Figure 2.4.9b — Profile fields we will stub in HTML this week",
-      "No Sign up screenshot in the book — same form pattern as Sign in",
+      "Sign up uses the same form pattern as Sign in",
     ],
     imageSrc: "/images/book/kambaz/account-profile.png",
     imageAlt: "Target Account Profile screen",

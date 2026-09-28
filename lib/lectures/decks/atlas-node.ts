@@ -67,7 +67,6 @@ export const ATLAS_NODE_SLIDES: LectureSlide[] = [
     bullets: [
       "Local `.env` can stay on `127.0.0.1` while you develop",
       "Render Environment holds the `mongodb+srv` value",
-      "This repo also accepts `MONGO_CONNECTION_STRING` as an alias",
     ],
     code: `const CONNECTION_STRING =
   process.env.DATABASE_CONNECTION_STRING ||

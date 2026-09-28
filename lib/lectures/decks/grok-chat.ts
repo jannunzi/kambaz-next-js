@@ -192,7 +192,7 @@ export const suggestCourseDescription = async (courseName: string) => {
     id: "spinner",
     title: "Animate Spinner",
     kind: "demo",
-    bullets: ["Jose used `.wd-spinner`. Tailwind: **`animate-spin`**"],
+    bullets: ["Use Tailwind **`animate-spin`** for the waiting indicator"],
     code: `.wd-spinner {
   animation: spin 1s linear infinite;
 }

@@ -40,7 +40,6 @@ export const INTRO_TO_JAVASCRIPT_SLIDES: LectureSlide[] = [
       "This course writes React in `.tsx` — JavaScript with type annotations",
       "Types are compile-time only. Browsers and Node still run JavaScript",
       "`a: number` catches mistakes before the page does",
-      "Runtime behavior is the same as the book samples",
     ],
   },
   {

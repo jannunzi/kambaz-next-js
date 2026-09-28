@@ -94,7 +94,6 @@ export default function ReactIconsSampler() {
     title: "Font Awesome was the old path",
     kind: "content",
     bullets: [
-      "Older slides linked a Font Awesome CSS kit and used `<i className=\"fa fa-…\">`",
       "This course uses **React Icons** so icons ship with the app and tree-shake",
       "You can still recognize FA names — `FaCalendar` is the same glyph",
     ],

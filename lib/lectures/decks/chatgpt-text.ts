@@ -166,7 +166,7 @@ console.log(response.output_text);`,
     title: "Image generation",
     kind: "demo",
     bullets: [
-      "Jose’s deck used **DALL·E 3**. Current API: **`gpt-image-1`**",
+      "Generate images with **`gpt-image-1`**",
     ],
     code: `const response = await client.images.generate({
   model: "gpt-image-1",
@@ -207,7 +207,7 @@ await fs.promises.writeFile(path.resolve("./speech.mp3"), buffer);`,
     kind: "demo",
     bullets: [
       "`createReadStream` stays on **Express**",
-      "Jose also showed **`whisper-1`**. Current: **`gpt-4o-transcribe`**",
+      "Transcribe audio with **`gpt-4o-transcribe`**",
     ],
     code: `import fs from "fs";
 
@@ -253,7 +253,7 @@ history.push({ role: "user", content: "tell me another" });`,
     kind: "demo",
     bullets: [
       "`responses.parse` plus **`zodTextFormat`** locks the JSON",
-      "Jose’s deck used `beta.chat.completions.parse` — same idea, current SDK",
+      "The older `beta.chat.completions.parse` call is the same idea. Use `responses.parse` here",
     ],
     code: `import { z } from "zod";
 import { zodTextFormat } from "openai/helpers/zod";
@@ -334,7 +334,7 @@ const response = await client.responses.parse({
     title: "Content moderation",
     kind: "demo",
     bullets: [
-      "Jose parsed a **compliance** schema. Current API: **`moderations.create`**",
+      "Check text with **`moderations.create`**",
     ],
     code: `const moderation = await client.moderations.create({
   model: "omni-moderation-latest",

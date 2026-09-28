@@ -27,7 +27,8 @@ export const TAILWIND_INTRO_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "A class is a tiny CSS rule Tailwind already wrote",
-      "`flex gap-3 text-3xl` = display flex + 0.75rem gap + large type",
+      "A length in **rem** is relative to the root font size, usually 16px, so 2rem = 32px.",
+      "`gap` is the space between flex or grid items. `flex gap-3 text-3xl` is a row, a 0.75rem gap, and large type",
       "You are not inventing selector names. You are picking utilities",
       "Plain CSS from §2.1 still matters — utilities compile down to the same properties",
     ],
@@ -37,7 +38,7 @@ export const TAILWIND_INTRO_SLIDES: LectureSlide[] = [
     title: "Full Tailwind includes Preflight",
     kind: "content",
     bullets: [
-      "`@import \"tailwindcss\"` loads **Preflight** — a reset that wipes browser defaults",
+      "`@import \"tailwindcss\"` loads **Preflight**, Tailwind's base reset. It wipes plain HTML defaults",
       "Lab 2’s CSS samples (`p`, headings, lists) would look wrong under that reset",
       "So Lab 2 Tailwind lives on its own route: `app/labs/lab2/tailwind/`",
       "Kambaz later imports **theme + utilities only** — no Preflight",
@@ -83,7 +84,7 @@ export default function TailwindLab() {
     title: "Link it from Lab 2",
     kind: "content",
     bullets: [
-      "The book says this in prose: link `/labs/lab2/tailwind` from the Lab 2 page",
+      "Link to `/labs/lab2/tailwind` from the main Lab 2 page so both are reachable from the Labs table of contents",
       "Both routes stay in the Labs TOC — CSS first, then utilities",
       "Work through spacing, type, color, responsive, filters, and grid one component at a time",
     ],
@@ -97,14 +98,15 @@ export default function TailwindLab() {
     codeAddedLines: [1],
   },
   {
-    id: "not-bootstrap",
-    title: "Bootstrap is optional history",
+    id: "tailwind-and-icons",
+    title: "Tailwind and React Icons",
     kind: "content",
     bullets: [
-      "Drive A2 used React-Bootstrap (`d-flex`, `ListGroup`, `Card`). This course does not",
-      "Book path: **Tailwind + React Icons** — `/book/ch2` and `/labs/lab2/tailwind`",
-      "If you see those names: `d-flex` → `flex`, `col-md-6` → `md:col-span-6`",
-      "A Kambaz “list group” is CSS you write in `kambaz.css` — not a kit import",
+      "This course styles screens with **Tailwind** utilities and **React Icons**",
+      "Follow `/book/ch2` and `/labs/lab2/tailwind`",
+      "A **breakpoint** is a viewport width at which styles change. `md:` starts at 48rem (768px)",
+      "A **12-column grid** divides the page into twelve columns. `md:col-span-6` spans six of them",
+      "Course Navigation’s list group is CSS you write in `kambaz.css`",
     ],
   },
   {
