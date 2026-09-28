@@ -2316,8 +2316,9 @@ describe("lecture decks", () => {
     assert.match(responsive, /flex-direction/);
     assert.match(responsive, /CSS Grid/);
     assert.match(responsive, /usually 16px, so 48rem is 768px/);
-    assert.match(responsive, /a width where the layout is allowed to change/);
+    assert.match(responsive, /viewport width at which styles change/);
     assert.match(responsive, /minimum height of 14rem/);
+    assert.doesNotMatch(responsive, /TailwindFilters|TailwindGrids/);
     assert.doesNotMatch(responsive, /gutter/i);
     assert.doesNotMatch(responsive, /Bootstrap/);
 

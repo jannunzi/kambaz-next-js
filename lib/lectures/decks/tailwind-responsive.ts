@@ -16,8 +16,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "A **responsive** page changes as the viewport — the browser window — gets wider",
-      "A **breakpoint** is a width where the layout is allowed to change. Tailwind names the common widths and lets you prefix a class with one of them, such as `md:bg-green-500`",
-      "Widths are written in **rem**. 1rem is the root font size, usually 16px, so 48rem is 768px",
+      "A **breakpoint** is a viewport width at which styles change. Tailwind names the common widths and lets you prefix a class with one of them, such as `md:bg-green-500`",
       "Five small components each teach one idea. The card at the end combines them",
     ],
   },
@@ -26,7 +25,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     title: "One breakpoint",
     kind: "content",
     bullets: [
-      "Tailwind is **mobile-first**: an unprefixed class applies at every width, and `md:` applies from 48rem (768px) up",
+      "Tailwind is **mobile-first**: an unprefixed class applies at every width, and a prefixed class applies at that breakpoint and up. As in §2.1.17, widths are in **rem** (1rem is usually 16px, so 48rem is 768px). `md:` starts at 48rem (768px)",
     ],
     code: `export default function TailwindResponsiveBreakpoint() {
   return (
@@ -272,7 +271,7 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
     title: "Add each demo to the page",
     kind: "content",
     bullets: [
-      "Import each responsive component into the lab page and render it there. The five small demos come first, then `TailwindResponsiveDesign`. Spacing, typography, and backgrounds stay above them, and the filter and grid samples from §2.3.5 and §2.3.6 stay below",
+      "Import each responsive component into the lab page and render it there. The five small demos come first, then `TailwindResponsiveDesign`. Spacing, typography, and backgrounds stay above the responsive demos",
     ],
     code: `import "./index.css";
 import TailwindSpacing from "./TailwindSpacing";
@@ -284,8 +283,6 @@ import TailwindResponsiveFlex from "./TailwindResponsiveFlex";
 import TailwindResponsiveGrid from "./TailwindResponsiveGrid";
 import TailwindResponsiveSpacingText from "./TailwindResponsiveSpacingText";
 import TailwindResponsiveDesign from "./TailwindResponsiveDesign";
-import TailwindFilters from "./TailwindFilters";
-import TailwindGrids from "./TailwindGrids";
 
 export default function TailwindLab() {
   return (
@@ -308,16 +305,12 @@ export default function TailwindLab() {
       <TailwindResponsiveSpacingText />
       <hr className="my-8" />
       <TailwindResponsiveDesign />
-      <hr className="my-8" />
-      <TailwindFilters />
-      <hr className="my-8" />
-      <TailwindGrids />
     </div>
   );
 }`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/tailwind/page.tsx",
-    codeAddedLines: [[5, 9], 24, 26, 28, 30, 32],
+    codeAddedLines: [[5, 9], 22, 24, 26, 28, 30],
   },
   {
     id: "vs-media",

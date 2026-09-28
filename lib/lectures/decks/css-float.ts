@@ -26,6 +26,7 @@ export const CSS_FLOAT_SLIDES: LectureSlide[] = [
     title: "float left, right, then clear",
     kind: "content",
     bullets: [
+      "A length in **rem** is relative to the root font size, usually 16px, so 2rem = 32px",
       "Floated boxes leave the flow. The next block can slide up beside them",
       "`img.wd-float-*` caps the photo at 35% so the paragraph has room to wrap",
       "`clear: both` on `wd-float-done` stops the wrap and starts a new row",
