@@ -509,11 +509,11 @@ export default schema;`}</CodeBlock>
   return model.find({}, { name: 1, description: 1 });
 }`}</CodeBlock>
           <p>
-            This book&apos;s running server keeps modules in their
-            own collection, so the schema you actually ship can keep
-            a <code>course</code>{" "}string instead of embedding. The
-            model name <code>CourseModel</code>{" "}is still what
-            enrollments will <code>ref</code>.
+            Keep modules in their own collection. Store a{" "}
+            <code>course</code>{" "}string on each module instead of
+            embedding the module list on the course. The model name{" "}
+            <code>CourseModel</code>{" "}is still what enrollments will{" "}
+            <code>ref</code>.
           </p>
           <CodeBlock
             language="js"

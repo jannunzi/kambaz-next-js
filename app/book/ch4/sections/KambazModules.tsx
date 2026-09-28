@@ -23,7 +23,7 @@ export default function KambazModules() {
         shared parent, we will put them in a Zustand store so the list is
         available throughout the application. The PDF used a modules
         reducer for the same array; the screens, dialog, trash can, and
-        pencil below are the ones from that walkthrough.
+        pencil below are what you will add.
       </p>
       <p>
         The walkthrough starts from the list you already have, adds a

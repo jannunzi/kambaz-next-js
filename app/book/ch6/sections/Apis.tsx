@@ -206,8 +206,8 @@ app.get("/api/users", findAllUsers);`}</CodeBlock>
           <SectionLink to="6.4.3.5" />{" "}will pass only the students
           enrolled in that course. Style the table with Tailwind
           utility classes rather than Bootstrap&apos;s{" "}
-          <code>table table-striped</code>{" "}— a full-width collapsed
-          table with a light border and striped odd rows is enough.
+          <code>table table-striped</code>: a full-width collapsed
+          table with a light border and striped odd rows (<code>w-full border-collapse</code>, <code>border</code>, <code>odd:bg-neutral-50</code>).
         </p>
         <CodeBlock
           language="tsx"

@@ -105,9 +105,9 @@ const app = express();
         <p>
           Place the <code>connect</code>{" "}call near the top of{" "}
           <code>index.js</code>{" "}so the connection is established
-          before any route handler tries to run a query. This book
-          wraps that call in <code>connectDatabase()</code>{" "}so a
-          missing or dead URI does not crash CI. The string you write
+          before any route handler tries to run a query. Wrap that
+          call in <code>connectDatabase()</code>{" "}so a missing or
+          bad URI doesn&apos;t crash the app. The string you write
           as a student is the one above. If{" "}
           <code>mongod</code>{" "}is not running, Mongoose will retry
           and then fail; start the service or the command-line process

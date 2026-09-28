@@ -126,12 +126,20 @@ export const TAILWIND_FLEX_PREVIEW_FRAMES: PreviewFrame[] = [
   },
 ];
 
-/** Phone is below `sm` (1 column). Desktop is `lg` (4 columns). */
+/**
+ * Phone is below `sm` (1 column). 700px is `sm` but not `lg` (2 columns).
+ * Desktop is `lg` (4 columns).
+ */
 export const TAILWIND_GRID_PREVIEW_FRAMES: PreviewFrame[] = [
   {
     width: 375,
     label: "Phone, 375px: 1 column",
     title: "Phone preview, one column",
+  },
+  {
+    width: 700,
+    label: "700px: 2 columns",
+    title: "700px preview, two columns",
   },
   {
     width: 1024,
