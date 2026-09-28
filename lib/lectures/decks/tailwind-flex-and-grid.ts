@@ -38,6 +38,7 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
       "Four copies of the same image, blur growing from none to `2xl`",
     ],
     code: `export default function TailwindFilters() {
+  // reactjs.jpg is used here so the lab runs out of the box.
   const src = "/images/reactjs.jpg";
   return (
     <div>
