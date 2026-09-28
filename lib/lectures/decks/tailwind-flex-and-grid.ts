@@ -16,8 +16,11 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "§2.3.5: `blur-*`, `grayscale`, `brightness-*`, `contrast-*` on the element",
-      "§2.3.6: `grid grid-cols-4 gap-4`, then `col-span-*` on a 12-column page",
-      "The last slides spell the §2.1.19 flex row with Tailwind utilities",
+      "**CSS Grid** places children into columns. `grid` turns the grid on and `grid-cols-*` sets how many columns",
+      "`gap` is the gutter, the space between those cells",
+      "`col-span-*` stretches one cell across that many columns",
+      "A **12-column grid** divides the page into twelve columns",
+      "The last slides write that flex row with Tailwind",
     ],
   },
   {
@@ -65,6 +68,22 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
       "On your own: a second row with `grayscale` or `brightness-*`",
     ],
     embed: "tw-filters",
+  },
+  {
+    id: "filters-page",
+    title: "Add filters to the page",
+    kind: "content",
+    bullets: [
+      "Add `TailwindFilters` to the lab page. Put this import after `TailwindResponsiveDesign`, and render the component after that one",
+    ],
+    code: `import TailwindFilters from "./TailwindFilters";
+
+      <TailwindResponsiveDesign />
+      <hr className="my-8" />
+      <TailwindFilters />`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/tailwind/page.tsx",
+    codeAddedLines: [1, 4, 5],
   },
   {
     id: "grid-four",
@@ -243,12 +262,28 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
     embed: "tw-grids",
   },
   {
+    id: "grids-page",
+    title: "Add grids to the page",
+    kind: "content",
+    bullets: [
+      "Add `TailwindGrids` to the lab page. Put this import after `TailwindFilters`, and render the component after that one",
+    ],
+    code: `import TailwindGrids from "./TailwindGrids";
+
+      <TailwindFilters />
+      <hr className="my-8" />
+      <TailwindGrids />`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/tailwind/page.tsx",
+    codeAddedLines: [1, 4, 5],
+  },
+  {
     id: "flex-map",
     title: "Flex.tsx → Tailwind classes",
     kind: "content",
     bullets: [
       "The Lab 2 flex row, written with Tailwind utilities",
-      "`w-[110px] shrink-0` pins column 1. `grow` stretches column 3",
+      "`w-[110px]` sets a width of 110px. `shrink-0` stops that column from shrinking. `grow` gives column 3 the leftover space",
     ],
     code: `<div className="flex flex-row">
   <div className="w-[110px] shrink-0 bg-yellow-300 p-2.5">Column 1</div>

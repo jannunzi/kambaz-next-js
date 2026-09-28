@@ -712,19 +712,22 @@ code.quiz-prompt-code {
   overflow: visible;
 }
 
-.lecture-slide .lecture-demo-frame-body .text-xs {
+/* Bump a lone size utility so a demo reads from the back. Skip the bump only
+ * for responsive prefixes (sm:text-, md:text-, lg:text-, xl:text-, 2xl:text-),
+ * so md:text-2xl stays real and [&_table]:text-base still gets the bump. */
+.lecture-slide .lecture-demo-frame-body .text-xs:not([class*="sm:text-"]):not([class*="md:text-"]):not([class*="lg:text-"]):not([class*="xl:text-"]):not([class*="2xl:text-"]) {
   font-size: 0.9375rem;
 }
 
-.lecture-slide .lecture-demo-frame-body .text-sm {
+.lecture-slide .lecture-demo-frame-body .text-sm:not([class*="sm:text-"]):not([class*="md:text-"]):not([class*="lg:text-"]):not([class*="xl:text-"]):not([class*="2xl:text-"]) {
   font-size: 1.09375rem;
 }
 
-.lecture-slide .lecture-demo-frame-body .text-base {
+.lecture-slide .lecture-demo-frame-body .text-base:not([class*="sm:text-"]):not([class*="md:text-"]):not([class*="lg:text-"]):not([class*="xl:text-"]):not([class*="2xl:text-"]) {
   font-size: 1.25rem;
 }
 
-.lecture-slide .lecture-demo-frame-body .text-lg {
+.lecture-slide .lecture-demo-frame-body .text-lg:not([class*="sm:text-"]):not([class*="md:text-"]):not([class*="lg:text-"]):not([class*="xl:text-"]):not([class*="2xl:text-"]) {
   font-size: 1.40625rem;
 }
 

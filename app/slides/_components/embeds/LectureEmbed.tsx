@@ -75,7 +75,12 @@ import {
   TailwindFiltersEmbed,
   TailwindFlexEmbed,
   TailwindGridsEmbed,
+  TailwindResponsiveBreakpointEmbed,
   TailwindResponsiveEmbed,
+  TailwindResponsiveFlexEmbed,
+  TailwindResponsiveGridEmbed,
+  TailwindResponsiveShowHideEmbed,
+  TailwindResponsiveSpacingEmbed,
   TailwindSpacingEmbed,
   TailwindTypographyEmbed,
 } from "./TailwindLabEmbeds";
@@ -312,6 +317,16 @@ export default function LectureEmbed({ id }: { id: LectureEmbedId }) {
       return <TailwindFlexEmbed />;
     case "tw-grids":
       return <TailwindGridsEmbed />;
+    case "tw-responsive-breakpoint":
+      return <TailwindResponsiveBreakpointEmbed />;
+    case "tw-responsive-show-hide":
+      return <TailwindResponsiveShowHideEmbed />;
+    case "tw-responsive-flex":
+      return <TailwindResponsiveFlexEmbed />;
+    case "tw-responsive-grid":
+      return <TailwindResponsiveGridEmbed />;
+    case "tw-responsive-spacing":
+      return <TailwindResponsiveSpacingEmbed />;
     case "tw-responsive":
       return <TailwindResponsiveEmbed />;
     case "kambaz-styled-nav":

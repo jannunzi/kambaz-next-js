@@ -83,7 +83,6 @@ export const useCoursesStore = create<CoursesStore>((set) => ({
     title: "The list any screen can share",
     kind: "demo",
     bullets: [
-      "This preview keeps a sample course list on the slide",
       "The real store lives in `store/coursesStore.ts` — import the hook",
       "Next deck wires Dashboard Add / Edit / Delete to that hook",
     ],

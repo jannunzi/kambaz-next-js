@@ -55,12 +55,28 @@ export const TAILWIND_COLORS_SLIDES: LectureSlide[] = [
     embed: "tw-backgrounds",
   },
   {
+    id: "page",
+    title: "Add colors to the page",
+    kind: "content",
+    bullets: [
+      "Add `TailwindBackgroundColors` to the lab page. Put this import after `TailwindTypography`, and render the component after that one",
+    ],
+    code: `import TailwindBackgroundColors from "./TailwindBackgroundColors";
+
+      <TailwindTypography />
+      <hr className="my-8" />
+      <TailwindBackgroundColors />`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/tailwind/page.tsx",
+    codeAddedLines: [1, 4, 5],
+  },
+  {
     id: "next-up",
     title: "Next: responsive prefixes",
     kind: "title",
     bullets: [
       "You can paint a band with `bg-{color}-{shade}` and a contrasting `text-*`",
-      "§2.3.4: mobile-first `md:` / `lg:` — then filters, then grid",
+      "Tailwind is **mobile-first**: an unprefixed class applies at every width, and a prefixed class applies from that width up. `md:` starts at 768px and `lg:` at 1024px",
     ],
   },
 ];

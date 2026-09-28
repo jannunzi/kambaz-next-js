@@ -66,6 +66,22 @@ export const TAILWIND_TYPOGRAPHY_SLIDES: LectureSlide[] = [
     embed: "tw-typography",
   },
   {
+    id: "page",
+    title: "Add typography to the page",
+    kind: "content",
+    bullets: [
+      "Add `TailwindTypography` to the lab page. Put this import after `TailwindSpacing`, and render the component after that one",
+    ],
+    code: `import TailwindTypography from "./TailwindTypography";
+
+      <TailwindSpacing />
+      <hr className="my-8" />
+      <TailwindTypography />`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/tailwind/page.tsx",
+    codeAddedLines: [1, 4, 5],
+  },
+  {
     id: "pair",
     title: "Pair a size with a weight",
     kind: "content",
