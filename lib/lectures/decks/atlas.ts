@@ -72,7 +72,7 @@ export const ATLAS_SLIDES: LectureSlide[] = [
       "The host will differ. Scheme, username, password, and cluster matter",
       "Next lecture pastes this into Compass. Later, Drivers add `/kambaz?`",
     ],
-    code: `mongodb+srv://dbuser:<password>@kambaz.jxui0bc.mongodb.net/`,
+    code: `mongodb+srv://giuseppi:supersecretpassword@kambaz.jxui0bc.mongodb.net/`,
     codeLanguage: "text",
     interactiveHint:
       "This sample password is fake. Never paste a real Atlas password into a commit.",

@@ -10,6 +10,7 @@ export const DEPLOYING_TO_VERCEL_SLIDES: LectureSlide[] = [
     id: "title",
     title: "VERCEL",
     kind: "title",
+    bullets: ["Jose Annunziato"],
   },
   {
     id: "account",
@@ -109,6 +110,7 @@ export const DEPLOYING_TO_VERCEL_SLIDES: LectureSlide[] = [
     id: "break",
     title: "BREAK",
     kind: "break",
+    bullets: ["Jose Annunziato"],
   },
   {
     id: "office-hours",

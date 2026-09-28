@@ -10,7 +10,12 @@ export const INSTALLING_NODEJS_SLIDES: BlockSlide[] = [
     id: "title",
     title: "NODE.JS",
     kind: "title",
-    blocks: [],
+    blocks: [
+      createBulletsBlock({
+        id: "title-bullets",
+        items: ["Jose Annunziato"],
+      }),
+    ],
   }),
   createBlockSlide({
     id: "client-server-reminder",
