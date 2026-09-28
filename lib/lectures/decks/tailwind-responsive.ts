@@ -15,11 +15,11 @@ export const TAILWIND_RESPONSIVE_SLIDES: AuthoredSlide[] = [
     title: "Responsive Design",
     kind: "content",
     bullets: [
-      "A **responsive** page changes as the viewport — the browser window — gets wider",
+      "A **responsive** page changes as the viewport (the browser window) widens",
       "As in §2.1.20, a **breakpoint** is a viewport width at which styles change. Tailwind names five of those widths",
-      "A prefix goes before a class name with a colon. `md:bg-green-500` is a green background at 768px and up",
-      "A **min-width** prefix applies at that width and up",
-      "Five small components each teach one idea. The card at the end combines them",
+      "A prefix goes before a class name with a colon. `md:bg-green-500`, green background at 768px and up",
+      "**Min-width**: applies when the viewport is at least that wide",
+      "Each component, one idea. The card combines them",
     ],
   },
   createBlockSlide({

@@ -2362,7 +2362,7 @@ describe("lecture decks", () => {
     assert.match(introBullets, /prefix goes before a class name with a colon/);
     assert.match(introBullets, /md:bg-green-500/);
     assert.match(introBullets, /green background at 768px and up/);
-    assert.match(introBullets, /\*{0,2}min-width\*{0,2} prefix applies at that width and up/i);
+    assert.match(introBullets, /\*{0,2}[Mm]in-width\*{0,2}: applies when the viewport is at least that wide/);
     const prefixSlide = findSlide("tailwind-responsive", "prefixes");
     assert.ok(isBlockSlide(prefixSlide));
     const prefixBullets = authoredSlideBullets(prefixSlide).join("\n");

@@ -12,9 +12,13 @@ function renderToken(token: string, key: number): ReactNode {
     );
   }
   if (token.startsWith("`") && token.endsWith("`")) {
+    const label = token.slice(1, -1);
+    // Short tokens such as md:bg-green-500 stay on one line. Longer snippets
+    // may wrap so a media query or path is not clipped.
+    const nowrap = label.length <= 32 ? " whitespace-nowrap" : "";
     return (
-      <code key={key} className="rounded bg-black/8 px-1.5 py-0.5 font-mono">
-        {token.slice(1, -1)}
+      <code key={key} className={`rounded bg-black/8 px-1.5 py-0.5 font-mono${nowrap}`}>
+        {label}
       </code>
     );
   }

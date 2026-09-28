@@ -543,9 +543,11 @@ code.quiz-prompt-code {
   margin-top: 0.65rem;
 }
 
-/* Same bullet type, two columns, so a short scale can sit beside itself. */
+/* Same bullet type, filled down each column: sm/md/lg beside xl/2xl. */
 .lecture-slide-bullets-cols {
   display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(3, auto);
   grid-template-columns: 1fr 1fr;
   column-gap: 2rem;
   row-gap: 0.85rem;
