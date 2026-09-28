@@ -698,10 +698,10 @@ app.get("/api/courses/:courseId/modules", findModulesForCourse);`}</CodeBlock>
             Dashboard and the Modules screen still talk to the same
             client functions from <ChapterLink to={5} />. After the
             DAO swap, create and rename a module and confirm Compass
-            updates. The LiveDemo below is that Dashboard against the
-            book store; when your sibling server is connected to
-            Mongo, the same Add / Update / Delete buttons write
-            documents instead of array elements.
+            updates. The demo below is that Dashboard. When your
+            sibling server is connected to Mongo, the same Add /
+            Update / Delete buttons write documents instead of array
+            elements.
           </p>
           <LiveDemo
             name="Dashboard"

@@ -165,12 +165,12 @@ mongoose.connect(CONNECTION_STRING);`}</CodeBlock>
           Add the <code>DATABASE_CONNECTION_STRING</code>{" "}line to the
           Node <code>.env</code>{" "}(not the Next.js one) and restart{" "}
           <code>nodemon</code>. Click the status button again after
-          Express is up — or keep using the book store for now.
+          Express is up.
         </OnYourOwn>
         <WithAI
-          prompt={`In webdev-server/.env.example, keep DATABASE_CONNECTION_STRING and mention MONGO_CONNECTION_STRING as an alias. Do not put a real Atlas password in any committed file.`}
+          prompt={`In webdev-server/.env.example, keep DATABASE_CONNECTION_STRING. Do not put a real Atlas password in any committed file.`}
         >
-          Ask the assistant to keep the env names straight:
+          Ask the assistant to keep the connection string name in the example env file:
         </WithAI>
       </Section>
 
