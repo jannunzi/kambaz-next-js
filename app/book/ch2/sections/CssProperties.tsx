@@ -49,25 +49,8 @@ export default function CssProperties() {
           this exercise on, move each new demo into its own file under{" "}
           <code>app/labs/lab2/</code>. One exercise per component keeps{" "}
           <code>page.tsx</code>{" "}manageable, the same organization used for
-          Lab 1&apos;s HTML exercises. Import each demo into{" "}
-          <code>page.tsx</code>:
+          Lab 1&apos;s HTML exercises.
         </p>
-        <CodeBlock
-          language="tsx"
-          name="Lab2"
-          file="app/labs/lab2/page.tsx"
-        >{`import "./index.css";
-import ForegroundColors from "./ForegroundColors";
-
-export default function Lab2() {
-  return (
-    <div id="wd-lab2">
-      <h2>Lab 2 - Cascading Style Sheets</h2>
-      {/* ...earlier exercises... */}
-      <ForegroundColors />
-    </div>
-  );
-}`}</CodeBlock>
         <p>
           Start with <code>ForegroundColors.tsx</code>:
         </p>
@@ -104,7 +87,26 @@ export default function Lab2() {
         <LiveDemo mode="styled" name="ForegroundColors" file="app/labs/lab2/ForegroundColors.tsx">
           <ForegroundColors />
         </LiveDemo>
-      
+        <p>
+          Now import each demo into <code>page.tsx</code>:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab2"
+          file="app/labs/lab2/page.tsx"
+        >{`import "./index.css";
+import ForegroundColors from "./ForegroundColors";
+
+export default function Lab2() {
+  return (
+    <div id="wd-lab2">
+      <h2>Lab 2 - Cascading Style Sheets</h2>
+      {/* ...earlier exercises... */}
+      <ForegroundColors />
+    </div>
+  );
+}`}</CodeBlock>
+
         <OnYourOwn>
           In <code>ForegroundColors.tsx</code>, add
           one more sentence that mixes at least two of your{" "}
