@@ -123,7 +123,7 @@ export const CSS_FLEX_SLIDES: LectureSlide[] = [
     title: "Live flex-grow",
     kind: "demo",
     bullets: [
-      "The last column grows to fill leftover width while the others stay as wide as their text.",
+      "Flex children can grow to absorb leftover space; only the column with `flex-grow: 1` stretches.",
       "Columns 1 and 2 stay text-sized",
       "The `Flex.tsx` you just pasted: Column 3 carries `wd-flex-grow-1`",
     ],

@@ -102,7 +102,7 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
     title: "Paste the 3 Columns Grid",
     kind: "content",
     bullets: [
-      "`col-span-2` stretches a cell across two tracks of a three-column grid.",
+      "`col-span` lets one cell stretch across several grid tracks without changing the column count.",
       "Paste the TSX below after the 4 Columns Grid",
       "`col-span-2` makes two of the cells twice as wide",
     ],

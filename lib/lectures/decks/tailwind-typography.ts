@@ -60,7 +60,6 @@ export const TAILWIND_TYPOGRAPHY_SLIDES: LectureSlide[] = [
     title: "Live size and weight scale",
     kind: "demo",
     bullets: [
-      "Sizes step up from `text-sm` to `text-3xl`, and weights step up from `font-thin` to `font-black`.",
       "Sizes step from `text-sm` to `text-3xl`",
       "Weights step from barely-there `font-thin` to heavy `font-black`",
     ],

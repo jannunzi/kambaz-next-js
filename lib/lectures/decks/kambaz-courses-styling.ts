@@ -177,7 +177,7 @@ export default function Module({
     title: "Lesson.tsx",
     kind: "content",
     bullets: [
-      "Lessons get a checkmark on the right and a green left border.",
+      "Lesson reuses Module's checkmark control and adds the green lesson border.",
       "Same imports as `Module` — `GreenCheckmark` is new in Chapter 2",
       "`border-l-[3px] border-green-600` is the accent Assignments reuse",
     ],
@@ -336,7 +336,7 @@ export default function CourseStatus() {
     title: "Live Home chrome",
     kind: "demo",
     bullets: [
-      "On a wide screen four columns sit side by side, then Status hides before both sidebars.",
+      "Four columns sit side by side on a wide screen; as it narrows, Status hides first (below `lg`), then both sidebars (below `md`).",
       "Course Nav + Modules + Status (Status needs a wide viewport / `lg`)",
       "Four columns on a wide stage: Kambaz nav, Course nav, Modules, Status",
     ],
