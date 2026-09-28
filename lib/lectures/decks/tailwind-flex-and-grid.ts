@@ -19,8 +19,8 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
       "**CSS Grid** places children into columns. `grid` turns the grid on and `grid-cols-*` sets how many columns",
       "`gap` is the gutter, the space between those cells",
       "`col-span-*` stretches one cell across that many columns",
-      "A **12-column grid** divides the page into twelve columns, because twelve divides evenly by two, three, four, and six",
-      "The last slides spell the §2.1.19 flex row with Tailwind utilities",
+      "A **12-column grid** divides the page into twelve columns",
+      "The last slides write that flex row with Tailwind",
     ],
   },
   {
@@ -283,7 +283,7 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "The Lab 2 flex row, written with Tailwind utilities",
-      "`w-[110px] shrink-0` pins column 1. `grow` stretches column 3",
+      "`w-[110px]` sets a width of 110px. `shrink-0` stops that column from shrinking. `grow` gives column 3 the leftover space",
     ],
     code: `<div className="flex flex-row">
   <div className="w-[110px] shrink-0 bg-yellow-300 p-2.5">Column 1</div>

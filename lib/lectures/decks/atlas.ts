@@ -57,7 +57,7 @@ export const ATLAS_SLIDES: LectureSlide[] = [
     title: "A user Mongoose will remember",
     kind: "content",
     bullets: [
-      "Create a database user on the Connect screen — for example `dbuser`",
+      "Create a database user on the Connect screen — for example `giuseppi`",
       "These credentials are how Mongoose logs in from Render",
       "Store them in a password manager. Do **not** commit the password",
       "Forget them and you must create a new user later",

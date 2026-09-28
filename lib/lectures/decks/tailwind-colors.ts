@@ -76,7 +76,7 @@ export const TAILWIND_COLORS_SLIDES: LectureSlide[] = [
     kind: "title",
     bullets: [
       "You can paint a band with `bg-{color}-{shade}` and a contrasting `text-*`",
-      "`md:` applies from 768px up and `lg:` from 1024px up. §2.3.4 uses those mobile-first prefixes, then filters, then grid",
+      "Tailwind is **mobile-first**: an unprefixed class applies at every width, and a prefixed class applies from that width up. `md:` starts at 768px and `lg:` at 1024px",
     ],
   },
 ];

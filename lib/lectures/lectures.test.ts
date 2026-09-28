@@ -1364,9 +1364,14 @@ describe("lecture decks", () => {
     );
     assert.match(
       css,
-      /\.lecture-slide \.lecture-demo-frame-body \.text-base:not\(\[class\*=":text-"\]\)/,
+      /\.lecture-slide \.lecture-demo-frame-body \.text-base:not\(\[class\*="sm:text-"\]\):not\(\[class\*="md:text-"\]\):not\(\[class\*="lg:text-"\]\):not\(\[class\*="xl:text-"\]\):not\(\[class\*="2xl:text-"\]\)/,
     );
-    assert.match(
+    assert.doesNotMatch(css, /\[class\*=":text-"\]/);
+    assert.doesNotMatch(
+      css,
+      /\.lecture-slide \.book-code-block-body pre \{[^}]*white-space:\s*pre-wrap/,
+    );
+    assert.doesNotMatch(
       css,
       /\.lecture-slide \.book-code-block-lined \.line \{[^}]*overflow-wrap:\s*anywhere/,
     );
