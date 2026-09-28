@@ -23,12 +23,21 @@ export const TAILWIND_RESPONSIVE_SLIDES: LectureSlide[] = [
   },
   {
     id: "breakpoints",
-    title: "Common prefixes",
+    title: "What sm: means",
     kind: "content",
     bullets: [
-      "`sm:` ~40rem · `md:` ~48rem · `lg:` ~64rem · `xl:` · `2xl:`",
-      "Kambaz later: `hidden md:block` on sidebars, `hidden lg:block` on Course Status",
-      "Dashboard cards: `grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4`",
+      "`sm:` applies at a screen width of `40rem` and wider",
+      "`rem` follows the root font size. `1rem` is 16px by default, so `40rem` is 640px",
+      "The other defaults: `md` 48rem (768px), `lg` 64rem (1024px), `xl` 80rem (1280px), `2xl` 96rem (1536px)",
+    ],
+  },
+  {
+    id: "dashboard-later",
+    title: "Dashboard columns later",
+    kind: "content",
+    bullets: [
+      "Later, in the Kambaz course app you build, the Dashboard's grid of course cards uses these prefixes",
+      "One column by default, two from `sm`, three from `xl`, and four from `2xl`",
     ],
   },
   {
