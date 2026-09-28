@@ -304,8 +304,8 @@ export default function Users() {
           <code>users</code>, otherwise the red accent. To test, use
           Compass to update the role of an existing user or create a
           new user with an <code>ADMIN</code>{" "}role, sign in as that
-          ADMIN user, and navigate to the Users screen. This book
-          seeds <code>nick_fury</code>{" "}/ <code>fury123</code>{" "}as
+          ADMIN user, and navigate to the Users screen. The sample
+          users include <code>nick_fury</code>{" "}/ <code>fury123</code>{" "}as
           an administrator. Confirm that all users are displayed.
         </p>
         <CodeBlock
@@ -983,11 +983,11 @@ app.post("/api/users", createUser);`}</CodeBlock>
   setUsers([...users, user]);
 };`}</CodeBlock>
         <p>
-          The LiveDemo below is that Users screen against the Lab 6
-          store — find all, filter by role and name, open details,
-          update, delete, create. Work through each verb once so the
-          same sequence feels familiar when you point the sibling
-          server at Mongo and click the real Account Users link.
+          The demo below is that Users screen. Find all, filter by
+          role and name, open details, update, delete, and create.
+          Work through each verb once so the same sequence feels
+          familiar when you point the sibling server at Mongo and
+          click the Account Users link.
         </p>
         <LiveDemo
           name="Lab6Users"

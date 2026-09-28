@@ -147,11 +147,7 @@ const CONNECTION_STRING =
   "mongodb://127.0.0.1:27017/kambaz";
 mongoose.connect(CONNECTION_STRING);`}</CodeBlock>
         <p>
-          Use <code>DATABASE_CONNECTION_STRING</code>. This
-          repo also accepts <code>MONGO_CONNECTION_STRING</code>. If
-          neither is set, DAOs stay in memory and{" "}
-          <code>/lab6/status</code>{" "}reports{" "}
-          <code>store: &quot;memory&quot;</code>. After you add the
+          Use <code>DATABASE_CONNECTION_STRING</code>. After you add the
           line and restart <code>nodemon</code>, the status demo below
           should report a database connection when Mongo is reachable.
           In <SectionLink to="6.3.2" />{" "}you will type the same key
