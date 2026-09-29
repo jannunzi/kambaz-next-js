@@ -62,11 +62,16 @@ export function mongoStatus() {
     process.env.DATABASE_CONNECTION_STRING ||
     process.env.MONGO_CONNECTION_STRING ||
     "";
+  // These routes never call Mongo. `mongo` stays false; Express sets it from a live connection.
+  if (!uri) {
+    return {
+      mongo: false,
+      database: "not configured" as const,
+      note: "DATABASE_CONNECTION_STRING is not set.",
+    };
+  }
   return {
-    mongo: Boolean(uri),
-    store: uri ? "env-configured" : "memory",
-    note: uri
-      ? "Connection string is set. Express DAOs use Mongoose when mongod/Atlas is reachable."
-      : "DATABASE_CONNECTION_STRING is not set",
+    mongo: false,
+    database: "configured" as const,
   };
 }

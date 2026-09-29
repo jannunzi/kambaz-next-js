@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import model from "./model.js";
-import { isMongoEnabled } from "../Kambaz/Database/mongo.js";
+import { isMongoEnabled, mongoConnectionString } from "../Kambaz/Database/mongo.js";
+import { lab6Status } from "./status.js";
 
 const memory = [
   {
@@ -24,10 +25,12 @@ export default function Lab6(app) {
   };
 
   app.get("/lab6/status", (req, res) => {
-    res.json({
-      mongo: isMongoEnabled(),
-      store: isMongoEnabled() ? "mongoose" : "memory",
-    });
+    res.json(
+      lab6Status({
+        connectionString: mongoConnectionString(),
+        connected: isMongoEnabled(),
+      }),
+    );
   });
 
   app.get("/lab6/todos", async (req, res) => {
