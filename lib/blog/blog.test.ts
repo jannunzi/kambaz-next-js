@@ -86,6 +86,12 @@ const REQUIRED_DIGEST_2026_09_28 = [
   "https://www.aikido.dev/blog/popular-code-generator-for-tanstack-query-hit-by-supply-chain-worm",
 ] as const;
 
+const REQUIRED_DIGEST_2026_09_29 = [
+  "https://vercel.com/blog/the-best-workflow-engine-is-a-programming-language",
+  "https://vercel.com/blog/building-a-software-factory-for-ai-sdk",
+  "https://vercel.com/blog/a-sandbox-without-a-network-boundary-is-only-half-a-sandbox",
+] as const;
+
 const REQUIRED_SOURCES = [
   ...REQUIRED_SEED_SOURCES,
   ...REQUIRED_CATCHUP_SOURCES,
@@ -98,6 +104,7 @@ const REQUIRED_SOURCES = [
   ...REQUIRED_DIGEST_2026_09_24,
   ...REQUIRED_DIGEST_2026_09_25,
   ...REQUIRED_DIGEST_2026_09_28,
+  ...REQUIRED_DIGEST_2026_09_29,
 ] as const;
 
 const ALLOWED_SOURCE_URL =
@@ -159,6 +166,9 @@ describe("blog posts", () => {
     for (const required of REQUIRED_DIGEST_2026_09_28) {
       assert.ok(urls.includes(required), required);
     }
+    for (const required of REQUIRED_DIGEST_2026_09_29) {
+      assert.ok(urls.includes(required), required);
+    }
 
     for (const post of BLOG_POSTS) {
       assert.ok(post.slug.length > 0, "slug");
@@ -186,54 +196,58 @@ describe("blog posts", () => {
     assert.deepEqual(
       listed.slice(0, 3).map((post) => post.slug),
       [
-        "nextjs-16-3-app-like-experiences",
-        "state-of-agent-skills-one-million",
-        "tanstack-query-codegen-supply-chain-worm",
+        "ai-sdk-software-factory",
+        "vercel-sandbox-network-boundary",
+        "vercel-workflow-sdk-programming-language",
       ],
     );
     assert.deepEqual(
       listed.slice(0, 3).map((post) => post.source.url).sort(),
-      [...REQUIRED_DIGEST_2026_09_28].sort(),
+      [...REQUIRED_DIGEST_2026_09_29].sort(),
     );
     assert.deepEqual(
       listed.slice(3, 6).map((post) => post.source.url).sort(),
-      [...REQUIRED_DIGEST_2026_09_25].sort(),
+      [...REQUIRED_DIGEST_2026_09_28].sort(),
     );
     assert.deepEqual(
       listed.slice(6, 9).map((post) => post.source.url).sort(),
-      [...REQUIRED_DIGEST_2026_09_24].sort(),
+      [...REQUIRED_DIGEST_2026_09_25].sort(),
     );
     assert.deepEqual(
       listed.slice(9, 12).map((post) => post.source.url).sort(),
-      [...REQUIRED_DIGEST_2026_09_23].sort(),
+      [...REQUIRED_DIGEST_2026_09_24].sort(),
     );
     assert.deepEqual(
       listed.slice(12, 15).map((post) => post.source.url).sort(),
-      [...REQUIRED_DIGEST_2026_09_22].sort(),
+      [...REQUIRED_DIGEST_2026_09_23].sort(),
     );
     assert.deepEqual(
       listed.slice(15, 18).map((post) => post.source.url).sort(),
-      [...REQUIRED_DIGEST_2026_09_21].sort(),
+      [...REQUIRED_DIGEST_2026_09_22].sort(),
     );
     assert.deepEqual(
       listed.slice(18, 21).map((post) => post.source.url).sort(),
-      [...REQUIRED_DIGEST_2026_09_17].sort(),
+      [...REQUIRED_DIGEST_2026_09_21].sort(),
     );
     assert.deepEqual(
       listed.slice(21, 24).map((post) => post.source.url).sort(),
-      [...REQUIRED_DIGEST_2026_09_16].sort(),
+      [...REQUIRED_DIGEST_2026_09_17].sort(),
     );
     assert.deepEqual(
       listed.slice(24, 27).map((post) => post.source.url).sort(),
-      [...REQUIRED_DIGEST_2026_09_15].sort(),
+      [...REQUIRED_DIGEST_2026_09_16].sort(),
     );
     assert.deepEqual(
       listed.slice(27, 30).map((post) => post.source.url).sort(),
+      [...REQUIRED_DIGEST_2026_09_15].sort(),
+    );
+    assert.deepEqual(
+      listed.slice(30, 33).map((post) => post.source.url).sort(),
       [...REQUIRED_CATCHUP_SOURCES].sort(),
     );
-    assert.equal(listed[30]?.slug, "august-2026-nextjs-security-release");
-    assert.equal(listed[31]?.slug, "nextjs-16-3-instant-navigations");
-    assert.equal(listed[32]?.slug, "nextjs-16-3-ai-improvements");
+    assert.equal(listed[33]?.slug, "august-2026-nextjs-security-release");
+    assert.equal(listed[34]?.slug, "nextjs-16-3-instant-navigations");
+    assert.equal(listed[35]?.slug, "nextjs-16-3-ai-improvements");
 
     assert.equal(listBlogSlugs().length, REQUIRED_SOURCES.length);
     assert.equal(
@@ -248,6 +262,7 @@ describe("blog posts", () => {
   });
 
   it("formats published dates in UTC and maps related chapters", () => {
+    assert.equal(formatBlogDate("2026-09-29T12:00:00.000Z"), "September 29, 2026");
     assert.equal(formatBlogDate("2026-09-28T12:00:00.000Z"), "September 28, 2026");
     assert.equal(formatBlogDate("2026-09-25T12:00:00.000Z"), "September 25, 2026");
     assert.equal(formatBlogDate("2026-09-24T12:00:00.000Z"), "September 24, 2026");
@@ -423,6 +438,19 @@ describe("blog posts", () => {
     assert.match(tanstackWorm?.intro.join(" ") ?? "", /Ilyas Makari/);
     assert.match(tanstackWorm?.intro.join(" ") ?? "", /Trinitite/);
     assert.match(tanstackWorm?.intro.join(" ") ?? "", /binding\.gyp/);
+
+    const workflow = getBlogPost("vercel-workflow-sdk-programming-language");
+    assert.match(workflow?.intro.join(" ") ?? "", /Pranay Prakash/);
+    assert.match(workflow?.intro.join(" ") ?? "", /createWebhook\(\)/);
+    assert.match(workflow?.intro.join(" ") ?? "", /Workflow v5/);
+    const factory = getBlogPost("ai-sdk-software-factory");
+    assert.match(factory?.intro.join(" ") ?? "", /Lars Grammel/);
+    assert.match(factory?.intro.join(" ") ?? "", /ai-sdk-factory/);
+    assert.match(factory?.intro.join(" ") ?? "", /75%/);
+    const sandbox = getBlogPost("vercel-sandbox-network-boundary");
+    assert.match(sandbox?.intro.join(" ") ?? "", /Brandon Tuttle/);
+    assert.match(sandbox?.intro.join(" ") ?? "", /SNI/);
+    assert.match(sandbox?.intro.join(" ") ?? "", /deny-all/);
   });
 
   it("dates the September 14 catch-up posts in America/New_York", () => {
@@ -440,6 +468,25 @@ describe("blog posts", () => {
       const post = getBlogPost(slug);
       assert.ok(post, slug);
       assert.equal(nyDate.format(new Date(post.publishedAt)), "September 14, 2026");
+    }
+  });
+
+  it("dates the September 29 digest posts in America/New_York", () => {
+    const nyDate = new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      timeZone: "America/New_York",
+    });
+    for (const slug of [
+      "ai-sdk-software-factory",
+      "vercel-sandbox-network-boundary",
+      "vercel-workflow-sdk-programming-language",
+    ]) {
+      const post = getBlogPost(slug);
+      assert.ok(post, slug);
+      assert.equal(post.publishedAt, "2026-09-29T12:00:00.000Z");
+      assert.equal(nyDate.format(new Date(post.publishedAt)), "September 29, 2026");
     }
   });
 

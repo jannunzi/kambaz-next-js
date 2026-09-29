@@ -6,6 +6,57 @@ import type { BlogPost } from "./types";
  */
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: "ai-sdk-software-factory",
+    title: "Vercel built a software factory that authors AI SDK PRs",
+    publishedAt: "2026-09-29T12:00:00.000Z",
+    tags: ["ai", "course"],
+    relatedChapters: ["ch1"],
+    intro: [
+      "On August 12, 2026, Lars Grammel and Eric Dodds explained how the AI SDK team built ai-sdk-factory after the repo piled up over 1,000 open issues and nearly 800 pull requests. Dedicated agents classify issues, reproduce bugs, analyze features, implement changes, review PRs, update docs, and open backports — each agent scoped to one task with its own prompts and evals. Humans still merge every change.",
+      "Security is built in from the second agent onward: every run happens in an isolated Vercel Sandbox with only the secrets that task needs, plus a network shield so untrusted issue or PR content cannot exfiltrate credentials. Four weeks into production the factory authored about 25–35% of merged mainline PRs, more than half of weekly v5/v6 backport merges, and closed over 75% of July issues while shrinking the open-issue peak.",
+      "Agent-assisted maintenance of the TypeScript AI stack sits beside the same Vercel and Next.js tooling you use in Chapter 1.",
+    ],
+    source: {
+      title: "Building a software factory for AI SDK",
+      url: "https://vercel.com/blog/building-a-software-factory-for-ai-sdk",
+      publisher: "Vercel",
+    },
+  },
+  {
+    slug: "vercel-sandbox-network-boundary",
+    title: "Sandbox egress control: half a sandbox without a network boundary",
+    publishedAt: "2026-09-29T12:00:00.000Z",
+    tags: ["security", "ai", "course"],
+    relatedChapters: ["ch1", "ch5"],
+    intro: [
+      "On August 11, 2026, Brandon Tuttle argued that compute isolation alone is only half a sandbox for agent workloads. A microVM can keep untrusted code off the host, but without egress control that code can still exfiltrate data, probe internal services, or abuse credentials available inside the environment. Recent research shows a forgotten DNS path or fail-open allowlist can defeat containment without crossing the VM boundary.",
+      "Vercel Sandbox enforces the network boundary on the host outside the microVM: domain and CIDR policies, SNI inspection for TLS destinations, DNS filtered with the same rules, credential injection at the firewall so API keys never enter the sandbox, and optional request forwarding through your own proxy with a Vercel OIDC identity. Policies can open, narrow, and deny connectivity while a sandbox is running — for example allow a registry during setup, then deny-all before generated code runs.",
+      "Those Node-side secrets and sandbox boundaries matter for the same server and deploy path you meet in Chapter 5 and Chapter 1.",
+    ],
+    source: {
+      title: "A sandbox without a network boundary is only half a sandbox",
+      url: "https://vercel.com/blog/a-sandbox-without-a-network-boundary-is-only-half-a-sandbox",
+      publisher: "Vercel",
+    },
+  },
+  {
+    slug: "vercel-workflow-sdk-programming-language",
+    title: "Workflow SDK: durable TypeScript without a new orchestrator",
+    publishedAt: "2026-09-29T12:00:00.000Z",
+    tags: ["nextjs", "ai", "course"],
+    relatedChapters: ["ch1", "ch5"],
+    intro: [
+      "On August 27, 2026, Pranay Prakash described Workflow SDK as durable execution that feels like ordinary TypeScript instead of a hand-drawn DAG. Mark an orchestrator with use workflow and side-effecting work with use step; between them you keep await, try/catch, Promise.all, loops, and conditionals. The compiler splits that one file into workflow and step bundles, retries uncaught errors by default, and replaces Temporal-style signals/queries/updates with a single hook primitive — including createWebhook() for an ad-hoc URL that parks a run until someone POSTs.",
+      "The post frames Workflow SDK as a library, not a platform: the runtime talks to a swappable World for storage, queuing, auth, and streaming (Postgres, Redis, Kafka, Vercel Queues, and more). On Vercel, each run pins to the immutable deployment that started it so changing workflow code does not break in-flight runs. Workflow v5 (beta) is said to cut step overhead substantially, with the long-term goal that steps feel free.",
+      "That durable server work sits next to the Node and App Router path you take in Chapter 5 and Chapter 1 when you ship full-stack apps on Vercel.",
+    ],
+    source: {
+      title: "The best workflow engine is a programming language",
+      url: "https://vercel.com/blog/the-best-workflow-engine-is-a-programming-language",
+      publisher: "Vercel",
+    },
+  },
+  {
     slug: "nextjs-16-3-app-like-experiences",
     title: "Next.js 16.3: Instant Navigations for app-like UX",
     publishedAt: "2026-09-28T12:00:00.000Z",
