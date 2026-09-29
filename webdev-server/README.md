@@ -52,8 +52,10 @@ Shortcut from the Next.js root in this monorepo only: `npm run server:dev`.
 
 Set `DATABASE_CONNECTION_STRING` (PDF name) or `MONGO_CONNECTION_STRING` to a
 local `mongodb://127.0.0.1:27017/kambaz` or Atlas `mongodb+srv://…/kambaz?…`
-URI. If the variable is unset or `mongod` is down, DAOs fall back to the
-in-memory copies of the Chapter 5 JSON files so `npm start` still works.
+URI. If the variable is unset, DAOs use the in-memory copies of the
+Chapter 5 JSON files. If it is set, DAOs use MongoDB and wait for the
+handshake; data routes answer 503 when Mongo never connects. `npm start`
+still listens either way.
 
 ```bash
 # in this folder's .env
