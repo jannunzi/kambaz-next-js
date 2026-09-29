@@ -1,5 +1,5 @@
 import "dotenv/config";
-// Before models, so the handshake hook is on every schema.
+// Before models, so the connection hook is on every schema.
 import { connectDatabase, databaseErrorHandler } from "./Kambaz/Database/mongo.js";
 import cors from "cors";
 import express from "express";

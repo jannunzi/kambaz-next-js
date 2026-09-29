@@ -96,8 +96,8 @@ const app = express();
           connection string does not crash the app: with no string,
           the DAOs keep the Chapter 5 in-memory arrays. If the string
           is set and <code>mongod</code>{" "}is not running, the server
-          still listens, but data routes wait for the driver and then
-          answer 503. They do not switch to those in-memory arrays.
+          still listens, but data routes wait about 30 seconds and then
+          return an error. They do not switch to those in-memory arrays.
           Start the service or the command-line process from{" "}
           <SectionLink to="6.1.1" />{" "}before you start{" "}
           <code>nodemon</code>.

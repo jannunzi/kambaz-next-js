@@ -9,12 +9,13 @@ let connectPromise = null;
  * Also accepted: MONGO_CONNECTION_STRING (CI / book env).
  *
  * isMongoConfigured() is true when a connection string is set. DAOs take
- * the Mongo path in that case and wait for this handshake; they do not
+ * the Mongo path in that case and wait for this connection; they do not
  * use in-memory arrays just because the driver is not connected yet.
  * isMongoConnected() is only for /lab6/status `mongo`.
  *
  * No string → in-memory DAOs. A string that never connects → 503.
- * connectDatabase() returns before the handshake so listen is not blocked.
+ * A failed attempt is forgotten so the next request tries again.
+ * connectDatabase() returns before the connection so listen is not blocked.
  */
 export function mongoConnectionString() {
   return (
@@ -52,31 +53,37 @@ function startConnect() {
     options.serverSelectionTimeoutMS = timeout;
     mongoose.set("bufferTimeoutMS", timeout);
   }
+  let attempt;
   try {
-    connectPromise = mongoose
-      .connect(uri, options)
-      .then(() => {
+    attempt = mongoose.connect(uri, options).then(
+      () => {
         connected = true;
         console.log("[kambaz] Connected to MongoDB");
         return true;
-      })
-      .catch((err) => {
+      },
+      async (err) => {
         connected = false;
         console.warn(
           "[kambaz] MongoDB unavailable:",
           err instanceof Error ? err.message : err,
         );
+        // Close the dead driver before the next request opens a new one.
+        await mongoose.disconnect().catch(() => {});
+        if (connectPromise === attempt) connectPromise = null;
         return false;
-      });
+      },
+    );
   } catch (err) {
     connected = false;
     console.warn(
       "[kambaz] MongoDB unavailable:",
       err instanceof Error ? err.message : err,
     );
-    connectPromise = Promise.resolve(false);
+    connectPromise = null;
+    return Promise.resolve(false);
   }
-  return connectPromise;
+  connectPromise = attempt;
+  return attempt;
 }
 
 export class DatabaseUnavailableError extends Error {
@@ -87,7 +94,7 @@ export class DatabaseUnavailableError extends Error {
   }
 }
 
-/** Query and save hooks await the shared handshake, then fail closed. */
+/** Query and save hooks await the shared connection, then fail closed. */
 async function waitForDatabase() {
   if (!isMongoConfigured()) return;
   const ok = await startConnect();
@@ -127,7 +134,7 @@ export async function connectDatabase() {
     );
     return false;
   }
-  // Start the handshake and return. index.js awaits this before listen;
+  // Start the connection and return. index.js awaits this before listen;
   // awaiting the driver here would block on server selection (~30s).
   startConnect();
   return false;
