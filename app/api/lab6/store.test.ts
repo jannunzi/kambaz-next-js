@@ -33,29 +33,31 @@ describe("Lab 6 connection status", () => {
     const status = mongoStatus();
     assert.equal(status.mongo, false);
     assert.equal(status.database, "not configured");
-    assert.equal(status.note, "DATABASE_CONNECTION_STRING is not set.");
+    assert.equal(
+      "note" in status ? status.note : undefined,
+      "DATABASE_CONNECTION_STRING is not set.",
+    );
     assert.equal("store" in status, false);
     assert.equal(JSON.stringify(status).includes("memory"), false);
     assert.equal(lab6Todos()[0]?.title, "Learn MongoDB");
   });
 
-  it("reports a configured database when DATABASE_CONNECTION_STRING is set", () => {
+  it("stays disconnected when the string is set but Mongo is unreachable", () => {
     clearConnectionEnv();
     process.env.DATABASE_CONNECTION_STRING = "mongodb://127.0.0.1:27017/kambaz";
     const status = mongoStatus();
-    assert.deepEqual(status, {
-      mongo: true,
-      database: "configured",
-      note: "Connection string is set. Express DAOs use Mongoose when mongod/Atlas is reachable.",
-    });
+    assert.equal(status.mongo, false);
+    assert.equal(status.database, "configured");
+    assert.equal("note" in status, false);
     assert.equal(JSON.stringify(status).includes("memory"), false);
   });
 
-  it("treats MONGO_CONNECTION_STRING as a configured database", () => {
+  it("treats MONGO_CONNECTION_STRING as configured and still disconnected", () => {
     clearConnectionEnv();
     process.env.MONGO_CONNECTION_STRING = "mongodb://127.0.0.1:27017/kambaz";
     const status = mongoStatus();
-    assert.equal(status.mongo, true);
+    assert.equal(status.mongo, false);
     assert.equal(status.database, "configured");
+    assert.equal("note" in status, false);
   });
 });

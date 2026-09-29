@@ -3,8 +3,6 @@ import { describe, it } from "node:test";
 import { lab6Status } from "./status.js";
 
 const NOTE_UNSET = "DATABASE_CONNECTION_STRING is not set.";
-const NOTE_SET =
-  "Connection string is set. Express DAOs use Mongoose when mongod/Atlas is reachable.";
 
 describe("Express Lab 6 status", () => {
   it("reports not configured when the connection string is unset", () => {
@@ -25,8 +23,8 @@ describe("Express Lab 6 status", () => {
     assert.deepEqual(status, {
       mongo: false,
       database: "configured",
-      note: NOTE_SET,
     });
+    assert.equal("note" in status, false);
   });
 
   it("sets mongo only after a connection", () => {
@@ -34,8 +32,10 @@ describe("Express Lab 6 status", () => {
       connectionString: "mongodb://127.0.0.1:27017/kambaz",
       connected: true,
     });
-    assert.equal(status.mongo, true);
-    assert.equal(status.database, "configured");
-    assert.equal(status.note, NOTE_SET);
+    assert.deepEqual(status, {
+      mongo: true,
+      database: "configured",
+    });
+    assert.equal("note" in status, false);
   });
 });

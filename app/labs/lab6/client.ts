@@ -35,7 +35,7 @@ function statusUrl() {
 
 export const fetchLab6Status = async () => {
   const { data } = await axios.get(statusUrl());
-  return data as { mongo: boolean; database: string; note: string };
+  return data as { mongo: boolean; database: string; note?: string };
 };
 
 export const fetchTodos = async (completed?: boolean) => {
