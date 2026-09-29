@@ -43,7 +43,7 @@ Shortcut from the Next.js root in this monorepo only: `npm run server:dev`.
 - http://localhost:4000 — Welcome to Full Stack Development!
 - http://localhost:4000/hello — Life is good!
 - http://localhost:4000/lab5/welcome — Welcome to Lab 5
-- http://localhost:4000/lab6/status — `{ mongo, database }`
+- http://localhost:4000/lab6/status — `{ mongo, database, note }`
 - http://localhost:4000/lab6/todos — Lab 6 todos (Mongoose or memory)
 - http://localhost:4000/api/courses — JSON course list
 - http://localhost:4000/api/users — users collection

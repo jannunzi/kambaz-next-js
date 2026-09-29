@@ -79,8 +79,10 @@ function functionProp(props: ElementProps): string | undefined {
   return undefined;
 }
 
-function isClassComponent(type: Function): boolean {
-  return Boolean(type.prototype && type.prototype.isReactComponent);
+function isClassComponent(type: (...args: unknown[]) => unknown): boolean {
+  const prototype = Object.getOwnPropertyDescriptor(type, "prototype")?.value;
+  if (typeof prototype !== "object" || prototype === null) return false;
+  return "isReactComponent" in prototype && Boolean(prototype.isReactComponent);
 }
 
 async function assertNoServerFunctionProps(node: ReactNode): Promise<void> {
@@ -114,7 +116,7 @@ async function assertNoServerFunctionProps(node: ReactNode): Promise<void> {
       );
       return;
     }
-    if (isClassComponent(node.type)) return;
+    if (isClassComponent(node.type as (...args: unknown[]) => unknown)) return;
     const render = node.type as (props: ElementProps) => ReactNode | Promise<ReactNode>;
     const rendered = render(props);
     const next = rendered instanceof Promise ? await rendered : rendered;

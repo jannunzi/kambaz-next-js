@@ -43,9 +43,11 @@ describe("Lab 6 connection status", () => {
     clearConnectionEnv();
     process.env.DATABASE_CONNECTION_STRING = "mongodb://127.0.0.1:27017/kambaz";
     const status = mongoStatus();
-    assert.equal(status.mongo, true);
-    assert.equal(status.database, "configured");
-    assert.match(status.note, /Connection string is set/);
+    assert.deepEqual(status, {
+      mongo: true,
+      database: "configured",
+      note: "Connection string is set. Express DAOs use Mongoose when mongod/Atlas is reachable.",
+    });
     assert.equal(JSON.stringify(status).includes("memory"), false);
   });
 
