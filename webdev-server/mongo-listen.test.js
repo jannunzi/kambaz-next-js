@@ -80,6 +80,7 @@ function startWebdev(port, env) {
     "DATABASE_CONNECTION_STRING",
     "MONGO_CONNECTION_STRING",
     "MONGO_SERVER_SELECTION_TIMEOUT_MS",
+    "MONGO_RETRY_COOLDOWN_MS",
   ]) {
     delete childEnv[key];
   }
@@ -241,12 +242,14 @@ describe("Express listen vs Mongo handshake", { timeout: 60_000 }, () => {
     }
   });
 
-  it("retries after Mongo was unreachable and then becomes reachable", async () => {
+  it("fails fast during the retry cooldown, then connects once Mongo is reachable", async () => {
+    const cooldownMs = 700;
     const proxy = await startSwitchProxy();
     const port = await freePort();
     const { child, log } = startWebdev(port, {
       DATABASE_CONNECTION_STRING: `mongodb://127.0.0.1:${proxy.port}/kambaz`,
       MONGO_SERVER_SELECTION_TIMEOUT_MS: "1500",
+      MONGO_RETRY_COOLDOWN_MS: String(cooldownMs),
     });
     const origin = `http://127.0.0.1:${port}`;
     let mongod;
@@ -260,19 +263,39 @@ describe("Express listen vs Mongo handshake", { timeout: 60_000 }, () => {
       assert.equal(failed.status, 503, JSON.stringify(failedBody));
       assert.deepEqual(failedBody, { error: "Database unavailable" });
 
-      mongod = await MongoMemoryServer.create();
-      const direct = mongod.getUri("kambaz");
-      const seed = mongoose.createConnection(direct);
-      await seed.asPromise();
-      await seed.collection("courses").insertOne({
-        _id: "RECOVER1",
-        name: "After Recovery",
-        number: "RC1",
-        credits: 3,
-        description: "seeded after the first connect failed",
-      });
-      await seed.close();
-      proxy.open(Number(new URL(direct).port));
+      const fastStarted = Date.now();
+      const [duringCourses, duringStatus] = await Promise.all([
+        fetch(`${origin}/api/courses`, { signal: AbortSignal.timeout(5000) }),
+        fetch(`${origin}/lab6/status`, { signal: AbortSignal.timeout(5000) }),
+      ]);
+      const fastMs = Date.now() - fastStarted;
+      const duringBody = await duringCourses.json();
+      const duringStatusBody = await duringStatus.json();
+      assert.ok(fastMs < 1000, `cooldown request took ${fastMs}ms\n${log()}`);
+      assert.equal(duringCourses.status, 503, JSON.stringify(duringBody));
+      assert.deepEqual(duringBody, { error: "Database unavailable" });
+      assert.deepEqual(duringStatusBody, { mongo: false, database: "configured" });
+
+      const seeded = (async () => {
+        mongod = await MongoMemoryServer.create();
+        const direct = mongod.getUri("kambaz");
+        const seed = mongoose.createConnection(direct);
+        await seed.asPromise();
+        await seed.collection("courses").insertOne({
+          _id: "RECOVER1",
+          name: "After Recovery",
+          number: "RC1",
+          credits: 3,
+          description: "seeded after the first connect failed",
+        });
+        await seed.close();
+        return Number(new URL(direct).port);
+      })();
+      const [, targetPort] = await Promise.all([
+        delay(cooldownMs + 200),
+        seeded,
+      ]);
+      proxy.open(targetPort);
 
       const coursesRes = await fetch(`${origin}/api/courses`, {
         signal: AbortSignal.timeout(20000),

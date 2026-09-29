@@ -3,6 +3,11 @@ import mongoose from "mongoose";
 let connected = false;
 /** @type {Promise<boolean> | null} */
 let connectPromise = null;
+/** Epoch ms of the last failed attempt, or 0 when there is nothing to cool down. */
+let lastFailureAt = 0;
+
+/** Pause before another connect after a failure. Tests override with MONGO_RETRY_COOLDOWN_MS. */
+const CONNECT_COOLDOWN_MS = 10_000;
 
 /**
  * PDF: DATABASE_CONNECTION_STRING
@@ -14,7 +19,8 @@ let connectPromise = null;
  * isMongoConnected() is only for /lab6/status `mongo`.
  *
  * No string → in-memory DAOs. A string that never connects → 503.
- * A failed attempt is forgotten so the next request tries again.
+ * After a failure, requests fail immediately until CONNECT_COOLDOWN_MS
+ * elapses. The next request then starts one shared connect attempt.
  * connectDatabase() returns before the connection so listen is not blocked.
  */
 export function mongoConnectionString() {
@@ -40,13 +46,36 @@ function serverSelectionTimeoutMS() {
   return Number.isFinite(value) && value > 0 ? value : undefined;
 }
 
+function connectCooldownMS() {
+  const raw = process.env.MONGO_RETRY_COOLDOWN_MS;
+  if (raw == null || raw === "") return CONNECT_COOLDOWN_MS;
+  const value = Number(raw);
+  return Number.isFinite(value) && value >= 0 ? value : CONNECT_COOLDOWN_MS;
+}
+
+function coolingDown() {
+  return lastFailureAt > 0 && Date.now() - lastFailureAt < connectCooldownMS();
+}
+
+function noteFailure(err) {
+  connected = false;
+  lastFailureAt = Date.now();
+  console.warn(
+    "[kambaz] MongoDB unavailable:",
+    err instanceof Error ? err.message : err,
+  );
+}
+
 function startConnect() {
+  // One in-flight attempt. Callers that arrive while it is running share it.
   if (connectPromise) return connectPromise;
   const uri = mongoConnectionString();
   if (!uri) {
     connectPromise = Promise.resolve(false);
     return connectPromise;
   }
+  // Fail fast until the cooldown elapses, then the next request may connect.
+  if (coolingDown()) return Promise.resolve(false);
   const timeout = serverSelectionTimeoutMS();
   const options = { bufferCommands: true };
   if (timeout) {
@@ -58,27 +87,20 @@ function startConnect() {
     attempt = mongoose.connect(uri, options).then(
       () => {
         connected = true;
+        lastFailureAt = 0;
         console.log("[kambaz] Connected to MongoDB");
         return true;
       },
       async (err) => {
-        connected = false;
-        console.warn(
-          "[kambaz] MongoDB unavailable:",
-          err instanceof Error ? err.message : err,
-        );
-        // Close the dead driver before the next request opens a new one.
+        noteFailure(err);
+        // Close the dead driver before a later request opens a new one.
         await mongoose.disconnect().catch(() => {});
         if (connectPromise === attempt) connectPromise = null;
         return false;
       },
     );
   } catch (err) {
-    connected = false;
-    console.warn(
-      "[kambaz] MongoDB unavailable:",
-      err instanceof Error ? err.message : err,
-    );
+    noteFailure(err);
     connectPromise = null;
     return Promise.resolve(false);
   }
