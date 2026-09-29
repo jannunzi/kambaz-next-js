@@ -119,8 +119,10 @@ export default model;`}</CodeBlock>
             <code>courses</code>{" "}collection. We will deal with
             moving enrollments to the database later in the chapter;
             for now the enrolled-user helper can still filter the
-            full course list against the in-memory enrollments array
-            if Mongo is not yet connected.
+            full course list against the in-memory enrollments array.
+            A connection string that is set still reads courses from
+            Mongo while the handshake is in progress; that wait is
+            not a reason to use the in-memory course array.
           </p>
           <CodeBlock
             language="js"
@@ -243,13 +245,15 @@ app.post("/api/courses", createCourse);`}</CodeBlock>
             Refactor the <code>deleteCourse()</code>{" "}DAO function to
             delete courses from the database by using the courses
             model as shown below. We will deal with moving enrollments
-            to the database later in the chapter. Until then, if
-            Mongo is off you can still filter enrollments out of the
-            in-memory copy so Dashboard does not keep a dangling
-            enrollment for a course that no longer exists. When Mongo
-            is on, <code>model.deleteOne</code>{" "}removes the course
+            to the database later in the chapter. Until then, only the
+            path with no connection string still filters enrollments
+            out of the in-memory copy so Dashboard does not keep a
+            dangling enrollment. When a connection string is set,{" "}
+            <code>model.deleteOne</code>{" "}removes the course
             document and <SectionLink to="6.4.3.3" />{" "}will remove
-            the related enrollment documents.
+            the related enrollment documents. A stopped{" "}
+            <code>mongod</code>{" "}does not send that delete back to
+            the in-memory array.
           </p>
           <CodeBlock
             language="js"

@@ -54,8 +54,10 @@ Set `DATABASE_CONNECTION_STRING` (PDF name) or `MONGO_CONNECTION_STRING` to a
 local `mongodb://127.0.0.1:27017/kambaz` or Atlas `mongodb+srv://…/kambaz?…`
 URI. If the variable is unset, DAOs use the in-memory copies of the
 Chapter 5 JSON files. If it is set, DAOs use MongoDB and wait for the
-handshake; data routes answer 503 when Mongo never connects. `npm start`
-still listens either way.
+handshake. When the host never accepts a connection, data routes answer
+503 after the driver's server selection timeout (about 30 seconds
+by default), not the 10 second command-buffer timeout, and they do not
+fall back to memory. `npm start` still listens either way.
 
 ```bash
 # in this folder's .env

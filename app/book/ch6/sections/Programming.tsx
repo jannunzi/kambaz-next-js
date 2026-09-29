@@ -92,11 +92,14 @@ const app = express();
           Place the <code>connect</code>{" "}call near the top of{" "}
           <code>index.js</code>{" "}so the connection is established
           before any route handler tries to run a query. Wrap that
-          call in <code>connectDatabase()</code>{" "}so a missing or
-          bad URI doesn&apos;t crash the app. If{" "}
-          <code>mongod</code>{" "}is not running, Mongoose will retry
-          and then fail; start the service or the command-line process
-          from <SectionLink to="6.1.1" />{" "}before you start{" "}
+          call in <code>connectDatabase()</code>{" "}so a missing
+          connection string does not crash the app: with no string,
+          the DAOs keep the Chapter 5 in-memory arrays. If the string
+          is set and <code>mongod</code>{" "}is not running, the server
+          still listens, but data routes wait for the driver and then
+          answer 503. They do not switch to those in-memory arrays.
+          Start the service or the command-line process from{" "}
+          <SectionLink to="6.1.1" />{" "}before you start{" "}
           <code>nodemon</code>.
         </p>
       </Section>
