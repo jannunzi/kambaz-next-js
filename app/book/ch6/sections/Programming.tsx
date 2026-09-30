@@ -91,13 +91,13 @@ const app = express();
         <p>
           Place the <code>connect</code>{" "}call near the top of{" "}
           <code>index.js</code>{" "}so the connection is established
-          before any route handler tries to run a query. Wrap that
-          call in <code>connectDatabase()</code>{" "}so a missing or
-          bad URI doesn&apos;t crash the app. If{" "}
-          <code>mongod</code>{" "}is not running, Mongoose will retry
-          and then fail; start the service or the command-line process
-          from <SectionLink to="6.1.1" />{" "}before you start{" "}
-          <code>nodemon</code>.
+          before any route handler tries to run a query. If MongoDB
+          is not running, a database request such as{" "}
+          <code>model.find()</code>{" "}fails after about 10 seconds,
+          and the server stops after about 30 seconds. Start{" "}
+          <code>mongod</code>{" "}(or check the connection string)
+          before you start the server. The service or command-line
+          process is in <SectionLink to="6.1.1" />.
         </p>
       </Section>
 
