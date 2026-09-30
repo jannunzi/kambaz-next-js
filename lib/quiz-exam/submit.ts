@@ -13,6 +13,7 @@ import {
   toAnswerWindowInfo,
   type QuizAnswersVisibleMode,
   type QuizTakeOverrideMode,
+  type SectionCloseInput,
 } from "./schedule";
 import type {
   QuizAttemptDoc,
@@ -40,6 +41,8 @@ export type ExamSubmitDeps = {
   takeOverride?: QuizTakeOverrideMode | null;
   /** Per-section staff override for student answer-key visibility. */
   answersVisible?: QuizAnswersVisibleMode | null;
+  /** Section close that stops taking and starts the answer clock. */
+  sectionClose?: SectionCloseInput | null;
   /** Tests inject a mock so coding items never call the network. */
   gradeCodingComplete?: CodingLlmComplete;
 };
@@ -99,10 +102,20 @@ export async function runExamSubmit(deps: ExamSubmitDeps): Promise<SubmitExamRes
 
   const submittedAt = deps.now ?? new Date();
   const schedule = getQuizSchedule(deps.quizId);
+  const sectionClose: SectionCloseInput = {
+    mode: deps.sectionClose?.mode ?? deps.takeOverride,
+    closesAt: deps.sectionClose?.closesAt,
+    closedAt: deps.sectionClose?.closedAt,
+  };
   if (
     deps.persist &&
     schedule &&
-    !isTakeWindowOpen(schedule, submittedAt, deps.takeOverride)
+    !isTakeWindowOpen(
+      schedule,
+      submittedAt,
+      sectionClose.mode,
+      sectionClose.closesAt,
+    )
   ) {
     return fail(
       "take_closed",
@@ -116,7 +129,13 @@ export async function runExamSubmit(deps: ExamSubmitDeps): Promise<SubmitExamRes
   });
   const graded = gradeDrawnQuestions(drawn, deps.answers, codingResults);
   const phase = schedule
-    ? getAnswerRevealPhase(schedule, submittedAt, true, deps.takeOverride)
+    ? getAnswerRevealPhase(
+        schedule,
+        submittedAt,
+        true,
+        sectionClose.mode,
+        sectionClose,
+      )
     : "submitted_waiting";
   const reveal = canRevealAnswers(phase, deps.answersVisible);
   const publicGraded = reveal ? graded : stripCorrectReveals(graded);
@@ -125,7 +144,13 @@ export async function runExamSubmit(deps: ExamSubmitDeps): Promise<SubmitExamRes
   const rosterEntry = (deps.roster as { entry: CanvasRosterEntry }).entry;
   const window =
     schedule && phase
-      ? toAnswerWindowInfo(schedule, phase, deps.answersVisible)
+      ? toAnswerWindowInfo(
+          schedule,
+          phase,
+          deps.answersVisible,
+          sectionClose,
+          submittedAt,
+        )
       : undefined;
 
   const doc: QuizAttemptDoc = {

@@ -146,3 +146,67 @@ export async function setQuizAnswersVisible(input: {
     return { ok: false, code: "invalid", message };
   }
 }
+
+/**
+ * Set or clear the per-section close. `closesAt` is an ISO instant (the
+ * client converts the Eastern Time datetime-local value) or null to clear.
+ */
+export async function setQuizSectionClose(input: {
+  quizId: string;
+  sectionId: string;
+  closesAt: string | null;
+}): Promise<SetQuizAccessOverrideResult> {
+  const authz = await authorizeStaffWriter();
+  if (!authz.ok) return authz.result;
+
+  const quizId = input.quizId.trim().toLowerCase();
+  const sectionId = input.sectionId.trim();
+  if (!isOverridableQuizId(quizId) || !isCourseSectionId(sectionId)) {
+    return {
+      ok: false,
+      code: "invalid",
+      message: "Unknown quiz or section.",
+    };
+  }
+
+  const closesAt = parseClosesAtIso(input.closesAt);
+  if (closesAt === "invalid") {
+    return {
+      ok: false,
+      code: "invalid",
+      message: "Enter a section close time in Eastern Time, or clear it.",
+    };
+  }
+
+  try {
+    const doc = await upsertQuizAccessOverride({
+      quizId,
+      sectionId,
+      closesAt,
+      updatedBy: authz.email ? normalizeEmail(authz.email) : undefined,
+    });
+    revalidatePath("/quizzes/take");
+    revalidatePath(`/quizzes/take/${quizId}`);
+    return { ok: true, override: toOverrideView(doc) };
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Could not save the override.";
+    console.error("quiz section close persist failed", message);
+    return { ok: false, code: "invalid", message };
+  }
+}
+
+function parseClosesAtIso(value: string | null): Date | null | "invalid" {
+  if (value == null || value.trim() === "") return null;
+  const trimmed = value.trim();
+  if (
+    !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})$/.test(
+      trimmed,
+    )
+  ) {
+    return "invalid";
+  }
+  const date = new Date(trimmed);
+  if (Number.isNaN(date.getTime())) return "invalid";
+  return date;
+}

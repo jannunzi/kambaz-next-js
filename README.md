@@ -230,22 +230,34 @@ then Disable again.
 
 ### Answers visible to students (staff only)
 
-The class calendar still decides the **default**: answer keys stay hidden
-until the scheduled review week (`answers_open` / `answers_reopen`), then
-hide again. That is the current product default (Off outside those
-windows). Staff can **override** it per quiz and section on
-`/quizzes/take` (same panel as Enable): **Answers visible to students:
-On / Off / Follow schedule**.
+The default follows **that section’s close**, not the class-wide dates in
+`QUIZ_WINDOW_ISO`. Answers stay hidden until one week after the section
+closes, then stay visible for one week (close + 7 days through close + 14
+days, same Eastern Time), then hide again. Example: CS5610-09 Q1 closes
+Sun Oct 4, 11:59pm ET, so answers are visible Oct 11, 11:59pm through
+Oct 18, 11:59pm ET.
+
+The effective close is `closesAt` once that time has passed, otherwise
+`closedAt` when staff has switched the section to Disable. With no
+effective close, answers stay hidden. Staff can still **override** per
+quiz and section on `/quizzes/take`: **Answers visible to students: On /
+Off / Follow schedule**.
 
 - **On** — students who already submitted see correct/incorrect marks and
-  expected answers, even outside the calendar window.
+  expected answers, even outside the section window.
 - **Off** — those marks, solutions, and the answer key stay hidden, even
-  during the review week. The attempt score still shows.
-- **Follow schedule** (default / unset) — calendar windows only.
+  during the section window. The attempt score still shows.
+- **Follow schedule** (default / unset) — the per-section close + 7 / + 14
+  day window. An optional exam-prep reopen (week before the midterm or
+  final) is still on; see `EXAM_PREP_ANSWER_REOPEN_ENABLED`.
+
+Taking is allowed only while mode is **Enable** and (`closesAt` is unset
+or now is still before it). The first switch from Enable to Disable
+records `closedAt` and does not overwrite it later.
 
 Staff attempt review at `/quizzes/staff/q1/attempts` always shows answers,
 regardless of this flag. Existing `quiz_attempts` documents are not
-changed.
+changed. This change does not rewrite Mongo documents.
 
 **Schema (`web-dev.quiz_access_overrides`, unique `{ quizId, sectionId }`):**
 
@@ -253,15 +265,18 @@ changed.
 {
   "quizId": "q1",
   "sectionId": "CS4550",
-  "mode": "open" | "closed" | "schedule",   // take enable (existing)
+  "mode": "open" | "closed" | "schedule",   // take enable
   "answersVisible": "on" | "off" | "schedule", // student answer key
+  "closesAt": ISODate,   // optional; taking stops here while mode is open
+  "closedAt": ISODate,   // optional; first Enable → Disable instant
   "updatedBy": "jannunzi@gmail.com",
   "updatedAt": ISODate
 }
 ```
 
-`answersVisible` omitted or `"schedule"` follows the calendar. Take
-`mode` and `answersVisible` are independent fields on the same document.
+`answersVisible` omitted or `"schedule"` follows the section close.
+Take `mode` and `answersVisible` are independent fields on the same
+document.
 
 **How to try:** Sign in as staff → `/quizzes/take/q1` → for CS4550 set
 **Answers visible to students: On** → submit (or reopen) as a student →
@@ -342,31 +357,26 @@ traditional groups.
 ### Answer review windows (same student URL)
 
 After submit, students return to **the same URL** (`/quizzes/take/q1`, etc.).
-Unlock is **class-wide** (wall-clock ET → stored as ISO UTC in
-`lib/quiz-exam/schedule.ts`), not “one week after *your* submit”.
+Answer visibility is **per section**, from that section’s close time — not
+“one week after *your* submit” and not the legacy class-wide answer dates.
+Those class-wide answer instants remain on `QuizSchedule` for reference.
+Syllabus take dates stay on the page as display only.
 
 | Phase | What the student sees |
 | --- | --- |
-| Take open, no attempt | Existing exam form. New attempts are blocked after the Sunday 23:59 ET due. |
-| Submitted, before answers open | Score / submitted status. Answers start **{answersOpenAt}**, only for **one week**, until **{answersCloseAt}**, and again one week before the midterm or final. |
-| First answer week | Full review of their drawn attempt with correct answers. Banner: only one week, until **{answersCloseAt}**; reopen one week before the exam. |
-| After that week | Answers hidden. Message that the window ended, plus the next reopen (week before midterm/final) if it is still ahead. |
-| Midterm / final prep week | Answers shown again until the exam instant. |
+| Take open, no attempt | Exam form while staff has enabled the section and `closesAt` has not passed. |
+| Submitted, before answers open | Score only. Answers start one week after the section close, for one week. |
+| Section answer week | Full review until close + 14 days. Banner uses that section’s dates. |
+| After that week | Answers hidden. Exam-prep reopen still mentioned when it is ahead. |
+| Midterm / final prep week | Answers shown again until the exam instant (`EXAM_PREP_ANSWER_REOPEN_ENABLED`). |
 
 The server clock decides the phase. `correctReveal` is omitted from HTML and
-from the submit payload unless the phase is `answers_open` or `answers_reopen`.
+from the submit payload unless the phase is `answers_open` or `answers_reopen`
+(or staff set answers to On).
 
-Fall 2026 first windows (00:00 ET Monday → +7d):
-
-- Q1: 2026-09-28 → 2026-10-05
-- Q2: 2026-10-12 → 2026-10-19
-- Q3: 2026-11-02 → 2026-11-09
-- Q4: 2026-11-09 → 2026-11-16
-- Q5: 2026-11-23 → 2026-11-30
-- Q6: 2026-12-21 → 2026-12-28
-
-Take windows follow Q1’s pattern (Monday 00:00 ET unlock → Sunday 23:59 ET
-due). Q1: unlock 2026-09-21, due 2026-09-27 23:59 ET.
+Syllabus take windows follow Q1’s pattern (Monday 00:00 ET unlock → Sunday
+23:59 ET due). Q1: unlock 2026-09-21, due 2026-09-27 23:59 ET. They do not
+open the quiz.
 
 **Exam dates** live in `COURSE_EXAMS` in the same module:
 

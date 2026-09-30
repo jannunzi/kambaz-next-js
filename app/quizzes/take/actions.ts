@@ -68,15 +68,14 @@ export async function submitExamAttempt(
         ok: false,
         code: "already_submitted",
         message:
-          "You already submitted this quiz. Return to this page to see your score and, when the class window opens, the answers.",
+          "You already submitted this quiz. Return to this page to see your score. Answers open one week after your section's quiz closes and stay available for one week.",
       };
     }
   }
 
-  const { takeOverride, answersVisible } = await loadQuizAccessForRoster(
-    input.quizId,
-    roster.entry.section,
-  );
+  const { takeOverride, answersVisible, closesAt, closedAt } =
+    await loadQuizAccessForRoster(input.quizId, roster.entry.section);
+  const sectionClose = { mode: takeOverride, closesAt, closedAt };
 
   try {
     const result = await runExamSubmit({
@@ -92,6 +91,7 @@ export async function submitExamAttempt(
       roster,
       takeOverride,
       answersVisible,
+      sectionClose,
       persist: impersonating ? undefined : insertQuizAttempt,
     });
     if (result.ok && impersonating) {
@@ -115,6 +115,7 @@ export async function submitExamAttempt(
       roster,
       takeOverride,
       answersVisible,
+      sectionClose,
     });
     if (graded.ok) {
       return {

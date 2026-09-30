@@ -3,13 +3,15 @@ import "server-only";
 import { getCollection } from "../mongo";
 import { courseSectionIdFromRoster } from "../roster/sections";
 import {
+  planQuizAccessOverrideWrite,
   toOverrideView,
   type QuizAccessOverrideRecord,
   type QuizAccessOverrideView,
 } from "./access-override";
-import type {
-  QuizAnswersVisibleMode,
-  QuizTakeOverrideMode,
+import {
+  parseInstant,
+  type QuizAnswersVisibleMode,
+  type QuizTakeOverrideMode,
 } from "./schedule";
 
 export const QUIZ_ACCESS_OVERRIDES_COLLECTION = "quiz_access_overrides";
@@ -25,6 +27,8 @@ export async function getQuizAccessOverridesCollection() {
 export type QuizAccessForRoster = {
   takeOverride?: QuizTakeOverrideMode;
   answersVisible?: QuizAnswersVisibleMode;
+  closesAt?: Date;
+  closedAt?: Date;
 };
 
 export async function loadTakeOverrideForRoster(
@@ -54,6 +58,8 @@ export async function loadQuizAccessForRoster(
     return {
       takeOverride: doc?.mode,
       answersVisible: doc?.answersVisible,
+      closesAt: parseInstant(doc?.closesAt),
+      closedAt: parseInstant(doc?.closedAt),
     };
   } catch {
     return {};
@@ -81,31 +87,32 @@ export async function upsertQuizAccessOverride(input: {
   sectionId: string;
   mode?: QuizTakeOverrideMode;
   answersVisible?: QuizAnswersVisibleMode;
+  /** A Date sets the close. `null` clears it. Omit to leave it unchanged. */
+  closesAt?: Date | null;
   updatedBy?: string;
   updatedAt?: Date;
 }): Promise<QuizAccessOverrideDoc> {
   const quizId = input.quizId;
   const sectionId = input.sectionId;
   const updatedAt = input.updatedAt ?? new Date();
-  const $set: Partial<QuizAccessOverrideDoc> = {
+  const collection = await getQuizAccessOverridesCollection();
+  const existing = await collection.findOne({ quizId, sectionId });
+  const plan = planQuizAccessOverrideWrite(existing, {
     quizId,
     sectionId,
+    mode: input.mode,
+    answersVisible: input.answersVisible,
+    closesAt: input.closesAt,
+    updatedBy: input.updatedBy,
     updatedAt,
-  };
-  if (input.mode) $set.mode = input.mode;
-  if (input.answersVisible) $set.answersVisible = input.answersVisible;
-  if (input.updatedBy) $set.updatedBy = input.updatedBy;
+  });
 
-  const $setOnInsert: Partial<QuizAccessOverrideDoc> = {};
-  if (!input.mode) $setOnInsert.mode = "schedule";
-  if (!input.answersVisible) $setOnInsert.answersVisible = "schedule";
-
-  const collection = await getQuizAccessOverridesCollection();
   await collection.updateOne(
     { quizId, sectionId },
     {
-      $set,
-      ...(Object.keys($setOnInsert).length > 0 ? { $setOnInsert } : {}),
+      $set: plan.$set,
+      ...(plan.$setOnInsert ? { $setOnInsert: plan.$setOnInsert } : {}),
+      ...(plan.$unset ? { $unset: plan.$unset } : {}),
     },
     { upsert: true },
   );
@@ -114,10 +121,16 @@ export async function upsertQuizAccessOverride(input: {
   return {
     quizId,
     sectionId,
-    mode: input.mode ?? "schedule",
-    answersVisible: input.answersVisible ?? "schedule",
+    mode: plan.$set.mode ?? existing?.mode ?? "schedule",
+    answersVisible:
+      plan.$set.answersVisible ?? existing?.answersVisible ?? "schedule",
+    closesAt:
+      input.closesAt === null
+        ? undefined
+        : (plan.$set.closesAt ?? existing?.closesAt),
+    closedAt: plan.$set.closedAt ?? existing?.closedAt,
     updatedAt,
-    updatedBy: input.updatedBy,
+    updatedBy: input.updatedBy ?? existing?.updatedBy,
   };
 }
 

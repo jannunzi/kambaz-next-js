@@ -7,12 +7,14 @@ import {
 import {
   activeTakeOverride,
   answersVisibleForRosterSection,
+  closedAtOnOpenToClosed,
   describeAnswersVisible,
   describeTakeAccess,
   isOverridableQuizId,
   listOverridableQuizIds,
   lookupAnswersVisible,
   lookupOverrideMode,
+  planQuizAccessOverrideWrite,
   takeOverrideForRosterSection,
   toOverrideView,
 } from "./access-override";
@@ -167,13 +169,20 @@ describe("per-section take overrides", () => {
     );
   });
 
-  it("leaves answer-reveal phases on the date windows even with a take override", () => {
+  it("does not reveal answers from the class calendar just because taking was overridden", () => {
     assert.equal(
       getAnswerRevealPhase(q1, duringWindow, true, "open"),
       "submitted_waiting",
     );
     assert.equal(
       getAnswerRevealPhase(q1, afterLock, true, "closed"),
+      "submitted_waiting",
+    );
+    assert.equal(
+      getAnswerRevealPhase(q1, afterLock, true, "closed", {
+        mode: "closed",
+        closedAt: et(2026, 9, 21, 12),
+      }),
       "answers_open",
     );
     assert.equal(
@@ -224,7 +233,7 @@ describe("per-section answers-visible overrides", () => {
   const waiting = et(2026, 9, 27, 12);
   const reviewOpen = et(2026, 9, 29, 12);
 
-  it("defaults to the class calendar when unset or Follow schedule", () => {
+  it("defaults to hidden until the section close window", () => {
     assert.equal(canRevealAnswers("submitted_waiting"), false);
     assert.equal(canRevealAnswers("submitted_waiting", "schedule"), false);
     assert.equal(canRevealAnswers("submitted_waiting", undefined), false);
@@ -236,10 +245,22 @@ describe("per-section answers-visible overrides", () => {
       scheduledVisible: false,
     });
     assert.deepEqual(describeAnswersVisible(q1, undefined, reviewOpen), {
-      visible: true,
+      visible: false,
       mode: "schedule",
-      scheduledVisible: true,
+      scheduledVisible: false,
     });
+    const closesAt = et(2026, 9, 22, 12);
+    assert.deepEqual(
+      describeAnswersVisible(q1, undefined, reviewOpen, {
+        mode: "open",
+        closesAt,
+      }),
+      {
+        visible: true,
+        mode: "schedule",
+        scheduledVisible: true,
+      },
+    );
   });
 
   it("staff On shows answers before the review week", () => {
@@ -258,11 +279,17 @@ describe("per-section answers-visible overrides", () => {
   it("staff Off hides answers during the review week", () => {
     assert.equal(canRevealAnswers("answers_open", "off"), false);
     assert.equal(canRevealAnswers("answers_reopen", "off"), false);
-    assert.deepEqual(describeAnswersVisible(q1, "off", reviewOpen), {
-      visible: false,
-      mode: "off",
-      scheduledVisible: true,
-    });
+    assert.deepEqual(
+      describeAnswersVisible(q1, "off", reviewOpen, {
+        mode: "open",
+        closesAt: et(2026, 9, 22, 12),
+      }),
+      {
+        visible: false,
+        mode: "off",
+        scheduledVisible: true,
+      },
+    );
     const copy = answerWindowCopy(q1, "answers_open", reviewOpen, undefined, "off");
     assert.match(copy.title, /answers are hidden/i);
     assert.match(copy.paragraphs.join(" "), /hid the answer key/i);
@@ -373,6 +400,35 @@ describe("submit honors the same per-section take override", () => {
     assert.equal(stored.length, 0);
   });
 
+  it("rejects a persisted submit after the section closesAt while still enabled", async () => {
+    const stored: QuizAttemptDoc[] = [];
+    const closesAt = et(2026, 10, 4, 23, 59);
+    const result = await runExamSubmit({
+      quizId: "q1",
+      drawnQuestionIds: drawn.map((item) => item.question.id),
+      answers: {},
+      startedAt: "2026-10-04T12:00:00.000Z",
+      now: closesAt,
+      takeOverride: "open",
+      sectionClose: { mode: "open", closesAt },
+      actor: { clerkUserId: "user_late_section", email: "late@northeastern.edu" },
+      roster: {
+        status: "matched",
+        entry: {
+          email: "late@northeastern.edu",
+          section: "CS5610-09 CRN 17396",
+        },
+      },
+      persist: async (doc) => {
+        stored.push(doc);
+        return { insertedId: "late-section" };
+      },
+    });
+    assert.equal(result.ok, false);
+    if (!result.ok) assert.equal(result.code, "take_closed");
+    assert.equal(stored.length, 0);
+  });
+
   it("rejects a persisted submit when force-closed during the window", async () => {
     const stored: QuizAttemptDoc[] = [];
     const result = await runExamSubmit({
@@ -436,6 +492,7 @@ describe("submit honors the same per-section take override", () => {
       now: et(2026, 9, 29, 12),
       takeOverride: "open",
       answersVisible: "off",
+      sectionClose: { mode: "open", closesAt: et(2026, 9, 22, 12) },
       actor: { clerkUserId: "user_hide", email: "hide@northeastern.edu" },
       roster: {
         status: "matched",
@@ -455,5 +512,85 @@ describe("submit honors the same per-section take override", () => {
         assert.equal("correct" in item, false);
       }
     }
+  });
+});
+
+describe("closedAt is recorded once", () => {
+  const t1 = et(2026, 10, 4, 23, 59);
+  const t2 = et(2026, 10, 5, 9);
+  const base = {
+    quizId: "q1",
+    sectionId: "CS5610-09",
+  };
+
+  it("sets closedAt on the first open → closed switch", () => {
+    const plan = planQuizAccessOverrideWrite(
+      { mode: "open" },
+      { ...base, mode: "closed", updatedAt: t1 },
+    );
+    assert.equal(plan.$set.closedAt, t1);
+    assert.equal(
+      closedAtOnOpenToClosed({
+        previousMode: "open",
+        nextMode: "closed",
+        now: t1,
+      }),
+      t1,
+    );
+  });
+
+  it("does not overwrite an existing closedAt", () => {
+    const stayingClosed = planQuizAccessOverrideWrite(
+      { mode: "closed", closedAt: t1 },
+      { ...base, mode: "closed", updatedAt: t2 },
+    );
+    assert.equal(stayingClosed.$set.closedAt, undefined);
+
+    const closedAgain = planQuizAccessOverrideWrite(
+      { mode: "open", closedAt: t1 },
+      { ...base, mode: "closed", updatedAt: t2 },
+    );
+    assert.equal(closedAgain.$set.closedAt, undefined);
+    assert.equal(
+      closedAtOnOpenToClosed({
+        previousMode: "open",
+        previousClosedAt: t1,
+        nextMode: "closed",
+        now: t2,
+      }),
+      undefined,
+    );
+  });
+
+  it("does not record closedAt unless the previous mode was open", () => {
+    const fromSchedule = planQuizAccessOverrideWrite(
+      { mode: "schedule" },
+      { ...base, mode: "closed", updatedAt: t1 },
+    );
+    assert.equal(fromSchedule.$set.closedAt, undefined);
+    const createdClosed = planQuizAccessOverrideWrite(null, {
+      ...base,
+      mode: "closed",
+      updatedAt: t1,
+    });
+    assert.equal(createdClosed.$set.closedAt, undefined);
+  });
+
+  it("sets and clears closesAt without moving closedAt", () => {
+    const set = planQuizAccessOverrideWrite(
+      { mode: "open", closedAt: t1 },
+      { ...base, closesAt: t2, updatedAt: t2 },
+    );
+    assert.equal(set.$set.closesAt, t2);
+    assert.equal(set.$set.closedAt, undefined);
+    assert.equal(set.$unset, undefined);
+
+    const cleared = planQuizAccessOverrideWrite(
+      { mode: "open", closedAt: t1 },
+      { ...base, closesAt: null, updatedAt: t2 },
+    );
+    assert.equal(cleared.$set.closesAt, undefined);
+    assert.equal(cleared.$set.closedAt, undefined);
+    assert.deepEqual(cleared.$unset, { closesAt: "" });
   });
 });

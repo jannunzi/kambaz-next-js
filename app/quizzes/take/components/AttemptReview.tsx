@@ -7,6 +7,7 @@ import {
   type QuizPhase,
   type QuizSchedule,
   type QuizTakeOverrideMode,
+  type SectionCloseInput,
 } from "@/lib/quiz-exam/schedule";
 import { formatStudentResponse } from "@/lib/quiz-exam/review";
 import type { GradedAnswer, StudentQuestion } from "@/lib/quiz-exam/types";
@@ -28,12 +29,14 @@ export function WindowBanner({
   now,
   takeOverride,
   answersVisible,
+  sectionClose,
 }: {
   schedule: QuizSchedule;
   phase: QuizPhase;
   now?: Date;
   takeOverride?: QuizTakeOverrideMode | null;
   answersVisible?: QuizAnswersVisibleMode | null;
+  sectionClose?: SectionCloseInput | null;
 }) {
   const copy = answerWindowCopy(
     schedule,
@@ -41,6 +44,7 @@ export function WindowBanner({
     now,
     takeOverride,
     answersVisible,
+    sectionClose ?? { mode: takeOverride },
   );
   const toneClass =
     copy.tone === "ok"
@@ -207,6 +211,7 @@ export function SubmittedAttemptView({
   now,
   takeOverride,
   answersVisible,
+  sectionClose,
 }: {
   title: string;
   schedule: QuizSchedule;
@@ -221,6 +226,7 @@ export function SubmittedAttemptView({
   now?: Date;
   takeOverride?: QuizTakeOverrideMode | null;
   answersVisible?: QuizAnswersVisibleMode | null;
+  sectionClose?: SectionCloseInput | null;
 }) {
   const revealAnswers = canRevealAnswers(phase, answersVisible);
   return (
@@ -239,6 +245,7 @@ export function SubmittedAttemptView({
         now={now}
         takeOverride={takeOverride}
         answersVisible={answersVisible}
+        sectionClose={sectionClose}
       />
       {revealAnswers ? (
         <GradedQuestionList
