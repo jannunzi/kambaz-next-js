@@ -6,6 +6,57 @@ import type { BlogPost } from "./types";
  */
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: "nextjs-v0-instant-navigations-agent",
+    title: "Making v0 navigations instant with Next.js 16.3 and an agent loop",
+    publishedAt: "2026-09-30T12:00:00.000Z",
+    tags: ["nextjs", "ai", "course"],
+    relatedChapters: ["ch1"],
+    intro: [
+      "On August 6, 2026, the Next.js blog described Instant Navigations in 16.3. They help dynamic App Router apps feel snappy without moving data-fetching to the client: Suspense loading states or 'use cache' let Next extract a shell and load it into the browser before navigation, a Partial Prerendering-style approach for personalized apps.",
+      "The Next.js team adopted this in v0, Vercel's full-stack coding platform, using a coding agent and the next-cache-components-optimizer Skill. For each slow journey the agent wrote a failing Playwright test with the instant() helper from @next/playwright, applied Skill patterns, re-ran until green, and kept the tests in CI. One refactor moves session and team fetches under Suspense so the settings shell stays instant. Install the Skill with npx skills add vercel/next.js --skill next-cache-components-optimizer, then prompt agents to make a named navigation instant.",
+      "The post closes on a simple point: frameworks still matter in the agent era because helpers like instant() turn fuzzy UX into deterministic tests. That App Router work sits on the same Vercel deploy path as Chapter 1.",
+    ],
+    source: {
+      title: "Making Navigations Instant in v0",
+      url: "https://nextjs.org/blog/making-v0-navigations-instant",
+      publisher: "Next.js",
+    },
+  },
+  {
+    slug: "cursor-agent-token-efficiency",
+    title: "Cursor cut agent token costs 7% without hurting quality",
+    publishedAt: "2026-09-30T12:00:00.000Z",
+    tags: ["ai", "course"],
+    relatedChapters: ["ch1"],
+    intro: [
+      "On September 23, 2026, Jediah Katz, Connor O'Keefe, and Calvin Yee wrote that longer agent runs spend more on context. Cursor improved harness efficiency and reduced user token costs about 7% without reducing agent quality.",
+      "They trimmed roughly 66% of the system prompt as models needed less hand-holding. Dynamic tool loading extends an earlier MCP idea: tools-as-dynamic-context cut tokens about 46.9% in sessions that called MCP, and the same idea for built-in tools cut static-context description tokens about 60%, while high-frequency read, search, edit, and shell tools stay static. Explicit prompt-cache breakpoints, available with the OpenAI API since GPT-5.6, plus moving variable setup into a phantom user message, cut cold cache misses about 20%. Line numbers on file reads only every tenth line meant about 1.6% fewer cache-read tokens. Subagent prompting and model selection were tightened to avoid an unnecessary coordination tax.",
+      "Those harness choices sit next to the Chapter 1 tooling you use when shipping apps with AI-assisted workflows.",
+    ],
+    source: {
+      title: "Improved token efficiency for longer agent runs",
+      url: "https://cursor.com/blog/improved-token-efficiency",
+      publisher: "Cursor",
+    },
+  },
+  {
+    slug: "memtensor-sckit-npm-pypi-worm",
+    title: "MemTensor npm/PyPI packages shipped a supplychain.local Go worm",
+    publishedAt: "2026-09-30T12:00:00.000Z",
+    tags: ["security", "course"],
+    relatedChapters: ["ch1", "ch5"],
+    intro: [
+      "On September 23, 2026, updated September 24, Oliver Smith at Aikido reported compromised packages that already had a benign history: npm @memtensor/memos-cloud-openclaw-plugin versions >=0.1.21 and PyPI MemoryOS >=2.0.34. The worm, tracked as supplychain.local, ships multiplatform Golang sckit binaries launched by language-native loaders when the package is used, not through install-time scripts.",
+      "Droppers spawn the platform binary with stage0 --config64 and a base64 config pointing at skyleen.fr C2 fronts. It is designed to self-propagate through stolen publish credentials (npm publish and twine) and GitHub Actions templates, and it hunts for GitHub, GitLab, npm, PyPI, AWS, Vault, Slack, and other secrets. Check lockfiles and installs for those versions, and treat runtime package-use paths as the risk, not only install hooks.",
+      "That package hygiene is the same Node dependency work as Chapter 5, on the full-stack stack you meet in Chapter 1.",
+    ],
+    source: {
+      title: "Novel supplychain.local Go worm appears",
+      url: "https://www.aikido.dev/blog/supplychain-local-memtensor-npm-pypi",
+      publisher: "Aikido",
+    },
+  },
+  {
     slug: "ai-sdk-software-factory",
     title: "Vercel built a software factory that authors AI SDK PRs",
     publishedAt: "2026-09-29T12:00:00.000Z",
