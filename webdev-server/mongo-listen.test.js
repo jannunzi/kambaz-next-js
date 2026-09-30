@@ -124,8 +124,8 @@ async function requestWhenUp(url, options = {}, budgetMs = 8000) {
   throw lastError ?? new Error(`server did not accept ${url}`);
 }
 
-describe("Express listen vs Mongo handshake", { timeout: 60_000 }, () => {
-  it("waits out a slow handshake and reads and writes Mongo", async () => {
+describe("Express listen vs Mongo connection", { timeout: 60_000 }, () => {
+  it("waits out a slow connection and reads and writes Mongo", async () => {
     const mongod = await MongoMemoryServer.create();
     const direct = mongod.getUri("kambaz");
     const targetPort = Number(new URL(direct).port);

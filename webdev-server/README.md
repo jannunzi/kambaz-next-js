@@ -57,10 +57,11 @@ Chapter 5 JSON files. If it is set, DAOs use MongoDB and wait for the
 connection. When the host never accepts a connection, the first data
 request answers 503 after about 30 seconds (the driver's server selection
 timeout) and does not fall back to memory. For about 10 seconds after
-that failure, further data requests answer 503 immediately and
-`/lab6/status` stays `mongo: false`. The next request after that cooldown
-starts one new connection attempt; requests that overlap share it. Once
-Mongo is reachable you do not need to restart this process. Set
+that failure, further data requests answer 503 immediately.
+`/lab6/status` stays `mongo: false` and does not reconnect on its own.
+The next data request after that cooldown starts one new connection
+attempt; data requests that overlap share it. Once Mongo is reachable
+you do not need to restart this process. Set
 `MONGO_RETRY_COOLDOWN_MS` to change the pause. `npm start` still listens
 either way.
 
