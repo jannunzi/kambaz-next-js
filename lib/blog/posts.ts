@@ -6,6 +6,108 @@ import type { BlogPost } from "./types";
  */
 export const BLOG_POSTS: BlogPost[] = [
   {
+    slug: "nextjs-v0-instant-navigations-agent",
+    title: "Making v0 navigations instant with Next.js 16.3 and an agent loop",
+    publishedAt: "2026-09-30T12:00:00.000Z",
+    tags: ["nextjs", "ai", "course"],
+    relatedChapters: ["ch1"],
+    intro: [
+      "On August 6, 2026, the Next.js blog described Instant Navigations in 16.3. They help dynamic App Router apps feel snappy without moving data-fetching to the client: Suspense loading states or 'use cache' let Next extract a shell and load it into the browser before navigation, a Partial Prerendering-style approach for personalized apps.",
+      "The Next.js team adopted this in v0, Vercel's full-stack coding platform, using a coding agent and the next-cache-components-optimizer Skill. For each slow journey the agent wrote a failing Playwright test with the instant() helper from @next/playwright, applied Skill patterns, re-ran until green, and kept the tests in CI. One refactor moves session and team fetches under Suspense so the settings shell stays instant. Install the Skill with npx skills add vercel/next.js --skill next-cache-components-optimizer, then prompt agents to make a named navigation instant.",
+      "The post closes on a simple point: frameworks still matter in the agent era because helpers like instant() turn fuzzy UX into deterministic tests. That App Router work sits on the same Vercel deploy path as Chapter 1.",
+    ],
+    source: {
+      title: "Making Navigations Instant in v0",
+      url: "https://nextjs.org/blog/making-v0-navigations-instant",
+      publisher: "Next.js",
+    },
+  },
+  {
+    slug: "cursor-agent-token-efficiency",
+    title: "Cursor cut agent token costs 7% without hurting quality",
+    publishedAt: "2026-09-30T12:00:00.000Z",
+    tags: ["ai", "course"],
+    relatedChapters: ["ch1"],
+    intro: [
+      "On September 23, 2026, Jediah Katz, Connor O'Keefe, and Calvin Yee wrote that longer agent runs spend more on context. Cursor improved harness efficiency and reduced user token costs about 7% without reducing agent quality.",
+      "They trimmed roughly 66% of the system prompt as models needed less hand-holding. Dynamic tool loading extends an earlier MCP idea: tools-as-dynamic-context cut tokens about 46.9% in sessions that called MCP, and the same idea for built-in tools cut static-context description tokens about 60%, while high-frequency read, search, edit, and shell tools stay static. Explicit prompt-cache breakpoints, available with the OpenAI API since GPT-5.6, plus moving variable setup into a phantom user message, cut cold cache misses about 20%. Line numbers on file reads only every tenth line meant about 1.6% fewer cache-read tokens. Subagent prompting and model selection were tightened to avoid an unnecessary coordination tax.",
+      "Those harness choices sit next to the Chapter 1 tooling you use when shipping apps with AI-assisted workflows.",
+    ],
+    source: {
+      title: "Improved token efficiency for longer agent runs",
+      url: "https://cursor.com/blog/improved-token-efficiency",
+      publisher: "Cursor",
+    },
+  },
+  {
+    slug: "memtensor-sckit-npm-pypi-worm",
+    title: "MemTensor npm/PyPI packages shipped a supplychain.local Go worm",
+    publishedAt: "2026-09-30T12:00:00.000Z",
+    tags: ["security", "course"],
+    relatedChapters: ["ch1", "ch5"],
+    intro: [
+      "On September 23, 2026, updated September 24, Oliver Smith at Aikido reported compromised packages that already had a benign history: npm @memtensor/memos-cloud-openclaw-plugin versions >=0.1.21 and PyPI MemoryOS >=2.0.34. The worm, tracked as supplychain.local, ships multiplatform Golang sckit binaries launched by language-native loaders when the package is used, not through install-time scripts.",
+      "Droppers spawn the platform binary with stage0 --config64 and a base64 config pointing at skyleen.fr C2 fronts. It is designed to self-propagate through stolen publish credentials (npm publish and twine) and GitHub Actions templates, and it hunts for GitHub, GitLab, npm, PyPI, AWS, Vault, Slack, and other secrets. Check lockfiles and installs for those versions, and treat runtime package-use paths as the risk, not only install hooks.",
+      "That package hygiene is the same Node dependency work as Chapter 5, on the full-stack stack you meet in Chapter 1.",
+    ],
+    source: {
+      title: "Novel supplychain.local Go worm appears",
+      url: "https://www.aikido.dev/blog/supplychain-local-memtensor-npm-pypi",
+      publisher: "Aikido",
+    },
+  },
+  {
+    slug: "ai-sdk-software-factory",
+    title: "Vercel built a software factory that authors AI SDK PRs",
+    publishedAt: "2026-09-29T12:00:00.000Z",
+    tags: ["ai", "course"],
+    relatedChapters: ["ch1"],
+    intro: [
+      "On August 12, 2026, Lars Grammel and Eric Dodds explained how the AI SDK team built ai-sdk-factory after the repo piled up over 1,000 open issues and nearly 800 pull requests. Dedicated agents classify issues, reproduce bugs, analyze features, implement changes, review PRs, update docs, and open backports — each agent scoped to one task with its own prompts and evals. Humans still merge every change.",
+      "Security is built in from the second agent onward: every run happens in an isolated Vercel Sandbox with only the secrets that task needs, plus a network shield so untrusted issue or PR content cannot exfiltrate credentials. Four weeks into production the factory authored about 25–35% of merged mainline PRs, more than half of weekly v5/v6 backport merges, and closed over 75% of July issues while shrinking the open-issue peak.",
+      "Agent-assisted maintenance of the TypeScript AI stack sits beside the same Vercel and Next.js tooling you use in Chapter 1.",
+    ],
+    source: {
+      title: "Building a software factory for AI SDK",
+      url: "https://vercel.com/blog/building-a-software-factory-for-ai-sdk",
+      publisher: "Vercel",
+    },
+  },
+  {
+    slug: "vercel-sandbox-network-boundary",
+    title: "Sandbox egress control: half a sandbox without a network boundary",
+    publishedAt: "2026-09-29T12:00:00.000Z",
+    tags: ["security", "ai", "course"],
+    relatedChapters: ["ch1", "ch5"],
+    intro: [
+      "On August 11, 2026, Brandon Tuttle argued that compute isolation alone is only half a sandbox for agent workloads. A microVM can keep untrusted code off the host, but without egress control that code can still exfiltrate data, probe internal services, or abuse credentials available inside the environment. Recent research shows a forgotten DNS path or fail-open allowlist can defeat containment without crossing the VM boundary.",
+      "Vercel Sandbox enforces the network boundary on the host outside the microVM: domain and CIDR policies, SNI inspection for TLS destinations, DNS filtered with the same rules, credential injection at the firewall so API keys never enter the sandbox, and optional request forwarding through your own proxy with a Vercel OIDC identity. Policies can open, narrow, and deny connectivity while a sandbox is running — for example allow a registry during setup, then deny-all before generated code runs.",
+      "Those Node-side secrets and sandbox boundaries matter for the same server and deploy path you meet in Chapter 5 and Chapter 1.",
+    ],
+    source: {
+      title: "A sandbox without a network boundary is only half a sandbox",
+      url: "https://vercel.com/blog/a-sandbox-without-a-network-boundary-is-only-half-a-sandbox",
+      publisher: "Vercel",
+    },
+  },
+  {
+    slug: "vercel-workflow-sdk-programming-language",
+    title: "Workflow SDK: durable TypeScript without a new orchestrator",
+    publishedAt: "2026-09-29T12:00:00.000Z",
+    tags: ["nextjs", "ai", "course"],
+    relatedChapters: ["ch1", "ch5"],
+    intro: [
+      "On August 27, 2026, Pranay Prakash described Workflow SDK as durable execution that feels like ordinary TypeScript instead of a hand-drawn DAG. Mark an orchestrator with use workflow and side-effecting work with use step; between them you keep await, try/catch, Promise.all, loops, and conditionals. The compiler splits that one file into workflow and step bundles, retries uncaught errors by default, and replaces Temporal-style signals/queries/updates with a single hook primitive — including createWebhook() for an ad-hoc URL that parks a run until someone POSTs.",
+      "The post frames Workflow SDK as a library, not a platform: the runtime talks to a swappable World for storage, queuing, auth, and streaming (Postgres, Redis, Kafka, Vercel Queues, and more). On Vercel, each run pins to the immutable deployment that started it so changing workflow code does not break in-flight runs. Workflow v5 (beta) is said to cut step overhead substantially, with the long-term goal that steps feel free.",
+      "That durable server work sits next to the Node and App Router path you take in Chapter 5 and Chapter 1 when you ship full-stack apps on Vercel.",
+    ],
+    source: {
+      title: "The best workflow engine is a programming language",
+      url: "https://vercel.com/blog/the-best-workflow-engine-is-a-programming-language",
+      publisher: "Vercel",
+    },
+  },
+  {
     slug: "nextjs-16-3-app-like-experiences",
     title: "Next.js 16.3: Instant Navigations for app-like UX",
     publishedAt: "2026-09-28T12:00:00.000Z",
