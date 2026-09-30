@@ -22,6 +22,7 @@ import {
   scheduleToIso,
   type QuizAnswersVisibleMode,
   type QuizTakeOverrideMode,
+  type SectionCloseInput,
 } from "@/lib/quiz-exam/schedule";
 import { canvasUserIdFromMetadata } from "@/lib/roster/emails";
 import { loadClerkRosterEmails } from "@/lib/roster/load-clerk-emails";
@@ -158,15 +159,24 @@ export default async function TakeExamPage({ params }: PageProps) {
 
   const now = new Date();
   const schedule = getQuizSchedule(quizId);
-  const { takeOverride, answersVisible } = await loadQuizAccessForRoster(
-    quizId,
-    roster.entry.section,
-  );
+  const { takeOverride, answersVisible, closesAt, closedAt } =
+    await loadQuizAccessForRoster(quizId, roster.entry.section);
+  const sectionClose: SectionCloseInput = {
+    mode: takeOverride,
+    closesAt,
+    closedAt,
+  };
   const attempt = impersonating
     ? null
     : await findLatestQuizAttempt(user.id, quizId);
   const phase = schedule
-    ? getAnswerRevealPhase(schedule, now, Boolean(attempt), takeOverride)
+    ? getAnswerRevealPhase(
+        schedule,
+        now,
+        Boolean(attempt),
+        takeOverride,
+        sectionClose,
+      )
     : attempt
       ? "submitted_waiting"
       : "take_open";
@@ -204,19 +214,20 @@ export default async function TakeExamPage({ params }: PageProps) {
           now={now}
           takeOverride={takeOverride}
           answersVisible={answersVisible}
+          sectionClose={sectionClose}
         />
       ) : attempt && !schedule ? (
         <StatusPanel title="Attempt submitted" tone="ok">
           <p>
             Your score is {attempt.score} / {attempt.maxScore}. This quiz has
-            no class review schedule configured yet, so answers stay hidden.
+            no review schedule configured yet, so answers stay hidden.
           </p>
         </StatusPanel>
       ) : showForm && schedule ? (
         <>
           {impersonating &&
           schedule &&
-          !isTakeWindowOpen(schedule, now, takeOverride) ? (
+          !isTakeWindowOpen(schedule, now, takeOverride, closesAt) ? (
             <div className="mt-4">
               <WindowBanner
                 schedule={schedule}
@@ -224,6 +235,7 @@ export default async function TakeExamPage({ params }: PageProps) {
                 now={now}
                 takeOverride={takeOverride}
                 answersVisible={answersVisible}
+                sectionClose={sectionClose}
               />
               <p className="text-sm text-neutral-700">
                 Students cannot start a new attempt right now. Impersonation
@@ -232,9 +244,9 @@ export default async function TakeExamPage({ params }: PageProps) {
             </div>
           ) : (
             <p className="mt-4 rounded-lg border border-sky-300 bg-sky-50 px-4 py-3 text-sky-950">
-              Student exam mode. Correct answers stay hidden until the
-              class-wide review window. Returning to this same URL later is how
-              you review.
+              Student exam mode. Correct answers stay hidden until one week
+              after your section&apos;s quiz closes, then for one week.
+              Returning to this same URL later is how you review.
             </p>
           )}
           {showCodingKeyNote ? (
@@ -252,6 +264,7 @@ export default async function TakeExamPage({ params }: PageProps) {
               startedAt={now.toISOString()}
               schedule={scheduleToIso(schedule)}
               impersonating={impersonating}
+              sectionClose={sectionClose}
             />
           </div>
         </>
@@ -263,11 +276,12 @@ export default async function TakeExamPage({ params }: PageProps) {
             now={now}
             takeOverride={takeOverride}
             answersVisible={answersVisible}
+            sectionClose={sectionClose}
           />
         </div>
       ) : (
         <StatusPanel title="This quiz is not open" tone="warn">
-          <p>No class-wide take window is configured for this quiz.</p>
+          <p>No take schedule is configured for this quiz.</p>
         </StatusPanel>
       )}
       <QuizAccessOverrides quizId={quizId} />
@@ -284,6 +298,7 @@ async function AttemptReviewSection({
   now,
   takeOverride,
   answersVisible,
+  sectionClose,
 }: {
   title: string;
   schedule: NonNullable<ReturnType<typeof getQuizSchedule>>;
@@ -292,6 +307,7 @@ async function AttemptReviewSection({
   now: Date;
   takeOverride?: QuizTakeOverrideMode;
   answersVisible?: QuizAnswersVisibleMode;
+  sectionClose?: SectionCloseInput;
 }) {
   const reveal = canRevealAnswers(phase, answersVisible);
   const classOverrides = await listQuizGradeOverrides(attempt.quizId);
@@ -322,6 +338,7 @@ async function AttemptReviewSection({
         now={now}
         takeOverride={takeOverride}
         answersVisible={answersVisible}
+        sectionClose={sectionClose}
       />
     </div>
   );

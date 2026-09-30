@@ -10,6 +10,9 @@ import {
 } from "@/lib/quiz-exam/access-override";
 import {
   formatEasternDateTime,
+  formatEasternDateTimeLocal,
+  parseEasternDateTimeLocal,
+  resolveSectionAnswerWindow,
   scheduleFromIso,
   type QuizAnswersVisibleMode,
   type QuizScheduleIso,
@@ -18,6 +21,7 @@ import {
 import {
   setQuizAccessOverride,
   setQuizAnswersVisible,
+  setQuizSectionClose,
 } from "../override-actions";
 
 const MODES: { id: QuizTakeOverrideMode; label: string }[] = [
@@ -61,6 +65,7 @@ export default function QuizAccessOverridePanel({
 }) {
   const router = useRouter();
   const [rows, setRows] = useState(overrides);
+  const [closeDrafts, setCloseDrafts] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [pendingKey, setPendingKey] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -99,9 +104,17 @@ export default function QuizAccessOverridePanel({
     });
   }
 
+  function closeDraft(quizId: string, sectionId: string, closesAt?: string) {
+    const key = overrideKey(quizId, sectionId);
+    if (key in closeDrafts) return closeDrafts[key];
+    return closesAt ? formatEasternDateTimeLocal(closesAt) : "";
+  }
+
   function setMode(quizId: string, sectionId: string, mode: QuizTakeOverrideMode) {
     const key = `${overrideKey(quizId, sectionId)}:take`;
     const previous = byKey.get(overrideKey(quizId, sectionId));
+    const recordingClose =
+      mode === "closed" && previous?.mode === "open" && !previous.closedAt;
     setError(null);
     setPendingKey(key);
     replaceRow(quizId, sectionId, {
@@ -109,6 +122,8 @@ export default function QuizAccessOverridePanel({
       sectionId,
       mode,
       answersVisible: previous?.answersVisible ?? "schedule",
+      closesAt: previous?.closesAt,
+      closedAt: recordingClose ? new Date().toISOString() : previous?.closedAt,
       updatedAt: new Date().toISOString(),
       updatedBy: previous?.updatedBy,
     });
@@ -140,6 +155,8 @@ export default function QuizAccessOverridePanel({
       sectionId,
       mode: previous?.mode ?? "schedule",
       answersVisible,
+      closesAt: previous?.closesAt,
+      closedAt: previous?.closedAt,
       updatedAt: new Date().toISOString(),
       updatedBy: previous?.updatedBy,
     });
@@ -161,6 +178,50 @@ export default function QuizAccessOverridePanel({
     });
   }
 
+  function saveClose(quizId: string, sectionId: string, clear = false) {
+    const key = `${overrideKey(quizId, sectionId)}:close`;
+    const previous = byKey.get(overrideKey(quizId, sectionId));
+    const raw = clear ? "" : closeDraft(quizId, sectionId, previous?.closesAt);
+    const parsed = clear || raw.trim() === "" ? null : parseEasternDateTimeLocal(raw);
+    if (!clear && raw.trim() !== "" && !parsed) {
+      setError("Enter a section close time in Eastern Time, or clear it.");
+      return;
+    }
+    setError(null);
+    setPendingKey(key);
+    replaceRow(quizId, sectionId, {
+      quizId,
+      sectionId,
+      mode: previous?.mode ?? "schedule",
+      answersVisible: previous?.answersVisible ?? "schedule",
+      closesAt: parsed ? parsed.toISOString() : undefined,
+      closedAt: previous?.closedAt,
+      updatedAt: new Date().toISOString(),
+      updatedBy: previous?.updatedBy,
+    });
+    startTransition(async () => {
+      const result = await setQuizSectionClose({
+        quizId,
+        sectionId,
+        closesAt: parsed ? parsed.toISOString() : null,
+      });
+      if (!result.ok) {
+        replaceRow(quizId, sectionId, previous);
+        setError(result.message);
+        setPendingKey(null);
+        return;
+      }
+      setCloseDrafts((current) => {
+        const next = { ...current };
+        delete next[overrideKey(quizId, sectionId)];
+        return next;
+      });
+      replaceRow(quizId, sectionId, result.override);
+      setPendingKey(null);
+      router.refresh();
+    });
+  }
+
   return (
     <section
       className="mt-6 rounded-lg border border-neutral-300 bg-neutral-50 p-4"
@@ -172,8 +233,11 @@ export default function QuizAccessOverridePanel({
       <p className="mt-0 mb-3 text-sm text-neutral-700">
         Quizzes stay closed until you <strong>Enable</strong> a section.
         Syllabus unlock/due dates are shown to students but do not open the
-        quiz. <strong>Disable</strong> turns it off again after a test.
-        Off (dates only) is the default. Practice quizzes are unchanged.
+        quiz. Set a <strong>section close</strong> (Eastern Time) to stop
+        taking at that moment. <strong>Disable</strong> turns it off
+        immediately and records that close the first time you switch from
+        Enable. Off (dates only) is the default. Practice quizzes are
+        unchanged.
       </p>
       <h2 className="mt-4 mb-1 text-lg font-semibold tracking-tight">
         Answers visible to students
@@ -182,10 +246,11 @@ export default function QuizAccessOverridePanel({
         Manual override for the answer key on completed attempts.{" "}
         <strong>On</strong> shows correct/incorrect marks and expected
         answers. <strong>Off</strong> hides them (score still shows).{" "}
-        <strong>Follow schedule</strong> is the default: hidden until the
-        class review week, then hidden again. Staff attempt review always
-        shows answers. Changing the take Enable/Disable does not change
-        this flag.
+        <strong>Follow schedule</strong> is the default: answers stay hidden
+        until one week after that section&apos;s quiz closes, then stay
+        visible for one week (close + 7 days through close + 14 days, same
+        Eastern Time). Staff attempt review always shows answers. Changing
+        Enable/Disable does not change this flag.
       </p>
       {error ? (
         <p role="alert" className="mb-3 rounded border border-amber-500 bg-amber-50 px-3 py-2 text-sm text-amber-950">
@@ -201,14 +266,35 @@ export default function QuizAccessOverridePanel({
               <ul className="m-0 list-none space-y-2 p-0">
                 {sections.map((sectionId) => {
                   const saved = currentRow(quiz.quizId, sectionId);
-                  const take = describeTakeAccess(schedule, saved.mode, clock);
+                  const sectionClose = {
+                    mode: saved.mode,
+                    closesAt: saved.closesAt,
+                    closedAt: saved.closedAt,
+                  };
+                  const take = describeTakeAccess(
+                    schedule,
+                    saved.mode,
+                    clock,
+                    saved.closesAt,
+                  );
                   const answers = describeAnswersVisible(
                     schedule,
                     saved.answersVisible,
                     clock,
+                    sectionClose,
+                  );
+                  const answerWindow = resolveSectionAnswerWindow(
+                    sectionClose,
+                    clock,
                   );
                   const takeKey = `${overrideKey(quiz.quizId, sectionId)}:take`;
                   const answersKey = `${overrideKey(quiz.quizId, sectionId)}:answers`;
+                  const closeKey = `${overrideKey(quiz.quizId, sectionId)}:close`;
+                  const draft = closeDraft(
+                    quiz.quizId,
+                    sectionId,
+                    saved.closesAt,
+                  );
                   return (
                     <li
                       key={sectionId}
@@ -259,9 +345,73 @@ export default function QuizAccessOverridePanel({
                         {take.mode === "schedule"
                           ? " (dates only — not enabled)"
                           : take.mode === "open"
-                            ? " (enabled by staff)"
+                            ? take.open
+                              ? " (enabled by staff)"
+                              : " (enabled, but the section close time has passed)"
                             : " (disabled by staff)"}
                       </p>
+                      <div className="mt-3">
+                        <label
+                          htmlFor={`${closeKey}-input`}
+                          className="text-sm text-neutral-700"
+                        >
+                          Section close (Eastern Time)
+                        </label>
+                        <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                          <input
+                            id={`${closeKey}-input`}
+                            type="datetime-local"
+                            value={draft}
+                            onChange={(event) =>
+                              setCloseDrafts((current) => ({
+                                ...current,
+                                [overrideKey(quiz.quizId, sectionId)]:
+                                  event.target.value,
+                              }))
+                            }
+                            className="rounded border border-neutral-400 bg-white px-2 py-1 text-sm"
+                          />
+                          <button
+                            type="button"
+                            disabled={pending && pendingKey === closeKey}
+                            onClick={() => saveClose(quiz.quizId, sectionId)}
+                            className="rounded border border-neutral-800 bg-neutral-800 px-2.5 py-1 text-sm text-white hover:bg-neutral-700 disabled:opacity-60"
+                          >
+                            Save close
+                          </button>
+                          <button
+                            type="button"
+                            disabled={
+                              (pending && pendingKey === closeKey) ||
+                              (!saved.closesAt && draft.trim() === "")
+                            }
+                            onClick={() =>
+                              saveClose(quiz.quizId, sectionId, true)
+                            }
+                            className="rounded border border-neutral-400 bg-white px-2.5 py-1 text-sm hover:bg-neutral-50 disabled:opacity-60"
+                          >
+                            Clear
+                          </button>
+                        </div>
+                        <p className="mb-0 mt-1 text-xs text-neutral-600">
+                          {answerWindow ? (
+                            <>
+                              {answerWindow.effective
+                                ? "Closed"
+                                : "Scheduled close"}{" "}
+                              {formatEasternDateTime(answerWindow.closeAt)}.
+                              Answers{" "}
+                              {answerWindow.effective ? "visible" : "will be visible"}{" "}
+                              {formatEasternDateTime(answerWindow.answersOpenAt)}{" "}
+                              until{" "}
+                              {formatEasternDateTime(answerWindow.answersCloseAt)}
+                              .
+                            </>
+                          ) : (
+                            "No section close yet. Answers stay hidden until this section closes."
+                          )}
+                        </p>
+                      </div>
                       <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
                         <p className="m-0 text-sm text-neutral-700">
                           Answers visible to students
@@ -307,8 +457,8 @@ export default function QuizAccessOverridePanel({
                         </strong>
                         {answers.mode === "schedule"
                           ? answers.scheduledVisible
-                            ? " (class review window)"
-                            : " (follows schedule — hidden)"
+                            ? " (section answer window)"
+                            : " (follows section close — hidden)"
                           : answers.mode === "on"
                             ? " (shown by staff)"
                             : " (hidden by staff)"}

@@ -214,7 +214,7 @@ describe("student exam sampling and grading", () => {
     assert.equal(stored.length, 0);
   });
 
-  it("includes correctReveal only when the class answer window is open", async () => {
+  it("includes correctReveal only when the section answer window is open", async () => {
     const drawn = drawWebsiteAttempt("q1", "review-open");
     const result = await runExamSubmit({
       quizId: "q1",
@@ -222,6 +222,10 @@ describe("student exam sampling and grading", () => {
       answers: {},
       startedAt: "2026-10-01T16:00:00.000Z",
       now: new Date("2026-10-01T16:00:00.000Z"),
+      sectionClose: {
+        mode: "open",
+        closesAt: new Date("2026-09-24T16:00:00.000Z"),
+      },
       actor: { clerkUserId: "user_review", email: "jane.doe@northeastern.edu" },
       roster: {
         status: "matched",

@@ -16,6 +16,7 @@ import {
   scheduleFromIso,
   type QuizPhase,
   type QuizScheduleIso,
+  type SectionCloseInput,
 } from "@/lib/quiz-exam/schedule";
 import { submitExamAttempt } from "../actions";
 import ChoiceContent from "../../components/ChoiceContent";
@@ -85,6 +86,7 @@ export default function ExamForm({
   startedAt,
   schedule,
   impersonating = false,
+  sectionClose,
 }: {
   quizId: string;
   title: string;
@@ -92,6 +94,7 @@ export default function ExamForm({
   startedAt: string;
   schedule: QuizScheduleIso;
   impersonating?: boolean;
+  sectionClose?: SectionCloseInput | null;
 }) {
   const [result, setResult] = useState<SubmitExamResult | null>(null);
   const [pending, setPending] = useState(false);
@@ -127,6 +130,7 @@ export default function ExamForm({
         persisted={result.persisted}
         impersonation={result.impersonation === true}
         answersVisible={result.window?.answersVisible}
+        sectionClose={sectionClose}
       />
     );
   }
@@ -145,9 +149,9 @@ export default function ExamForm({
       <p className="text-sm text-neutral-700">
         This attempt has {questions.length} questions (topic items plus short
         coding items){timeLimitLabel}, {formatItemPoints(questions.length)} points
-        each (100 total). Correct answers stay hidden until the class-wide
-        review window — not immediately after you submit. Grading happens on
-        the server. Coding items are scored leniently (misspellings, missing
+        each (100 total). Correct answers stay hidden until one week after
+        your section closes the quiz — not immediately after you submit.
+        Grading happens on the server. Coding items are scored leniently (misspellings, missing
         slashes, and extra whitespace are forgiven).
       </p>
 

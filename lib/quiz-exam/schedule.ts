@@ -1,32 +1,50 @@
 /**
- * Class-wide Fall 2026 quiz take + answer-review windows.
+ * Class-wide Fall 2026 quiz schedules, plus per-section answer windows.
  *
  * Civil times are America/New_York (ET). Stored values are ISO UTC.
- * Unlock is the same instant for every student — not “one week after you
- * submitted”.
  *
- * Answer windows (package-14 / NOTE-package-13): answers open the Monday
- * 00:00 ET after the due-week Sunday, and close +7d.
+ * `QUIZ_WINDOW_ISO` take dates are syllabus display only. They do not open
+ * or close a quiz. Taking is staff-enabled per section (`mode === "open"`)
+ * and stops at that section’s `closesAt` when one is set.
  *
- * Take windows follow the same weekly pattern as Q1
- * (unlock Monday 00:00 ET → due Sunday 23:59 ET).
+ * Student answer visibility does **not** use the class-wide
+ * `answersOpenAt` / `answersCloseAt` instants stored below. Jose’s rule
+ * (2026-09-29): answers open one week after that section’s quiz closes and
+ * hide again two weeks after the close (visible for one week, same ET
+ * wall-clock time). With no effective section close, answers stay hidden.
+ * Staff `answersVisible` on/off still overrides.
+ *
+ * `EXAM_PREP_ANSWER_REOPEN_ENABLED` is the only switch for the extra
+ * midterm/final prep reopen.
  */
 
 export type ExamName = "midterm" | "final";
 
 /**
- * Staff per-section take gate. Taking is allowed only when mode is `open`.
- * `closed`, `schedule`, and unset keep the quiz disabled. Syllabus dates
- * are still shown; they do not open the quiz by themselves.
+ * Staff per-section take gate. Taking is allowed only when mode is `open`
+ * and (`closesAt` is unset or `now < closesAt`). `closed`, `schedule`, and
+ * unset keep the quiz disabled. Syllabus dates are still shown; they do not
+ * open the quiz by themselves.
  */
 export type QuizTakeOverrideMode = "open" | "closed" | "schedule";
 
 /**
- * Staff per-section answer-key gate. `on` / `off` override the calendar.
- * `schedule` / unset keep the existing class-wide review windows
- * (default: hidden until `answers_open` / `answers_reopen`).
+ * Staff per-section answer-key gate. `on` / `off` override the section
+ * window. `schedule` / unset follow Jose’s rule: hidden until one week
+ * after the section close, visible for the next week, then hidden again.
  */
 export type QuizAnswersVisibleMode = "on" | "off" | "schedule";
+
+/**
+ * Per-section close fields from `quiz_access_overrides`.
+ * `closesAt` is the staff-set stop time. `closedAt` is recorded the first
+ * time staff switches that section from open to closed.
+ */
+export type SectionCloseInput = {
+  mode?: QuizTakeOverrideMode | null;
+  closesAt?: Date | string | null;
+  closedAt?: Date | string | null;
+};
 
 export type QuizPhase =
   | "take_open"
@@ -116,9 +134,29 @@ export const COURSE_EXAMS = {
   finalAt: "2026-12-14T05:00:00.000Z",
 } as const;
 
+/**
+ * Extra answer reopen during the week before the midterm (Q1–Q3) and the
+ * final (Q4–Q6). X1/X2 already skip it via `skipExamPrep`.
+ *
+ * Jose’s default is the per-section window (close + 7 days through close +
+ * 14 days). Set this flag to `false` to remove the exam-prep reopen from
+ * both the phase and the student copy. Open question for Jose: keep it?
+ */
+export const EXAM_PREP_ANSWER_REOPEN_ENABLED = true;
+
+/** Answers become visible this many ET calendar days after the section close. */
+export const SECTION_ANSWERS_OPEN_AFTER_DAYS = 7;
+/** Answers hide again this many ET calendar days after the section close. */
+export const SECTION_ANSWERS_HIDE_AFTER_DAYS = 14;
+
 const PRE_MIDTERM_QUIZZES = new Set(["q1", "q2", "q3", "x1"]);
 
-/** Q1–Q6 and X1/X2 take + first answer windows (ISO UTC). */
+/**
+ * Q1–Q6 and X1/X2 syllabus take windows (ISO UTC).
+ * `answersOpenAt` / `answersCloseAt` are the legacy class-wide calendar.
+ * They stay on the schedule for reference and do not control student
+ * answer visibility.
+ */
 const QUIZ_WINDOW_ISO: Record<
   string,
   {
@@ -246,18 +284,110 @@ function examAtForQuiz(quizId: string): Date {
   );
 }
 
-/** One week before an ET midnight, as the same clock time seven calendar days earlier. */
-export function examPrepOpenAt(examAt: Date): Date {
-  const parts = easternCivilParts(examAt);
-  const prior = new Date(Date.UTC(parts.year, parts.month - 1, parts.day - 7));
+/**
+ * Shift an instant by whole ET calendar days, keeping the same wall-clock
+ * time. DST is applied for the destination civil date (fall-back and
+ * spring-forward), matching `etWallTimeToUtc`.
+ */
+export function addEasternCalendarDays(date: Date, days: number): Date {
+  const parts = easternCivilParts(date);
+  const shifted = new Date(
+    Date.UTC(parts.year, parts.month - 1, parts.day + days),
+  );
   return etWallTimeToUtc(
-    prior.getUTCFullYear(),
-    prior.getUTCMonth() + 1,
-    prior.getUTCDate(),
+    shifted.getUTCFullYear(),
+    shifted.getUTCMonth() + 1,
+    shifted.getUTCDate(),
     parts.hour,
     parts.minute,
     parts.second,
   );
+}
+
+/** One week before an ET instant, as the same clock time seven calendar days earlier. */
+export function examPrepOpenAt(examAt: Date): Date {
+  return addEasternCalendarDays(examAt, -7);
+}
+
+export function parseInstant(
+  value: Date | string | null | undefined,
+): Date | undefined {
+  if (value == null || value === "") return undefined;
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return undefined;
+  return date;
+}
+
+/**
+ * Close instant that starts Jose’s answer clock.
+ * `closesAt` once it has passed; otherwise `closedAt` when mode is closed;
+ * otherwise none.
+ */
+export function effectiveSectionCloseAt(
+  input: SectionCloseInput | null | undefined,
+  now: Date = new Date(),
+): Date | undefined {
+  if (!input) return undefined;
+  const closesAt = parseInstant(input.closesAt);
+  if (closesAt && now.getTime() >= closesAt.getTime()) return closesAt;
+  if (input.mode === "closed") return parseInstant(input.closedAt);
+  return undefined;
+}
+
+/** Default answer window: [close + 7d, close + 14d) at the same ET clock time. */
+export function answerWindowFromSectionClose(closeAt: Date): {
+  answersOpenAt: Date;
+  answersCloseAt: Date;
+} {
+  return {
+    answersOpenAt: addEasternCalendarDays(closeAt, SECTION_ANSWERS_OPEN_AFTER_DAYS),
+    answersCloseAt: addEasternCalendarDays(closeAt, SECTION_ANSWERS_HIDE_AFTER_DAYS),
+  };
+}
+
+export type ResolvedSectionAnswerWindow = {
+  closeAt: Date;
+  answersOpenAt: Date;
+  answersCloseAt: Date;
+  /** False when `closesAt` is still in the future (display only). */
+  effective: boolean;
+};
+
+/**
+ * Window for student copy and the staff panel. A future `closesAt` is
+ * included so the dates can be shown before the quiz actually closes.
+ * Reveal uses only `effective` windows.
+ */
+export function resolveSectionAnswerWindow(
+  input: SectionCloseInput | null | undefined,
+  now: Date = new Date(),
+): ResolvedSectionAnswerWindow | undefined {
+  if (!input) return undefined;
+  const closesAt = parseInstant(input.closesAt);
+  const closedAt =
+    input.mode === "closed" ? parseInstant(input.closedAt) : undefined;
+  if (closesAt && now.getTime() >= closesAt.getTime()) {
+    return {
+      closeAt: closesAt,
+      ...answerWindowFromSectionClose(closesAt),
+      effective: true,
+    };
+  }
+  if (closedAt) {
+    return {
+      closeAt: closedAt,
+      ...answerWindowFromSectionClose(closedAt),
+      effective: true,
+    };
+  }
+  if (closesAt) {
+    return {
+      closeAt: closesAt,
+      ...answerWindowFromSectionClose(closesAt),
+      effective: false,
+    };
+  }
+  return undefined;
 }
 
 function easternCivilParts(date: Date): {
@@ -327,23 +457,18 @@ export function isScheduledTakeWindow(
 
 /**
  * Graded take is staff-enabled only. Calendar dates never open a quiz.
+ * A section `closesAt` stops taking at that instant even while mode is open.
  */
 export function isTakeWindowOpen(
   _schedule: QuizSchedule,
-  _now: Date = new Date(),
-  override?: QuizTakeOverrideMode | null,
-): boolean {
-  return override === "open";
-}
-
-export function isInFirstAnswerWindow(
-  schedule: QuizSchedule,
   now: Date = new Date(),
+  override?: QuizTakeOverrideMode | null,
+  closesAt?: Date | string | null,
 ): boolean {
-  const t = now.getTime();
-  return (
-    t >= schedule.answersOpenAt.getTime() && t < schedule.answersCloseAt.getTime()
-  );
+  if (override !== "open") return false;
+  const close = parseInstant(closesAt);
+  if (!close) return true;
+  return now.getTime() < close.getTime();
 }
 
 export function isInExamPrepWindow(
@@ -357,15 +482,40 @@ export function isInExamPrepWindow(
   );
 }
 
+function sectionCloseFor(
+  override: QuizTakeOverrideMode | null | undefined,
+  sectionClose?: SectionCloseInput | null,
+): SectionCloseInput {
+  return {
+    mode: sectionClose?.mode ?? override,
+    closesAt: sectionClose?.closesAt,
+    closedAt: sectionClose?.closedAt,
+  };
+}
+
+function isInsideAnswerWindow(
+  window: { answersOpenAt: Date; answersCloseAt: Date },
+  now: Date,
+): boolean {
+  const t = now.getTime();
+  return (
+    t >= window.answersOpenAt.getTime() && t < window.answersCloseAt.getTime()
+  );
+}
+
 /**
- * Class-wide phase for `/quizzes/take/[quizId]`.
+ * Phase for `/quizzes/take/[quizId]`.
  * `now` must be the server clock when deciding whether to leak answers.
+ * Submitted attempts follow the per-section close, not `QUIZ_WINDOW_ISO`
+ * answer dates. Exam-prep reopen stays behind
+ * `EXAM_PREP_ANSWER_REOPEN_ENABLED`.
  */
 export function getAnswerRevealPhase(
   quizIdOrSchedule: string | QuizSchedule,
   now: Date = new Date(),
   hasAttempt = false,
   override?: QuizTakeOverrideMode | null,
+  sectionClose?: SectionCloseInput | null,
 ): QuizPhase | null {
   const schedule =
     typeof quizIdOrSchedule === "string"
@@ -373,16 +523,34 @@ export function getAnswerRevealPhase(
       : quizIdOrSchedule;
   if (!schedule) return null;
 
-  if (hasAttempt) {
-    if (isInFirstAnswerWindow(schedule, now)) return "answers_open";
-    if (isInExamPrepWindow(schedule, now)) return "answers_reopen";
-    if (now.getTime() < schedule.answersOpenAt.getTime()) {
-      return "submitted_waiting";
-    }
-    return "answers_closed";
+  const access = sectionCloseFor(override, sectionClose);
+
+  if (!hasAttempt) {
+    return isTakeWindowOpen(schedule, now, access.mode, access.closesAt)
+      ? "take_open"
+      : "take_closed";
   }
 
-  return isTakeWindowOpen(schedule, now, override) ? "take_open" : "take_closed";
+  const window = resolveSectionAnswerWindow(access, now);
+  if (window?.effective && isInsideAnswerWindow(window, now)) {
+    return "answers_open";
+  }
+  if (EXAM_PREP_ANSWER_REOPEN_ENABLED && isInExamPrepWindow(schedule, now)) {
+    return "answers_reopen";
+  }
+  if (window?.effective && now.getTime() < window.answersOpenAt.getTime()) {
+    return "submitted_waiting";
+  }
+  if (!window?.effective) {
+    if (
+      EXAM_PREP_ANSWER_REOPEN_ENABLED &&
+      now.getTime() >= schedule.examPrepCloseAt.getTime()
+    ) {
+      return "answers_closed";
+    }
+    return "submitted_waiting";
+  }
+  return "answers_closed";
 }
 
 export function activeAnswersVisibleOverride(
@@ -393,8 +561,8 @@ export function activeAnswersVisibleOverride(
 
 /**
  * Student-facing answer-key visibility. Staff `on` / `off` override the
- * calendar. Unset / `schedule` keep the existing review windows (default
- * hidden). Staff attempt review never uses this — it always reveals.
+ * section window. Unset / `schedule` follow that window (default hidden).
+ * Staff attempt review never uses this — it always reveals.
  */
 export function canRevealAnswers(
   phase: QuizPhase | null,
@@ -410,12 +578,15 @@ export function toAnswerWindowInfo(
   schedule: QuizSchedule,
   phase: QuizPhase,
   answersVisible?: QuizAnswersVisibleMode | null,
+  sectionClose?: SectionCloseInput | null,
+  now: Date = new Date(),
 ): AnswerWindowInfo {
   const override = activeAnswersVisibleOverride(answersVisible);
+  const display = resolveSectionAnswerWindow(sectionClose, now);
   return {
     phase,
-    answersOpenAt: schedule.answersOpenAt.toISOString(),
-    answersCloseAt: schedule.answersCloseAt.toISOString(),
+    answersOpenAt: (display?.answersOpenAt ?? schedule.answersOpenAt).toISOString(),
+    answersCloseAt: (display?.answersCloseAt ?? schedule.answersCloseAt).toISOString(),
     examPrepOpenAt: schedule.examPrepOpenAt.toISOString(),
     examPrepCloseAt: schedule.examPrepCloseAt.toISOString(),
     examName: schedule.examName,
@@ -438,6 +609,47 @@ export function formatEasternDateTime(date: Date | string): string {
   }).format(value);
 }
 
+/** `datetime-local` value for an instant, as America/New_York wall time. */
+export function formatEasternDateTimeLocal(date: Date | string): string {
+  const value = typeof date === "string" ? new Date(date) : date;
+  const parts = easternCivilParts(value);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${parts.year}-${pad(parts.month)}-${pad(parts.day)}T${pad(parts.hour)}:${pad(parts.minute)}`;
+}
+
+/** Parse a `datetime-local` value as America/New_York wall time. */
+export function parseEasternDateTimeLocal(value: string): Date | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(value.trim());
+  if (!match) return null;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const hour = Number(match[4]);
+  const minute = Number(match[5]);
+  if (
+    month < 1 ||
+    month > 12 ||
+    day < 1 ||
+    day > 31 ||
+    hour > 23 ||
+    minute > 59
+  ) {
+    return null;
+  }
+  const date = etWallTimeToUtc(year, month, day, hour, minute, 0);
+  const parts = easternCivilParts(date);
+  if (
+    parts.year !== year ||
+    parts.month !== month ||
+    parts.day !== day ||
+    parts.hour !== hour ||
+    parts.minute !== minute
+  ) {
+    return null;
+  }
+  return date;
+}
+
 export function examLabel(name: ExamName): string {
   return name === "midterm" ? "midterm" : "final";
 }
@@ -454,14 +666,25 @@ export function answerWindowCopy(
   now: Date = new Date(),
   override?: QuizTakeOverrideMode | null,
   answersVisible?: QuizAnswersVisibleMode | null,
+  sectionClose?: SectionCloseInput | null,
 ): AnswerWindowCopy {
-  const open = formatEasternDateTime(schedule.answersOpenAt);
-  const close = formatEasternDateTime(schedule.answersCloseAt);
+  const access = sectionCloseFor(override, sectionClose);
+  const display = resolveSectionAnswerWindow(access, now);
+  const open = display
+    ? formatEasternDateTime(display.answersOpenAt)
+    : undefined;
+  const close = display
+    ? formatEasternDateTime(display.answersCloseAt)
+    : undefined;
   const prepOpen = formatEasternDateTime(schedule.examPrepOpenAt);
   const prepClose = formatEasternDateTime(schedule.examPrepCloseAt);
   const exam = examLabel(schedule.examName);
-  const prepAgain = `They will be available again one week before the ${exam}, from ${prepOpen} until ${prepClose}.`;
+  const prepAgain = EXAM_PREP_ANSWER_REOPEN_ENABLED
+    ? `They will be available again one week before the ${exam}, from ${prepOpen} until ${prepClose}.`
+    : null;
   const answersOverride = activeAnswersVisibleOverride(answersVisible);
+  const withPrep = (paragraphs: string[]) =>
+    prepAgain ? [...paragraphs, prepAgain] : paragraphs;
 
   if (answersOverride === "on" && phase !== "take_open" && phase !== "take_closed") {
     return {
@@ -486,23 +709,24 @@ export function answerWindowCopy(
   }
 
   if (phase === "submitted_waiting") {
+    const lead =
+      open && close
+        ? `Correct answers will be available starting ${open}, only for one week, until ${close}.`
+        : "Correct answers stay hidden until one week after your section's quiz closes, and then for one week.";
     return {
       title: "Answers are not open yet",
-      paragraphs: [
-        `Correct answers will be available starting ${open}, only for one week, until ${close}.`,
-        prepAgain,
-      ],
+      paragraphs: withPrep([lead]),
       tone: "warn",
     };
   }
 
   if (phase === "answers_open") {
+    const lead = close
+      ? `Answers are available only for one week, until ${close}.`
+      : "Answers are available only for one week.";
     return {
       title: "Answers are available this week",
-      paragraphs: [
-        `Answers are available only for one week, until ${close}.`,
-        prepAgain,
-      ],
+      paragraphs: withPrep([lead]),
       tone: "ok",
     };
   }
@@ -518,18 +742,21 @@ export function answerWindowCopy(
   }
 
   if (phase === "answers_closed") {
-    const prepStillAhead = now.getTime() < schedule.examPrepOpenAt.getTime();
+    const ended = close
+      ? `The answer review window for your section ended on ${close}.`
+      : "Answers are hidden for your section.";
+    const paragraphs = [ended];
+    if (EXAM_PREP_ANSWER_REOPEN_ENABLED) {
+      const prepStillAhead = now.getTime() < schedule.examPrepOpenAt.getTime();
+      paragraphs.push(
+        prepStillAhead
+          ? `Answers will be available again one week before the ${exam}, from ${prepOpen} until ${prepClose}.`
+          : `The ${exam} prep window (${prepOpen} until ${prepClose}) has also ended.`,
+      );
+    }
     return {
       title: "The answer review window has ended",
-      paragraphs: prepStillAhead
-        ? [
-            `The class review window ended on ${close}.`,
-            `Answers will be available again one week before the ${exam}, from ${prepOpen} until ${prepClose}.`,
-          ]
-        : [
-            `The class review window ended on ${close}.`,
-            `The ${exam} prep window (${prepOpen} until ${prepClose}) has also ended.`,
-          ],
+      paragraphs,
       tone: "warn",
     };
   }
@@ -538,6 +765,17 @@ export function answerWindowCopy(
     const unlock = formatEasternDateTime(schedule.takeUnlockAt);
     const lock = formatEasternDateTime(schedule.takeLockAt);
     const dates = `Syllabus window: opens ${unlock} and is due ${lock}. Those dates do not open the quiz by themselves.`;
+    const closesAt = parseInstant(access.closesAt);
+    if (override === "open" && closesAt && now.getTime() >= closesAt.getTime()) {
+      return {
+        title: "The take window for your section has ended",
+        paragraphs: [
+          `New attempts closed at ${formatEasternDateTime(closesAt)}.`,
+          dates,
+        ],
+        tone: "warn",
+      };
+    }
     if (override === "closed") {
       return {
         title: "This quiz is disabled for your section",
@@ -558,10 +796,16 @@ export function answerWindowCopy(
     };
   }
 
+  const closesAt = parseInstant(access.closesAt);
+  const until = closesAt
+    ? `This attempt stays open until ${formatEasternDateTime(closesAt)}.`
+    : "This attempt stays open until the instructor or a TA closes it for your section.";
+  const syllabus = `Syllabus window: opens ${formatEasternDateTime(schedule.takeUnlockAt)} and is due ${formatEasternDateTime(schedule.takeLockAt)}. Those dates do not open or close the quiz by themselves.`;
   return {
     title: "Graded quiz",
     paragraphs: [
-      `This attempt is open until ${formatEasternDateTime(schedule.takeLockAt)}. Correct answers stay hidden until the class review window.`,
+      `${until} Correct answers stay hidden until one week after your section closes, then for one week.`,
+      syllabus,
     ],
     tone: "neutral",
   };
