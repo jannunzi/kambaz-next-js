@@ -276,8 +276,8 @@ describe("reveal windows vs every quiz and exam take window", () => {
 
   /**
    * Jose's one-week-after-close rule reveals a quiz's answers while the next
-   * quiz (or X1, the same week as Q3) is still open. Kept as todos so the
-   * suite stays green until he decides whether that leak is acceptable.
+   * quiz is still open. Q3 sharing the week of Oct 26 with X1 is accepted
+   * (asserted below). The other overlaps stay todos until he decides.
    */
   const answerRuleOverlaps = [
     ["q1", "q2"],
@@ -318,9 +318,31 @@ describe("reveal windows vs every quiz and exam take window", () => {
   it.todo(
     "Q1 answers Mon Oct 12–Mon Oct 19 overlap Q2 take (week of Oct 12): Jose's one-week-after-close rule",
   );
-  it.todo(
-    "Q2 answers Mon Oct 26–Mon Nov 2 overlap Q3 and X1 take (week of Oct 26): Jose's one-week-after-close rule",
-  );
+  it("Q2 answers Mon Oct 26–Mon Nov 2 overlap Q3 and X1 take (week of Oct 26): Jose's one-week-after-close rule", () => {
+    const q3 = getQuizSchedule("q3");
+    const x1 = getQuizSchedule("x1");
+    assert.ok(q3);
+    assert.ok(x1);
+    assert.equal(easternIsoDate(q3.takeUnlockAt), "2026-10-26");
+    assert.equal(easternIsoDate(x1.takeUnlockAt), "2026-10-26");
+    const hits = collectOverlaps().filter(
+      (hit) =>
+        hit.sectionId &&
+        hit.revealQuiz === "q2" &&
+        hit.kind === "first-answer" &&
+        (hit.takeQuiz === "q3" || hit.takeQuiz === "x1"),
+    );
+    assert.equal(hits.length, sections.length * 2);
+    const takeIds = [...new Set(hits.map((hit) => hit.takeQuiz))].sort();
+    assert.deepEqual(takeIds, ["q3", "x1"]);
+    for (const hit of hits) {
+      assert.equal(hit.reveal, "2026-10-26T00:00:00 – 2026-11-02T00:00:00");
+      assert.equal(
+        hit.take,
+        "2026-10-26T00:00:00 – 2026-11-01T23:59:00",
+      );
+    }
+  });
   it.todo(
     "Q3 answers Mon Nov 9–Mon Nov 16 overlap Q4 take (week of Nov 9): Jose's one-week-after-close rule",
   );

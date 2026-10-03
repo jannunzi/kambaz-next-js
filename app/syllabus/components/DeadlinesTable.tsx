@@ -1,4 +1,4 @@
-import { formatQuizDeadlineLabel } from "../data/deadlines";
+import { formatSharedQuizDeadlineDate } from "../data/deadlines";
 import { formatAgendaDate, formatWeekOf } from "../data/dates";
 import type { Deadline } from "../data/types";
 import SyllabusSection from "./SyllabusSection";
@@ -12,7 +12,7 @@ const KIND_LABEL: Record<Deadline["kind"], string> = {
 
 function formatDeadlineDate(deadline: Deadline): string {
   if (deadline.kind === "quiz" && deadline.date) {
-    return formatQuizDeadlineLabel(deadline.date);
+    return formatSharedQuizDeadlineDate(deadline);
   }
   if (
     deadline.kind === "exam" &&

@@ -108,6 +108,14 @@ export function q1WeekOfLabel(): string {
 }
 
 /**
+ * CS 5610-02 meets Mondays. Mon Oct 12, 2026 is Indigenous Peoples’ Day, so
+ * that section has no class in the Q2 week. Jose has not chosen a replacement
+ * slot. Do not invent a date.
+ */
+export const CS5610_02_Q2_TBA =
+  "CS 5610-02: Q2 time to be announced (no class Mon Oct 12)";
+
+/**
  * Student-facing quiz timing (Piazza Post 33, clarified in the course chat).
  * In-person: end of lecture on that section’s meeting day. Online: the quiz
  * is open Monday through Sunday; attendance is not required. Q1’s week and
@@ -120,7 +128,7 @@ export const quizLectureMeetingDayNote = (() => {
   const wed = formatEasternWeekdayMonthDay(wednesday);
   const sun = formatEasternWeekdayMonthDay(sunday);
   const span = `${easternIsoDate(monday)} through ${easternIsoDate(sunday)}`;
-  return `In-person sections take each quiz at the end of lecture on your section’s own meeting that week — CS 5610-02 Mondays 6:00–9:00pm ET and CS 4550-01 Wednesdays 6:00–9:00pm ET — not a calendar day labeled “today,” and not any weekday that week. CS 5610-09 (online): attendance is not required. Each quiz is open the whole week, Monday 12:00am ET through Sunday 11:59pm ET. Q1 in the week of ${weekOf} is ${mon} at the end of lecture for CS 5610-02, ${wed} at the end of lecture for CS 4550, and open ${mon} through ${sun} (${span} ET) for CS 5610-09.`;
+  return `In-person sections take each quiz at the end of lecture on your section’s own meeting that week — CS 5610-02 Mondays 6:00–9:00pm ET and CS 4550-01 Wednesdays 6:00–9:00pm ET — not a calendar day labeled “today,” and not any weekday that week. CS 5610-09 (online): attendance is not required. Each quiz is open the whole week, Monday 12:00am ET through Sunday 11:59pm ET. Q1 in the week of ${weekOf} is ${mon} at the end of lecture for CS 5610-02, ${wed} at the end of lecture for CS 4550, and open ${mon} through ${sun} (${span} ET) for CS 5610-09. ${CS5610_02_Q2_TBA}.`;
 })();
 
 /**
@@ -135,6 +143,16 @@ export function formatQuizDeadlineLabel(
   if (modality === "online") return `${week} · open Monday–Sunday`;
   if (modality === "in-person") return `${week} · end of lecture`;
   return `${week} · in person: end of lecture; online: Mon–Sun`;
+}
+
+/** Shared-deadlines Date cell. Q2 names the undecided CS 5610-02 slot. */
+export function formatSharedQuizDeadlineDate(deadline: Deadline): string {
+  if (!deadline.date) return "End of lecture";
+  const label = formatQuizDeadlineLabel(deadline.date);
+  if (deadline.label.startsWith("Q2 ")) {
+    return `${label}. ${CS5610_02_Q2_TBA}`;
+  }
+  return label;
 }
 
 export const deadlinesNote =

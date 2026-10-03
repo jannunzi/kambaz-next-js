@@ -1,5 +1,6 @@
 import Link from "next/link";
 import {
+  CS5610_02_Q2_TBA,
   formatQuizDeadlineLabel,
   quizLectureMeetingDayNote,
 } from "../data/deadlines";
@@ -28,6 +29,14 @@ function rowClass(row: AgendaRow): string {
 function dateLabel(row: AgendaRow, section: CourseSection): string {
   if (row.kind === "orientation") {
     return formatAgendaDate(row.date);
+  }
+  if (
+    section.id === "cs5610-02" &&
+    row.deadlines.some(
+      (deadline) => deadline.kind === "quiz" && deadline.label.startsWith("Q2 "),
+    )
+  ) {
+    return CS5610_02_Q2_TBA;
   }
   if (row.deadlines.some((deadline) => deadline.kind === "quiz")) {
     return formatQuizDeadlineLabel(row.date, section.modality);

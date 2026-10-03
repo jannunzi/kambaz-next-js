@@ -3,6 +3,7 @@ import {
   getQuizSchedule,
   quizWeekOfLabel,
 } from "@/lib/quiz-exam/schedule";
+import { CS5610_02_Q2_TBA } from "./deadlines";
 import type { EvaluationItem, GradeBand } from "./types";
 
 function q1OnlineSpan(): string {
@@ -24,7 +25,7 @@ export const evaluationItems: EvaluationItem[] = [
     label: "Quizzes (Q1–Q6)",
     weight: 10,
     description:
-      `Short checks on this course website (~10 questions, about 30 minutes). Each quiz is the week after that chapter’s assignment is due. In-person sections take it at the end of lecture that week (CS 5610-02 Mondays, CS 4550 Wednesdays). CS 5610-09 (online) has the quiz open Monday through Sunday of that week; attendance is not required. Q1 is the week of ${quizWeekOfLabel("q1")} (online: ${q1OnlineSpan()}), not the end of Chapter 1’s original two weeks (Sep 14 and Sep 21). Q2 through Q6 follow the same one-week shift. Canvas is a staff-approved fallback if the site is unavailable — ask your instructor or TA before using it.`,
+      `Short checks on this course website (~10 questions, about 30 minutes). Each quiz is the week after that chapter’s assignment is due. In-person sections take it at the end of lecture that week (CS 5610-02 Mondays, CS 4550 Wednesdays). ${CS5610_02_Q2_TBA}. CS 5610-09 (online) has the quiz open Monday through Sunday of that week; attendance is not required. Q1 is the week of ${quizWeekOfLabel("q1")} (online: ${q1OnlineSpan()}), not the end of Chapter 1’s original two weeks (Sep 14 and Sep 21). Q2 through Q6 follow the same one-week shift. Canvas is a staff-approved fallback if the site is unavailable — ask your instructor or TA before using it.`,
   },
   {
     label: "Exams (X1–X2)",

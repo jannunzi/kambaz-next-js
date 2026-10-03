@@ -2,9 +2,11 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import {
+  CS5610_02_Q2_TBA,
   deadlines,
   deadlinesNote,
   formatQuizDeadlineLabel,
+  formatSharedQuizDeadlineDate,
   quizLectureMeetingDayNote,
 } from "./deadlines.ts";
 
@@ -53,6 +55,14 @@ describe("quiz lecture meeting-day copy", () => {
       quizLectureMeetingDayNote,
       /Q1 in the week of Sep 28 is Mon Sep 28 at the end of lecture for CS 5610-02, Wed Sep 30 at the end of lecture for CS 4550, and open Mon Sep 28 through Sun Oct 4 \(2026-09-28 through 2026-10-04 ET\) for CS 5610-09/,
     );
+    assert.equal(
+      quizLectureMeetingDayNote.includes(CS5610_02_Q2_TBA),
+      true,
+    );
+    assert.equal(
+      CS5610_02_Q2_TBA,
+      "CS 5610-02: Q2 time to be announced (no class Mon Oct 12)",
+    );
     assert.doesNotMatch(quizLectureMeetingDayNote, /Tue Sep 29/);
     assert.doesNotMatch(
       quizLectureMeetingDayNote,
@@ -85,6 +95,16 @@ describe("quiz lecture meeting-day copy", () => {
       formatQuizDeadlineLabel("2026-10-12", "online"),
       "Week of Oct 12 · open Monday–Sunday",
     );
+    assert.equal(
+      formatQuizDeadlineLabel("2026-10-12", "in-person"),
+      "Week of Oct 12 · end of lecture",
+    );
+    const q2 = deadlines.find((deadline) => deadline.label.startsWith("Q2 "));
+    assert.ok(q2);
+    assert.equal(
+      formatSharedQuizDeadlineDate(q2),
+      `Week of Oct 12 · in person: end of lecture; online: Mon–Sun. ${CS5610_02_Q2_TBA}`,
+    );
     const quizDates = deadlines
       .filter((deadline) => deadline.kind === "quiz")
       .map((deadline) => deadline.date);
@@ -99,7 +119,9 @@ describe("quiz lecture meeting-day copy", () => {
   });
 
   it("uses the shared meeting-day label on Shared deadlines and agenda quiz rows", () => {
-    assert.match(deadlinesTable, /formatQuizDeadlineLabel/);
+    assert.match(deadlinesTable, /formatSharedQuizDeadlineDate/);
+    assert.match(agendaTable, /CS5610_02_Q2_TBA/);
+    assert.match(agendaTable, /section\.id === "cs5610-02"/);
     assert.match(agendaTable, /formatQuizDeadlineLabel\(row\.date, section\.modality\)/);
     assert.match(agendaTable, /quizLectureMeetingDayNote/);
     assert.match(agendaTable, /deadline\.kind === "quiz"/);
