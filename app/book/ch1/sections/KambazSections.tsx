@@ -811,7 +811,8 @@ export default function CourseNavigation({ cid }: { cid: string }) {
           Router, layouts (and some pages) receive the dynamic segment through a{" "}
           <code>params</code>{" "}prop that is a Promise — so the function is marked{" "}
           <code>async</code>{" "}and you <code>await params</code>{" "}before reading{" "}
-          <code>cid</code>. Copy this shape for now; Chapter 3 explains{" "}
+          <code>cid</code>. Copy this shape for now;{" "}
+          <SectionLink to="6.2.6.1" />{" "}explains{" "}
           <code>async</code>/<code>await</code>{" "}more carefully:
         </p>
         <CodeBlock
@@ -1106,7 +1107,7 @@ export default function Home() {
           from Dashboard, Modules, and Home — no line-by-line walkthrough this
           time. From the Dashboard, open a course, then choose Assignments in
           Course Navigation. The polished target is below; match the plain
-          HTML LiveDemo for this chapter. Exact due dates may differ. Keep the
+          HTML demo for this chapter. Exact due dates may differ. Keep the
           given <code>id</code>{" "}and <code>className</code>{" "}values so later
           chapters and graders can find them.{" "}
           <ChapterLink to={2} />{" "}will style this screen with Tailwind.
@@ -1160,7 +1161,8 @@ export default function Home() {
           <li>
             The page needs <code>cid</code>{" "}from the URL for those links — use
             the same <code>async</code> / <code>await params</code>{" "}shape as the
-            courses layout (copy for now; Chapter 3 explains it)
+            courses layout (copy for now; <SectionLink to="6.2.6.1" />{" "}
+            explains <code>async</code>/<code>await</code>)
           </li>
         </ul>
         <p>Start from these stubs and fill them in:</p>
@@ -1343,7 +1345,7 @@ export default async function Assignments({
           section where you built the worked example. Build the screens in
           order as you read — this list is for checking coverage, not a
           substitute for the walkthroughs. Assignments and the Assignment
-          Editor stay On your own: match the ids and LiveDemos in those
+          Editor stay On your own: match the ids and interactive demos in those
           sections.
         </p>
         <ol>

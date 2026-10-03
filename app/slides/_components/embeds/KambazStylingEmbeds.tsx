@@ -58,8 +58,8 @@ function StyledCourseCard({
 export function KambazStyledNavEmbed() {
   return (
     <LectureDemoFrame label="Navigation.tsx" url="/dashboard">
-      <div className="font-sans text-sm [&_nav]:!block [&_nav]:!relative">
-        <ContainFixed height={340}>
+      <div className="font-sans text-sm [&_nav]:!top-auto [&_nav]:!bottom-auto [&_nav]:!block [&_nav]:!h-auto [&_nav]:!relative">
+        <ContainFixed height="auto">
           <KambazNavigation />
           <div
             className="wd-main-content-offset p-3 text-neutral-500"

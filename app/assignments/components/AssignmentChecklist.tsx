@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, type ReactNode } from "react";
-import { a1CriterionCoverage } from "@/lib/assignments/a1-rubric";
+import { criterionCoverage } from "@/lib/assignments/checkers";
 import { listRubricCriteria, nestRubricCriteria } from "@/lib/assignments/catalog";
 import type { AssignmentCheckResult } from "@/lib/assignments/checks";
 import { latestResultByCriterion } from "@/lib/assignments/checks";
@@ -12,9 +12,11 @@ import {
   gradePoints,
   rowPresentation,
   studentAutoPoints,
+  visibleCheckMessage,
   type CriterionGradeRow,
   type GradeAudience,
 } from "@/lib/assignments/grade-rows";
+import { formatPointsPercent } from "@/lib/assignments/grade";
 import { ASSIGNMENT_STUDENT_COPY } from "@/lib/assignments/student-copy";
 import type { AssignmentHubItem, RubricCriterion } from "@/lib/assignments/types";
 import { criterionVerifyUrl } from "@/lib/assignments/verify-urls";
@@ -36,8 +38,7 @@ function DeployTitle({
 }
 
 function isManualCriterion(assignmentId: string, criterionId: string): boolean {
-  if (assignmentId !== "a1") return true;
-  return a1CriterionCoverage(criterionId) !== "auto";
+  return criterionCoverage(assignmentId, criterionId) !== "auto";
 }
 
 function Legend({
@@ -105,6 +106,12 @@ function CriterionRow({
     changed,
     audience,
     manual,
+    skipped: Boolean(result?.skipped),
+  });
+  const checkMessage = visibleCheckMessage({
+    message: result?.message,
+    skipped: result?.skipped,
+    manual: manual && audience === "student",
   });
   const autoId = `auto-${criterion.id}`;
   const overrideId = `override-${criterion.id}`;
@@ -112,6 +119,12 @@ function CriterionRow({
   const verifyHref = criterionVerifyUrl(vercelUrl, criterion.id);
   const staff = audience === "staff";
   const showAuto = scored && (staff || !manual);
+  const scoreLabel =
+    !scored || (audience === "student" && manual)
+      ? `${criterion.points} pts`
+      : staff
+        ? formatPointsPercent(row.points, row.maxPoints)
+        : formatPointsPercent(row.autoPassed ? row.maxPoints : 0, row.maxPoints);
   return (
     <div
       className={`rounded-md border px-3 py-3 ${presentation.className}`}
@@ -194,11 +207,11 @@ function CriterionRow({
         <p className="mb-1 font-sans text-sm">{ASSIGNMENT_STUDENT_COPY.manualCheckHint}</p>
       ) : null}
       <p className="mb-1 text-sm">{criterion.description}</p>
-      {result && !result.skipped && result.message ? (
-        <p className="mb-1 font-sans text-sm">{result.message}</p>
+      {checkMessage ? (
+        <p className="mb-1 font-sans text-sm">{checkMessage}</p>
       ) : null}
       <p className="mb-0 font-sans text-sm">
-        <span className="font-medium">{criterion.points} pts</span>
+        <span className="font-medium">{scoreLabel}</span>
         {criterion.bookHref ? (
           <>
             {" · "}
@@ -294,15 +307,15 @@ export default function AssignmentChecklist({
         <p className="m-0 text-base font-semibold tracking-tight">
           {scored
             ? audience === "staff"
-              ? `${headerPoints.earnedPoints} / ${headerPoints.totalPoints} pts`
-              : `Auto checks ${headerPoints.earnedPoints} / ${headerPoints.totalPoints} pts`
+              ? formatPointsPercent(headerPoints.earnedPoints, headerPoints.totalPoints)
+              : `Auto checks ${formatPointsPercent(headerPoints.earnedPoints, headerPoints.totalPoints)}`
             : supportsUrlSubmission(assignment.id)
-              ? "No checks yet. Run to score this page. Checkmarks are not saved."
+              ? "No checks yet. Run to score this page. Checkmarks stay on this page only."
               : "Checked by staff at grading. This page does not save checkmarks or award points."}
         </p>
         {savedPoints ? (
           <p className="mb-0 mt-1 text-sm">
-            Staff grade {savedPoints.earnedPoints} / {savedPoints.totalPoints} pts
+            Staff grade {formatPointsPercent(savedPoints.earnedPoints, savedPoints.totalPoints)}
             {savedPoints.gradedByEmail ? ` · saved by ${savedPoints.gradedByEmail}` : ""}
             {savedPoints.savedAt
               ? ` · ${new Date(savedPoints.savedAt).toLocaleString()}`
@@ -311,8 +324,8 @@ export default function AssignmentChecklist({
         ) : null}
         {live && savedPoints && audience === "staff" ? (
           <p className="mb-0 mt-1 text-sm font-semibold">
-            Saved {savedPoints.earnedPoints} / {savedPoints.totalPoints} pts · This run{" "}
-            {staffPoints.earnedPoints} / {staffPoints.totalPoints} pts
+            Saved {formatPointsPercent(savedPoints.earnedPoints, savedPoints.totalPoints)} · This run{" "}
+            {formatPointsPercent(staffPoints.earnedPoints, staffPoints.totalPoints)}
           </p>
         ) : null}
         {scored ? <Legend audience={audience} showChanged={Boolean(savedPoints)} /> : null}
@@ -339,7 +352,7 @@ export default function AssignmentChecklist({
             </h2>
             {scored ? (
               <p className="mt-0 mb-3 font-sans text-sm text-neutral-700">
-                {groupPoints.earnedPoints} / {groupPoints.totalPoints} pts
+                {formatPointsPercent(groupPoints.earnedPoints, groupPoints.totalPoints)}
               </p>
             ) : null}
             {group.intro ? <p className="mt-0 text-neutral-800">{group.intro}</p> : null}

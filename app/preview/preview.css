@@ -1,0 +1,22 @@
+/*
+ * The preview document is only the lab sample. Override the root layout's
+ * flex column so the iframe viewport matches the frame width exactly and a
+ * vertical scrollbar cannot shrink it below the active breakpoint.
+ */
+html,
+body {
+  margin: 0;
+  height: auto;
+  min-height: 0;
+  background: #fff;
+  overflow: hidden;
+}
+
+body {
+  display: block;
+}
+
+#preview-root {
+  padding: 12px;
+  background: #fff;
+}

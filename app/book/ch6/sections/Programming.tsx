@@ -42,20 +42,6 @@ export default function Programming() {
         Node.js projects — <code>webdev-client</code>{" "}and the sibling{" "}
         <code>webdev-server</code>.
       </p>
-      <p>
-        LiveDemos in this book call same-origin{" "}
-        <code>/api/lab6</code>, which implements the Express Lab 6
-        contract with an in-memory store so pages render when{" "}
-        <code>mongod</code>{" "}is not running. The teaching code below
-        is the sibling server. When{" "}
-        <code>DATABASE_CONNECTION_STRING</code>{" "}(or{" "}
-        <code>MONGO_CONNECTION_STRING</code>) is set and reachable,
-        those DAOs use Mongoose; otherwise they keep the{" "}
-        <ChapterLink to={5} />{" "}arrays. The prose is written as if
-        the database is connected — that is the path you will run
-        locally tomorrow and on Atlas after{" "}
-        <SectionLink to="6.3" />.
-      </p>
 
       <Section
         level={3}
@@ -105,14 +91,13 @@ const app = express();
         <p>
           Place the <code>connect</code>{" "}call near the top of{" "}
           <code>index.js</code>{" "}so the connection is established
-          before any route handler tries to run a query. This book
-          wraps that call in <code>connectDatabase()</code>{" "}so a
-          missing or dead URI does not crash CI. The string you write
-          as a student is the one above. If{" "}
-          <code>mongod</code>{" "}is not running, Mongoose will retry
-          and then fail; start the service or the command-line process
-          from <SectionLink to="6.1.1" />{" "}before you start{" "}
-          <code>nodemon</code>.
+          before any route handler tries to run a query. If MongoDB
+          is not running, a database request such as{" "}
+          <code>model.find()</code>{" "}fails after about 10 seconds,
+          and the server stops after about 30 seconds. Start{" "}
+          <code>mongod</code>{" "}(or check the connection string)
+          before you start the server. The service or command-line
+          process is in <SectionLink to="6.1.1" />.
         </p>
       </Section>
 
@@ -162,11 +147,7 @@ const CONNECTION_STRING =
   "mongodb://127.0.0.1:27017/kambaz";
 mongoose.connect(CONNECTION_STRING);`}</CodeBlock>
         <p>
-          The PDF name is <code>DATABASE_CONNECTION_STRING</code>. This
-          repo also accepts <code>MONGO_CONNECTION_STRING</code>. If
-          neither is set, DAOs stay in memory and{" "}
-          <code>/lab6/status</code>{" "}reports{" "}
-          <code>store: &quot;memory&quot;</code>. After you add the
+          Use <code>DATABASE_CONNECTION_STRING</code>. After you add the
           line and restart <code>nodemon</code>, the status demo below
           should report a database connection when Mongo is reachable.
           In <SectionLink to="6.3.2" />{" "}you will type the same key
@@ -184,12 +165,12 @@ mongoose.connect(CONNECTION_STRING);`}</CodeBlock>
           Add the <code>DATABASE_CONNECTION_STRING</code>{" "}line to the
           Node <code>.env</code>{" "}(not the Next.js one) and restart{" "}
           <code>nodemon</code>. Click the status button again after
-          Express is up — or keep using the book store for now.
+          Express is up.
         </OnYourOwn>
         <WithAI
-          prompt={`In webdev-server/.env.example, keep DATABASE_CONNECTION_STRING as the PDF name and mention MONGO_CONNECTION_STRING as an alias. Do not put a real Atlas password in any committed file.`}
+          prompt={`In webdev-server/.env.example, keep DATABASE_CONNECTION_STRING. Do not put a real Atlas password in any committed file.`}
         >
-          Ask the assistant to keep the env names straight:
+          Ask the assistant to keep the connection string name in the example env file:
         </WithAI>
       </Section>
 
@@ -343,8 +324,7 @@ export default model;`}</CodeBlock>
           implemented a data access object using arrays declared in the{" "}
           <code>Database/index.js</code>{" "}files. This chapter
           refactors the DAOs so they use an actual database.{" "}
-          <ChapterLink to={5} />
-          &apos;s DAO read arrays from that barrel file. This chapter
+          <ChapterLink to={5} />&apos;s DAO read arrays from that barrel file. This chapter
           keeps the same function names and reimplements them with the
           model. The following <code>Kambaz/Users/dao.js</code>{" "}
           re-implements the CRUD operations for the users collection

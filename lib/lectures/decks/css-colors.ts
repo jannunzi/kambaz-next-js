@@ -41,7 +41,7 @@ export const CSS_COLORS_SLIDES: LectureSlide[] = [
   },
   {
     id: "fg-tsx",
-    title: "ForegroundColors.tsx",
+    title: "Foreground color",
     kind: "content",
     bullets: [
       "Wrapper id: `wd-css-colors`",
@@ -74,6 +74,31 @@ export const CSS_COLORS_SLIDES: LectureSlide[] = [
     embed: "css-foreground",
   },
   {
+    id: "wire",
+    title: "Import each demo into page.tsx",
+    kind: "content",
+    bullets: [
+      "`import \"./index.css\"` once, then one component import and one tag per exercise",
+      "Repeat the same two lines for BackgroundColors, Borders, and every later file",
+      "Edit the Lab 2 page. Do not replace the style, id, and class sections already there",
+    ],
+    code: `import "./index.css";
+import ForegroundColors from "./ForegroundColors";
+
+export default function Lab2() {
+  return (
+    <div id="wd-lab2">
+      <h2>Lab 2 - Cascading Style Sheets</h2>
+      {/* ...earlier exercises... */}
+      <ForegroundColors />
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/page.tsx",
+    codeAddedLines: [2, 9],
+  },
+  {
     id: "bg-css",
     title: "Background color classes",
     kind: "content",
@@ -92,7 +117,7 @@ export const CSS_COLORS_SLIDES: LectureSlide[] = [
   },
   {
     id: "bg-tsx",
-    title: "BackgroundColors.tsx",
+    title: "Background color",
     kind: "content",
     bullets: [
       "One element, two classes: `wd-bg-color-blue wd-fg-color-white`",
@@ -102,7 +127,7 @@ export const CSS_COLORS_SLIDES: LectureSlide[] = [
     code: `export default function BackgroundColors() {
   return (
     <div id="wd-css-background-colors">
-      <h3 className="wd-bg-color-blue wd-fg-color-white">Background color</h3>
+      <h2 className="wd-bg-color-blue wd-fg-color-white">Background color</h2>
       <p className="wd-bg-color-red wd-fg-color-black">
         This background of this paragraph is red but{" "}
         <span className="wd-bg-color-green wd-fg-color-white">

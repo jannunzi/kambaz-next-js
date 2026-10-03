@@ -34,9 +34,9 @@ export const LECTURE_4_SLUGS = [
   "css-colors",
   "css-box-model",
   "css-size-and-position",
-  "css-media-queries",
   "css-float",
   "css-flex",
+  "css-media-queries",
   "css-rotation",
 ] as const;
 
@@ -46,8 +46,8 @@ export const LECTURE_6_SLUGS = [
   "tailwind-spacing",
   "tailwind-typography",
   "tailwind-colors",
-  "tailwind-flex-and-grid",
   "tailwind-responsive",
+  "tailwind-filters-and-grid",
 ] as const;
 
 export const LECTURE_7_SLUGS = [
@@ -545,6 +545,11 @@ export const LECTURE_EMBED_IDS = [
   "tw-filters",
   "tw-flex",
   "tw-grids",
+  "tw-responsive-breakpoint",
+  "tw-responsive-show-hide",
+  "tw-responsive-flex",
+  "tw-responsive-grid",
+  "tw-responsive-spacing",
   "tw-responsive",
   "kambaz-styled-nav",
   "kambaz-styled-dashboard",
@@ -650,6 +655,7 @@ export const LECTURE_DIAGRAM_IDS = [
   "vercel-protect-mock",
   "vercel-auth-mock",
   "box-model",
+  "tailwind-breakpoints",
   "google-cloud-key-mock",
   "youtube-enable-api-mock",
   "youtube-search-flow",

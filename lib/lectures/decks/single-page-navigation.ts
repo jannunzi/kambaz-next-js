@@ -207,7 +207,7 @@ export default function LabsLayout({ children }:
     bullets: [
       "Create the Kambaz screen under a **route group**: `app/(kambaz)/page.tsx`",
       "Parentheses are for organization. The group name does **not** appear in the URL",
-      "Drive leftovers say `app/Kambaz/page.tsx` — this course uses **`(kambaz)`**",
+      "Put the screen at `app/(kambaz)/page.tsx`, not `app/Kambaz/page.tsx`",
     ],
     code: `export default function Kambaz() {
   return (

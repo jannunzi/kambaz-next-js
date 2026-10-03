@@ -1,5 +1,6 @@
 import type { AssignmentCheckResult } from "./check-types";
 import { latestResultByCriterion } from "./checks";
+import { pointsPercent } from "./grade";
 import type { AssignmentId } from "./types";
 
 /**
@@ -104,16 +105,18 @@ export function gradePoints(rows: readonly CriterionGradeRow[]): {
 } {
   const earnedPoints = rows.reduce((sum, row) => sum + row.points, 0);
   const totalPoints = rows.reduce((sum, row) => sum + row.maxPoints, 0);
-  const percent =
-    totalPoints === 0 ? 0 : Math.round((earnedPoints / totalPoints) * 100);
-  return { earnedPoints, totalPoints, percent };
+  return {
+    earnedPoints,
+    totalPoints,
+    percent: pointsPercent(earnedPoints, totalPoints),
+  };
 }
 
 /** Student-facing auto-check total. Manual rows and override points are excluded. */
 export function studentAutoPoints(
   rows: readonly CriterionGradeRow[],
   manualIds: ReadonlySet<string>,
-): { earnedPoints: number; totalPoints: number } {
+): { earnedPoints: number; totalPoints: number; percent: number } {
   let earnedPoints = 0;
   let totalPoints = 0;
   for (const row of rows) {
@@ -121,7 +124,11 @@ export function studentAutoPoints(
     totalPoints += row.maxPoints;
     if (row.autoPassed) earnedPoints += row.maxPoints;
   }
-  return { earnedPoints, totalPoints };
+  return {
+    earnedPoints,
+    totalPoints,
+    percent: pointsPercent(earnedPoints, totalPoints),
+  };
 }
 
 export function sanitizeCheckResults(
@@ -365,8 +372,25 @@ const FILL_CLASS: Record<RowFill, string> = {
 };
 
 /**
+ * Checker text under a row. A skipped Name on Labs row keeps its sign-in
+ * hint. Manual rows already show their own hint, so that skipped message
+ * is not repeated.
+ */
+export function visibleCheckMessage(input: {
+  message?: string | null;
+  skipped?: boolean;
+  manual: boolean;
+}): string | null {
+  const message = input.message?.trim() ?? "";
+  if (!message) return null;
+  if (input.manual && input.skipped) return null;
+  return message;
+}
+
+/**
  * Blue is an edge and a badge, not a fill, so it can sit on green, red, or
  * yellow. Yellow replaces green and red when the row is overridden.
+ * A skipped auto row stays neutral so "No credit" does not replace its hint.
  */
 export function rowPresentation(input: {
   row: CriterionGradeRow;
@@ -374,6 +398,7 @@ export function rowPresentation(input: {
   changed: boolean;
   audience: GradeAudience;
   manual: boolean;
+  skipped?: boolean;
 }): RowPresentation {
   const changed = input.scored && input.changed;
   if (!input.scored || (input.audience === "student" && input.manual)) {
@@ -400,6 +425,16 @@ export function rowPresentation(input: {
         : GRADE_ROW_COPY.override,
       mark: "override",
       className: className("yellow", changed),
+    };
+  }
+
+  if (input.skipped) {
+    return {
+      fill: "neutral",
+      changed,
+      label: "",
+      mark: "",
+      className: className("neutral", changed),
     };
   }
 

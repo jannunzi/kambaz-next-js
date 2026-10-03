@@ -681,27 +681,53 @@ code.quiz-prompt-code {
   box-sizing: border-box;
 }
 
+/* Chat fields use width:100% plus padding. Content-box adds that padding
+ * outside the frame. Other controls stay content-box, matching main. */
+.lecture-slide .lecture-chat-field {
+  box-sizing: border-box;
+}
+
+/* Inline images sit on the text baseline and leave a gap the frame then
+ * clips. Block layout keeps the image's margin edge inside the card. */
+.lecture-slide .lecture-demo-frame img {
+  display: block;
+}
+
 .lecture-slide .lecture-demo-frame-caption {
   font-size: calc(1.1rem * var(--lecture-block-font-scale, 1));
 }
 
 .lecture-slide .lecture-demo-frame-body {
+  /* Grow to the demo. flow-root keeps the last child's margin inside the
+   * frame so a border or padding band is not clipped. The slide pane
+   * scrolls when the result is taller than the viewport. */
+  display: flow-root;
+  max-height: none;
+  overflow: visible;
   font-size: calc(1.25rem * var(--lecture-block-font-scale, 1));
 }
 
-.lecture-slide .lecture-demo-frame-body .text-xs {
+.lecture-slide .lecture-demo-frame-body > * {
+  max-height: none;
+  overflow: visible;
+}
+
+/* Bump a lone size utility so a demo reads from the back. Skip the bump only
+ * for responsive prefixes (sm:text-, md:text-, lg:text-, xl:text-, 2xl:text-),
+ * so md:text-2xl stays real and [&_table]:text-base still gets the bump. */
+.lecture-slide .lecture-demo-frame-body .text-xs:not([class*="sm:text-"]):not([class*="md:text-"]):not([class*="lg:text-"]):not([class*="xl:text-"]):not([class*="2xl:text-"]) {
   font-size: 0.9375rem;
 }
 
-.lecture-slide .lecture-demo-frame-body .text-sm {
+.lecture-slide .lecture-demo-frame-body .text-sm:not([class*="sm:text-"]):not([class*="md:text-"]):not([class*="lg:text-"]):not([class*="xl:text-"]):not([class*="2xl:text-"]) {
   font-size: 1.09375rem;
 }
 
-.lecture-slide .lecture-demo-frame-body .text-base {
+.lecture-slide .lecture-demo-frame-body .text-base:not([class*="sm:text-"]):not([class*="md:text-"]):not([class*="lg:text-"]):not([class*="xl:text-"]):not([class*="2xl:text-"]) {
   font-size: 1.25rem;
 }
 
-.lecture-slide .lecture-demo-frame-body .text-lg {
+.lecture-slide .lecture-demo-frame-body .text-lg:not([class*="sm:text-"]):not([class*="md:text-"]):not([class*="lg:text-"]):not([class*="xl:text-"]):not([class*="2xl:text-"]) {
   font-size: 1.40625rem;
 }
 

@@ -230,7 +230,7 @@ export default function Home() {
     title: "Next: Assignments",
     kind: "title",
     bullets: [
-      "On your own — match the book LiveDemo and `wd-*` ids",
+      "On your own — match the Assignments screen and the `wd-*` ids",
     ],
   },
 ];

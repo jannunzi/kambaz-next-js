@@ -1,5 +1,4 @@
-import "@/app/labs/lab2/index.css";
-import { BoxModelWidget } from "@/app/labs/lab2/BoxModel";
+import { BoxModelWidget } from "./BoxModelWidget";
 import DiagramFrame from "./DiagramFrame";
 
 export default function BoxModelDiagram() {

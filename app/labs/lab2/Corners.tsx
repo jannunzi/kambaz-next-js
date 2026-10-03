@@ -1,7 +1,7 @@
 export default function Corners() {
   return (
     <div id="wd-css-corners">
-      <h3>Rounded corners</h3>
+      <h2>Rounded corners</h2>
       <p className="wd-rounded-corners-top wd-border-thin wd-border-blue wd-border-solid wd-padding-fat">
         Rounded corners on the top
       </p>

@@ -10,6 +10,7 @@ import {
   toBlockSlide,
   toBlockSlides,
 } from "./blocks";
+import { demoFrameClips, MARGINS_LIVE_CLIP_BEFORE } from "./demo-clip";
 import {
   COURSE_SITE_ORIGIN,
   adjacentLectureSlugs,
@@ -1144,8 +1145,8 @@ describe("lecture catalog", () => {
     assert.equal(lastLecture3.prev?.slug, "kambaz-modules");
     const lastLecture4 = adjacentLectureSlugs("css-rotation");
     assert.equal(lastLecture4.next?.slug, "react-icons");
-    assert.equal(lastLecture4.prev?.slug, "css-flex");
-    const lastLecture6 = adjacentLectureSlugs("tailwind-responsive");
+    assert.equal(lastLecture4.prev?.slug, "css-media-queries");
+    const lastLecture6 = adjacentLectureSlugs("tailwind-filters-and-grid");
     assert.equal(lastLecture6.next?.slug, "kambaz-styling");
     const lastCh2 = adjacentLectureSlugs("kambaz-account-styling");
     assert.equal(lastCh2.next?.slug, "intro-to-javascript");
@@ -1204,27 +1205,27 @@ describe("lecture decks", () => {
     assert.equal(counts["kambaz-courses"], 8);
     assert.equal(counts["kambaz-modules"], 12);
     assert.equal(counts["kambaz-assignments"], 12);
-    assert.equal(counts["css-intro"], 12);
-    assert.equal(counts["css-colors"], 9);
-    assert.equal(counts["css-box-model"], 10);
-    assert.equal(counts["css-size-and-position"], 10);
+    assert.equal(counts["css-intro"], 22);
+    assert.equal(counts["css-colors"], 10);
+    assert.equal(counts["css-box-model"], 18);
+    assert.equal(counts["css-size-and-position"], 22);
     assert.equal(counts["css-media-queries"], 8);
-    assert.equal(counts["css-float"], 8);
-    assert.equal(counts["css-flex"], 7);
+    assert.equal(counts["css-float"], 9);
+    assert.equal(counts["css-flex"], 12);
     assert.equal(counts["css-rotation"], 6);
-    assert.equal(counts["react-icons"], 8);
+    assert.equal(counts["react-icons"], 9);
     assert.equal(counts["tailwind-intro"], 9);
-    assert.equal(counts["tailwind-spacing"], 7);
-    assert.equal(counts["tailwind-typography"], 6);
-    assert.equal(counts["tailwind-colors"], 8);
-    assert.equal(counts["tailwind-flex-and-grid"], 8);
-    assert.equal(counts["tailwind-responsive"], 7);
+    assert.equal(counts["tailwind-spacing"], 8);
+    assert.equal(counts["tailwind-typography"], 7);
+    assert.equal(counts["tailwind-colors"], 6);
+    assert.equal(counts["tailwind-filters-and-grid"], 15);
+    assert.equal(counts["tailwind-responsive"], 23);
     assert.equal(counts["kambaz-styling"], 8);
     assert.equal(counts["kambaz-nav-styling"], 7);
     assert.equal(counts["kambaz-dashboard-styling"], 7);
-    assert.equal(counts["kambaz-courses-styling"], 13);
+    assert.equal(counts["kambaz-courses-styling"], 14);
     assert.equal(counts["kambaz-assignments-styling"], 9);
-    assert.equal(counts["kambaz-account-styling"], 7);
+    assert.equal(counts["kambaz-account-styling"], 8);
     assert.equal(counts["intro-to-javascript"], 8);
     assert.equal(counts["variables-and-constants"], 7);
     assert.equal(counts["variable-types"], 6);
@@ -1363,6 +1364,19 @@ describe("lecture decks", () => {
     );
     assert.match(
       css,
+      /\.lecture-slide \.lecture-demo-frame-body \.text-base:not\(\[class\*="sm:text-"\]\):not\(\[class\*="md:text-"\]\):not\(\[class\*="lg:text-"\]\):not\(\[class\*="xl:text-"\]\):not\(\[class\*="2xl:text-"\]\)/,
+    );
+    assert.doesNotMatch(css, /\[class\*=":text-"\]/);
+    assert.doesNotMatch(
+      css,
+      /\.lecture-slide \.book-code-block-body pre \{[^}]*white-space:\s*pre-wrap/,
+    );
+    assert.doesNotMatch(
+      css,
+      /\.lecture-slide \.book-code-block-lined \.line \{[^}]*overflow-wrap:\s*anywhere/,
+    );
+    assert.match(
+      css,
       /\.lecture-block-size-lg \{[^}]*max-width:\s*100%/,
     );
     const blocks = readFileSync(
@@ -1371,6 +1385,72 @@ describe("lecture decks", () => {
     );
     assert.match(blocks, /blockFrameClass/);
     assert.doesNotMatch(blocks, /lecture-block-size-md"/);
+  });
+
+  it("lets live-demo frames grow instead of clipping on a max height", () => {
+    const css = readFileSync(join(process.cwd(), "app/book/book.css"), "utf8");
+    assert.match(
+      css,
+      /\.lecture-slide \.lecture-demo-frame-body \{[^}]*display:\s*flow-root/,
+    );
+    assert.match(
+      css,
+      /\.lecture-slide \.lecture-demo-frame-body > \* \{[^}]*max-height:\s*none/,
+    );
+    const embedDir = join(process.cwd(), "app/slides/_components/embeds");
+    for (const name of readdirSync(embedDir)) {
+      if (!name.endsWith(".tsx")) continue;
+      const source = readFileSync(join(embedDir, name), "utf8");
+      assert.doesNotMatch(
+        source,
+        /max-h-\d+/,
+        `${name} caps a live demo and clips content`,
+      );
+    }
+
+    const deck = getLectureDeck("css-box-model");
+    assert.ok(deck);
+    const margins = deck.slides[MARGINS_LIVE_CLIP_BEFORE.slide - 1];
+    assert.equal(margins?.id, MARGINS_LIVE_CLIP_BEFORE.id);
+    assert.equal(margins?.embed, MARGINS_LIVE_CLIP_BEFORE.embed);
+    const embeds = readFileSync(
+      join(embedDir, "CssLabEmbeds.tsx"),
+      "utf8",
+    );
+    assert.match(embeds, /function CssMarginsEmbed\(\)[\s\S]*<Margins \/>/);
+    assert.doesNotMatch(embeds, /function CssMarginsEmbed\(\)[\s\S]*max-h-/);
+    assert.match(
+      embeds,
+      /function CssRotateEmbed\(\)[\s\S]*px-8 py-8/,
+      "rotated cards need room inside the frame",
+    );
+    const styling = readFileSync(join(embedDir, "KambazStylingEmbeds.tsx"), "utf8");
+    assert.match(
+      styling,
+      /function KambazStyledNavEmbed\(\)[\s\S]*<ContainFixed height="auto">/,
+      "the fixed sidebar needs a frame tall enough to show Courses",
+    );
+
+    // Known positive: the pre-fix Live Margins.tsx frame. If this stays
+    // quiet, the clip check is not actually looking for a scroller or a
+    // box past the frame.
+    assert.equal(demoFrameClips(MARGINS_LIVE_CLIP_BEFORE), true);
+    assert.equal(
+      demoFrameClips({
+        scrolls: [
+          {
+            scrollHeight: 590,
+            clientHeight: 590,
+            scrollWidth: 1178,
+            clientWidth: 1178,
+            overflowX: "visible",
+            overflowY: "visible",
+          },
+        ],
+        boxes: [{ top: -4, right: -8, bottom: -30, left: -8 }],
+      }),
+      false,
+    );
   });
 
   it("gives every lecture code block a one-click Copy overlay", () => {
@@ -1548,10 +1628,10 @@ describe("lecture decks", () => {
       },
       "css-intro": {
         "style-attr": "css-style-attr",
-        "import-css": "css-import",
-        "id-selectors": "css-id-selectors",
-        "class-selectors": "css-class-selectors",
-        structure: "css-structure-selectors",
+        "import-live": "css-import",
+        "id-live": "css-id-selectors",
+        "class-live": "css-class-selectors",
+        "structure-live": "css-structure-selectors",
       },
       "css-colors": {
         "fg-demo": "css-foreground",
@@ -1559,18 +1639,18 @@ describe("lecture decks", () => {
       },
       "css-box-model": {
         "borders-demo": "css-borders",
-        padding: "css-padding",
-        margins: "css-margins",
+        "padding-live": "css-padding",
+        "margins-live": "css-margins",
         "box-model-demo": "css-box-model",
-        corners: "css-corners",
+        "corners-live": "css-corners",
       },
       "css-size-and-position": {
-        dimensions: "css-dimensions",
+        "dimensions-live": "css-dimensions",
         "display-demo": "css-display",
-        relative: "css-position-relative",
-        absolute: "css-position-absolute",
-        fixed: "css-position-fixed",
-        zindex: "css-zindex",
+        "relative-live": "css-position-relative",
+        "absolute-live": "css-position-absolute",
+        "fixed-live": "css-position-fixed",
+        "zindex-live": "css-zindex",
       },
       "css-media-queries": { demo: "css-media-queries" },
       "css-float": {
@@ -1578,26 +1658,33 @@ describe("lecture decks", () => {
         "grid-demo": "css-grid-layout",
       },
       "css-flex": {
-        row: "css-flex-row",
-        grow: "css-flex-grow",
-        pin: "css-flex-width",
+        "row-live": "css-flex-row",
+        "grow-live": "css-flex-grow",
+        "pin-live": "css-flex-width",
       },
       "css-rotation": {
         rotate: "css-rotate",
         gradient: "css-gradient",
       },
-      "react-icons": { sampler: "react-icons" },
+      "react-icons": { "sampler-live": "react-icons" },
       "tailwind-spacing": { demo: "tw-spacing" },
       "tailwind-typography": { demo: "tw-typography" },
       "tailwind-colors": {
         demo: "tw-backgrounds",
-        "filters-demo": "tw-filters",
       },
-      "tailwind-flex-and-grid": {
+      "tailwind-filters-and-grid": {
+        "filters-demo": "tw-filters",
         "flex-demo": "tw-flex",
         "grid-demo": "tw-grids",
       },
-      "tailwind-responsive": { demo: "tw-responsive" },
+      "tailwind-responsive": {
+        "breakpoint-demo": "tw-responsive-breakpoint",
+        "show-hide-demo": "tw-responsive-show-hide",
+        "flex-demo": "tw-responsive-flex",
+        "grid-demo": "tw-responsive-grid",
+        "spacing-demo": "tw-responsive-spacing",
+        demo: "tw-responsive",
+      },
       "kambaz-nav-styling": { demo: "kambaz-styled-nav" },
       "kambaz-dashboard-styling": { demo: "kambaz-styled-dashboard" },
       "kambaz-courses-styling": {
@@ -2155,6 +2242,10 @@ describe("lecture decks", () => {
     assert.match(size, /wd-zindex-bring-to-front/);
 
     const mq = slideText("css-media-queries");
+    assert.equal(
+      findSlide("css-media-queries", "purpose").bullets?.[2],
+      "A **breakpoint** is a viewport width at which styles change, for example through a media query.",
+    );
     assert.match(mq, /@media/);
     assert.match(mq, /750px/);
     assert.match(mq, /MediaQueriesDemo\.tsx/);
@@ -2163,10 +2254,17 @@ describe("lecture decks", () => {
     assert.doesNotMatch(mq, /min-width: 576px/);
 
     const float = slideText("css-float");
+    assert.equal(
+      findSlide("css-float", "classes").bullets?.[0],
+      "A length in **rem** is relative to the root font size, usually 16px, so 2rem = 32px.",
+    );
     assert.match(float, /wd-float-left/);
     assert.match(float, /wd-float-done/);
+    assert.match(float, /wd-float-divs/);
+    assert.match(float, /STARSHIP/);
+    assert.match(float, /staradvertiser/i);
     assert.match(float, /wd-grid-col-half-page/);
-    assert.doesNotMatch(float, /staradvertiser/i);
+    assert.match(float, /wd-grid-col-left-sidebar/);
     assert.doesNotMatch(float, /googleusercontent/i);
 
     const flex = slideText("css-flex");
@@ -2203,29 +2301,98 @@ describe("lecture decks", () => {
     assert.match(spacing, /TailwindSpacing/);
     assert.match(spacing, /mb-4/);
     assert.match(spacing, /ms-4 me-8/);
+    assert.match(spacing, /import TailwindSpacing from "\.\/TailwindSpacing"/);
+    assert.match(spacing, /render the component under the heading/);
 
     const type = slideText("tailwind-typography");
     assert.match(type, /TailwindTypography/);
     assert.match(type, /text-sm/);
     assert.match(type, /font-black/);
+    assert.match(type, /import TailwindTypography from "\.\/TailwindTypography"/);
+    assert.match(type, /after `TailwindSpacing`/);
 
     const colors = slideText("tailwind-colors");
+    assert.match(colors, /Shades: 50, 100, 200 … 900, 950 \(lightest to darkest\)/);
+    assert.doesNotMatch(colors, /steps of 100/);
     assert.match(colors, /bg-red-500/);
     assert.match(colors, /yellow-500/);
-    assert.match(colors, /blur-lg/);
-    assert.match(colors, /TailwindFilters/);
+    assert.match(colors, /import TailwindBackgroundColors from "\.\/TailwindBackgroundColors"/);
+    assert.doesNotMatch(colors, /TailwindFilters/);
 
-    const flexGrid = slideText("tailwind-flex-and-grid");
+    const flexGrid = slideText("tailwind-filters-and-grid");
     assert.match(flexGrid, /shrink-0/);
+    assert.match(flexGrid, /blur-lg/);
+    assert.match(flexGrid, /TailwindFilters/);
     assert.match(flexGrid, /grid-cols-4/);
     assert.match(flexGrid, /col-span-4/);
     assert.match(flexGrid, /wd-tailwind-grid-system/);
+    assert.match(flexGrid, /import TailwindFilters from "\.\/TailwindFilters"/);
+    assert.match(flexGrid, /after `TailwindResponsiveDesign`/);
+    assert.match(flexGrid, /import TailwindGrids from "\.\/TailwindGrids"/);
+    assert.match(flexGrid, /after `TailwindFilters`/);
     assert.doesNotMatch(flexGrid, /wd-flex-row-container/);
 
     const responsive = slideText("tailwind-responsive");
     assert.match(responsive, /md:flex/);
     assert.match(responsive, /TailwindResponsiveDesign/);
+    assert.match(responsive, /TailwindResponsiveBreakpoint/);
+    assert.match(responsive, /TailwindResponsiveShowHide/);
+    assert.match(responsive, /TailwindResponsiveFlex/);
+    assert.match(responsive, /TailwindResponsiveGrid/);
+    assert.match(responsive, /TailwindResponsiveSpacingText/);
     assert.match(responsive, /mobile-first/i);
+    assert.match(responsive, /40rem \(640px\)/);
+    assert.match(responsive, /96rem \(1536px\)/);
+    assert.match(responsive, /md:max-w-2xl/);
+    assert.match(responsive, /md:shrink-0/);
+    assert.match(responsive, /flex-direction/);
+    assert.match(responsive, /CSS Grid/);
+    assert.match(responsive, /usually 16px, so 48rem is 768px/);
+    assert.match(responsive, /As in §2\.1\.20/);
+    assert.match(responsive, /viewport width at which styles change/);
+    assert.doesNotMatch(responsive, /for example through a media query/);
+    assert.match(responsive, /minimum height of 14rem/);
+    const responsiveIds = getLectureDeck("tailwind-responsive")!.slides.map((slide) => slide.id);
+    assert.equal(responsiveIds[responsiveIds.indexOf("intro") + 1], "prefixes");
+    assert.equal(responsiveIds[responsiveIds.indexOf("prefixes") + 1], "prefix-ruler");
+    assert.ok(responsiveIds.indexOf("prefix-ruler") < responsiveIds.indexOf("breakpoint-tsx"));
+    assert.equal(findSlide("tailwind-responsive", "prefix-ruler").diagram, "tailwind-breakpoints");
+    assert.doesNotMatch(
+      findSlide("tailwind-responsive", "intro").bullets?.join("\n") ?? "",
+      /md:/,
+    );
+    assert.doesNotMatch(
+      findSlide("tailwind-responsive", "widths").bullets?.join("\n") ?? "",
+      /40rem \(640px\)/,
+    );
+    const cardIds = ["tsx", "card-frame", "card-image", "card-text", "demo"];
+    const cardAt = responsiveIds.indexOf("tsx");
+    assert.deepEqual(responsiveIds.slice(cardAt, cardAt + cardIds.length), cardIds);
+    assert.equal(findSlide("tailwind-responsive", "tsx").code, undefined);
+    const cardParts = ["card-frame", "card-image", "card-text"].map((id) => {
+      const slide = findSlide("tailwind-responsive", id);
+      assert.equal(slide.codeFile, "app/labs/lab2/tailwind/TailwindResponsiveDesign.tsx");
+      assert.ok(slide.codeHighlightLines?.length);
+      assert.ok(slide.title.length <= 42);
+      return slide.code ?? "";
+    });
+    const cardSource = readFileSync(
+      join(process.cwd(), "app/labs/lab2/tailwind/TailwindResponsiveDesign.tsx"),
+      "utf8",
+    );
+    assert.equal(cardParts.join("\n").trim(), cardSource.trim());
+    assert.deepEqual(findSlide("tailwind-responsive", "page").codeAddedLines, [
+      [5, 10],
+      [21, 32],
+    ]);
+    assert.deepEqual(findSlide("tailwind-spacing", "page").codeAddedLines, [1, 4]);
+    assert.deepEqual(findSlide("tailwind-typography", "page").codeAddedLines, [1, 4, 5]);
+    assert.deepEqual(findSlide("tailwind-colors", "page").codeAddedLines, [1, 4, 5]);
+    assert.deepEqual(findSlide("tailwind-filters-and-grid", "filters-page").codeAddedLines, [1, 4, 5]);
+    assert.deepEqual(findSlide("tailwind-filters-and-grid", "grids-page").codeAddedLines, [1, 4, 5]);
+    assert.doesNotMatch(responsive, /TailwindFilters|TailwindGrids/);
+    assert.doesNotMatch(responsive, /gutter/i);
+    assert.doesNotMatch(responsive, /Bootstrap/);
 
     const shell = slideText("kambaz-styling");
     assert.match(shell, /tailwindcss\/theme/);
@@ -2612,15 +2779,20 @@ describe("lecture decks", () => {
     assert.doesNotMatch(atlas, /netlify\.com/i);
     assert.doesNotMatch(atlas, /OMDb|omdb/i);
     assert.doesNotMatch(atlas, /napster/i);
-    assert.doesNotMatch(atlas, /supersecretpassword/);
-    assert.match(atlas, /<password>/);
+    assert.match(
+      atlas,
+      /mongodb\+srv:\/\/giuseppi:supersecretpassword@kambaz\.jxui0bc\.mongodb\.net\//,
+    );
 
     const compass = slideText("atlas-compass");
     assert.match(compass, /mongodb\+srv/);
     assert.match(compass, /New Window|new window/i);
     assert.match(compass, /users|courses|modules/);
     assert.doesNotMatch(compass, /netlify\.com/i);
-    assert.doesNotMatch(compass, /supersecretpassword/);
+    assert.match(
+      compass,
+      /mongodb\+srv:\/\/giuseppi:supersecretpassword@kambaz\.jxui0bc\.mongodb\.net\//,
+    );
 
     const node = slideText("atlas-node");
     assert.match(node, /0\.0\.0\.0\/0/);
@@ -2946,6 +3118,9 @@ describe("lecture decks", () => {
       },
       "css-box-model": {
         layers: "box-model",
+      },
+      "tailwind-responsive": {
+        "prefix-ruler": "tailwind-breakpoints",
       },
       "youtube-api": {
         credentials: "google-cloud-key-mock",

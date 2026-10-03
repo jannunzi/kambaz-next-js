@@ -3,11 +3,14 @@ import { describe, it } from "node:test";
 import { A1_RUBRIC } from "./a1";
 import { listRubricCriteria, rubricPointTotal } from "./catalog";
 import type { AssignmentCheckResult } from "./check-types";
+import { A2_RUBRIC } from "./a2";
 import {
   computeAllOrNothingGrade,
   effectivePassedIds,
   formatGradeSummary,
+  formatPointsPercent,
   gradeFromResultsAndOverrides,
+  pointsPercent,
   proposedGradeFromResults,
   proposedPassedIdsFromResults,
 } from "./grade";
@@ -39,7 +42,7 @@ describe("all-or-nothing grade calculation", () => {
     assert.equal(passed.totalPoints, rubricPointTotal(A1_RUBRIC));
     assert.equal(
       passed.percent,
-      Math.round((vercel.points / passed.totalPoints) * 100),
+      pointsPercent(vercel.points, passed.totalPoints),
     );
 
     const failed = computeAllOrNothingGrade(A1_RUBRIC, []);
@@ -55,8 +58,27 @@ describe("all-or-nothing grade calculation", () => {
     assert.equal(grade.passedIds.join(","), ids.join(","));
     assert.equal(
       formatGradeSummary(grade),
-      `8 / ${grade.totalPoints} pts (${grade.percent}%)`,
+      `8 / ${grade.totalPoints} (${grade.percent.toFixed(1)}%)`,
     );
+    assert.equal(formatPointsPercent(110, 125), "110 / 125 (88.0%)");
+    assert.equal(pointsPercent(1, 3), 33.3);
+    assert.equal(formatPointsPercent(1, 3), "1 / 3 (33.3%)");
+    assert.equal(pointsPercent(5, 8), 62.5);
+    assert.equal(formatPointsPercent(5, 8), "5 / 8 (62.5%)");
+    assert.equal(formatPointsPercent(0, 0), "—");
+    assert.equal(formatPointsPercent(Number.NaN, 125), "—");
+    assert.equal(formatPointsPercent(undefined, undefined), "—");
+    assert.equal(formatPointsPercent(-4, 125), "0 / 125 (0.0%)");
+    assert.equal(pointsPercent(130, 125), 104);
+    assert.equal(formatPointsPercent(130, 125), "130 / 125 (104.0%)");
+    assert.equal(pointsPercent(124, 125), 99.2);
+    assert.equal(formatPointsPercent(124, 125), "124 / 125 (99.2%)");
+    assert.equal(pointsPercent(124.5, 125), 99.6);
+    assert.equal(formatPointsPercent(124.5, 125), "124.5 / 125 (99.6%)");
+    assert.equal(pointsPercent(125, 125), 100);
+    assert.equal(formatPointsPercent(125, 125), "125 / 125 (100.0%)");
+    const a2 = computeAllOrNothingGrade(A2_RUBRIC, []);
+    assert.equal(formatGradeSummary(a2), `0 / ${a2.totalPoints} (0.0%)`);
   });
 
   it("builds a proposed grade from auto-pass results only", () => {

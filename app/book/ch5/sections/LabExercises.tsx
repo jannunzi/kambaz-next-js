@@ -25,7 +25,7 @@ export default function LabExercises() {
         <strong>two terminals</strong>: one for the Next.js user
         interface on port 3000 and one for the sibling Express server
         on port 4000. Leave both running for the rest of the chapter.
-        Express LiveDemos below call the companion through{" "}
+        The interactive demos below call the companion through{" "}
         <code>httpServer()</code>.{" "}
         <SectionLink to="5.3" />{" "}Route Handler demos stay on
         same-origin <code>/api/...</code>{" "}and do not need port 4000.
@@ -83,8 +83,7 @@ app.listen(4000);`}</CodeBlock>
         the link navigates to the expected response. Do not hard-code
         the host for long — the next subsection replaces it with an
         environment variable. Style the link with Tailwind — a simple
-        underline or list item — rather than Bootstrap{" "}
-        <code>list-group</code>.
+        underline or list item.
       </p>
       <CodeBlock
         language="tsx"
@@ -160,13 +159,13 @@ app.listen(4000);`}</CodeBlock>
           <code>process.env.NEXT_PUBLIC_HTTP_SERVER</code>.
         </p>
         <p>
-          The PDF name is{" "}
-          <code>NEXT_PUBLIC_HTTP_SERVER</code>. This book wraps it in{" "}
-          <code>httpServer()</code>{" "}so every Express LiveDemo uses
+          The variable is{" "}
+          <code>NEXT_PUBLIC_HTTP_SERVER</code>. Wrap it in{" "}
+          <code>httpServer()</code>{" "}so every Express demo uses
           the same client code — locally{" "}
           <code>http://localhost:4000</code>, and later whatever origin
           you set for deploy. Unset, the helper still points at the
-          companion on 4000, which is enough for every LiveDemo in this
+          companion on 4000, which is enough for every interactive demo in this
           chapter. <SectionLink to="5.5" />{" "}is when you point the
           same helper at a deployed origin. Do not hard-code the host
           in screens.
@@ -369,10 +368,7 @@ export default function Lab5(app) {
             implemented earlier. Import the new component in your Lab
             5 component and confirm that clicking the links generates
             the expected response. Use Tailwind inputs and colored
-            buttons — the PDF used Bootstrap{" "}
-            <code>FormControl</code>{" "}and{" "}
-            <code>btn-primary</code>; the live sample uses rounded
-            borders and{" "}
+            buttons: rounded borders and{" "}
             <code>bg-blue-600</code>.
           </p>
           <CodeBlock
@@ -490,7 +486,7 @@ const [b, setB] = useState("23");
             request&apos;s path. Now implement the same operations
             again, multiply and divide on the server and client, but
             multiplying and dividing parameters encoded in the query
-            string. Both pairs of links should appear in the LiveDemos
+            string. Both pairs of links should appear in the demos
             above once you finish — path IDs start with{" "}
             <code>wd-path-parameter-</code>, query IDs with{" "}
             <code>wd-query-parameter-</code>.
@@ -1363,7 +1359,7 @@ useEffect(() => { fetchAssignment(); }, []);`}</CodeBlock>
             as a list of todos when the component loads. Confirm that
             the todos render when the component first loads. Strike
             through completed titles so the list reads like a
-            checklist. The finished LiveDemo for this component waits
+            checklist. The finished interactive demo for this component waits
             until{" "}
             <SectionLink to="5.2.6.4" />, after POST, DELETE, PUT, and
             error handling are on the same screen.
@@ -1831,8 +1827,7 @@ const updateTodo = (req, res) => {
             <code>errorMessage</code>{" "}state variable that we
             populate with the error from the server if an error
             occurs. The error is rendered as a red alert box using
-            Tailwind — the PDF used Bootstrap{" "}
-            <code>alert-danger</code>; the live sample uses{" "}
+            Tailwind:{" "}
             <code>bg-red-100</code>{" "}and{" "}
             <code>text-red-800</code>. To test, remove an item using
             the{" "}

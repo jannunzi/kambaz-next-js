@@ -1,3 +1,4 @@
-/* Full Tailwind (includes Preflight). Import only from the dedicated
-   /labs/lab2/tailwind route — not from the book or shared Kambaz chrome. */
+/* Full Tailwind (theme, Preflight, utilities) in one import so base
+   is declared before utilities. Used by /labs/lab2/tailwind and the
+   book preview iframe. Do not also import utilities.css in that document. */
 @import "tailwindcss";

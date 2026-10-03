@@ -6,28 +6,284 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
     title: "WEB DEV",
     kind: "title",
     bullets: [
-      "Chapter 2 · Flex and Grid",
-      "§2.3.6 · Tailwind layout utilities — not a second float lecture",
+      "Chapter 2 · Filters and Grid",
+      "§2.3.5–2.3.6 · blur utilities, then CSS Grid",
     ],
   },
   {
     id: "purpose",
-    title: "Same CSS, shorter class names",
+    title: "Filters, then a real grid",
     kind: "content",
     bullets: [
-      "§2.1 already taught `display: flex` and percentage float columns",
-      "This deck is the **utility** spelling — skip the raw CSS redo",
-      "`flex` → `display: flex`. `grow` → `flex-grow: 1`. `shrink-0` → `flex-shrink: 0`",
-      "Grid: `grid grid-cols-4 gap-4`, then `col-span-*` to span",
+      "§2.3.5: `blur-*`, `grayscale`, `brightness-*`, `contrast-*` on the element",
+      "**CSS Grid** places children into columns. `grid` turns the grid on and `grid-cols-*` sets how many columns",
+      "`gap` is the gutter, the space between those cells",
+      "`col-span-*` stretches one cell across that many columns",
+      "A **12-column grid** divides the page into twelve columns",
+      "The last slides write that flex row with Tailwind",
     ],
+  },
+  {
+    id: "filters-purpose",
+    title: "Filters are utilities too",
+    kind: "content",
+    bullets: [
+      "Apply the effect on the element — usually an image",
+      "Swap one class to change the strength. No extra CSS file",
+    ],
+  },
+  {
+    id: "filters-tsx",
+    title: "Blur utilities",
+    kind: "content",
+    bullets: [
+      "Filter utilities apply visual effects like blur straight onto an image or element.",
+      "Four copies of the same image, blur growing from none to `2xl`",
+    ],
+    code: `export default function TailwindFilters() {
+  // reactjs.jpg is used here so the lab runs out of the box.
+  const src = "/images/reactjs.jpg";
+  return (
+    <div>
+      <h2>Blurs</h2>
+      <div className="flex">
+        <img className="blur-none w-1/4" src={src} alt="blur none" />
+        <img className="blur-sm w-1/4" src={src} alt="blur sm" />
+        <img className="blur-lg w-1/4" src={src} alt="blur lg" />
+        <img className="blur-2xl w-1/4" src={src} alt="blur 2xl" />
+      </div>
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/tailwind/TailwindFilters.tsx",
+  },
+  {
+    id: "filters-demo",
+    title: "Live blur row",
+    kind: "demo",
+    bullets: [
+      "Each blur level is one utility class swapped for another.",
+      "`w-1/4` plus `flex` puts four images in one row",
+      "On your own: a second row with `grayscale` or `brightness-*`",
+    ],
+    embed: "tw-filters",
+  },
+  {
+    id: "filters-page",
+    title: "Add filters to the page",
+    kind: "content",
+    bullets: [
+      "Add `TailwindFilters` to the lab page. Put this import after `TailwindResponsiveDesign`, and render the component after that one",
+    ],
+    code: `import TailwindFilters from "./TailwindFilters";
+
+      <TailwindResponsiveDesign />
+      <hr className="my-8" />
+      <TailwindFilters />`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/tailwind/page.tsx",
+    codeAddedLines: [1, 4, 5],
+  },
+  {
+    id: "grid-four",
+    title: "grid-cols-4 wraps children",
+    kind: "content",
+    bullets: [
+      "`grid grid-cols-4 gap-4` — four columns, consistent gutters",
+      "Nine cells wrap onto a third row. No manual row break",
+      "Start `TailwindGrids.tsx` with the outer wrapper, the Tailwind Grids `h2`, and this four-column grid",
+    ],
+    code: `export default function TailwindGrids() {
+  return (
+    <div>
+      <h2>Tailwind Grids</h2>
+      <div>
+        <h3 className="mt-6 text-3xl font-bold">4 Columns Grid</h3>
+        <div className="grid grid-cols-4 gap-4">
+          {Array.from({ length: 9 }, (_, i) => (
+            <div key={i} className="text-center bg-blue-300 p-3">
+              {String(i + 1).padStart(2, "0")}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/tailwind/TailwindGrids.tsx",
+  },
+  {
+    id: "grid-three",
+    title: "Paste the 3 Columns Grid",
+    kind: "content",
+    bullets: [
+      "`col-span` lets one cell stretch across several grid tracks without changing the column count.",
+      "Paste the TSX below after the 4 Columns Grid",
+      "`col-span-2` makes two of the cells twice as wide",
+    ],
+    code: `      <div>
+        <h3 className="mt-6 text-3xl font-bold">3 Columns Grid</h3>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="text-center bg-blue-300 p-3">01</div>
+          <div className="text-center bg-blue-300 p-3">02</div>
+          <div className="text-center bg-blue-300 p-3">03</div>
+          <div className="col-span-2 text-center bg-blue-300 p-3">04</div>
+          <div className="text-center bg-blue-300 p-3">05</div>
+          <div className="text-center bg-blue-300 p-3">06</div>
+          <div className="col-span-2 text-center bg-blue-300 p-3">07</div>
+        </div>
+      </div>`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/tailwind/TailwindGrids.tsx",
+  },
+  {
+    id: "grid-system",
+    title: "Paste the grid system",
+    kind: "content",
+    bullets: [
+      "A twelve-column grid is the sweet spot because twelve divides evenly by two, three, four, and six.",
+      "Paste the TSX below after the 3 Columns Grid",
+      "Twelve columns: `col-span-4` + `col-span-8`, then `2 / 8 / 2`",
+    ],
+    code: `      <div id="wd-tailwind-grid-system" className="mt-6">
+        <h2>Grid system</h2>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="bg-red-500 text-white">
+            <h3>Left half</h3>
+          </div>
+          <div className="bg-blue-500 text-white">
+            <h3>Right half</h3>
+          </div>
+        </div>
+        <div className="grid grid-cols-12 gap-2 mt-2">
+          <div className="col-span-4 bg-yellow-500">
+            <h3>One third</h3>
+          </div>
+          <div className="col-span-8 bg-green-500 text-white">
+            <h3>Two thirds</h3>
+          </div>
+        </div>
+        <div className="grid grid-cols-12 gap-2 mt-2">
+          <div className="col-span-2 bg-black text-white">
+            <h3>Sidebar</h3>
+          </div>
+          <div className="col-span-8 bg-gray-500 text-white">
+            <h3>Main content</h3>
+          </div>
+          <div className="col-span-2 bg-blue-400">
+            <h3>Sidebar</h3>
+          </div>
+        </div>
+      </div>`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/tailwind/TailwindGrids.tsx",
+  },
+  {
+    id: "col-span",
+    title: "col-span on a 12-column grid",
+    kind: "content",
+    bullets: [
+      "This is the finished `TailwindGrids.tsx`: four columns, three columns, then the 12-column system",
+      "A 3-column grid uses `col-span-2` on two of the cells",
+      "Twelve divides by 2, 3, 4, and 6 — `col-span-4` + `col-span-8`, then `2 / 8 / 2`",
+    ],
+    code: `export default function TailwindGrids() {
+  return (
+    <div>
+      <h2>Tailwind Grids</h2>
+      <div>
+        <h3 className="mt-6 text-3xl font-bold">4 Columns Grid</h3>
+        <div className="grid grid-cols-4 gap-4">
+          {Array.from({ length: 9 }, (_, i) => (
+            <div key={i} className="text-center bg-blue-300 p-3">
+              {String(i + 1).padStart(2, "0")}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div>
+        <h3 className="mt-6 text-3xl font-bold">3 Columns Grid</h3>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="text-center bg-blue-300 p-3">01</div>
+          <div className="text-center bg-blue-300 p-3">02</div>
+          <div className="text-center bg-blue-300 p-3">03</div>
+          <div className="col-span-2 text-center bg-blue-300 p-3">04</div>
+          <div className="text-center bg-blue-300 p-3">05</div>
+          <div className="text-center bg-blue-300 p-3">06</div>
+          <div className="col-span-2 text-center bg-blue-300 p-3">07</div>
+        </div>
+      </div>
+      <div id="wd-tailwind-grid-system" className="mt-6">
+        <h2>Grid system</h2>
+        <div className="grid grid-cols-2 gap-2">
+          <div className="bg-red-500 text-white">
+            <h3>Left half</h3>
+          </div>
+          <div className="bg-blue-500 text-white">
+            <h3>Right half</h3>
+          </div>
+        </div>
+        <div className="grid grid-cols-12 gap-2 mt-2">
+          <div className="col-span-4 bg-yellow-500">
+            <h3>One third</h3>
+          </div>
+          <div className="col-span-8 bg-green-500 text-white">
+            <h3>Two thirds</h3>
+          </div>
+        </div>
+        <div className="grid grid-cols-12 gap-2 mt-2">
+          <div className="col-span-2 bg-black text-white">
+            <h3>Sidebar</h3>
+          </div>
+          <div className="col-span-8 bg-gray-500 text-white">
+            <h3>Main content</h3>
+          </div>
+          <div className="col-span-2 bg-blue-400">
+            <h3>Sidebar</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/tailwind/TailwindGrids.tsx",
+  },
+  {
+    id: "grid-demo",
+    title: "Live Tailwind grids",
+    kind: "demo",
+    bullets: [
+      "Four-column wrap, a 3-column grid with `col-span-2`, then the 12-column splits",
+      "§2.1’s float “grid” was percentages. This is CSS Grid",
+    ],
+    embed: "tw-grids",
+  },
+  {
+    id: "grids-page",
+    title: "Add grids to the page",
+    kind: "content",
+    bullets: [
+      "Add `TailwindGrids` to the lab page. Put this import after `TailwindFilters`, and render the component after that one",
+    ],
+    code: `import TailwindGrids from "./TailwindGrids";
+
+      <TailwindFilters />
+      <hr className="my-8" />
+      <TailwindGrids />`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/tailwind/page.tsx",
+    codeAddedLines: [1, 4, 5],
   },
   {
     id: "flex-map",
     title: "Flex.tsx → Tailwind classes",
     kind: "content",
     bullets: [
-      "Pinned column + growing column — same Lab 2 Flex story",
-      "`w-[110px] shrink-0` pins column 1. `grow` stretches column 3",
+      "The Lab 2 flex row, written with Tailwind utilities",
+      "`w-[110px]` sets a width of 110px. `shrink-0` stops that column from shrinking. `grow` gives column 3 the leftover space",
     ],
     code: `<div className="flex flex-row">
   <div className="w-[110px] shrink-0 bg-yellow-300 p-2.5">Column 1</div>
@@ -48,75 +304,12 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
     embed: "tw-flex",
   },
   {
-    id: "grid-four",
-    title: "grid-cols-4 wraps children",
-    kind: "content",
-    bullets: [
-      "`grid grid-cols-4 gap-4` — four columns, consistent gutters",
-      "Nine cells wrap onto a third row. No manual row break",
-    ],
-    code: `export default function TailwindGrids() {
-  return (
-    <div>
-      <h3 className="mt-6 text-3xl font-bold">4 Columns Grid</h3>
-      <div className="grid grid-cols-4 gap-4">
-        {Array.from({ length: 9 }, (_, i) => (
-          <div key={i} className="text-center bg-blue-300 p-3">
-            {String(i + 1).padStart(2, "0")}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}`,
-    codeLanguage: "tsx",
-    codeFile: "app/labs/lab2/tailwind/TailwindGrids.tsx",
-  },
-  {
-    id: "col-span",
-    title: "col-span on a 12-column grid",
-    kind: "content",
-    bullets: [
-      "Twelve divides by 2, 3, 4, and 6 — that is why page layouts use 12",
-      "`col-span-4` + `col-span-8` = one third / two thirds",
-      "Sidebar / content / sidebar = `2 / 8 / 2`",
-    ],
-    code: `<div id="wd-tailwind-grid-system" className="mt-6">
-  <h2>Grid system</h2>
-  <div className="grid grid-cols-2 gap-2">
-    <div className="bg-red-500 text-white"><h3>Left half</h3></div>
-    <div className="bg-blue-500 text-white"><h3>Right half</h3></div>
-  </div>
-  <div className="grid grid-cols-12 gap-2 mt-2">
-    <div className="col-span-4 bg-yellow-500"><h3>One third</h3></div>
-    <div className="col-span-8 bg-green-500 text-white"><h3>Two thirds</h3></div>
-  </div>
-  <div className="grid grid-cols-12 gap-2 mt-2">
-    <div className="col-span-2 bg-black text-white"><h3>Sidebar</h3></div>
-    <div className="col-span-8 bg-gray-500 text-white"><h3>Main content</h3></div>
-    <div className="col-span-2 bg-blue-400"><h3>Sidebar</h3></div>
-  </div>
-</div>`,
-    codeLanguage: "tsx",
-    codeFile: "app/labs/lab2/tailwind/TailwindGrids.tsx",
-  },
-  {
-    id: "grid-demo",
-    title: "Live Tailwind grids",
-    kind: "demo",
-    bullets: [
-      "Four-column wrap, then the 12-column page splits",
-      "§2.1’s float “grid” was percentages. This is CSS Grid",
-    ],
-    embed: "tw-grids",
-  },
-  {
     id: "next-up",
-    title: "Next: responsive prefixes",
+    title: "Next: style Kambaz",
     kind: "title",
     bullets: [
-      "You can pin a flex column and span grid tracks with utilities",
-      "§2.3.4: mobile-first `md:` / `lg:` — the Tailwind spelling of `@media`",
+      "You can blur an image and span grid tracks with utilities",
+      "§2.4: wire Tailwind into the Kambaz shell — theme + utilities, no Preflight",
     ],
   },
 ];

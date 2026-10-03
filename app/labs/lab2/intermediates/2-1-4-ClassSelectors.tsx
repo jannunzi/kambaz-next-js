@@ -3,6 +3,7 @@ import "../index.css";
 export default function ClassSelectors() {
   return (
     <div id="wd-lab2">
+      <h2>Lab 2 - Cascading Style Sheets</h2>
       <div id="wd-css-class-selectors">
         <h3>Class selectors</h3>
         <p className="wd-class-selector">

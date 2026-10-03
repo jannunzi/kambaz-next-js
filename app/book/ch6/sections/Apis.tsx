@@ -205,9 +205,8 @@ app.get("/api/users", findAllUsers);`}</CodeBlock>
           screen will pass every user, and the course People page in{" "}
           <SectionLink to="6.4.3.5" />{" "}will pass only the students
           enrolled in that course. Style the table with Tailwind
-          utility classes rather than Bootstrap&apos;s{" "}
-          <code>table table-striped</code>{" "}— a full-width collapsed
-          table with a light border and striped odd rows is enough.
+          utility classes: a full-width collapsed
+          table with a light line under the header row and striped odd rows (<code>w-full border-collapse</code>, <code>border-b border-neutral-300</code>, <code>odd:bg-neutral-50</code>).
         </p>
         <CodeBlock
           language="tsx"
@@ -305,8 +304,8 @@ export default function Users() {
           <code>users</code>, otherwise the red accent. To test, use
           Compass to update the role of an existing user or create a
           new user with an <code>ADMIN</code>{" "}role, sign in as that
-          ADMIN user, and navigate to the Users screen. This book
-          seeds <code>nick_fury</code>{" "}/ <code>fury123</code>{" "}as
+          ADMIN user, and navigate to the Users screen. The sample
+          users include <code>nick_fury</code>{" "}/ <code>fury123</code>{" "}as
           an administrator. Confirm that all users are displayed.
         </p>
         <CodeBlock
@@ -465,8 +464,9 @@ export const findUsersByPartialName = async (name: string) => {
           and calls <code>fetchUsers</code>{" "}again. Confirm that
           selecting various roles actually filters the users by their
           role. Style the select with Tailwind — a bordered control
-          about a quarter of the width — rather than Bootstrap&apos;s{" "}
-          <code>form-select</code>.
+          about a quarter of the width (
+          <code>w-1/4 rounded border</code>
+          ).
         </p>
         <CodeBlock
           language="tsx"
@@ -591,9 +591,8 @@ app.get("/api/users/:userId", findUserById);`}</CodeBlock>
           <code>uid</code>{" "}as a dependency so that the component
           re-renders if you click on another user while the component
           is still displaying. The panel is a fixed column on the
-          right — Tailwind <code>fixed top-0 end-0 bottom-0</code>{" "}
-          with a white background and a shadow — rather than a
-          Bootstrap offcanvas.
+          right: Tailwind <code>fixed top-0 end-0 bottom-0</code>{" "}
+          with a white background and a shadow.
         </p>
         <CodeBlock
           language="tsx"
@@ -984,11 +983,11 @@ app.post("/api/users", createUser);`}</CodeBlock>
   setUsers([...users, user]);
 };`}</CodeBlock>
         <p>
-          The LiveDemo below is that Users screen against the Lab 6
-          store — find all, filter by role and name, open details,
-          update, delete, create. Work through each verb once so the
-          same sequence feels familiar when you point the sibling
-          server at Mongo and click the real Account Users link.
+          The demo below is that Users screen. Find all, filter by
+          role and name, open details, update, delete, and create.
+          Work through each verb once so the same sequence feels
+          familiar when you point the sibling server at Mongo and
+          click the Account Users link.
         </p>
         <LiveDemo
           name="Lab6Users"

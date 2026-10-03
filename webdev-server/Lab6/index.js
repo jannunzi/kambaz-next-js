@@ -1,6 +1,11 @@
 import { v4 as uuidv4 } from "uuid";
 import model from "./model.js";
-import { isMongoEnabled } from "../Kambaz/Database/mongo.js";
+import {
+  isMongoConfigured,
+  isMongoConnected,
+  mongoConnectionString,
+} from "../Kambaz/Database/mongo.js";
+import { lab6Status } from "./status.js";
 
 const memory = [
   {
@@ -19,15 +24,17 @@ const memory = [
 
 export default function Lab6(app) {
   const findTodos = async () => {
-    if (isMongoEnabled()) return model.find();
+    if (isMongoConfigured()) return model.find();
     return memory;
   };
 
   app.get("/lab6/status", (req, res) => {
-    res.json({
-      mongo: isMongoEnabled(),
-      store: isMongoEnabled() ? "mongoose" : "memory",
-    });
+    res.json(
+      lab6Status({
+        connectionString: mongoConnectionString(),
+        connected: isMongoConnected(),
+      }),
+    );
   });
 
   app.get("/lab6/todos", async (req, res) => {
@@ -41,7 +48,7 @@ export default function Lab6(app) {
   });
 
   app.get("/lab6/todos/:id", async (req, res) => {
-    const todo = isMongoEnabled()
+    const todo = isMongoConfigured()
       ? await model.findById(req.params.id)
       : memory.find((t) => t._id === req.params.id);
     if (!todo) {
@@ -58,7 +65,7 @@ export default function Lab6(app) {
       description: req.body?.description ?? "",
       _id: uuidv4(),
     };
-    if (isMongoEnabled()) {
+    if (isMongoConfigured()) {
       res.status(201).json(await model.create(todo));
       return;
     }
@@ -67,7 +74,7 @@ export default function Lab6(app) {
   });
 
   app.put("/lab6/todos/:id", async (req, res) => {
-    if (isMongoEnabled()) {
+    if (isMongoConfigured()) {
       await model.updateOne({ _id: req.params.id }, { $set: req.body });
       res.json(await model.findById(req.params.id));
       return;
@@ -82,7 +89,7 @@ export default function Lab6(app) {
   });
 
   app.delete("/lab6/todos/:id", async (req, res) => {
-    if (isMongoEnabled()) {
+    if (isMongoConfigured()) {
       res.json(await model.deleteOne({ _id: req.params.id }));
       return;
     }

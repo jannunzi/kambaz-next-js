@@ -5,10 +5,7 @@ export const INTRO_TO_WEB_DEVELOPMENT_SLIDES: LectureSlide[] = [
     id: "title",
     title: "WEB DEV",
     kind: "title",
-    bullets: [
-      "Introduction to Web Development",
-      "Jose Annunziato",
-    ],
+    bullets: ["Introduction to Web Development", "Jose Annunziato"],
   },
   {
     id: "internet",

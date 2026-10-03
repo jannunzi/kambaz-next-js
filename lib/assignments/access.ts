@@ -1,6 +1,6 @@
 import type { RosterLookupResult } from "../roster/types";
 
-export const ASSIGNMENT_SUBMISSION_IDS = ["a1"] as const;
+export const ASSIGNMENT_SUBMISSION_IDS = ["a1", "a2"] as const;
 
 export type AssignmentSubmitGate =
   | { ok: true }

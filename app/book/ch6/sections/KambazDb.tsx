@@ -119,8 +119,7 @@ export default model;`}</CodeBlock>
             <code>courses</code>{" "}collection. We will deal with
             moving enrollments to the database later in the chapter;
             for now the enrolled-user helper can still filter the
-            full course list against the in-memory enrollments array
-            if Mongo is not yet connected.
+            full course list against the in-memory enrollments array.
           </p>
           <CodeBlock
             language="js"
@@ -243,11 +242,8 @@ app.post("/api/courses", createCourse);`}</CodeBlock>
             Refactor the <code>deleteCourse()</code>{" "}DAO function to
             delete courses from the database by using the courses
             model as shown below. We will deal with moving enrollments
-            to the database later in the chapter. Until then, if
-            Mongo is off you can still filter enrollments out of the
-            in-memory copy so Dashboard does not keep a dangling
-            enrollment for a course that no longer exists. When Mongo
-            is on, <code>model.deleteOne</code>{" "}removes the course
+            to the database later in the chapter.{" "}
+            <code>model.deleteOne</code>{" "}removes the course
             document and <SectionLink to="6.4.3.3" />{" "}will remove
             the related enrollment documents.
           </p>
@@ -361,7 +357,7 @@ app.put("/api/courses/:courseId", updateCourse);`}</CodeBlock>
           <code>courseId</code>) whose value is the{" "}
           <code>_id</code>{" "}of some course document the module
           belongs to. That is what Chapter 5 already did in JSON, and
-          it is the shape this book&apos;s{" "}
+          it is the shape the{" "}
           <code>modules</code>{" "}collection keeps so the existing{" "}
           <code>/api/courses/:courseId/modules</code>{" "}routes stay
           stable.
@@ -382,21 +378,20 @@ app.put("/api/courses/:courseId", updateCourse);`}</CodeBlock>
           the documents would instead be embedded in the
           corresponding parent course document in a{" "}
           <code>modules</code>{" "}array. Because modules are not
-          expected to be fetched outside a course, the original
-          chapter embeds them on the course schema. This book also
-          keeps a <code>modules</code>{" "}collection with a{" "}
+          expected to be fetched outside a course, one design embeds
+          them on the course schema. You can also keep a{" "}
+          <code>modules</code>{" "}collection with a{" "}
           <code>course</code>{" "}field. Both shapes are valid; pick
           one per project and stick to it. The subsections below show
-          the embed schema so you can read the original design, then
-          implement the collection-plus-foreign-key DAO that matches
-          the LiveDemo routes.
+          the embed schema, then implement the collection-plus-foreign-key
+          DAO that matches the interactive demo routes.
         </p>
         <ul>
           <li>
             A foreign key on the child: each module has{" "}
             <code>course</code>{" "}equal to the course{" "}
             <code>_id</code>{" "}(what Chapter 5 already did in JSON,
-            and what this book&apos;s collection uses).
+            and what the modules collection uses).
           </li>
           <li>
             An array of child ids on the parent.
@@ -415,7 +410,7 @@ app.put("/api/courses/:courseId", updateCourse);`}</CodeBlock>
         >
           <p>
             Since modules are not expected to be accessible outside
-            their course, the original design embeds the module
+            their course, the embed design puts the module
             documents in a new <code>modules</code>{" "}property in the
             course schema. To demonstrate, create the schema file
             below that describes the data structure of module
@@ -509,11 +504,11 @@ export default schema;`}</CodeBlock>
   return model.find({}, { name: 1, description: 1 });
 }`}</CodeBlock>
           <p>
-            This book&apos;s running server keeps modules in their
-            own collection, so the schema you actually ship can keep
-            a <code>course</code>{" "}string instead of embedding. The
-            model name <code>CourseModel</code>{" "}is still what
-            enrollments will <code>ref</code>.
+            Keep modules in their own collection. Store a{" "}
+            <code>course</code>{" "}string on each module instead of
+            embedding the module list on the course. The model name{" "}
+            <code>CourseModel</code>{" "}is still what enrollments will{" "}
+            <code>ref</code>.
           </p>
           <CodeBlock
             language="js"
@@ -652,11 +647,10 @@ app.get("/api/courses/:courseId/modules", findModulesForCourse);`}</CodeBlock>
   );
 }`}</CodeBlock>
           <p>
-            This book&apos;s client keeps the Chapter 5 URL{" "}
+            Keep the Chapter 5 URL{" "}
             <code>DELETE /api/modules/:moduleId</code>{" "}because the
             collection already stores the foreign key. If you embed,
-            switch the client to encode the course id as shown in the
-            original chapter —{" "}
+            switch the client to encode the course id —{" "}
             <code>/api/courses/:courseId/modules/:moduleId</code> —
             and pass <code>cid</code>{" "}from the Modules page into{" "}
             <code>onRemoveModule</code>.
@@ -700,10 +694,10 @@ app.get("/api/courses/:courseId/modules", findModulesForCourse);`}</CodeBlock>
             Dashboard and the Modules screen still talk to the same
             client functions from <ChapterLink to={5} />. After the
             DAO swap, create and rename a module and confirm Compass
-            updates. The LiveDemo below is that Dashboard against the
-            book store; when your sibling server is connected to
-            Mongo, the same Add / Update / Delete buttons write
-            documents instead of array elements.
+            updates. The demo below is that Dashboard. When your
+            sibling server is connected to Mongo, the same Add /
+            Update / Delete buttons write documents instead of array
+            elements.
           </p>
           <LiveDemo
             name="Dashboard"
@@ -1123,8 +1117,8 @@ app.get("/api/courses/:cid/users", findUsersForCourse);`}</CodeBlock>
           assignments — the same one-to-many relationship you just
           implemented for modules. You can store assignments in their
           own collection with a <code>course</code>{" "}foreign key, which
-          is what this book does, or embed them on the course the way
-          the original chapter embedded modules. Mirror the modules
+          is the collection-plus-foreign-key shape, or embed them on the
+          course the way the embed schema does for modules. Mirror the modules
           DAO: <code>findAssignmentsForCourse</code>,{" "}
           <code>createAssignment</code>,{" "}
           <code>updateAssignment</code>,{" "}

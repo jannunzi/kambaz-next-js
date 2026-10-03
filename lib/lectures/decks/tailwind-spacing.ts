@@ -34,7 +34,7 @@ export const TAILWIND_SPACING_SLIDES: LectureSlide[] = [
   },
   {
     id: "tsx",
-    title: "TailwindSpacing.tsx",
+    title: "Margin and padding utilities",
     kind: "content",
     bullets: [
       "Blue boxes show margin. Green boxes show padding",
@@ -71,6 +71,21 @@ export const TAILWIND_SPACING_SLIDES: LectureSlide[] = [
       "Green boxes grow from the inside — that is padding",
     ],
     embed: "tw-spacing",
+  },
+  {
+    id: "page",
+    title: "Add spacing to the page",
+    kind: "content",
+    bullets: [
+      "Add `TailwindSpacing` to the lab page. Put this import with the other imports, and render the component under the heading",
+    ],
+    code: `import TailwindSpacing from "./TailwindSpacing";
+
+      <h1 className="text-4xl font-bold mb-8">Tailwind CSS</h1>
+      <TailwindSpacing />`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/tailwind/page.tsx",
+    codeAddedLines: [1, 4],
   },
   {
     id: "vs-css",

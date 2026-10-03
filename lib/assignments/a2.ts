@@ -1,3 +1,4 @@
+import { ASSIGNMENT_STUDENT_COPY } from "./student-copy";
 import type { AssignmentRubric } from "./types";
 
 /**
@@ -17,7 +18,7 @@ export const A2_RUBRIC: AssignmentRubric = {
           id: "a2-delivery-branch",
           label: "a2 GitHub branch",
           description:
-            "Create, commit, and push a branch named a2 on the same public repository from A1.",
+            "Create, commit, and push a branch named a2 on the same public repository from A1. Submit that branch’s GitHub URL (…/tree/a2). The tree page must load.",
           points: 3,
           bookHref: "/book/ch2#sec-2-5",
           bookLabel: "§2.5",
@@ -26,7 +27,7 @@ export const A2_RUBRIC: AssignmentRubric = {
           id: "a2-delivery-vercel",
           label: "Vercel branch deployment",
           description:
-            "Enable branch deployments so a2 has its own preview URL, with Deployment Protection off.",
+            "Enable branch deployments so a2 has its own preview URL whose hostname contains -git-a2-, with Deployment Protection off.",
           points: 3,
           bookHref: "/book/ch2#sec-2-5",
           bookLabel: "§2.5",
@@ -44,7 +45,7 @@ export const A2_RUBRIC: AssignmentRubric = {
           id: "a2-delivery-labs-nav",
           label: "Labs still listed",
           description:
-            "app/labs/TOC.tsx and app/labs/page.tsx still list every lab and Kambaz.",
+            "app/labs/TOC.tsx and app/labs/page.tsx still link Lab 1 (/labs/lab1), Lab 2 (/labs/lab2), and Kambaz (wd-kambaz-link).",
           points: 3,
           bookHref: "/book/ch2#sec-2-5",
           bookLabel: "§2.5",
@@ -61,7 +62,7 @@ export const A2_RUBRIC: AssignmentRubric = {
           id: "a2-lab-page",
           label: "Lab 2 page and CSS file",
           description:
-            "Create app/labs/lab2/page.tsx and index.css, and link Lab 2 from the Labs index and TOC.",
+            "Create app/labs/lab2/page.tsx (id wd-lab2) and index.css, and link Lab 2 from the Labs index and TOC (href /labs/lab2).",
           points: 3,
           bookHref: "/book/ch2#sec-2-1",
           bookLabel: "§2.1",
@@ -70,7 +71,7 @@ export const A2_RUBRIC: AssignmentRubric = {
           id: "a2-lab-selectors",
           label: "Selectors",
           description:
-            "Practice the style attribute, then move rules into the CSS file with id, class, and document-structure selectors.",
+            "Practice the style attribute, then move rules into the CSS file with id, class, and document-structure selectors (wd-css-id-selectors, wd-css-class-selectors, wd-css-document-structure).",
           points: 5,
           bookHref: "/book/ch2#sec-2-1-1",
           bookLabel: "§2.1.1",
@@ -79,7 +80,7 @@ export const A2_RUBRIC: AssignmentRubric = {
           id: "a2-lab-box-model",
           label: "Color, border, and box model",
           description:
-            "Create the color, border, box-model, corner, dimension, and display samples and import them.",
+            "Create the color, background, border, padding, margin, box-model, corner, dimension, and display samples and import them.",
           points: 5,
           bookHref: "/book/ch2#sec-2-1-7",
           bookLabel: "§2.1.7",
@@ -88,7 +89,7 @@ export const A2_RUBRIC: AssignmentRubric = {
           id: "a2-lab-layout",
           label: "Position, float, flex, and media queries",
           description:
-            "Create the position, z-index, float, grid, flex, and media-query samples and import them.",
+            "Create the position, z-index, float, grid, flex, and media-query samples (wd-css-positions through wd-css-flex, plus wd-media-queries-demo) and import them.",
           points: 5,
           bookHref: "/book/ch2#sec-2-1-13",
           bookLabel: "§2.1.13",
@@ -96,7 +97,8 @@ export const A2_RUBRIC: AssignmentRubric = {
         {
           id: "a2-lab-icons",
           label: "React Icons",
-          description: "Create ReactIconsSampler.tsx and import it on Lab 2.",
+          description:
+            "Create ReactIconsSampler.tsx (id wd-react-icons-sampler) with at least one icon and import it on Lab 2.",
           points: 3,
           bookHref: "/book/ch2#sec-2-2",
           bookLabel: "§2.2",
@@ -105,7 +107,7 @@ export const A2_RUBRIC: AssignmentRubric = {
           id: "a2-lab-tailwind",
           label: "Tailwind samples",
           description:
-            "Create Tailwind samples under app/labs/lab2/tailwind/ — spacing, typography, backgrounds, responsive prefixes, filters, and grids.",
+            "Create Tailwind samples under app/labs/lab2/tailwind/ — spacing, typography, backgrounds, responsive prefixes, filters, and grids (id wd-tailwind-grid-system).",
           points: 5,
           bookHref: "/book/ch2#sec-2-3",
           bookLabel: "§2.3",
@@ -116,7 +118,7 @@ export const A2_RUBRIC: AssignmentRubric = {
       id: "kambaz",
       title: "Kambaz — Chapter 2 restyle",
       intro:
-        "Restyle the prototype so navigation, Dashboard, Modules, and related screens start to resemble the target product. Editor and Account stay On your own.",
+        `Restyle the prototype so navigation, Dashboard, Modules, and related screens start to resemble the target product. Editor and Account stay On your own. ${ASSIGNMENT_STUDENT_COPY.manualCheckLabNote}`,
       criteria: [
         {
           id: "a2-kambaz-nav",
@@ -179,7 +181,7 @@ export const A2_RUBRIC: AssignmentRubric = {
           id: "a2-kambaz-editor",
           label: "Assignment Editor",
           description:
-            "Style the Assignment Editor to match the figures and LiveDemo (On your own).",
+            "Style the Assignment Editor to match the figures and interactive demo (On your own).",
           points: 5,
           bookHref: "/book/ch2#sec-2-4-8",
           bookLabel: "§2.4.8",

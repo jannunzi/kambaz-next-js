@@ -169,7 +169,7 @@ export default function Chat() {
     title: "Request Image Route",
     kind: "demo",
     bullets: [
-      "Jose used **`dall-e-3`**. Current generate model: **`gpt-image-1`**",
+      "Generate images with **`gpt-image-1`**",
     ],
     code: `const shapeMap = {
   square: "1024x1024", portrait: "1024x1792", landscape: "1792x1024",
@@ -270,7 +270,7 @@ app.post("/api/openai/tts", convertText2Speech);`,
     id: "stt",
     title: "Transcribe Route",
     kind: "demo",
-    bullets: ["Jose used **`whisper-1`**. Current: **`gpt-4o-transcribe`**"],
+    bullets: ["Transcribe audio with **`gpt-4o-transcribe`**"],
     code: `const transcribe = async (req, res) => {
   const { audioFile } = req.params;
   const transcription = await openai.audio.transcriptions.create({

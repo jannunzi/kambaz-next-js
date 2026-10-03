@@ -209,7 +209,7 @@ export const CH2_KAMBAZ_EXERCISES: readonly BookExerciseParent[] = [
     tasks: [
       lab(
         "2.4.8-lab",
-        "Style the Assignment Editor to match the figures and LiveDemo (On your own).",
+        "Style the Assignment Editor to match the figures and interactive demo (On your own).",
       ),
       oyo(
         "2.4.8-oyo",

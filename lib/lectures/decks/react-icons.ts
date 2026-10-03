@@ -40,7 +40,8 @@ export const REACT_ICONS_SLIDES: LectureSlide[] = [
       "Each icon comes from a different path: `vsc`, `ai`, `fa6`, `fa`",
       "The parent `text-3xl` scales them — icons size in `em`",
     ],
-    code: `import { FaCalendar, FaEnvelopeOpenText, FaRegClock } from "react-icons/fa";
+    code: `import "@/app/labs/lab2/tailwind/utilities.css";
+import { FaCalendar, FaEnvelopeOpenText, FaRegClock } from "react-icons/fa";
 import { AiOutlineDashboard } from "react-icons/ai";
 import { FaBookBible } from "react-icons/fa6";
 import { VscAccount } from "react-icons/vsc";
@@ -48,7 +49,7 @@ import { VscAccount } from "react-icons/vsc";
 export default function ReactIconsSampler() {
   return (
     <div id="wd-react-icons-sampler" className="mb-4 font-sans">
-      <h3 className="text-lg font-semibold">React Icons Sampler</h3>
+      <h2 className="text-lg font-semibold">React Icons Sampler</h2>
       <div className="flex gap-3 text-3xl">
         <VscAccount />
         <AiOutlineDashboard />
@@ -62,6 +63,16 @@ export default function ReactIconsSampler() {
 }`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/ReactIconsSampler.tsx",
+  },
+  {
+    id: "sampler-live",
+    title: "Live ReactIconsSampler",
+    kind: "demo",
+    bullets: [
+      "Each icon is a plain React component sized in `em`, so the parent's text size scales it.",
+      "Six icons, one row, sized by the parent `text-3xl`",
+      "Import the sampler into Lab 2 so it stays on the growing page",
+    ],
     embed: "react-icons",
   },
   {
@@ -70,7 +81,7 @@ export default function ReactIconsSampler() {
     kind: "content",
     bullets: [
       "Icon components accept ordinary element props",
-      "`className=\"text-4xl text-blue-600\"` — Tailwind utilities work here too",
+      "`className=\"text-4xl text-red-600\"` — Tailwind utilities work here too",
       "`size={32}` is pixels if you prefer a number",
       "`text-3xl` on the parent already scaled the sampler row",
     ],
@@ -83,7 +94,6 @@ export default function ReactIconsSampler() {
     title: "Font Awesome was the old path",
     kind: "content",
     bullets: [
-      "Older slides linked a Font Awesome CSS kit and used `<i className=\"fa fa-…\">`",
       "This course uses **React Icons** so icons ship with the app and tree-shake",
       "You can still recognize FA names — `FaCalendar` is the same glyph",
     ],

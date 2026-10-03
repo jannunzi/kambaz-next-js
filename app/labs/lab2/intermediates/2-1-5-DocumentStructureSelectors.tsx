@@ -3,6 +3,7 @@ import "../index.css";
 export default function DocumentStructureSelectors() {
   return (
     <div id="wd-lab2">
+      <h2>Lab 2 - Cascading Style Sheets</h2>
       <div id="wd-css-document-structure">
         <div className="wd-selector-1">
           <h3>Document structure selectors</h3>

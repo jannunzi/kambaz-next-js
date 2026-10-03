@@ -32,7 +32,9 @@ npm install
 npm run dev
 ```
 
-Or from this repo root: `npm run server:dev`.
+Or from this repo root: `npm run server:dev`. Root `npm test` runs
+`webdev-server/mongo-listen.test.js`, so that `npm install` is required
+first.
 
 ## Book term pages
 
@@ -425,20 +427,22 @@ never changes a saved grade. `assignment_progress` is unused.
 The UI never mentions the auth vendor — the button says “Sign in with your
 Canvas email.”
 
-**A1 URL submit (Phase 2C).** Rostered students (matched by Canvas email,
+**A1 and A2 URL submit.** Rostered students (matched by Canvas email,
 including Northeastern aliases) and staff can save a public
-Vercel deployment URL on `/assignments/a1` (GitHub is optional). Off-roster
-signed-in users see an explicit message instead of a blank form. Documents
-live in `assignment_submissions` (user + `a1`). **Save URLs** stores those
-URLs only. **Run** normalizes the deploy to its origin, fetches `/`,
-`/labs`, `/labs/lab1`, and Kambaz account/course screens, then maps many
-A1 rubric rows to pass/fail from `wd-*` ids and required routes. GitHub
+Vercel deployment URL on `/assignments/a1` and `/assignments/a2` (GitHub is
+optional for A1. A2 Save and Run require a `…/tree/a2` GitHub URL that loads,
+and the Vercel host’s first label must match `-git-a2` and end in `.vercel.app`).
+Off-roster signed-in users see an explicit message instead of a blank form.
+Documents live in `assignment_submissions` (user + assignment id). **Save URLs**
+stores those URLs only. **Run** normalizes the deploy to its origin, fetches
+Labs and the assignment’s checklist screens, then maps rubric rows to
+pass/fail from `wd-*` ids. Rows the DOM cannot settle (A1’s two highlighted
+On your own rows, and every A2 Kambaz styling row) stay manual: checked by
+staff at grading, and students cannot tick them for points. GitHub
 format/public checks run only when a GitHub URL is provided. Name checks
-read Labs HTML, not just the submitted landing/signin page. Two On your
-own rows stay manual (`a1-lab-highlighted-paragraph-oyo`,
-`a1-lab-highlighted-box-oyo`). This is still not Canvas grade export.
-Staff **View as student** can exercise the form; the submission is not
-saved.
+read Labs HTML, not just the submitted landing page. This is still not Canvas
+grade export. Staff **View as student** can exercise the form; the submission
+is not saved.
 
 Canvas assignment descriptions should **not** paste the website rubric.
 Point students at the live pages. Suggested student copy (HTML helpers in

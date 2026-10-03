@@ -1,6 +1,6 @@
 {
   "$schema": "./lecture-clips.schema.json",
-  "description": "HTML §1.3 lecture clips from Yolanda's 2026-09-23 draft. Only rows with confidence ≥ 0.7. CSS §2.1 is not mapped yet. SP26 rows are whole-session archives, so Watch full lecture uses the same YouTube id with no start time. FA26 parts stay snippets until parentLectureYoutubeId, fullLectureUrl, or playlistUrl is set.",
+  "description": "HTML §1.3 lecture clips from Yolanda's 2026-09-23 draft. Only rows with confidence ≥ 0.7. CSS §2.1 is mapped to 21 standalone @WebDevTV uploads (temporary, older-semester footage FA25/FA24/SP23, may be swapped after the FA26 CSS lectures). SP26 rows are whole-session archives, so Watch full lecture uses the same YouTube id with no start time. FA26 parts stay snippets until parentLectureYoutubeId, fullLectureUrl, or playlistUrl is set.",
   "titles": {
     "sec-1-3": "HTML Overview — What is HTML?",
     "sec-1-3-1": "Headings, div, and span",
@@ -16,7 +16,28 @@
     "sec-1-3-7": "Props (React attributes / passing data)",
     "sec-1-3-8": "Children",
     "sec-1-3-9": "Anchors (a / href)",
-    "sec-1-3-11": "Layouts"
+    "sec-1-3-11": "Layouts",
+    "sec-2-1": "Styling React Components with CSS",
+    "sec-2-1-1": "Style Attribute",
+    "sec-2-1-2": "Importing CSS Documents",
+    "sec-2-1-3": "ID Selectors",
+    "sec-2-1-4": "Class Selectors",
+    "sec-2-1-5": "Document Structure Selectors",
+    "sec-2-1-6": "CSS Selection Rule Mechanism",
+    "sec-2-1-7": "Foreground Color",
+    "sec-2-1-8": "Background Color",
+    "sec-2-1-9": "Borders",
+    "sec-2-1-10": "Padding, Margins, and the Box Model",
+    "sec-2-1-11": "Corners",
+    "sec-2-1-12": "Dimensions and Display",
+    "sec-2-1-13": "Relative Position",
+    "sec-2-1-14": "Absolute Position",
+    "sec-2-1-15": "Fixed Position",
+    "sec-2-1-16": "Z-Index",
+    "sec-2-1-17": "Float",
+    "sec-2-1-18": "Grid Layout with Float",
+    "sec-2-1-19": "Flex",
+    "sec-2-1-20": "Media Queries"
   },
   "sections": {
     "sec-1-3": [
@@ -182,6 +203,279 @@
         "sourceCourse": "CS5610",
         "semester": "FA26",
         "confidence": 0.75
+      }
+    ],
+    "sec-2-1": [
+      {
+        "youtubeVideoId": "KAQNwJQsxP8",
+        "url": "https://youtu.be/KAQNwJQsxP8",
+        "startSec": 0,
+        "endSec": 386,
+        "sourceCourse": "CS5610",
+        "semester": "FA25",
+        "confidence": 0.9,
+        "parentLectureYoutubeId": "wBh_OSjiRqY",
+        "note": "Standalone @WebDevTV upload \"What Is CSS? Cascading Style Sheets, Rules and Selectors Explained\", cut from wBh_OSjiRqY at 575s. TEMPORARY standalone clip from an older semester; swap if FA26 CSS lectures are better."
+      }
+    ],
+    "sec-2-1-1": [
+      {
+        "youtubeVideoId": "R-6Ip9jsM3s",
+        "url": "https://youtu.be/R-6Ip9jsM3s",
+        "startSec": 0,
+        "endSec": 455,
+        "sourceCourse": "CS5610",
+        "semester": "FA25",
+        "confidence": 0.9,
+        "parentLectureYoutubeId": "wBh_OSjiRqY",
+        "note": "Standalone @WebDevTV upload \"Inline CSS with the style Attribute: camelCase Properties and Style Objects\", cut from wBh_OSjiRqY at 1136s. TEMPORARY standalone clip from an older semester; swap if FA26 CSS lectures are better."
+      }
+    ],
+    "sec-2-1-2": [
+      {
+        "youtubeVideoId": "5S_RS1C_KUk",
+        "url": "https://youtu.be/5S_RS1C_KUk",
+        "startSec": 0,
+        "endSec": 184,
+        "sourceCourse": "CS5610",
+        "semester": "FA25",
+        "confidence": 0.85,
+        "parentLectureYoutubeId": "wBh_OSjiRqY",
+        "note": "Standalone @WebDevTV upload \"Moving CSS into a Separate Stylesheet File and Importing It\", cut from wBh_OSjiRqY at 1742s. TEMPORARY standalone clip from an older semester; swap if FA26 CSS lectures are better."
+      }
+    ],
+    "sec-2-1-3": [
+      {
+        "youtubeVideoId": "IKZJzBgs57g",
+        "url": "https://youtu.be/IKZJzBgs57g",
+        "startSec": 0,
+        "endSec": 213,
+        "sourceCourse": "CS5610",
+        "semester": "FA24",
+        "confidence": 0.85,
+        "parentLectureYoutubeId": "1UMtMCRfJJ4",
+        "note": "Standalone @WebDevTV upload \"CSS ID Selectors Explained: Styling One Unique Element with #\", cut from 1UMtMCRfJJ4 at 5651s. TEMPORARY standalone clip from an older semester; swap if FA26 CSS lectures are better."
+      }
+    ],
+    "sec-2-1-4": [
+      {
+        "youtubeVideoId": "J5Il-f4ZDkU",
+        "url": "https://youtu.be/J5Il-f4ZDkU",
+        "startSec": 0,
+        "endSec": 253,
+        "sourceCourse": "CS5610",
+        "semester": "FA25",
+        "confidence": 0.85,
+        "parentLectureYoutubeId": "wBh_OSjiRqY",
+        "note": "Standalone @WebDevTV upload \"CSS Class Selectors: Dot Syntax and Naming Conventions\", cut from wBh_OSjiRqY at 2088s. TEMPORARY standalone clip from an older semester; swap if FA26 CSS lectures are better."
+      }
+    ],
+    "sec-2-1-5": [
+      {
+        "youtubeVideoId": "ORyNYFVT6SE",
+        "url": "https://youtu.be/ORyNYFVT6SE",
+        "startSec": 0,
+        "endSec": 469,
+        "sourceCourse": "CS5610",
+        "semester": "FA24",
+        "confidence": 0.9,
+        "parentLectureYoutubeId": "1UMtMCRfJJ4",
+        "note": "Standalone @WebDevTV upload \"CSS Descendant vs Child Selectors (Space vs Child Combinator) Explained\", cut from 1UMtMCRfJJ4 at 5921s. TEMPORARY standalone clip from an older semester; swap if FA26 CSS lectures are better."
+      }
+    ],
+    "sec-2-1-6": [
+      {
+        "youtubeVideoId": "_lo9Uw43LjM",
+        "url": "https://youtu.be/_lo9Uw43LjM",
+        "startSec": 0,
+        "endSec": 139,
+        "sourceCourse": "CS5610",
+        "semester": "FA24",
+        "confidence": 0.85,
+        "parentLectureYoutubeId": "1UMtMCRfJJ4",
+        "note": "Standalone @WebDevTV upload \"CSS Specificity Explained: ID vs Class, Source Order and Inheritance\", cut from 1UMtMCRfJJ4 at 6385s. TEMPORARY standalone clip from an older semester; swap if FA26 CSS lectures are better."
+      }
+    ],
+    "sec-2-1-7": [
+      {
+        "youtubeVideoId": "j5ldk5TVeBk",
+        "url": "https://youtu.be/j5ldk5TVeBk",
+        "startSec": 0,
+        "endSec": 163,
+        "sourceCourse": "CS5610",
+        "semester": "FA25",
+        "confidence": 0.85,
+        "parentLectureYoutubeId": "wBh_OSjiRqY",
+        "note": "Standalone @WebDevTV upload \"CSS Text Color: Setting the Foreground color Property\", cut from wBh_OSjiRqY at 1935s. TEMPORARY standalone clip from an older semester; swap if FA26 CSS lectures are better."
+      }
+    ],
+    "sec-2-1-8": [
+      {
+        "youtubeVideoId": "g8xRa3_BMFs",
+        "url": "https://youtu.be/g8xRa3_BMFs",
+        "startSec": 0,
+        "endSec": 131,
+        "sourceCourse": "CS5610",
+        "semester": "FA25",
+        "confidence": 0.8,
+        "parentLectureYoutubeId": "wBh_OSjiRqY",
+        "note": "Standalone @WebDevTV upload \"CSS background-color and Combining Multiple Classes\", cut from wBh_OSjiRqY at 2652s. TEMPORARY standalone clip from an older semester; swap if FA26 CSS lectures are better."
+      }
+    ],
+    "sec-2-1-9": [
+      {
+        "youtubeVideoId": "2AjMnfQxgJg",
+        "url": "https://youtu.be/2AjMnfQxgJg",
+        "startSec": 0,
+        "endSec": 137,
+        "sourceCourse": "CS5610",
+        "semester": "FA25",
+        "confidence": 0.9,
+        "parentLectureYoutubeId": "wBh_OSjiRqY",
+        "note": "Standalone @WebDevTV upload \"CSS Borders: Border Style, Width, Color and Shorthand\", cut from wBh_OSjiRqY at 3516s. TEMPORARY standalone clip from an older semester; swap if FA26 CSS lectures are better."
+      }
+    ],
+    "sec-2-1-10": [
+      {
+        "youtubeVideoId": "TcJ4cGvdgEc",
+        "url": "https://youtu.be/TcJ4cGvdgEc",
+        "startSec": 0,
+        "endSec": 266,
+        "sourceCourse": "CS5610",
+        "semester": "FA25",
+        "confidence": 0.9,
+        "parentLectureYoutubeId": "wBh_OSjiRqY",
+        "note": "Standalone @WebDevTV upload \"CSS Box Model Explained: Content, Padding, Border and Margin\", cut from wBh_OSjiRqY at 2814s. TEMPORARY standalone clip from an older semester; swap if FA26 CSS lectures are better."
+      }
+    ],
+    "sec-2-1-11": [
+      {
+        "youtubeVideoId": "CJuXLj8671M",
+        "url": "https://youtu.be/CJuXLj8671M",
+        "startSec": 0,
+        "endSec": 39,
+        "sourceCourse": "CS5610",
+        "semester": "FA25",
+        "confidence": 0.75,
+        "parentLectureYoutubeId": "wBh_OSjiRqY",
+        "note": "Standalone @WebDevTV upload \"CSS Rounded Corners with border-radius\", cut from wBh_OSjiRqY at 4034s. TEMPORARY standalone clip from an older semester; swap if FA26 CSS lectures are better."
+      }
+    ],
+    "sec-2-1-12": [
+      {
+        "youtubeVideoId": "0v7q0T5DVEU",
+        "url": "https://youtu.be/0v7q0T5DVEU",
+        "startSec": 0,
+        "endSec": 701,
+        "sourceCourse": "CS5610",
+        "semester": "FA25",
+        "confidence": 0.85,
+        "parentLectureYoutubeId": "wBh_OSjiRqY",
+        "note": "Standalone @WebDevTV upload \"CSS Width, Height and Display: Block vs Inline Elements\", cut from wBh_OSjiRqY at 4191s. TEMPORARY standalone clip from an older semester; swap if FA26 CSS lectures are better."
+      }
+    ],
+    "sec-2-1-13": [
+      {
+        "youtubeVideoId": "M6_XyXVWYi8",
+        "url": "https://youtu.be/M6_XyXVWYi8",
+        "startSec": 0,
+        "endSec": 798,
+        "sourceCourse": "CS5610",
+        "semester": "FA25",
+        "confidence": 0.9,
+        "parentLectureYoutubeId": "wBh_OSjiRqY",
+        "note": "Standalone @WebDevTV upload \"CSS position: relative Explained with Examples\", cut from wBh_OSjiRqY at 4887s. TEMPORARY standalone clip from an older semester; swap if FA26 CSS lectures are better."
+      }
+    ],
+    "sec-2-1-14": [
+      {
+        "youtubeVideoId": "3AUYzBux3gA",
+        "url": "https://youtu.be/3AUYzBux3gA",
+        "startSec": 0,
+        "endSec": 703,
+        "sourceCourse": "CS5610",
+        "semester": "FA25",
+        "confidence": 0.9,
+        "parentLectureYoutubeId": "wBh_OSjiRqY",
+        "note": "Standalone @WebDevTV upload \"CSS position: absolute and the Nearest Positioned Parent\", cut from wBh_OSjiRqY at 5682s. TEMPORARY standalone clip from an older semester; swap if FA26 CSS lectures are better."
+      }
+    ],
+    "sec-2-1-15": [
+      {
+        "youtubeVideoId": "yFQ65RFazm4",
+        "url": "https://youtu.be/yFQ65RFazm4",
+        "startSec": 0,
+        "endSec": 160,
+        "sourceCourse": "CS5610",
+        "semester": "FA25",
+        "confidence": 0.8,
+        "parentLectureYoutubeId": "wBh_OSjiRqY",
+        "note": "Standalone @WebDevTV upload \"CSS position: fixed Explained: Elements That Stay Put While Scrolling\", cut from wBh_OSjiRqY at 6399s. TEMPORARY standalone clip from an older semester; swap if FA26 CSS lectures are better."
+      }
+    ],
+    "sec-2-1-16": [
+      {
+        "youtubeVideoId": "wQaPVZiXbNs",
+        "url": "https://youtu.be/wQaPVZiXbNs",
+        "startSec": 0,
+        "endSec": 198,
+        "sourceCourse": "CS5610",
+        "semester": "FA25",
+        "confidence": 0.9,
+        "parentLectureYoutubeId": "wBh_OSjiRqY",
+        "note": "Standalone @WebDevTV upload \"CSS z-index Explained: Stacking Overlapping Elements\", cut from wBh_OSjiRqY at 6557s. TEMPORARY standalone clip from an older semester; swap if FA26 CSS lectures are better."
+      }
+    ],
+    "sec-2-1-17": [
+      {
+        "youtubeVideoId": "t7GiNbsLpG0",
+        "url": "https://youtu.be/t7GiNbsLpG0",
+        "startSec": 0,
+        "endSec": 306,
+        "sourceCourse": "CS5610",
+        "semester": "FA25",
+        "confidence": 0.9,
+        "parentLectureYoutubeId": "wBh_OSjiRqY",
+        "note": "Standalone @WebDevTV upload \"CSS float Explained: Wrapping Text Around Images\", cut from wBh_OSjiRqY at 6927s. TEMPORARY standalone clip from an older semester; swap if FA26 CSS lectures are better."
+      }
+    ],
+    "sec-2-1-18": [
+      {
+        "youtubeVideoId": "N_W8sWgVXVw",
+        "url": "https://youtu.be/N_W8sWgVXVw",
+        "startSec": 0,
+        "endSec": 184,
+        "sourceCourse": "CS5610",
+        "semester": "FA25",
+        "confidence": 0.85,
+        "parentLectureYoutubeId": "wBh_OSjiRqY",
+        "note": "Standalone @WebDevTV upload \"Building Column Layouts with CSS float and clear\", cut from wBh_OSjiRqY at 7227s. TEMPORARY standalone clip from an older semester; swap if FA26 CSS lectures are better."
+      }
+    ],
+    "sec-2-1-19": [
+      {
+        "youtubeVideoId": "y0Y2ZHeu6us",
+        "url": "https://youtu.be/y0Y2ZHeu6us",
+        "startSec": 0,
+        "endSec": 993,
+        "sourceCourse": "CS5610",
+        "semester": "FA25",
+        "confidence": 0.9,
+        "parentLectureYoutubeId": "wBh_OSjiRqY",
+        "note": "Standalone @WebDevTV upload \"CSS Flexbox Tutorial: justify-content, align-items, flex-grow and flex-basis\", cut from wBh_OSjiRqY at 7410s. TEMPORARY standalone clip from an older semester; swap if FA26 CSS lectures are better."
+      }
+    ],
+    "sec-2-1-20": [
+      {
+        "youtubeVideoId": "iJ4jD8aeQ_E",
+        "url": "https://youtu.be/iJ4jD8aeQ_E",
+        "startSec": 0,
+        "endSec": 419,
+        "sourceCourse": "CS5610",
+        "semester": "SP23",
+        "confidence": 0.85,
+        "parentLectureYoutubeId": "Xi8EdrZG_FQ",
+        "note": "Standalone @WebDevTV upload \"CSS Media Queries Explained: Responsive Breakpoints\", cut from Xi8EdrZG_FQ at 10583s. TEMPORARY standalone clip from an older semester; swap if FA26 CSS lectures are better."
       }
     ]
   }

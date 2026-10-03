@@ -57,7 +57,7 @@ export const ATLAS_SLIDES: LectureSlide[] = [
     title: "A user Mongoose will remember",
     kind: "content",
     bullets: [
-      "Create a database user on the Connect screen — Jose used `giuseppi`",
+      "Create a database user on the Connect screen — for example `giuseppi`",
       "These credentials are how Mongoose logs in from Render",
       "Store them in a password manager. Do **not** commit the password",
       "Forget them and you must create a new user later",
@@ -72,10 +72,10 @@ export const ATLAS_SLIDES: LectureSlide[] = [
       "The host will differ. Scheme, username, password, and cluster matter",
       "Next lecture pastes this into Compass. Later, Drivers add `/kambaz?`",
     ],
-    code: `mongodb+srv://giuseppi:<password>@kambaz.jxui0bc.mongodb.net/`,
+    code: `mongodb+srv://giuseppi:supersecretpassword@kambaz.jxui0bc.mongodb.net/`,
     codeLanguage: "text",
     interactiveHint:
-      "This sample password is fake. Never paste a real Atlas password into a commit or the book.",
+      "This sample password is fake. Never paste a real Atlas password into a commit.",
   },
   {
     id: "recap",

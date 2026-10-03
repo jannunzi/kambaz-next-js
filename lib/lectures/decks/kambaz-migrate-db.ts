@@ -18,7 +18,6 @@ export const KAMBAZ_MIGRATE_DB_SLIDES: LectureSlide[] = [
       "Dashboard Add / Edit / Delete still die on refresh",
       "Copy Chapter 3 JSON into `webdev-server/Kambaz/Database`",
       "URLs stay the same in Chapter 6 — only the storage changes",
-      "Ignore Mongo branches in the live DAOs until then",
     ],
   },
   {

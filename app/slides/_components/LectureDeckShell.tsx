@@ -395,10 +395,10 @@ export default function LectureDeckShell({
       })
     : undefined;
   const stageClass = isPresenting
-    ? `lecture-slide lecture-slide-${density} h-full w-full min-w-0 overflow-x-hidden overflow-y-auto px-5 py-6 sm:px-8 sm:py-7 ${kindFrame(kind)}${
+    ? `lecture-slide lecture-slide-${density} box-border h-full w-full min-w-0 overflow-x-hidden overflow-y-auto px-5 py-6 sm:px-8 sm:py-7 ${kindFrame(kind)}${
         fallbackPresent ? " lecture-slide-present-fallback" : ""
       }`
-    : `lecture-slide lecture-slide-${density} min-h-0 min-w-0 w-full flex-1 overflow-x-hidden overflow-y-auto rounded-lg border-2 px-4 py-4 sm:px-6 sm:py-5 ${kindFrame(kind)}`;
+    : `lecture-slide lecture-slide-${density} box-border min-h-0 min-w-0 w-full flex-1 overflow-x-hidden overflow-y-auto rounded-lg border-2 px-4 py-4 sm:px-6 sm:py-5 ${kindFrame(kind)}`;
 
   return (
     <section

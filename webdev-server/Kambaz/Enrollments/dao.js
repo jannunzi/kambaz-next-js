@@ -1,10 +1,10 @@
 import { v4 as uuidv4 } from "uuid";
 import model from "./model.js";
-import { isMongoEnabled } from "../Database/mongo.js";
+import { isMongoConfigured } from "../Database/mongo.js";
 
 export default function EnrollmentsDao(db) {
   async function findCoursesForUser(userId) {
-    if (isMongoEnabled()) {
+    if (isMongoConfigured()) {
       const enrollments = await model.find({ user: userId }).populate("course");
       return enrollments.map((enrollment) => enrollment.course);
     }
@@ -16,7 +16,7 @@ export default function EnrollmentsDao(db) {
   }
 
   async function findUsersForCourse(courseId) {
-    if (isMongoEnabled()) {
+    if (isMongoConfigured()) {
       const enrollments = await model
         .find({ course: courseId })
         .populate("user");
@@ -35,7 +35,7 @@ export default function EnrollmentsDao(db) {
       user: userId,
       course: courseId,
     };
-    if (isMongoEnabled()) {
+    if (isMongoConfigured()) {
       return model.create(enrollment);
     }
     db.enrollments.push({ ...enrollment, _id: uuidv4() });
@@ -43,7 +43,7 @@ export default function EnrollmentsDao(db) {
   }
 
   async function unenrollUserFromCourse(user, course) {
-    if (isMongoEnabled()) return model.deleteOne({ user, course });
+    if (isMongoConfigured()) return model.deleteOne({ user, course });
     db.enrollments = db.enrollments.filter(
       (e) => !(e.user === user && e.course === course),
     );
@@ -51,13 +51,13 @@ export default function EnrollmentsDao(db) {
   }
 
   async function unenrollAllUsersFromCourse(courseId) {
-    if (isMongoEnabled()) return model.deleteMany({ course: courseId });
+    if (isMongoConfigured()) return model.deleteMany({ course: courseId });
     db.enrollments = db.enrollments.filter((e) => e.course !== courseId);
     return { deletedCount: 1 };
   }
 
   function findEnrollmentsForUser(userId) {
-    if (isMongoEnabled()) return model.find({ user: userId });
+    if (isMongoConfigured()) return model.find({ user: userId });
     return db.enrollments.filter((e) => e.user === userId);
   }
 

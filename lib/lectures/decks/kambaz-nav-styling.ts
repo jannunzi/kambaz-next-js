@@ -91,7 +91,8 @@ export default function KambazNavigation() {
     title: "Live styled sidebar",
     kind: "demo",
     bullets: [
-      "Contained so `fixed` cannot escape this figure",
+      "Pin the sidebar as a fixed black column of icon-and-label tiles so Kambaz scrolls beside it.",
+      "In this preview the sidebar stays in the frame. On the Kambaz page, `fixed` pins it to the window",
       "Idle tiles: black + white text. Dashboard is the active white/red tile",
     ],
     embed: "kambaz-styled-nav",

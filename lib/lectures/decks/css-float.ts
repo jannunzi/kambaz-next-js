@@ -16,8 +16,8 @@ export const CSS_FLOAT_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "`float: left` or `float: right` takes a box out of normal stacking",
-      "Following **inline** content wraps beside it — the classic “image + paragraph” trick",
-      "This deck uses **colored boxes**, not photos. Same `wd-float-*` classes as Lab 2",
+      "Following **inline** content wraps beside it — the classic image + paragraph",
+      "Lab 2 floats the Starship photo. The same classes also work on colored boxes",
       "Flex (next deck) is the modern row/column tool. Still learn float — Lab 2 grades it",
     ],
   },
@@ -26,7 +26,9 @@ export const CSS_FLOAT_SLIDES: LectureSlide[] = [
     title: "float left, right, then clear",
     kind: "content",
     bullets: [
+      "A length in **rem** is relative to the root font size, usually 16px, so 2rem = 32px.",
       "Floated boxes leave the flow. The next block can slide up beside them",
+      "`img.wd-float-*` caps the photo at 35% so the paragraph has room to wrap",
       "`clear: both` on `wd-float-done` stops the wrap and starts a new row",
     ],
     code: `.wd-float-left {
@@ -37,30 +39,83 @@ export const CSS_FLOAT_SLIDES: LectureSlide[] = [
   float: right;
   height: 100px;
 }
+img.wd-float-left,
+img.wd-float-right {
+  width: auto;
+  max-width: 35%;
+}
+img.wd-float-left {
+  margin: 0 1rem 0.5rem 0;
+}
+img.wd-float-right {
+  margin: 0 0 0.5rem 1rem;
+}
 .wd-float-done {
   clear: both;
 }`,
     codeLanguage: "css",
     codeFile: "app/labs/lab2/index.css",
+    codeHighlightLines: [[9, 19]],
+  },
+  {
+    id: "float-tsx",
+    title: "Float right, then left",
+    kind: "content",
+    bullets: [
+      "`float` pulls an element to one edge so content wraps around it, and `clear: both` stops that wrap.",
+      "`STARSHIP` is the photo URL and `LOREM` is the wrapping paragraph. Float the photo right, then left",
+      "The second block floats three colored boxes and one more image, then `wd-float-done`",
+    ],
+    code: `import "./index.css";
+
+const STARSHIP =
+  "https://www.staradvertiser.com/wp-content/uploads/2021/08/web1_Starship-gap2.jpg";
+const LOREM =
+  "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eius hic reprehenderit doloremque adipisci iste deserunt. Inventore, hic. Esse nihil unde aut, dignissimos eos consequatur veniam distinctio?";
+
+export default function Float() {
+  return (
+    <div id="wd-float-divs">
+      <h2>Float</h2>
+      <div>
+        <img className="wd-float-right" src={STARSHIP} alt="Starship" />
+        {LOREM} {LOREM}
+        <img className="wd-float-left" src={STARSHIP} alt="Starship" />
+        {LOREM} {LOREM}
+        <img className="wd-float-right" src={STARSHIP} alt="Starship" />
+        {LOREM} {LOREM}
+        <img className="wd-float-left" src={STARSHIP} alt="Starship" />
+        {LOREM} {LOREM}
+        <div className="wd-float-done" />
+      </div>
+      <div>
+        <div className="wd-float-left wd-dimension-portrait wd-bg-color-yellow">
+          Yellow
+        </div>
+        <div className="wd-float-left wd-dimension-portrait wd-bg-color-blue wd-fg-color-white">
+          Blue
+        </div>
+        <div className="wd-float-left wd-dimension-portrait wd-bg-color-red">
+          Red
+        </div>
+        <img className="wd-float-right" src={STARSHIP} alt="Starship" />
+        <div className="wd-float-done" />
+      </div>
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab2/Float.tsx",
+    codeHighlightLines: [[3, 6], [14, 22], [24, 35]],
   },
   {
     id: "float-demo",
-    title: "Boxes wrap, then clear",
+    title: "Live float",
     kind: "demo",
     bullets: [
-      "Yellow / blue / red portrait boxes float left in a row",
-      "A gray card floats right so text can wrap the other way",
+      "Text wraps the Starship photo on the right, then on the left",
       "The empty `wd-float-done` div ends the wrap",
     ],
-    code: `<div className="wd-float-left wd-dimension-portrait wd-bg-color-yellow">
-  Yellow
-</div>
-<div className="wd-float-left wd-dimension-portrait wd-bg-color-blue wd-fg-color-white">
-  Blue
-</div>
-<div className="wd-float-done" />`,
-    codeLanguage: "tsx",
-    codeFile: "app/labs/lab2/Float.tsx",
     embed: "css-float",
   },
   {
@@ -86,26 +141,46 @@ export const CSS_FLOAT_SLIDES: LectureSlide[] = [
   },
   {
     id: "halves",
-    title: "Half and half, then sidebars",
+    title: "Percentage float columns",
     kind: "content",
     bullets: [
+      "`float: left` plus percentage widths puts columns side by side, and each row needs `clear: both`.",
       "Row 1: `wd-grid-col-half-page` twice",
       "Row 2: 20% / 60% / 20% — sidebar, main, sidebar",
     ],
-    code: `<div className="wd-grid-row">
-  <div className="wd-grid-col-half-page wd-bg-color-yellow">
-    <h3>Left half</h3>
-  </div>
-  <div className="wd-grid-col-half-page wd-bg-color-blue wd-fg-color-white">
-    <h3>Right half</h3>
-  </div>
-</div>`,
+    code: `export default function GridLayout() {
+  return (
+    <div id="wd-css-grid-layout">
+      <h2>Grid layout</h2>
+      <div className="wd-grid-row">
+        <div className="wd-grid-col-half-page wd-bg-color-yellow">
+          <h3>Left half</h3>
+        </div>
+        <div className="wd-grid-col-half-page wd-bg-color-blue wd-fg-color-white">
+          <h3>Right half</h3>
+        </div>
+      </div>
+      <div className="wd-grid-row">
+        <div className="wd-grid-col-left-sidebar wd-bg-color-yellow">
+          <h3>Side bar</h3>
+        </div>
+        <div className="wd-grid-col-main-content wd-bg-color-blue wd-fg-color-white">
+          <h3>Main content</h3>
+        </div>
+        <div className="wd-grid-col-right-sidebar wd-bg-color-green wd-fg-color-white">
+          <h3>Side bar</h3>
+        </div>
+      </div>
+    </div>
+  );
+}`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/GridLayout.tsx",
+    codeHighlightLines: [[13, 23]],
   },
   {
     id: "grid-demo",
-    title: "GridLayout.tsx",
+    title: "Live float columns",
     kind: "demo",
     bullets: [
       "Two rows, no flex, no CSS Grid module",
@@ -119,7 +194,7 @@ export const CSS_FLOAT_SLIDES: LectureSlide[] = [
     kind: "title",
     bullets: [
       "Float wraps text and can fake columns if you clear each row",
-      "Deck 7: `display: flex` — rows without floats, clearing, or percentage math",
+      "§2.1.19: `display: flex` — rows without floats, clearing, or percentage math",
     ],
   },
 ];

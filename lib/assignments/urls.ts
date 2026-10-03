@@ -186,6 +186,54 @@ export function parseGithubRepoUrl(
   return { ok: true, repo: { owner, repo, href } };
 }
 
+/**
+ * Vercel branch previews put `-git-<branch>-` in the first DNS label.
+ * Labels longer than 63 characters are truncated, so the label may end at
+ * `-git-<branch>` with no trailing hyphen.
+ */
+export function isVercelBranchPreviewHost(hostname: string, branch: string): boolean {
+  const host = hostnameOf(hostname);
+  if (!host.endsWith(".vercel.app")) return false;
+  const label = host.split(".")[0] ?? "";
+  if (!label || !branch) return false;
+  const safe = branch.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`-git-${safe}(?:-|$)`).test(label);
+}
+
+/**
+ * A2-only hint for http:// and schemeless GitHub URLs. Null for other inputs
+ * so A1 keeps ASSIGNMENT_STUDENT_COPY.githubFormat.
+ */
+export function a2GithubSchemeMessage(raw: string): string | null {
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  const lower = trimmed.toLowerCase();
+  const schemeless = !/^[a-z][a-z0-9+.-]*:/i.test(trimmed);
+  if (!lower.startsWith("http://") && !schemeless) return null;
+  return ASSIGNMENT_STUDENT_COPY.a2GithubBranchUrl;
+}
+
+/**
+ * Branch name from a GitHub `/tree/<branch>` or `/commits/<branch>` URL.
+ * A repository-root URL has no branch.
+ */
+export function githubUrlBranch(raw: string): string | null {
+  const parsed = parseHttpsUrl(raw);
+  if (!parsed.ok) return null;
+  const host = hostnameOf(parsed.url.hostname);
+  if (host !== "github.com" && host !== "www.github.com") return null;
+  const parts = parsed.url.pathname.split("/").filter(Boolean);
+  if (parts.length < 4) return null;
+  if (parts[2] !== "tree" && parts[2] !== "commits") return null;
+  const branch = parts[3];
+  if (!branch) return null;
+  try {
+    return decodeURIComponent(branch);
+  } catch {
+    return branch;
+  }
+}
+
 export function deployOriginFromUrl(raw: string): UrlParseResult {
   const parsed = looksLikeDeployUrl(raw);
   if (!parsed.ok) return parsed;
@@ -208,11 +256,14 @@ export const A1_SEED_PATHS = [
   "/dashboard",
 ] as const;
 
-export function a1SeedUrls(deployUrl: string): string[] {
+export function seedUrlsForDeploy(
+  deployUrl: string,
+  seedPaths: readonly string[],
+): string[] {
   const origin = deployOriginFromUrl(deployUrl);
   if (!origin.ok) return [];
   const submitted = looksLikeDeployUrl(deployUrl);
-  const urls = A1_SEED_PATHS.map((path) => urlOnDeployOrigin(origin.href, path));
+  const urls = seedPaths.map((path) => urlOnDeployOrigin(origin.href, path));
   if (submitted.ok) urls.unshift(submitted.href);
   const seen = new Set<string>();
   const unique: string[] = [];
@@ -222,6 +273,10 @@ export function a1SeedUrls(deployUrl: string): string[] {
     unique.push(href);
   }
   return unique;
+}
+
+export function a1SeedUrls(deployUrl: string): string[] {
+  return seedUrlsForDeploy(deployUrl, A1_SEED_PATHS);
 }
 
 export function labsUrlFromDeploy(deployUrl: string): string | null {

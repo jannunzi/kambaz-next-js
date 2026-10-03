@@ -117,7 +117,7 @@ export const INSTALLING_NODEJS_SLIDES: BlockSlide[] = [
     title: "Download Node.js",
     kind: "content",
     interactiveHint:
-      "On the projector: open nodejs.org and point at the LTS button.",
+      "Open nodejs.org and use the LTS button.",
     blocks: [
       createBulletsBlock({
         id: "download-bullets",

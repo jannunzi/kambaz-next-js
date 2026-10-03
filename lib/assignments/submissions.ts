@@ -2,6 +2,7 @@ import "server-only";
 
 import { normalizeEmail } from "../roster/emails";
 import { getCollection } from "../mongo";
+import { selectRosterSubmission } from "./staff";
 import type { AssignmentId } from "./types";
 import {
   ASSIGNMENT_SUBMISSIONS_COLLECTION,
@@ -107,10 +108,11 @@ export async function findSubmissionForStaffStudent(input: {
     return readAssignmentSubmission(input.clerkUserId, input.assignmentId);
   }
   if (!input.email) return null;
-  const email = normalizeEmail(input.email);
-  const collection = await getAssignmentSubmissionsCollection();
-  return collection.findOne({
-    assignmentId: input.assignmentId,
-    $or: [{ rosterEmail: email }, { email }],
-  });
+  const submissions = await listSubmissionsForAssignment(input.assignmentId);
+  return (
+    selectRosterSubmission(
+      { email: normalizeEmail(input.email) },
+      submissions,
+    ) ?? null
+  );
 }

@@ -184,6 +184,7 @@ describe("assignment catalog", () => {
         ?.criteria.some((row) => row.id === "a1-delivery-labs-nav"),
     );
     const nameAndSection = findCriterion(A1_RUBRIC, "a1-delivery-name-section");
+    assert.equal(nameAndSection?.label, "Name on Labs");
     assert.equal(nameAndSection?.description, ASSIGNMENT_STUDENT_COPY.nameAndSection);
     assert.match(nameAndSection?.description ?? "", /full Canvas name on Labs/i);
     assert.match(nameAndSection?.description ?? "", /first then last/i);
@@ -246,7 +247,7 @@ describe("assignment catalog", () => {
       "<div id=\"wd-h-tag\"><h4>Heading Tags</h4></div>",
     );
     assert.equal(headingFail.passed, false);
-    assert.equal(supportsUrlSubmission("a2"), false);
+    assert.equal(supportsUrlSubmission("a2"), true);
   });
 });
 
@@ -387,7 +388,7 @@ describe("assignment progress helpers", () => {
     ];
     assert.deepEqual(
       studentAutoPoints(rows, new Set(A1_MANUAL_CRITERION_IDS)),
-      { earnedPoints: 3, totalPoints: 3 },
+      { earnedPoints: 3, totalPoints: 3, percent: 100 },
     );
     const summary = summarizeProgress(assignment, ["a1-delivery-vercel"]);
     assert.equal(summary.earnedPoints, 3);

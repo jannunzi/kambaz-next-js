@@ -11,7 +11,7 @@ import {
 } from "@/lib/assignments/grade-rows";
 import type { AssignmentGradeView } from "@/lib/assignments/grade-rows";
 import { ASSIGNMENT_STUDENT_COPY } from "@/lib/assignments/student-copy";
-import type { StaffStudentRow } from "@/lib/assignments/staff";
+import { type StaffStudentRow } from "@/lib/assignments/staff";
 import type { AssignmentHubItem } from "@/lib/assignments/types";
 import type { AssignmentSubmissionView } from "@/lib/assignments/submissions-store";
 import { saveAssignmentGrade } from "../staff-actions";
@@ -31,11 +31,13 @@ export default function A1WorkArea({
   serverUserId: string | null;
   authEnabled: boolean;
   canSubmit: boolean;
+  showSubmissionStatus?: boolean;
   impersonating: boolean;
   gateReason: SubmissionGateReason;
   staffQueue?: StaffStudentRow[];
   selectedStudent?: StaffStudentRow | null;
   selectedSection?: string;
+  selectedFilter?: string;
 }) {
   return (
     <AssignmentViewer serverUserId={serverUserId} authEnabled={authEnabled}>
@@ -58,21 +60,25 @@ function A1WorkSession({
   initialSubmission,
   initialGrade,
   canSubmit,
+  showSubmissionStatus = false,
   impersonating,
   gateReason,
   staffQueue,
   selectedStudent,
   selectedSection,
+  selectedFilter,
 }: {
   assignment: AssignmentHubItem;
   initialSubmission: AssignmentSubmissionView | null;
   initialGrade: AssignmentGradeView | null;
   canSubmit: boolean;
+  showSubmissionStatus?: boolean;
   impersonating: boolean;
   gateReason: SubmissionGateReason;
   staffQueue?: StaffStudentRow[];
   selectedStudent?: StaffStudentRow | null;
   selectedSection?: string;
+  selectedFilter?: string;
 }) {
   const staffMode = Boolean(selectedStudent);
   const [submission, setSubmission] = useState(initialSubmission);
@@ -159,6 +165,7 @@ function A1WorkSession({
           queue={staffQueue}
           selectedKey={selectedStudent?.key}
           selectedSection={selectedSection}
+          selectedFilter={selectedFilter}
         />
       ) : null}
 
@@ -169,8 +176,10 @@ function A1WorkSession({
       ) : (
         <A1SubmissionForm
           key={`${selectedStudent?.key ?? "self"}:${submission?.updatedAt ?? "none"}`}
+          assignmentId={assignment.id}
           initialSubmission={submission}
           canSubmit={canSubmit || staffMode}
+          showSubmissionStatus={showSubmissionStatus && !staffMode}
           impersonating={impersonating}
           gateReason={canSubmit || staffMode ? null : gateReason}
           staffStudentKey={selectedStudent?.key}

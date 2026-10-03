@@ -93,6 +93,10 @@ describe("crawlA1Deploy follow-up priority", () => {
     assert.ok(followups.includes(`${ORIGIN}/Courses/1234/Assignments/123`));
     assert.equal(followups.includes(`${ORIGIN}/courses/RS110/home`), false);
     assert.equal(followups.includes(`${ORIGIN}/labs/lab5`), false);
+    assert.equal(
+      followups.some((url) => url.toLowerCase().includes("/people")),
+      false,
+    );
 
     const results = await runA1Checks({
       vercelUrl: ORIGIN,

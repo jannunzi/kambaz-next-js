@@ -61,7 +61,7 @@ git push -u origin a6`}</CodeBlock>
         <li>
           Finish every Lab 6 exercise on{" "}
           <Link href="/labs/lab6">/labs/lab6</Link>{" "}and confirm the
-          LiveDemos in this chapter still behave as described.
+          interactive demos in this chapter still behave as described.
         </li>
         <li>
           Implement the Mongoose schemas, models, and DAOs for users,

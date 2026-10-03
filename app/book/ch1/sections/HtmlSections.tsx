@@ -958,7 +958,7 @@ My favorite books (in no particular order)
             The default is <code>text</code> so if you want a simple single-line text, omit it (or use{" "}
             <code>type=&quot;text&quot;</code>).
             Use <code>type=&quot;password&quot;</code>{" "}to mask characters as
-            the user types. Later sections introduce other types such as <code>email</code>
+            the user types. Later sections introduce other types such as <code>email</code>{" "}
             and <code>date</code>.
           </li>
           <li>
@@ -2288,7 +2288,7 @@ export default function HighlightedBoxLab() {
           Router works. Today Next.js uses the browser{" "}
           <strong>History API</strong>{" "}so paths like <code>/labs/lab1</code>{" "}
           update without a full reload — and without requiring a{" "}
-          <code>#</code>{" "}prefix. Reserve hash fragments for in-page jumps (as in
+          <code>#</code>{" "}prefix. Reserve hash fragments for in-page jumps (as in{" "}
           <SectionLink to="1.3.9" />), not for app routes in this course.
         </p>
         <p>

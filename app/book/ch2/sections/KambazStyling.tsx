@@ -861,7 +861,7 @@ export default function CourseStatus() {
         <code>flex</code>{" "}divs. On a wide
         screen the result is four columns — Kambaz Navigation, Course Navigation,
         Modules, and Course Status. As the window narrows, columns hide in this
-        order (matching the PDF figures):
+        order:
       </p>
       <ul>
         <li>
@@ -1431,7 +1431,7 @@ export default function AssignmentEditor() {
           section where you styled the worked example. Restyle the screens
           in order as you read — this list is for checking coverage, not a
           substitute for the walkthroughs. Assignment Editor and Account
-          stay On your own: match the figures and LiveDemos in those
+          stay On your own: match the figures and interactive demos in those
           sections. Each screen is listed once, with Lab,{" "}
           <strong>On your own</strong>, and <strong>With AI</strong>{" "}
           nested as a/b/c.

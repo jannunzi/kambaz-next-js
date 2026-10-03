@@ -68,22 +68,20 @@ export default function Intro() {
           the intended effect.
         </p>
         <p>
-          The PDF spine for this chapter is{" "}
+          This chapter moves through{" "}
           <em>
             forms and events → Redux → Context → Zustand → Kambaz
           </em>
-          . This interactive book keeps that coverage and the Redux Hello
-          / Add / Todo labs, then puts{" "}
+          . The Redux Hello, Add, and Todo labs stay so you can read a
+          slice when you meet one.{" "}
+          <SectionLink to="4.6" />{" "}covers Hello, Counter, Add, and
+          Todos even though Kambaz itself will not use those reducers.
+          Put{" "}
           <OfficialLink href="https://zustand.docs.pmnd.rs/">
             Zustand
           </OfficialLink>{" "}
-          on Kambaz courses and modules because it is the smaller store
-          students will maintain. The PDF&apos;s Kambaz screens use Redux
-          reducers for the same lists — same screens, different store.
-          You will still be able to read a Redux slice when you meet one,
-          which is why <SectionLink to="4.6" />{" "}restores the full Hello,
-          Counter, Add, and Todos teaching from the PDF even though
-          Kambaz itself will not use those reducers.
+          on Kambaz courses and modules — it is the smaller store you
+          will maintain.
         </p>
         <p>
           React&apos;s{" "}
@@ -100,9 +98,9 @@ export default function Intro() {
           <OfficialLink href="https://redux-toolkit.js.org/">
             Redux Toolkit
           </OfficialLink>{" "}
-          is the PDF&apos;s application store: a single object, reducers
+          is an application store: a single object, reducers
           that receive actions, <code>useSelector</code> and{" "}
-          <code>dispatch</code>. Zustand is the store this book uses for
+          <code>dispatch</code>. Zustand is the store for
           Kambaz courses and modules. After the labs,{" "}
           <SectionLink to="4.10" />{" "}applies these ideas to Kambaz so
           Add, Edit, and Delete change the screens that already render
@@ -244,8 +242,7 @@ export default function Lab4() {
             Tailwind CSS
           </OfficialLink>{" "}
           classes from{" "}
-          <Link href="/labs/lab2">Lab 2</Link>, not a separate Bootstrap
-          pill bar. Confirm you can reach{" "}
+          <Link href="/labs/lab2">Lab 2</Link>. Confirm you can reach{" "}
           <LocalUrl href="/labs/lab4" />{" "}from the Labs table of contents
           before continuing. A coverage checklist for Lab 4 is in{" "}
           <SectionLink to="4.8" /> — use it after you have walked through

@@ -101,7 +101,7 @@ export function KambazModulesEmbed() {
       label="app/(kambaz)/courses/[cid]/modules/page.tsx"
       url="/courses/1234/modules"
     >
-      <div className="max-h-56 overflow-auto font-sans text-sm">
+      <div className="font-sans text-sm">
         <ModulesDemo />
       </div>
     </LectureDemoFrame>
@@ -114,7 +114,7 @@ export function KambazHomeEmbed() {
       label="app/(kambaz)/courses/[cid]/home/page.tsx"
       url="/courses/1234/home"
     >
-      <div className="max-h-56 overflow-auto font-sans text-sm [&_h2]:mt-0">
+      <div className="font-sans text-sm [&_h2]:mt-0">
         <HomeDemo />
       </div>
     </LectureDemoFrame>
@@ -127,7 +127,7 @@ export function KambazAssignmentsEmbed() {
       label="app/(kambaz)/courses/[cid]/assignments/page.tsx"
       url="/courses/1234/assignments"
     >
-      <div className="max-h-56 overflow-auto font-sans text-sm [&_h2]:mt-0">
+      <div className="font-sans text-sm [&_h2]:mt-0">
         <AssignmentsDemo />
       </div>
     </LectureDemoFrame>

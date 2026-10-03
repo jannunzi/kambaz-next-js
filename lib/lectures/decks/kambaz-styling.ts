@@ -68,11 +68,14 @@ export const KAMBAZ_STYLING_SLIDES: LectureSlide[] = [
       "`KambazNavigation` is a sibling. Children sit in `wd-main-content-offset`",
       "`p-3` is the page gutter. The 120px left offset comes next, with the sidebar",
     ],
-    code: `import "@/app/labs/lab2/tailwind/utilities.css";
+    code: `import { ReactNode } from "react";
+import "@/app/labs/lab2/tailwind/utilities.css";
 import "./kambaz.css";
 import KambazNavigation from "./Navigation";
 
-export default function KambazLayout({ children }) {
+export default function KambazLayout({
+  children,
+}: Readonly<{ children: ReactNode }>) {
   return (
     <div id="wd-kambaz" className="font-sans">
       <KambazNavigation />
@@ -82,7 +85,7 @@ export default function KambazLayout({ children }) {
 }`,
     codeLanguage: "tsx",
     codeFile: "app/(kambaz)/layout.tsx",
-    codeAddedLines: [[1, 2], 8],
+    codeAddedLines: [1, [2, 3], 8, 12],
   },
   {
     id: "tables-out",
@@ -101,7 +104,7 @@ export default function KambazLayout({ children }) {
     bullets: [
       "Navigation, Dashboard, Course Nav, Modules, Home, People, Assignments",
       "Assignment Editor and Account stay **On your own** — match the figures",
-      "Use the book checklist after you restyle, not instead of walking the screens",
+      "Use the §2.4.10 checklist after you restyle, not instead of walking the screens",
     ],
   },
   {

@@ -11,11 +11,18 @@ import {
   type SubmissionGateReason,
 } from "@/lib/assignments/submission-form";
 import {
+  showSubmittedConfirmation,
+  submitActionLabel,
+  submitFailureCopy,
+  type SubmitFailureCopy,
+} from "@/lib/assignments/submission-status";
+import {
   runAssignmentChecks,
   runPublicAssignmentChecks,
   saveAssignmentSubmission,
 } from "../submission-actions";
 import { runStaffAssignmentChecks } from "../staff-actions";
+import SubmittedConfirmation from "./SubmittedConfirmation";
 
 export type { SubmissionGateReason };
 
@@ -27,8 +34,10 @@ function formatSavedAt(iso?: string): string | null {
 }
 
 export default function A1SubmissionForm({
+  assignmentId,
   initialSubmission,
   canSubmit,
+  showSubmissionStatus = false,
   impersonating = false,
   gateReason = null,
   staffStudentKey,
@@ -41,8 +50,11 @@ export default function A1SubmissionForm({
   onSubmission,
   onDeployUrlChange,
 }: {
+  assignmentId: string;
   initialSubmission: AssignmentSubmissionView | null;
   canSubmit: boolean;
+  /** Roster-matched students see Submitted / Graded. Everyone else does not. */
+  showSubmissionStatus?: boolean;
   impersonating?: boolean;
   gateReason?: SubmissionGateReason;
   staffStudentKey?: string;
@@ -63,6 +75,7 @@ export default function A1SubmissionForm({
   );
   const [note, setNote] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<SubmitFailureCopy | null>(null);
   const [pendingAction, setPendingAction] = useState<"save" | "check" | null>(
     null,
   );
@@ -75,15 +88,30 @@ export default function A1SubmissionForm({
 
   const savedAt = savedToAccount ? formatSavedAt(submission?.updatedAt) : null;
   const checkedAt = formatSavedAt(submission?.lastCheckedAt);
+  const hasStoredSubmission = Boolean(savedToAccount && submission);
+  const showSubmitted =
+    showSubmissionStatus &&
+    showSubmittedConfirmation({
+      hasSubmission: hasStoredSubmission,
+      submitFailed: Boolean(submitError),
+    });
 
   function applySave(
     result: Awaited<ReturnType<typeof saveAssignmentSubmission>>,
   ) {
     if (!result.ok) {
-      setError(result.message);
+      setSubmitError(
+        submitFailureCopy({
+          hasSubmission: hasStoredSubmission,
+          submittedAt: submission?.updatedAt,
+          detail: result.message,
+        }),
+      );
+      setError(null);
       setNote(null);
       return;
     }
+    setSubmitError(null);
     setError(null);
     setGithubUrl(result.submission.githubUrl);
     setVercelUrl(result.submission.vercelUrl);
@@ -91,11 +119,7 @@ export default function A1SubmissionForm({
     setSubmission(result.submission);
     setSavedToAccount(result.persisted);
     onSubmission?.(result.submission);
-    setNote(
-      result.persisted
-        ? ASSIGNMENT_STUDENT_COPY.saved
-        : ASSIGNMENT_STUDENT_COPY.savedButNotPersisted,
-    );
+    setNote(result.persisted ? null : ASSIGNMENT_STUDENT_COPY.savedButNotPersisted);
   }
 
   function applyRun(result: {
@@ -113,7 +137,7 @@ export default function A1SubmissionForm({
     setNote(
       staffReview
         ? "Checks finished. Save records the grade. Running checks again does not change a saved grade."
-        : "Checks finished. These results stay on this page until you Clear or leave. They are not saved.",
+        : "Checks finished. These results stay on this page until you Clear or leave. They are not submitted.",
     );
   }
 
@@ -122,7 +146,7 @@ export default function A1SubmissionForm({
     setError(null);
     startTransition(async () => {
       const result = await saveAssignmentSubmission({
-        assignmentId: "a1",
+        assignmentId,
         githubUrl,
         vercelUrl,
       });
@@ -138,19 +162,19 @@ export default function A1SubmissionForm({
       const result =
         checkAction === "staff" && staffStudentKey
           ? await runStaffAssignmentChecks({
-              assignmentId: "a1",
+              assignmentId,
               studentKey: staffStudentKey,
               githubUrl,
               vercelUrl,
             })
           : checkAction === "public"
             ? await runPublicAssignmentChecks({
-                assignmentId: "a1",
+                assignmentId,
                 githubUrl,
                 vercelUrl,
               })
             : await runAssignmentChecks({
-                assignmentId: "a1",
+                assignmentId,
                 githubUrl,
                 vercelUrl,
               });
@@ -170,13 +194,28 @@ export default function A1SubmissionForm({
         </p>
       )}
       <p className="mt-0 text-neutral-800">
-        {ASSIGNMENT_STUDENT_COPY.checkInstructions}
+        {assignmentId === "a2"
+          ? "Paste the a2 branch preview URL (the hostname contains -git-a2-) and the GitHub URL for that branch (…/tree/a2). Checks open that branch, then fetch Labs, Lab 2, the Tailwind page, and Kambaz screens."
+          : ASSIGNMENT_STUDENT_COPY.checkInstructions}
       </p>
 
       {impersonating ? (
         <p className="rounded-lg border-2 border-amber-500 bg-amber-50 px-4 py-3 font-sans text-sm text-amber-950">
           {ASSIGNMENT_STUDENT_COPY.impersonationBanner}
         </p>
+      ) : null}
+
+      {!staffReview && submitError ? (
+        <div
+          role="alert"
+          className="mb-3 rounded-lg border-2 border-red-600 bg-red-50 px-4 py-3 font-sans text-sm text-red-950"
+        >
+          <p className="m-0 font-semibold">{submitError.title}</p>
+          <p className="mb-0 mt-1">{submitError.body}</p>
+        </div>
+      ) : null}
+      {!staffReview && showSubmitted && submission ? (
+        <SubmittedConfirmation submission={submission} />
       ) : null}
 
       <form
@@ -188,18 +227,25 @@ export default function A1SubmissionForm({
         >
           <div>
             <label
-              htmlFor="a1-github-url"
+              htmlFor={`${assignmentId}-github-url`}
               className="font-sans text-sm font-semibold"
             >
-              Public GitHub repository URL (optional)
+              {assignmentId === "a2"
+                ? "GitHub a2 branch URL (…/tree/a2)"
+                : "Public GitHub repository URL (optional)"}
             </label>
             <input
-              id="a1-github-url"
+              id={`${assignmentId}-github-url`}
               name="githubUrl"
               type="url"
               inputMode="url"
               autoComplete="url"
-              placeholder="https://github.com/yourname/webdev-client"
+              required={assignmentId === "a2"}
+              placeholder={
+                assignmentId === "a2"
+                  ? "https://github.com/yourname/webdev-client/tree/a2"
+                  : "https://github.com/yourname/webdev-client"
+              }
               className="mt-1 box-border w-full rounded border border-neutral-400 bg-white px-3 py-2 font-sans text-sm"
               value={githubUrl}
               onChange={(event) => setGithubUrl(event.target.value)}
@@ -215,13 +261,13 @@ export default function A1SubmissionForm({
           </div>
           <div>
             <label
-              htmlFor="a1-vercel-url"
+              htmlFor={`${assignmentId}-vercel-url`}
               className="font-sans text-sm font-semibold"
             >
               Public Vercel deployment URL
             </label>
             <input
-              id="a1-vercel-url"
+              id={`${assignmentId}-vercel-url`}
               name="vercelUrl"
               type="url"
               inputMode="url"
@@ -259,7 +305,10 @@ export default function A1SubmissionForm({
               disabled={pendingAction !== null}
               onClick={onSaveUrls}
             >
-              {pendingAction === "save" ? "Saving…" : "Save URLs"}
+              {submitActionLabel({
+                hasSubmission: hasStoredSubmission,
+                pending: pendingAction === "save",
+              })}
             </button>
           ) : null}
           <div className="flex flex-wrap gap-2">
@@ -291,7 +340,7 @@ export default function A1SubmissionForm({
           </div>
         </form>
 
-      {savedAt ? (
+      {staffReview && savedAt ? (
         <p className="mb-1 mt-3 font-sans text-sm text-neutral-700">
           Last saved {savedAt}
           {checkedAt ? ` · Last checked ${checkedAt}` : null}

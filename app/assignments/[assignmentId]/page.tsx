@@ -31,10 +31,9 @@ import {
 } from "@/lib/assignments/submissions-store";
 import {
   buildStaffStudentQueue,
-  findStaffStudent,
-  listStaffQueueSections,
-  resolveStaffSectionFilter,
-  staffQueueForSection,
+  resolveStaffGraderView,
+  studentVisibleSubmission,
+  type StaffGradeFilter,
   type StaffStudentRow,
 } from "@/lib/assignments/staff";
 import { buildA1GateDiagnostics } from "@/lib/assignments/diagnostics";
@@ -60,6 +59,7 @@ import {
   isImpersonatingStudent,
 } from "@/lib/roster/staff-access";
 import { COURSE_WEBSITE_ACCOUNT_COPY } from "@/lib/course-site/account-copy";
+import { SIGN_IN_FOR_SUBMISSION_STATUS } from "@/lib/assignments/submission-status";
 import A1SubmitDiagnostics from "../components/A1SubmitDiagnostics";
 import A1WorkArea from "../components/A1WorkArea";
 import AssignmentChapterLink from "../components/AssignmentChapterLink";
@@ -83,7 +83,7 @@ function loggedOutSubmitVisibility(assignmentId: string, configured: boolean) {
 
 type PageProps = {
   params: Promise<{ assignmentId: string }>;
-  searchParams: Promise<{ student?: string; section?: string }>;
+  searchParams: Promise<{ student?: string; section?: string; filter?: string }>;
 };
 
 export function generateStaticParams() {
@@ -107,11 +107,16 @@ export default async function AssignmentDetailPage({
   searchParams,
 }: PageProps) {
   const { assignmentId } = await params;
-  const { student: studentKey, section: sectionParam } = await searchParams;
+  const {
+    student: studentKey,
+    section: sectionParam,
+    filter: filterParam,
+  } = await searchParams;
   const assignment = getAssignment(assignmentId);
   if (!assignment) notFound();
 
   let signedIn = false;
+  let rosterMatched = false;
   let serverUserId: string | null = null;
   const mongoReady = isAssignmentProgressConfigured();
   let initialGrade: AssignmentGradeView | null = null;
@@ -122,6 +127,7 @@ export default async function AssignmentDetailPage({
   let staffQueue: StaffStudentRow[] | undefined;
   let selectedStudent: StaffStudentRow | null = null;
   let selectedSection: string | undefined;
+  let selectedFilter: StaffGradeFilter = "all";
   let showStaffGrader = false;
   let staffDiagnostics: A1GateDiagnostics | null = null;
 
@@ -195,6 +201,7 @@ export default async function AssignmentDetailPage({
       });
       canSubmit = visibility.canSubmit;
       gateReason = visibility.gateReason;
+      rosterMatched = roster.status === "matched";
 
       if (staff) {
         let rosterCount: number | null = null;
@@ -219,7 +226,7 @@ export default async function AssignmentDetailPage({
         });
       }
 
-      console.info("a1 submit gate", {
+      console.info("assignment submit gate", {
         assignmentId: assignment.id,
         emailCount: emails.length,
         hasNortheasternEmail: emails.some((email) =>
@@ -238,7 +245,14 @@ export default async function AssignmentDetailPage({
           !impersonating &&
           supportsUrlSubmission(assignment.id)
         ) {
-          const doc = await readAssignmentSubmission(userId, assignment.id);
+          const doc =
+            roster.status === "matched"
+              ? studentVisibleSubmission({
+                  clerkUserId: userId,
+                  rosterEntry: roster.entry,
+                  submissions: await listSubmissionsForAssignment(assignment.id),
+                })
+              : await readAssignmentSubmission(userId, assignment.id);
           initialSubmission = doc ? toSubmissionView(doc) : null;
         }
       } catch (error) {
@@ -255,16 +269,16 @@ export default async function AssignmentDetailPage({
             rosterList.status === "ok" ? rosterList.entries : [],
             submissions,
           );
-          selectedSection = resolveStaffSectionFilter(
-            sectionParam,
-            listStaffQueueSections(staffQueue),
-          );
+          const view = resolveStaffGraderView({
+            queue: staffQueue,
+            section: sectionParam,
+            filter: filterParam,
+            studentKey,
+          });
+          selectedSection = view.section;
+          selectedFilter = view.filter;
           if (studentKey) {
-            selectedStudent =
-              findStaffStudent(
-                staffQueueForSection(staffQueue, selectedSection),
-                studentKey,
-              ) ?? null;
+            selectedStudent = view.student ?? null;
             if (selectedStudent?.clerkUserId) {
               const doc = await readAssignmentSubmission(
                 selectedStudent.clerkUserId,
@@ -346,6 +360,12 @@ export default async function AssignmentDetailPage({
       </p>
       <AssignmentChapterLink assignment={assignment} />
 
+      {supportsUrlSubmission(assignment.id) && !signedIn ? (
+        <p className="rounded-lg border border-neutral-300 bg-neutral-50 px-4 py-3 font-sans text-sm text-neutral-800">
+          {SIGN_IN_FOR_SUBMISSION_STATUS}
+        </p>
+      ) : null}
+
       {staffDiagnostics ? (
         <A1SubmitDiagnostics data={staffDiagnostics} />
       ) : null}
@@ -368,11 +388,13 @@ export default async function AssignmentDetailPage({
           serverUserId={serverUserId}
           authEnabled={isClerkPublishableKeySet()}
           canSubmit={canSubmit}
+          showSubmissionStatus={rosterMatched}
           impersonating={impersonating}
           gateReason={canSubmit ? null : gateReason}
           staffQueue={staffQueue}
           selectedStudent={selectedStudent}
           selectedSection={selectedSection}
+          selectedFilter={selectedFilter}
         />
       ) : (
         <AssignmentChecklist

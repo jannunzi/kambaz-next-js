@@ -6,6 +6,7 @@ import {
   a1CheckAction,
   a1SubmissionFormState,
   gateReasonFromAccess,
+  missingA2GithubMessage,
   preparePublicAssignmentCheck,
   resolveA1SubmitVisibility,
   submissionGateCopy,
@@ -429,7 +430,7 @@ describe("A1 submission form visibility", () => {
       false,
     );
     const otherAssignment = preparePublicAssignmentCheck({
-      assignmentId: "a2",
+      assignmentId: "a3",
       githubUrl: "",
       vercelUrl: "https://jane-a1.vercel.app",
     });
@@ -438,5 +439,29 @@ describe("A1 submission form visibility", () => {
       assert.equal(otherAssignment.code, "invalid");
       assert.equal(otherAssignment.message, ASSIGNMENT_STUDENT_COPY.unknownAssignment);
     }
+
+    const a1Optional = preparePublicAssignmentCheck({
+      assignmentId: "a1",
+      githubUrl: "",
+      vercelUrl: "https://jane-a1.vercel.app",
+    });
+    assert.equal(a1Optional.ok, true);
+    assert.equal(missingA2GithubMessage("a1", ""), null);
+
+    const a2Missing = preparePublicAssignmentCheck({
+      assignmentId: "a2",
+      githubUrl: "  ",
+      vercelUrl: "https://webdev-client-git-a2-jane.vercel.app",
+    });
+    assert.equal(a2Missing.ok, false);
+    if (!a2Missing.ok) {
+      assert.equal(a2Missing.message, ASSIGNMENT_STUDENT_COPY.a2GithubRequired);
+      assert.match(a2Missing.message, /tree\/a2/);
+      assert.notEqual(a2Missing.message, ASSIGNMENT_STUDENT_COPY.githubFormat);
+    }
+    assert.equal(
+      missingA2GithubMessage("a2", ""),
+      ASSIGNMENT_STUDENT_COPY.a2GithubRequired,
+    );
   });
 });
