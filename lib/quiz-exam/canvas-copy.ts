@@ -2,6 +2,7 @@ import { COURSE_SITE_ORIGIN } from "../assignments/catalog";
 import { GRADED_QUIZ_IDS, type GradedQuizId } from "./draw-counts";
 import {
   formatEasternCivilTimestamp,
+  formatEasternDateTime,
   getQuizSchedule,
 } from "./schedule";
 
@@ -24,6 +25,9 @@ export type CanvasFallbackQuizMeta = {
   unlockAt: string;
   dueAt: string;
   lockAt: string;
+  /** Civil America/New_York bounds of the single answer week. */
+  answersOpenAt: string;
+  answersCloseAt: string;
   takePath: string;
 };
 
@@ -47,10 +51,13 @@ const CANVAS_FALLBACK_TITLES: Record<GradedQuizId, string> = {
   x2: "X2 — Final",
 };
 
-/** Canvas dates are the website take window in civil ET, so they cannot drift. */
+/** Canvas take and answer dates come from the website schedule, so they cannot drift. */
 function canvasWindow(
   quizId: GradedQuizId,
-): Pick<CanvasFallbackQuizMeta, "unlockAt" | "dueAt" | "lockAt"> {
+): Pick<
+  CanvasFallbackQuizMeta,
+  "unlockAt" | "dueAt" | "lockAt" | "answersOpenAt" | "answersCloseAt"
+> {
   const schedule = getQuizSchedule(quizId);
   if (!schedule) {
     throw new Error(`Missing quiz schedule for Canvas fallback ${quizId}`);
@@ -60,6 +67,8 @@ function canvasWindow(
     unlockAt: formatEasternCivilTimestamp(schedule.takeUnlockAt),
     dueAt,
     lockAt: dueAt,
+    answersOpenAt: formatEasternCivilTimestamp(schedule.answersOpenAt),
+    answersCloseAt: formatEasternCivilTimestamp(schedule.answersCloseAt),
   };
 }
 
@@ -84,9 +93,16 @@ export function getCanvasFallbackQuiz(
  */
 export function canvasQuizDescriptionHtml(quiz: CanvasFallbackQuizMeta): string {
   const url = canvasQuizTakeUrl(quiz.quizId);
+  const schedule = getQuizSchedule(quiz.quizId);
+  if (!schedule) {
+    throw new Error(`Missing quiz schedule for Canvas fallback ${quiz.quizId}`);
+  }
+  const answersOpen = formatEasternDateTime(schedule.answersOpenAt);
+  const answersClose = formatEasternDateTime(schedule.answersCloseAt);
   return [
     `<p>Take ${quiz.canvasTitle} on the course site:</p>`,
     `<p><a href="${url}">${url}</a></p>`,
+    `<p>Correct answers are available for one week only, from ${answersOpen} until ${answersClose}.</p>`,
     quiz.quizId.startsWith("q")
       ? `<p>This Canvas copy is traditional questions only (multiple choice, true/false, fill in the blank). Short coding items are graded on the website and are not included here.</p>`
       : "",

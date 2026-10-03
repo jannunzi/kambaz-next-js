@@ -1,12 +1,10 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
-  COURSE_EXAMS,
+  addEasternDays,
   answerWindowCopy,
   canRevealAnswers,
   etWallTimeToUtc,
-  examPrepOpenAt,
-  examPrepWindowOpens,
   formatEasternCivilTimestamp,
   formatEasternDateTime,
   getAnswerRevealPhase,
@@ -44,7 +42,7 @@ describe("Eastern wall-time conversion", () => {
     );
     assert.equal(q1.answersOpenAt.toISOString(), et(2026, 10, 5).toISOString());
     assert.equal(q1.answersCloseAt.toISOString(), et(2026, 10, 12).toISOString());
-    assert.equal(q1.examName, "midterm");
+    assert.equal(quizWeekOfLabel("q1"), "Sep 28");
     assert.equal(
       formatEasternCivilTimestamp(q1.takeUnlockAt),
       "2026-09-28T00:00:00",
@@ -70,43 +68,20 @@ describe("Eastern wall-time conversion", () => {
   });
 });
 
-describe("exam prep reopen windows", () => {
-  it("uses syllabus X2 week as finalAt and the weekday after X1 as midtermAt", () => {
-    assert.equal(COURSE_EXAMS.midtermAt, et(2026, 11, 5).toISOString());
-    assert.equal(COURSE_EXAMS.finalAt, et(2026, 12, 14).toISOString());
-    const midterm = new Date(COURSE_EXAMS.midtermAt);
-    const final = new Date(COURSE_EXAMS.finalAt);
-    assert.equal(
-      examPrepOpenAt(midterm).toISOString(),
-      et(2026, 10, 29).toISOString(),
-    );
-    assert.equal(
-      examPrepOpenAt(final).toISOString(),
-      et(2026, 12, 7).toISOString(),
-    );
-    assert.equal(quizWeekOfLabel("q1"), "Sep 28");
-  });
-
-  it("labels Q1–Q3 midterm and Q4–Q6 final", () => {
-    assert.equal(getQuizSchedule("q1")?.examName, "midterm");
-    assert.equal(getQuizSchedule("q3")?.examName, "midterm");
-    assert.equal(getQuizSchedule("q4")?.examName, "final");
-    assert.equal(getQuizSchedule("q6")?.examName, "final");
-  });
-
-  it("opens X1/X2 take windows and skips exam-prep reopen", () => {
+describe("X1 and X2 take windows", () => {
+  it("keeps the exam take weeks and the single answer week after each lock", () => {
     const x1 = getQuizSchedule("x1");
     const x2 = getQuizSchedule("x2");
     assert.ok(x1);
     assert.ok(x2);
-    assert.equal(x1.examName, "midterm");
-    assert.equal(x2.examName, "final");
     assert.equal(x1.takeUnlockAt.toISOString(), et(2026, 10, 26).toISOString());
     assert.equal(x1.takeLockAt.toISOString(), et(2026, 11, 1, 23, 59).toISOString());
-    assert.equal(x1.examPrepOpenAt.toISOString(), x1.examPrepCloseAt.toISOString());
+    assert.equal(x1.answersOpenAt.toISOString(), et(2026, 11, 2).toISOString());
+    assert.equal(x1.answersCloseAt.toISOString(), et(2026, 11, 9).toISOString());
     assert.equal(x2.takeUnlockAt.toISOString(), et(2026, 12, 14).toISOString());
     assert.equal(x2.takeLockAt.toISOString(), et(2026, 12, 20, 23, 59).toISOString());
-    assert.equal(x2.examPrepOpenAt.toISOString(), x2.examPrepCloseAt.toISOString());
+    assert.equal(x2.answersOpenAt.toISOString(), et(2026, 12, 21).toISOString());
+    assert.equal(x2.answersCloseAt.toISOString(), et(2026, 12, 28).toISOString());
   });
 });
 
@@ -163,55 +138,53 @@ describe("getAnswerRevealPhase boundaries", () => {
     assert.equal(canRevealAnswers("answers_closed"), false);
   });
 
-  it("reopens Q1 one week before the midterm, exclusive of midtermAt", () => {
+  it("keeps Q1 closed on the old exam-prep Monday", () => {
+    assert.equal(getAnswerRevealPhase("q1", et(2026, 10, 12), true), "answers_closed");
+    assert.equal(getAnswerRevealPhase("q1", et(2026, 10, 29), true), "answers_closed");
+    assert.equal(canRevealAnswers(getAnswerRevealPhase("q1", et(2026, 10, 29), true)), false);
     assert.equal(
-      getAnswerRevealPhase("q1", et(2026, 10, 28, 23, 59), true),
-      "answers_closed",
-    );
-    assert.equal(getAnswerRevealPhase("q1", et(2026, 10, 29), true), "answers_reopen");
-    const lastPrep = new Date(q1.examPrepCloseAt.getTime() - 1);
-    assert.equal(getAnswerRevealPhase(q1, lastPrep, true), "answers_reopen");
-    assert.equal(getAnswerRevealPhase("q1", q1.examPrepCloseAt, true), "answers_closed");
-    assert.equal(canRevealAnswers("answers_reopen"), true);
-  });
-
-  it("keeps Q3's extra week and does not reopen a window that starts during the take", () => {
-    const q3 = getQuizSchedule("q3");
-    assert.ok(q3);
-    assert.equal(q3.answersOpenAt.toISOString(), et(2026, 11, 9).toISOString());
-    assert.equal(q3.answersCloseAt.toISOString(), et(2026, 11, 16).toISOString());
-    assert.equal(examPrepWindowOpens(q3), false);
-    assert.equal(getAnswerRevealPhase("q3", et(2026, 11, 2), true), "submitted_waiting");
-    assert.equal(getAnswerRevealPhase("q3", et(2026, 11, 4, 12), true), "submitted_waiting");
-    assert.equal(getAnswerRevealPhase("q3", et(2026, 11, 5), true), "submitted_waiting");
-    assert.equal(getAnswerRevealPhase("q3", et(2026, 11, 9), true), "answers_open");
-    assert.equal(getAnswerRevealPhase("q3", et(2026, 11, 16), true), "answers_closed");
-    assert.equal(
-      canRevealAnswers(getAnswerRevealPhase("q3", et(2026, 11, 2), true), "on"),
-      true,
-    );
-
-    const q6 = getQuizSchedule("q6");
-    assert.ok(q6);
-    assert.equal(examPrepWindowOpens(q6), false);
-    assert.equal(getAnswerRevealPhase("q6", et(2026, 12, 14), true), "submitted_waiting");
-    assert.equal(
-      canRevealAnswers(getAnswerRevealPhase("q6", et(2026, 12, 14), true), "on"),
+      canRevealAnswers(getAnswerRevealPhase("q1", et(2026, 10, 29), true), "on"),
       true,
     );
   });
 
-  it("reopens Q4 the week before the final, and hides Q6 until its take lock", () => {
-    const q4 = getQuizSchedule("q4");
-    const q6 = getQuizSchedule("q6");
-    assert.ok(q4);
-    assert.ok(q6);
-    assert.equal(q4.examName, "final");
-    assert.equal(getAnswerRevealPhase("q4", et(2026, 12, 6, 23, 59), true), "answers_closed");
-    assert.equal(getAnswerRevealPhase("q4", et(2026, 12, 7), true), "answers_reopen");
-    assert.equal(getAnswerRevealPhase("q4", et(2026, 12, 14), true), "answers_closed");
+  it("opens each quiz for the single week after its take week", () => {
+    const expected = {
+      q1: [et(2026, 10, 5), et(2026, 10, 12)],
+      q2: [et(2026, 10, 19), et(2026, 10, 26)],
+      q3: [et(2026, 11, 2), et(2026, 11, 9)],
+      q4: [et(2026, 11, 16), et(2026, 11, 23)],
+      q5: [et(2026, 11, 30), et(2026, 12, 7)],
+      q6: [et(2026, 12, 14), et(2026, 12, 21)],
+    } as const;
+    for (const [id, [open, close]] of Object.entries(expected)) {
+      const schedule = getQuizSchedule(id);
+      assert.ok(schedule, id);
+      assert.equal(schedule.answersOpenAt.toISOString(), open.toISOString(), id);
+      assert.equal(schedule.answersCloseAt.toISOString(), close.toISOString(), id);
+      const windows = visibleAnswerWindows(schedule);
+      assert.equal(windows.length, 1, id);
+      assert.equal(windows[0]?.openAt.toISOString(), open.toISOString(), id);
+      assert.equal(windows[0]?.closeAt.toISOString(), close.toISOString(), id);
+      assert.equal(getAnswerRevealPhase(schedule, open, true), "answers_open", id);
+      const lastMs = new Date(close.getTime() - 1);
+      assert.equal(getAnswerRevealPhase(schedule, lastMs, true), "answers_open", id);
+      assert.equal(getAnswerRevealPhase(schedule, close, true), "answers_closed", id);
+      assert.equal(
+        getAnswerRevealPhase(schedule, addEasternDays(close, 7), true),
+        "answers_closed",
+        id,
+      );
+      assert.equal(
+        canRevealAnswers(getAnswerRevealPhase(schedule, addEasternDays(close, 7), true)),
+        false,
+        id,
+      );
+    }
+    assert.equal(getAnswerRevealPhase("q4", et(2026, 12, 7), true), "answers_closed");
     assert.equal(getAnswerRevealPhase("q6", et(2026, 12, 10), true), "submitted_waiting");
-    assert.equal(getAnswerRevealPhase("q6", et(2026, 12, 21), true), "answers_open");
+    assert.equal(getAnswerRevealPhase("q6", et(2026, 12, 14), true), "answers_open");
+    assert.equal(getAnswerRevealPhase("q6", et(2026, 12, 21), true), "answers_closed");
   });
 
   it("does not treat a missing attempt during the answer window as a reveal phase", () => {
@@ -228,42 +201,28 @@ describe("answer-window copy", () => {
   const q1 = getQuizSchedule("q1");
   assert.ok(q1);
 
-  it("mentions the one-week window, close time, and midterm reopen while waiting", () => {
-    const copy = answerWindowCopy(q1, "submitted_waiting", et(2026, 10, 4, 12));
-    const text = copy.paragraphs.join(" ");
-    assert.match(copy.title, /not open yet/i);
-    assert.match(text, /only for one week/);
-    assert.match(text, /midterm/);
-    assert.doesNotMatch(text, /Q1–Q2 answers reopen for review/);
-    assert.ok(text.includes(formatEasternDateTime(q1.answersOpenAt)));
-    assert.ok(text.includes(formatEasternDateTime(q1.answersCloseAt)));
-  });
+  const reopenCopy = /available again|midterm|final|prep window/i;
 
-  it("says answers are available only for one week during the first window", () => {
-    const copy = answerWindowCopy(q1, "answers_open", et(2026, 10, 6));
-    const text = copy.paragraphs.join(" ");
-    assert.match(text, /only for one week/);
-    assert.match(text, /midterm/);
-    assert.doesNotMatch(text, /Q1–Q2 answers reopen for review/);
-    assert.ok(text.includes(formatEasternDateTime(q1.answersCloseAt)));
-  });
-
-  it("points at the next reopen after the first week closes", () => {
-    const copy = answerWindowCopy(q1, "answers_closed", et(2026, 10, 20));
-    const text = copy.paragraphs.join(" ");
-    assert.match(copy.title, /ended/i);
-    assert.match(text, /available again/);
-    assert.match(text, /midterm/);
-    assert.doesNotMatch(text, /Q1–Q2 answers reopen for review/);
-  });
-
-  it("uses final labeling for post-midterm quizzes", () => {
-    const q5 = getQuizSchedule("q5");
-    assert.ok(q5);
-    const copy = answerWindowCopy(q5, "answers_reopen", et(2026, 12, 8));
-    assert.match(copy.title, /final/);
-    assert.match(copy.paragraphs.join(" "), /final/);
-  });
+  function paragraphsFromWindows(
+    schedule: NonNullable<ReturnType<typeof getQuizSchedule>>,
+    phase: "submitted_waiting" | "answers_open" | "answers_closed",
+  ): string[] {
+    const windows = visibleAnswerWindows(schedule);
+    assert.equal(windows.length, 1, schedule.quizId);
+    const review = windows[0];
+    assert.ok(review);
+    const open = formatEasternDateTime(review.openAt);
+    const close = formatEasternDateTime(review.closeAt);
+    if (phase === "submitted_waiting") {
+      return [
+        `Correct answers will be available starting ${open}, only for one week, until ${close}.`,
+      ];
+    }
+    if (phase === "answers_open") {
+      return [`Answers are available only for one week, until ${close}.`];
+    }
+    return [`The class review window ended on ${close}.`];
+  }
 
   it("names the quiz week without saying how the section takes it", () => {
     const sentence = syllabusTakeWindowSentence(q1);
@@ -280,62 +239,44 @@ describe("answer-window copy", () => {
     assert.match(syllabusTakeWindowSentence(q2), /week of Oct 12/);
   });
 
-  it("prints only the dates the reveal phase will actually open", () => {
-    for (const id of ["q1", "q2", "q3", "q4", "q5", "q6"]) {
+  it("derives every answer date in student copy from the computed windows", () => {
+    for (const id of ["q1", "q2", "q3", "q4", "q5", "q6", "x1", "x2"]) {
       const schedule = getQuizSchedule(id);
       assert.ok(schedule, id);
       const windows = visibleAnswerWindows(schedule);
-      assert.ok(windows.some((window) => window.kind === "review"), id);
+      assert.equal(windows.length, 1, id);
+      const review = windows[0];
+      assert.ok(review);
+      assert.equal(review.kind, "review", id);
+      assert.equal(review.openAt.toISOString(), schedule.answersOpenAt.toISOString(), id);
+      assert.equal(review.closeAt.toISOString(), schedule.answersCloseAt.toISOString(), id);
+
       const duringTake = new Date(schedule.takeLockAt.getTime() - 60_000);
-      const waiting = answerWindowCopy(
-        schedule,
-        "submitted_waiting",
-        duringTake,
-      ).paragraphs.join(" ");
-      for (const window of windows) {
-        const openText = formatEasternDateTime(window.openAt);
-        const closeText = formatEasternDateTime(window.closeAt);
-        assert.equal(waiting.includes(openText), true, `${id} missing ${openText}`);
-        assert.equal(waiting.includes(closeText), true, `${id} missing ${closeText}`);
-        assert.equal(
-          getAnswerRevealPhase(schedule, window.openAt, true),
-          window.kind === "review" ? "answers_open" : "answers_reopen",
-          id,
-        );
-        const lastMs = new Date(window.closeAt.getTime() - 1);
-        assert.equal(
-          getAnswerRevealPhase(schedule, lastMs, true),
-          window.kind === "review" ? "answers_open" : "answers_reopen",
-          id,
-        );
-      }
-      if (!windows.some((window) => window.kind === "exam_prep")) {
-        assert.doesNotMatch(waiting, /available again/);
-        for (const instant of [schedule.examPrepOpenAt, schedule.examPrepCloseAt]) {
-          const text = formatEasternDateTime(instant);
-          const usedByReview = windows.some(
-            (window) =>
-              formatEasternDateTime(window.openAt) === text ||
-              formatEasternDateTime(window.closeAt) === text,
-          );
-          if (!usedByReview) {
-            assert.equal(waiting.includes(text), false, `${id} mentions ${text}`);
-          }
-        }
-        const probe = new Date(
-          Math.max(
-            schedule.examPrepOpenAt.getTime(),
-            schedule.takeLockAt.getTime() + 60_000,
-          ),
-        );
-        if (probe.getTime() < schedule.examPrepCloseAt.getTime()) {
-          assert.notEqual(
-            getAnswerRevealPhase(schedule, probe, true),
-            "answers_reopen",
-            id,
-          );
-        }
-      }
+      const waiting = answerWindowCopy(schedule, "submitted_waiting", duringTake);
+      const openCopy = answerWindowCopy(schedule, "answers_open", review.openAt);
+      const closedCopy = answerWindowCopy(schedule, "answers_closed", review.closeAt);
+      assert.deepEqual(waiting.paragraphs, paragraphsFromWindows(schedule, "submitted_waiting"), id);
+      assert.deepEqual(openCopy.paragraphs, paragraphsFromWindows(schedule, "answers_open"), id);
+      assert.deepEqual(closedCopy.paragraphs, paragraphsFromWindows(schedule, "answers_closed"), id);
+      const text = [...waiting.paragraphs, ...openCopy.paragraphs, ...closedCopy.paragraphs].join(" ");
+      assert.doesNotMatch(text, reopenCopy, id);
+      assert.equal(waiting.paragraphs.length, 1, id);
+      assert.equal(openCopy.paragraphs.length, 1, id);
+      assert.equal(closedCopy.paragraphs.length, 1, id);
+
+      assert.equal(getAnswerRevealPhase(schedule, duringTake, true), "submitted_waiting", id);
+      assert.equal(getAnswerRevealPhase(schedule, review.openAt, true), "answers_open", id);
+      assert.equal(
+        getAnswerRevealPhase(schedule, new Date(review.closeAt.getTime() - 1), true),
+        "answers_open",
+        id,
+      );
+      assert.equal(getAnswerRevealPhase(schedule, review.closeAt, true), "answers_closed", id);
+      assert.equal(
+        getAnswerRevealPhase(schedule, addEasternDays(review.closeAt, 7), true),
+        "answers_closed",
+        id,
+      );
     }
   });
 });

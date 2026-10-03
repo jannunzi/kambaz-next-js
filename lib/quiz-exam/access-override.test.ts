@@ -258,7 +258,7 @@ describe("per-section answers-visible overrides", () => {
 
   it("staff Off hides answers during the review week", () => {
     assert.equal(canRevealAnswers("answers_open", "off"), false);
-    assert.equal(canRevealAnswers("answers_reopen", "off"), false);
+    assert.equal(canRevealAnswers("answers_closed", "off"), false);
     assert.deepEqual(describeAnswersVisible(q1, "off", reviewOpen), {
       visible: false,
       mode: "off",

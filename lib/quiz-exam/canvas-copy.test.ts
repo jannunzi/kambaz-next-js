@@ -11,6 +11,7 @@ import {
 } from "./canvas-copy";
 import {
   formatEasternCivilTimestamp,
+  formatEasternDateTime,
   getQuizSchedule,
 } from "./schedule";
 
@@ -25,6 +26,17 @@ describe("Canvas quiz fallback copy", () => {
       assert.doesNotMatch(html, /use this Canvas quiz instead of the website/i);
       assert.doesNotMatch(html, /take this Canvas quiz by default/i);
       assert.doesNotMatch(html, /end of lecture|Monday through Sunday|in person|time to be announced/i);
+      assert.doesNotMatch(html, /available again|prep window|one week before the/i);
+      const schedule = getQuizSchedule(quiz.quizId);
+      assert.ok(schedule, quiz.quizId);
+      const answersOpen = formatEasternDateTime(schedule.answersOpenAt);
+      const answersClose = formatEasternDateTime(schedule.answersCloseAt);
+      assert.match(
+        html,
+        new RegExp(
+          `Correct answers are available for one week only, from ${answersOpen.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")} until ${answersClose.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\.`,
+        ),
+      );
       assert.doesNotMatch(html.replaceAll(url, ""), /Clerk|Kambaz|Lab [0-9]|wd-/i);
       assert.ok(html.indexOf(url) < html.indexOf(CANVAS_FALLBACK_PERMISSION_BLURB));
       if (quiz.quizId.startsWith("q")) {
@@ -48,6 +60,14 @@ describe("Canvas quiz fallback copy", () => {
         formatEasternCivilTimestamp(schedule.takeLockAt),
       );
       assert.equal(quiz.lockAt, quiz.dueAt);
+      assert.equal(
+        quiz.answersOpenAt,
+        formatEasternCivilTimestamp(schedule.answersOpenAt),
+      );
+      assert.equal(
+        quiz.answersCloseAt,
+        formatEasternCivilTimestamp(schedule.answersCloseAt),
+      );
       assert.doesNotMatch(quiz.dueAt, /2026-09-27/);
       assert.doesNotMatch(quiz.lockAt, /2026-09-27/);
     }
@@ -55,6 +75,14 @@ describe("Canvas quiz fallback copy", () => {
     assert.equal(q1?.unlockAt, "2026-09-28T00:00:00");
     assert.equal(q1?.dueAt, "2026-10-04T23:59:00");
     assert.equal(q1?.lockAt, "2026-10-04T23:59:00");
+    assert.equal(q1?.answersOpenAt, "2026-10-05T00:00:00");
+    assert.equal(q1?.answersCloseAt, "2026-10-12T00:00:00");
+    const q3 = CANVAS_FALLBACK_QUIZZES.find((quiz) => quiz.quizId === "q3");
+    assert.equal(q3?.answersOpenAt, "2026-11-02T00:00:00");
+    assert.equal(q3?.answersCloseAt, "2026-11-09T00:00:00");
+    const q6 = CANVAS_FALLBACK_QUIZZES.find((quiz) => quiz.quizId === "q6");
+    assert.equal(q6?.answersOpenAt, "2026-12-14T00:00:00");
+    assert.equal(q6?.answersCloseAt, "2026-12-21T00:00:00");
   });
 
   it("keeps the checked-in Q1 assessment meta on the shifted window", () => {

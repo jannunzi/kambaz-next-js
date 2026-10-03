@@ -77,4 +77,4 @@ export type {
   SubmitExamInput,
   SubmitExamResult,
 } from "./types";
-export type { AnswerWindowInfo, ExamName, QuizPhase, QuizSchedule } from "./schedule";
+export type { AnswerWindowInfo, QuizPhase, QuizSchedule } from "./schedule";
