@@ -349,23 +349,24 @@ Unlock is **class-wide** (wall-clock ET → stored as ISO UTC in
 
 | Phase | What the student sees |
 | --- | --- |
-| Take open, no attempt | Existing exam form. New attempts are blocked after the Sunday 23:59 ET due. |
-| Submitted, before answers open | Score / submitted status. Answers start **{answersOpenAt}**, one week after that quiz closes, and stay available for **one week**, until **{answersCloseAt}**. Q1–Q2 answers reopen for review Mon 11/2 through Thu 11/5. Q3’s answers open Nov 9, with no Nov 2 reopen. Q4 and Q5 answers are available in their normal windows, and Q6 answers open after X2. |
-| First answer week | Full review of their drawn attempt with correct answers. Banner: available for one week, until **{answersCloseAt}**, opened one week after the quiz closed. Q1–Q2 answers reopen for review Mon 11/2 through Thu 11/5. Q3’s answers open Nov 9, with no Nov 2 reopen. Q4 and Q5 answers are available in their normal windows, and Q6 answers open after X2. |
-| After that week | Answers hidden. Message that the window ended. Q1–Q2 answers reopen for review Mon 11/2 through Thu 11/5 if that window is still ahead. After Thu 11/5 that sentence is hidden. Q3’s answers open Nov 9, with no Nov 2 reopen. Q4 and Q5 answers are available in their normal windows, and Q6 answers open after X2. |
-| Q1–Q2 review | Q1–Q2 answers reopen for review Mon 11/2 through Thu 11/5 (after X1). Q3 is not included. There is no Q4–Q6 exam-prep reopen before X2. |
+| Take open, no attempt | Existing exam form. CS 5610-09 is open Monday through Sunday 11:59pm ET. In-person sections take the quiz at the end of lecture that week. |
+| Submitted, before answers open | Score / submitted status. Answers start **{answersOpenAt}** (Monday 00:00 ET after the due Sunday) and stay available for one week, until **{answersCloseAt}**. |
+| First answer week | Full review of their drawn attempt with correct answers, until **{answersCloseAt}**. |
+| After that week | Answers hidden until the one-week exam-prep reopen (`midtermAt − 7d` for Q1–Q3, `finalAt − 7d` for Q4–Q6). |
+| During the take window | The key stays hidden even if a whole-class window has started. Staff can show it with `answersVisible: on`. |
 
 The server clock decides the phase. `correctReveal` is omitted from HTML and
 from the submit payload unless the phase is `answers_open` or `answers_reopen`.
 
-Fall 2026 first windows open Monday 00:00 ET one week after the Monday
-following each quiz’s Sunday lock, and last 7 days:
+Fall 2026 first answer windows open Monday 00:00 ET after the due-week
+Sunday and last 7 days (main’s rule, shifted with the take week). Q6 stays
+after X2:
 
-- Q1: 2026-10-12 → 2026-10-19
-- Q2: 2026-10-26 → 2026-11-02
-- Q3: 2026-11-09 → 2026-11-16
-- Q4: 2026-11-23 → 2026-11-30
-- Q5: 2026-12-07 → 2026-12-14
+- Q1: 2026-10-05 → 2026-10-12
+- Q2: 2026-10-19 → 2026-10-26
+- Q3: 2026-11-02 → 2026-11-09
+- Q4: 2026-11-16 → 2026-11-23
+- Q5: 2026-11-30 → 2026-12-07
 - Q6: 2026-12-21 → 2026-12-28
 
 Take windows are the class-wide website window (Monday 00:00 ET unlock →
@@ -376,9 +377,8 @@ quiz at the end of their meeting that week. Q1: unlock 2026-09-28, lock
 
 **Exam dates** live in `COURSE_EXAMS` in the same module:
 
-- `midtermAt` — Q1–Q2 review close `2026-11-05T05:00:00.000Z` (Thu
-  2026-11-05 00:00 ET). X1 is taken the week of October 26, before this
-  review. `/quizzes/take/x1` is a coming-soon stub.
+- `midtermAt` — Q1–Q3 answer-reopen close `2026-11-05T05:00:00.000Z` (Thu
+  2026-11-05 00:00 ET). `/quizzes/take/x1` is a coming-soon stub.
 - `finalAt` — syllabus **X2** week `2026-12-14T05:00:00.000Z`
   (2026-12-14 00:00 ET). `/quizzes/take/x2` is a coming-soon stub.
   University finals are 2026-12-14–20 on the syllabus.
@@ -391,15 +391,10 @@ blurb) is generated with `npm run canvas:export-qti`. See
 `scripts/canvas-fallback/README.md`. Students still take the website
 unless staff unlock Canvas.
 
-Q1–Q2 answers reopen for review Monday 2026-11-02 00:00 ET through Thursday
-2026-11-05 00:00 ET. That window is after X1 (taken the week of October 26).
-It starts only after Q3’s Sunday lock and ends at `midtermAt`, so it is 3 days
-rather than 7. Q3 is not in the review: its answers open Monday 2026-11-09.
-Jose has not decided whether to move the Q1–Q2 window. There is no Q4–Q6
-exam-prep reopen before X2: Q6 locks Sunday 2026-12-13 23:59 ET and `finalAt`
-is Monday 2026-12-14 00:00 ET, so a non-overlapping window cannot fit. Q4 and
-Q5 answers are available in their normal windows, and Q6 answers open after X2
-(2026-12-21 through 2026-12-28). X1 and X2 take dates are unchanged.
+Per-section answer windows are PR #191. This branch only moves quiz take
+weeks. If a whole-class answer or exam-prep window would open before that
+quiz’s take lock, the key stays hidden unless staff set `answersVisible`
+to `on`. X1 and X2 take dates are unchanged.
 
 Staff **View as student** still does not persist an attempt. Impersonation can
 exercise the form even outside the take window; answers still follow the

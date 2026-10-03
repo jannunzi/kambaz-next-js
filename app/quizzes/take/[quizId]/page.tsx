@@ -190,7 +190,7 @@ export default async function TakeExamPage({ params }: PageProps) {
       </h1>
       {schedule ? (
         <p className="mt-3 mb-0 text-sm text-neutral-700">
-          {syllabusTakeWindowSentence(schedule)}
+          {syllabusTakeWindowSentence(schedule, roster.entry.section)}
         </p>
       ) : null}
       {impersonating ? (
@@ -210,6 +210,7 @@ export default async function TakeExamPage({ params }: PageProps) {
           now={now}
           takeOverride={takeOverride}
           answersVisible={answersVisible}
+          rosterSection={roster.entry.section}
         />
       ) : attempt && !schedule ? (
         <StatusPanel title="Attempt submitted" tone="ok">
@@ -230,6 +231,7 @@ export default async function TakeExamPage({ params }: PageProps) {
                 now={now}
                 takeOverride={takeOverride}
                 answersVisible={answersVisible}
+                rosterSection={roster.entry.section}
               />
               <p className="text-sm text-neutral-700">
                 Students cannot start a new attempt right now. Impersonation
@@ -269,6 +271,7 @@ export default async function TakeExamPage({ params }: PageProps) {
             now={now}
             takeOverride={takeOverride}
             answersVisible={answersVisible}
+            rosterSection={roster.entry.section}
           />
         </div>
       ) : (
@@ -290,6 +293,7 @@ async function AttemptReviewSection({
   now,
   takeOverride,
   answersVisible,
+  rosterSection,
 }: {
   title: string;
   schedule: NonNullable<ReturnType<typeof getQuizSchedule>>;
@@ -298,6 +302,7 @@ async function AttemptReviewSection({
   now: Date;
   takeOverride?: QuizTakeOverrideMode;
   answersVisible?: QuizAnswersVisibleMode;
+  rosterSection?: string;
 }) {
   const reveal = canRevealAnswers(phase, answersVisible);
   const classOverrides = await listQuizGradeOverrides(attempt.quizId);
@@ -328,6 +333,7 @@ async function AttemptReviewSection({
         now={now}
         takeOverride={takeOverride}
         answersVisible={answersVisible}
+        rosterSection={rosterSection}
       />
     </div>
   );

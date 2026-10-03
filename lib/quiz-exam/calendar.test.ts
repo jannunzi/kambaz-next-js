@@ -160,10 +160,19 @@ describe("Fall 2026 Canvas calendar", () => {
     assert.match(quiz.description, /week of Sep 28/);
     assert.match(quiz.description, /attendance is not required/i);
     assert.match(quiz.description, /2026-09-28 through 2026-10-04/);
-    assert.match(quiz.description, /not the end of Chapter 1’s original two weeks/);
+    assert.doesNotMatch(quiz.description, /original two weeks/);
+    assert.doesNotMatch(quiz.description, /one-week shift/);
     assert.match(
       quiz.description,
       /CS 5610-02: Q2 time to be announced \(no class Mon Oct 12\)/,
+    );
+    assert.match(
+      quiz.description,
+      /CS 4550: Q4 time to be announced \(no class Wed Nov 11\)/,
+    );
+    assert.match(
+      quiz.description,
+      /CS 4550: Q5 time to be announced \(no class Wed Nov 25\)/,
     );
     assert.match(quiz.description, /10 questions/);
     assert.doesNotMatch(quiz.description, /unlocks Monday/);
@@ -196,12 +205,16 @@ describe("Fall 2026 Canvas calendar", () => {
     assert.doesNotMatch(studentCopy, /section starts later/i);
     assert.doesNotMatch(studentCopy, /chapter quizzes \(Q1–Q6\) are due Sunday/);
     assert.match(deadlinesNote, /Quizzes \(Q1–Q6\) are the week after each chapter’s assignment is due/);
-    assert.match(deadlinesNote, /your section’s own meeting that week/);
-    assert.match(deadlinesNote, /CS 5610-02 Mondays 6:00–9:00pm ET/);
+    assert.match(deadlinesNote, /end of their own lecture that week/);
+    assert.match(deadlinesNote, /CS 5610-02 on Monday, CS 4550 on Wednesday/);
     assert.match(deadlinesNote, /attendance is not required/);
     assert.match(deadlinesNote, /2026-09-28 through 2026-10-04 ET/);
-    assert.match(deadlinesNote, /not a calendar day labeled “today,”/);
-    assert.match(deadlinesNote, /Q1 in the week of Sep 28 is Mon Sep 28/);
+    assert.doesNotMatch(deadlinesNote, /labeled “today”/);
+    assert.match(deadlinesNote, /Q1 is the week of Sep 28/);
+    assert.match(
+      deadlinesNote,
+      /CS 4550: Q4 time to be announced \(no class Wed Nov 11\)/,
+    );
     assert.match(
       deadlinesNote,
       /CS 5610-02: Q2 time to be announced \(no class Mon Oct 12\)/,

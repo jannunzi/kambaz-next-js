@@ -28,12 +28,14 @@ export function WindowBanner({
   now,
   takeOverride,
   answersVisible,
+  rosterSection,
 }: {
   schedule: QuizSchedule;
   phase: QuizPhase;
   now?: Date;
   takeOverride?: QuizTakeOverrideMode | null;
   answersVisible?: QuizAnswersVisibleMode | null;
+  rosterSection?: string | null;
 }) {
   const copy = answerWindowCopy(
     schedule,
@@ -41,6 +43,7 @@ export function WindowBanner({
     now,
     takeOverride,
     answersVisible,
+    rosterSection,
   );
   const toneClass =
     copy.tone === "ok"
@@ -207,6 +210,7 @@ export function SubmittedAttemptView({
   now,
   takeOverride,
   answersVisible,
+  rosterSection,
 }: {
   title: string;
   schedule: QuizSchedule;
@@ -221,6 +225,7 @@ export function SubmittedAttemptView({
   now?: Date;
   takeOverride?: QuizTakeOverrideMode | null;
   answersVisible?: QuizAnswersVisibleMode | null;
+  rosterSection?: string | null;
 }) {
   const revealAnswers = canRevealAnswers(phase, answersVisible);
   return (
@@ -239,6 +244,7 @@ export function SubmittedAttemptView({
         now={now}
         takeOverride={takeOverride}
         answersVisible={answersVisible}
+        rosterSection={rosterSection}
       />
       {revealAnswers ? (
         <GradedQuestionList
