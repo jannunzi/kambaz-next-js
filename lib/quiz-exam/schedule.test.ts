@@ -6,6 +6,7 @@ import {
   canRevealAnswers,
   etWallTimeToUtc,
   examPrepOpenAt,
+  examPrepWindowOpens,
   formatEasternCivilTimestamp,
   formatEasternDateTime,
   getAnswerRevealPhase,
@@ -16,6 +17,7 @@ import {
   nthWeekdayOfMonth,
   quizWeekOfLabel,
   syllabusTakeWindowSentence,
+  visibleAnswerWindows,
 } from "./schedule";
 
 function et(year: number, month: number, day: number, hour = 0, minute = 0) {
@@ -173,11 +175,30 @@ describe("getAnswerRevealPhase boundaries", () => {
     assert.equal(canRevealAnswers("answers_reopen"), true);
   });
 
-  it("prefers the first answer window when it overlaps exam prep (Q3)", () => {
-    assert.equal(getAnswerRevealPhase("q3", et(2026, 11, 2), true), "answers_open");
-    assert.equal(getAnswerRevealPhase("q3", et(2026, 11, 4, 12), true), "answers_open");
-    assert.equal(getAnswerRevealPhase("q3", et(2026, 11, 5), true), "answers_open");
-    assert.equal(getAnswerRevealPhase("q3", et(2026, 11, 9), true), "answers_closed");
+  it("keeps Q3's extra week and does not reopen a window that starts during the take", () => {
+    const q3 = getQuizSchedule("q3");
+    assert.ok(q3);
+    assert.equal(q3.answersOpenAt.toISOString(), et(2026, 11, 9).toISOString());
+    assert.equal(q3.answersCloseAt.toISOString(), et(2026, 11, 16).toISOString());
+    assert.equal(examPrepWindowOpens(q3), false);
+    assert.equal(getAnswerRevealPhase("q3", et(2026, 11, 2), true), "submitted_waiting");
+    assert.equal(getAnswerRevealPhase("q3", et(2026, 11, 4, 12), true), "submitted_waiting");
+    assert.equal(getAnswerRevealPhase("q3", et(2026, 11, 5), true), "submitted_waiting");
+    assert.equal(getAnswerRevealPhase("q3", et(2026, 11, 9), true), "answers_open");
+    assert.equal(getAnswerRevealPhase("q3", et(2026, 11, 16), true), "answers_closed");
+    assert.equal(
+      canRevealAnswers(getAnswerRevealPhase("q3", et(2026, 11, 2), true), "on"),
+      true,
+    );
+
+    const q6 = getQuizSchedule("q6");
+    assert.ok(q6);
+    assert.equal(examPrepWindowOpens(q6), false);
+    assert.equal(getAnswerRevealPhase("q6", et(2026, 12, 14), true), "submitted_waiting");
+    assert.equal(
+      canRevealAnswers(getAnswerRevealPhase("q6", et(2026, 12, 14), true), "on"),
+      true,
+    );
   });
 
   it("reopens Q4 the week before the final, and hides Q6 until its take lock", () => {
@@ -248,11 +269,73 @@ describe("answer-window copy", () => {
     const sentence = syllabusTakeWindowSentence(q1);
     assert.equal(
       sentence,
-      "This quiz is the week of Sep 28. Those dates do not open the quiz by themselves.",
+      "This quiz is the week of Sep 28. The instructor or a TA still has to enable it.",
     );
-    assert.doesNotMatch(sentence, /end of lecture|Monday through Sunday|in person|online|is due/i);
+    assert.doesNotMatch(
+      sentence,
+      /end of lecture|Monday through Sunday|in person|online|is due|by themselves/i,
+    );
     const q2 = getQuizSchedule("q2");
     assert.ok(q2);
     assert.match(syllabusTakeWindowSentence(q2), /week of Oct 12/);
+  });
+
+  it("prints only the dates the reveal phase will actually open", () => {
+    for (const id of ["q1", "q2", "q3", "q4", "q5", "q6"]) {
+      const schedule = getQuizSchedule(id);
+      assert.ok(schedule, id);
+      const windows = visibleAnswerWindows(schedule);
+      assert.ok(windows.some((window) => window.kind === "review"), id);
+      const duringTake = new Date(schedule.takeLockAt.getTime() - 60_000);
+      const waiting = answerWindowCopy(
+        schedule,
+        "submitted_waiting",
+        duringTake,
+      ).paragraphs.join(" ");
+      for (const window of windows) {
+        const openText = formatEasternDateTime(window.openAt);
+        const closeText = formatEasternDateTime(window.closeAt);
+        assert.equal(waiting.includes(openText), true, `${id} missing ${openText}`);
+        assert.equal(waiting.includes(closeText), true, `${id} missing ${closeText}`);
+        assert.equal(
+          getAnswerRevealPhase(schedule, window.openAt, true),
+          window.kind === "review" ? "answers_open" : "answers_reopen",
+          id,
+        );
+        const lastMs = new Date(window.closeAt.getTime() - 1);
+        assert.equal(
+          getAnswerRevealPhase(schedule, lastMs, true),
+          window.kind === "review" ? "answers_open" : "answers_reopen",
+          id,
+        );
+      }
+      if (!windows.some((window) => window.kind === "exam_prep")) {
+        assert.doesNotMatch(waiting, /available again/);
+        for (const instant of [schedule.examPrepOpenAt, schedule.examPrepCloseAt]) {
+          const text = formatEasternDateTime(instant);
+          const usedByReview = windows.some(
+            (window) =>
+              formatEasternDateTime(window.openAt) === text ||
+              formatEasternDateTime(window.closeAt) === text,
+          );
+          if (!usedByReview) {
+            assert.equal(waiting.includes(text), false, `${id} mentions ${text}`);
+          }
+        }
+        const probe = new Date(
+          Math.max(
+            schedule.examPrepOpenAt.getTime(),
+            schedule.takeLockAt.getTime() + 60_000,
+          ),
+        );
+        if (probe.getTime() < schedule.examPrepCloseAt.getTime()) {
+          assert.notEqual(
+            getAnswerRevealPhase(schedule, probe, true),
+            "answers_reopen",
+            id,
+          );
+        }
+      }
+    }
   });
 });
