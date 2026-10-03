@@ -1,9 +1,4 @@
 import Link from "next/link";
-import {
-  formatQuizDeadlineLabel,
-  quizLectureMeetingDayNote,
-  quizMeetingTba,
-} from "../data/deadlines";
 import { holidayMeetingNote } from "../data/holidays";
 import { formatAgendaDate, formatWeekOf } from "../data/dates";
 import type { AgendaGroup, AgendaRow, CourseSection } from "../data/types";
@@ -26,13 +21,9 @@ function rowClass(row: AgendaRow): string {
   return "border-b border-neutral-200";
 }
 
-function dateLabel(row: AgendaRow, section: CourseSection): string {
+function dateLabel(row: AgendaRow): string {
   if (row.kind === "orientation") {
     return formatAgendaDate(row.date);
-  }
-  const quiz = row.deadlines.find((deadline) => deadline.kind === "quiz");
-  if (quiz) {
-    return quizMeetingTba(section, quiz) ?? formatQuizDeadlineLabel(row.date, section.modality);
   }
   return formatWeekOf(row.date);
 }
@@ -49,10 +40,7 @@ export default function AgendaTable({
       <p>
         Every section follows the same Canvas module sequence from the week of
         September 14, 2026, grouped by chapter. Dates are the shared Monday —
-        Week of Sep 14 through Week of Dec 14. In-person sections take each
-        quiz at the end of lecture that week. CS 5610-09 (online) has the
-        quiz open Monday through Sunday.
-        CS 4550’s September 9 meeting is
+        Week of Sep 14 through Week of Dec 14. CS 4550’s September 9 meeting is
         orientation only and does not start Chapter 1. Each chapter spans two
         weeks. Chapter 4 is one Canvas module — “Ch 4 — Client state,
         Midterm/X1” — covering the weeks of Oct 26 and Nov 2. X1 is taken
@@ -67,7 +55,7 @@ export default function AgendaTable({
         <Link href="/slides/grok-api">Grok API</Link>
         ). X2 is the week of Dec 14, even though the last
         day of classes is Dec 13. Quizzes are the week after each chapter’s
-        assignment is due. {quizLectureMeetingDayNote}
+        assignment is due.
       </p>
       <p>{holidayMeetingNote}</p>
       <p className="font-sans text-sm text-neutral-600">
@@ -108,7 +96,7 @@ export default function AgendaTable({
                   className={rowClass(row)}
                 >
                   <td className="px-3 py-2 font-sans">
-                    {dateLabel(row, section)}
+                    {dateLabel(row)}
                   </td>
                   <td className="px-3 py-2 tabular-nums text-neutral-600">
                     {row.kind === "orientation" ? "—" : row.lectureNumber}

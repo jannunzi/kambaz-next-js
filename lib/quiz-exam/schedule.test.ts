@@ -244,26 +244,15 @@ describe("answer-window copy", () => {
     assert.match(copy.paragraphs.join(" "), /final/);
   });
 
-  it("names the online week and the in-person lecture separately", () => {
-    const both = syllabusTakeWindowSentence(q1);
-    assert.match(both, /CS 5610-09 \(online\): open Monday through Sunday 11:59pm ET/);
-    assert.match(both, /In-person sections: end of lecture that week/);
-    assert.doesNotMatch(both, /is due/);
-    assert.match(
-      syllabusTakeWindowSentence(q1, "CS5610-09 CRN 17396"),
-      /CS 5610-09 \(online\): open Monday through Sunday 11:59pm ET/,
+  it("names the quiz week without saying how the section takes it", () => {
+    const sentence = syllabusTakeWindowSentence(q1);
+    assert.equal(
+      sentence,
+      "This quiz is the week of Sep 28. Those dates do not open the quiz by themselves.",
     );
-    assert.doesNotMatch(
-      syllabusTakeWindowSentence(q1, "CS5610-09 CRN 17396"),
-      /end of lecture/,
-    );
-    assert.match(
-      syllabusTakeWindowSentence(q1, "CS4550 CRN 11464"),
-      /In-person sections: end of lecture that week/,
-    );
-    assert.doesNotMatch(
-      syllabusTakeWindowSentence(q1, "CS5610-02 CRN 17395"),
-      /Sunday 11:59pm ET \(through/,
-    );
+    assert.doesNotMatch(sentence, /end of lecture|Monday through Sunday|in person|online|is due/i);
+    const q2 = getQuizSchedule("q2");
+    assert.ok(q2);
+    assert.match(syllabusTakeWindowSentence(q2), /week of Oct 12/);
   });
 });

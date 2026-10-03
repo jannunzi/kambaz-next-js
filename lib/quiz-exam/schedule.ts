@@ -11,13 +11,11 @@
  * belong to PR #191. A whole-class window that would open before this
  * quiz’s take lock stays hidden unless staff set answersVisible to `on`.
  *
- * Take windows are the class-wide website window for the quiz week:
- * Monday 00:00 ET unlock through Sunday 23:59 ET lock. That is the
- * CS 5610-09 (online) open week — attendance is not required (Q1:
- * 2026-09-28 through 2026-10-04). In-person sections (CS 5610-02 Monday,
- * CS 4550 Wednesday) still take the quiz at the end of their meeting
- * that same week. These dates do not open a quiz by themselves; staff
- * enable taking.
+ * Take windows are the class-wide website window for the quiz week
+ * (Monday 00:00 ET unlock through Sunday 23:59 ET lock). These dates do
+ * not open a quiz by themselves; staff enable taking. Student-facing
+ * schedule copy names the week only. How a quiz is taken is the
+ * Evaluation Quizzes row.
  */
 
 export type ExamName = "midterm" | "final";
@@ -521,25 +519,14 @@ export function formatEasternCivilTimestamp(date: Date | string): string {
 }
 
 /** Student-facing take window. Dates are display-only; staff still enable taking. */
-export function syllabusTakeWindowSentence(
-  schedule: QuizSchedule,
-  rosterSection?: string | null,
-): string {
-  const unlock = formatEasternDateTime(schedule.takeUnlockAt);
-  const lock = formatEasternDateTime(schedule.takeLockAt);
+export function syllabusTakeWindowSentence(schedule: QuizSchedule): string {
   const staffNote = "Those dates do not open the quiz by themselves.";
   if (!schedule.quizId.startsWith("q")) {
+    const unlock = formatEasternDateTime(schedule.takeUnlockAt);
+    const lock = formatEasternDateTime(schedule.takeLockAt);
     return `Syllabus window: opens ${unlock} and is due ${lock}. ${staffNote}`;
   }
-  const online = rosterSection ? /5610-09/i.test(rosterSection) : false;
-  const inPerson = rosterSection ? /4550|5610-02/i.test(rosterSection) : false;
-  if (online && !inPerson) {
-    return `CS 5610-09 (online): open Monday through Sunday 11:59pm ET (through ${lock}). ${staffNote}`;
-  }
-  if (inPerson && !online) {
-    return `In-person sections: end of lecture that week. ${staffNote}`;
-  }
-  return `CS 5610-09 (online): open Monday through Sunday 11:59pm ET. In-person sections: end of lecture that week. ${staffNote}`;
+  return `This quiz is the week of ${quizWeekOfLabel(schedule.quizId)}. ${staffNote}`;
 }
 
 export function examLabel(name: ExamName): string {
@@ -558,7 +545,6 @@ export function answerWindowCopy(
   now: Date = new Date(),
   override?: QuizTakeOverrideMode | null,
   answersVisible?: QuizAnswersVisibleMode | null,
-  rosterSection?: string | null,
 ): AnswerWindowCopy {
   const open = formatEasternDateTime(schedule.answersOpenAt);
   const close = formatEasternDateTime(schedule.answersCloseAt);
@@ -640,7 +626,7 @@ export function answerWindowCopy(
   }
 
   if (phase === "take_closed") {
-    const dates = syllabusTakeWindowSentence(schedule, rosterSection);
+    const dates = syllabusTakeWindowSentence(schedule);
     if (override === "closed") {
       return {
         title: "This quiz is disabled for your section",
@@ -665,7 +651,7 @@ export function answerWindowCopy(
     title: "Graded quiz",
     paragraphs: [
       schedule.quizId.startsWith("q")
-        ? `${syllabusTakeWindowSentence(schedule, rosterSection)} Correct answers stay hidden until the class review window.`
+        ? `${syllabusTakeWindowSentence(schedule)} Correct answers stay hidden until the class review window.`
         : `This attempt is open until ${formatEasternDateTime(schedule.takeLockAt)}. Correct answers stay hidden until the class review window.`,
     ],
     tone: "neutral",

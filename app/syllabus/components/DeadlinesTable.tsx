@@ -1,4 +1,3 @@
-import { formatSharedQuizDeadlineDate } from "../data/deadlines";
 import { formatAgendaDate, formatWeekOf } from "../data/dates";
 import type { Deadline } from "../data/types";
 import SyllabusSection from "./SyllabusSection";
@@ -12,7 +11,7 @@ const KIND_LABEL: Record<Deadline["kind"], string> = {
 
 function formatDeadlineDate(deadline: Deadline): string {
   if (deadline.kind === "quiz" && deadline.date) {
-    return formatSharedQuizDeadlineDate(deadline);
+    return formatWeekOf(deadline.date);
   }
   if (
     deadline.kind === "exam" &&
@@ -21,9 +20,7 @@ function formatDeadlineDate(deadline: Deadline): string {
   ) {
     return `${formatWeekOf(deadline.date)} · 2nd half of lecture`;
   }
-  if (deadline.kind === "quiz" || !deadline.date) {
-    return "End of lecture";
-  }
+  if (deadline.kind === "quiz" || !deadline.date) return "That week";
   return formatAgendaDate(deadline.date);
 }
 

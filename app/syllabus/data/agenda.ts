@@ -8,7 +8,7 @@ import {
   startOfWeekMonday,
   wholeWeeksBetween,
 } from "./dates";
-import { deadlines, quizMeetingTba } from "./deadlines";
+import { deadlines } from "./deadlines";
 import { holidays } from "./holidays";
 import { sections } from "./sections";
 import {
@@ -86,18 +86,14 @@ export function buildAgenda(section: CourseSection): AgendaRow[] {
   const rows: AgendaRow[] = [];
 
   for (const date of collectMeetingDates(section)) {
-    const weekDeadlines = deadlinesInWeek(date);
-    const quizOnHoliday = weekDeadlines.some(
-      (deadline) => quizMeetingTba(section, deadline),
-    );
-    const onlineNote = quizOnHoliday ? undefined : onlineNoteFor(date);
+    const onlineNote = onlineNoteFor(date);
 
     if (compareIso(date, SHARED_CURRICULUM_START) < 0) {
       rows.push({
         date,
         kind: "orientation",
         topic: ORIENTATION_TOPIC,
-        deadlines: weekDeadlines,
+        deadlines: deadlinesInWeek(date),
         onlineNote,
       });
       continue;
@@ -115,7 +111,7 @@ export function buildAgenda(section: CourseSection): AgendaRow[] {
       lectureNumber: topicIndex + 1,
       topic: topic?.topic ?? "Project workshop / catch-up",
       href: topic?.href,
-      deadlines: weekDeadlines,
+      deadlines: deadlinesInWeek(date),
       onlineNote,
     });
   }

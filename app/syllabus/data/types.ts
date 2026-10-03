@@ -52,9 +52,8 @@ export type Deadline = {
   /**
    * Shared calendar date. Quizzes use the Monday of the week after that
    * chapter’s assignment is due (Piazza Post 33) as the “Week of” label.
-   * In-person sections take the quiz at the end of their meeting that week.
-   * The online section’s quiz is open Monday through Sunday. X1 uses the
-   * Monday of midterm week (2nd half of lecture). X2 uses its Sunday lock date.
+   * X1 uses the Monday of midterm week (2nd half of lecture). X2 uses its
+   * Sunday lock date.
    */
   date?: IsoDate;
   kind: DeadlineKind;

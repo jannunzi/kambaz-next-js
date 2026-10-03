@@ -116,16 +116,17 @@ describe("buildAgenda shared week index", () => {
     assert.equal(ipd?.kind, "lecture");
     assert.equal(ipd?.lectureNumber, 5);
     assert.match(ipd?.topic ?? "", /Chapter 3/);
-    assert.equal(ipd?.onlineNote, undefined);
-    assert.doesNotMatch(ipd?.topic ?? "", /not required to attend/);
+    assert.match(ipd?.onlineNote ?? "", /Indigenous Peoples/);
+    assert.match(ipd?.onlineNote ?? "", /not required to attend/);
+    assert.match(ipd?.onlineNote ?? "", /recording will be posted/);
+    assert.doesNotMatch(ipd?.onlineNote ?? "", /meets online/);
 
     const wed = buildAgenda(BY_ID["cs4550-01"]!);
     const veterans = wed.find((row) => row.date === "2026-11-11");
     assert.equal(veterans?.kind, "lecture");
     assert.equal(veterans?.lectureNumber, 9);
     assert.match(veterans?.topic ?? "", /Chapter 5 week 1/);
-    assert.equal(veterans?.onlineNote, undefined);
-    assert.doesNotMatch(veterans?.topic ?? "", /not required to attend/);
+    assert.match(veterans?.onlineNote ?? "", /Veterans Day/);
 
     const monBeforeBreak = mon.find((row) => row.date === "2026-11-23");
     assert.equal(monBeforeBreak?.kind, "lecture");
@@ -137,8 +138,10 @@ describe("buildAgenda shared week index", () => {
     assert.equal(fallBreak?.kind, "lecture");
     assert.equal(fallBreak?.lectureNumber, 11);
     assert.match(fallBreak?.topic ?? "", /Chapter 6 week 1/);
-    assert.equal(fallBreak?.onlineNote, undefined);
-    assert.doesNotMatch(fallBreak?.topic ?? "", /not required to attend/);
+    assert.match(fallBreak?.onlineNote ?? "", /Fall break/);
+    assert.match(fallBreak?.onlineNote ?? "", /not required to attend/);
+    assert.match(fallBreak?.onlineNote ?? "", /recording will be posted/);
+    assert.doesNotMatch(fallBreak?.onlineNote ?? "", /meets online/);
   });
 
   it("places X2 in the week of December 14", () => {

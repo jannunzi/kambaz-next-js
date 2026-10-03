@@ -349,7 +349,7 @@ Unlock is **class-wide** (wall-clock ET → stored as ISO UTC in
 
 | Phase | What the student sees |
 | --- | --- |
-| Take open, no attempt | Existing exam form. CS 5610-09 is open Monday through Sunday 11:59pm ET. In-person sections take the quiz at the end of lecture that week. |
+| Take open, no attempt | Existing exam form. The page names the quiz week only. |
 | Submitted, before answers open | Score / submitted status. Answers start **{answersOpenAt}** (Monday 00:00 ET after the due Sunday) and stay available for one week, until **{answersCloseAt}**. |
 | First answer week | Full review of their drawn attempt with correct answers, until **{answersCloseAt}**. |
 | After that week | Answers hidden until the one-week exam-prep reopen (`midtermAt − 7d` for Q1–Q3, `finalAt − 7d` for Q4–Q6). |
@@ -369,10 +369,11 @@ after X2:
 - Q5: 2026-11-30 → 2026-12-07
 - Q6: 2026-12-21 → 2026-12-28
 
-Take windows are the class-wide website window (Monday 00:00 ET unlock →
-Sunday 23:59 ET lock). That Monday–Sunday span is the CS 5610-09 online
-open week (attendance is not required). In-person sections still take the
-quiz at the end of their meeting that week. Q1: unlock 2026-09-28, lock
+Take windows stay the class-wide website window (Monday 00:00 ET unlock →
+Sunday 23:59 ET lock) so staff can enable a quiz that week. Student-facing
+schedule and take-page copy names the week only (Q1 is the week of Sep 28).
+In person at the end of lecture, and online open for the whole week, is
+stated once on the Evaluation Quizzes row. Q1 unlock 2026-09-28, lock
 2026-10-04 23:59 ET.
 
 **Exam dates** live in `COURSE_EXAMS` in the same module:

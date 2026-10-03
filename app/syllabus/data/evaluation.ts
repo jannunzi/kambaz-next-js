@@ -1,18 +1,4 @@
-import {
-  easternIsoDate,
-  getQuizSchedule,
-  quizWeekOfLabel,
-} from "@/lib/quiz-exam/schedule";
-import { deadlines, quizHolidayAnnouncements } from "./deadlines";
 import type { EvaluationItem, GradeBand } from "./types";
-
-function q1OnlineSpan(): string {
-  const q1 = getQuizSchedule("q1");
-  if (!q1) {
-    throw new Error("Q1 schedule is missing");
-  }
-  return `${easternIsoDate(q1.takeUnlockAt)} through ${easternIsoDate(q1.takeLockAt)}`;
-}
 
 export const evaluationItems: EvaluationItem[] = [
   {
@@ -25,7 +11,7 @@ export const evaluationItems: EvaluationItem[] = [
     label: "Quizzes (Q1–Q6)",
     weight: 10,
     description:
-      `Short checks on this course website (~10 questions, about 30 minutes). Each quiz is the week after that chapter’s assignment is due. In-person sections take it at the end of lecture that week (CS 5610-02 Mondays, CS 4550 Wednesdays). ${deadlines.filter((deadline) => deadline.kind === "quiz").flatMap(quizHolidayAnnouncements).join(" ")} CS 5610-09 (online) has the quiz open Monday through Sunday of that week; attendance is not required. Q1 is the week of ${quizWeekOfLabel("q1")} (online: ${q1OnlineSpan()}). Canvas is a staff-approved fallback if the site is unavailable — ask your instructor or TA before using it.`,
+      "Short checks on this course website (~10 questions, about 30 minutes). Each quiz is the week after that chapter’s assignment is due. In person, the quiz is at the end of lecture that week. Online, the quiz is open for the whole week. Canvas is a staff-approved fallback if the site is unavailable — ask your instructor or TA before using it.",
   },
   {
     label: "Exams (X1–X2)",

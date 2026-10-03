@@ -77,27 +77,27 @@ describe("Fall 2026 Canvas calendar", () => {
   it("labels quizzes as the week after each chapter, not Sunday dues", () => {
     const expected: Record<string, { label: string; date: string }> = {
       Q1: {
-        label: "Q1 — HTML (week after Chapter 1)",
+        label: "Q1 — HTML · week of Sep 28",
         date: "2026-09-28",
       },
       Q2: {
-        label: "Q2 — CSS & Tailwind (week after Chapter 2)",
+        label: "Q2 — CSS & Tailwind · week of Oct 12",
         date: "2026-10-12",
       },
       Q3: {
-        label: "Q3 — JavaScript (week after Chapter 3)",
+        label: "Q3 — JavaScript · week of Oct 26",
         date: "2026-10-26",
       },
       Q4: {
-        label: "Q4 — Client state (week after Chapter 4)",
+        label: "Q4 — Client state · week of Nov 9",
         date: "2026-11-09",
       },
       Q5: {
-        label: "Q5 — REST APIs (week after Chapter 5)",
+        label: "Q5 — REST APIs · week of Nov 23",
         date: "2026-11-23",
       },
       Q6: {
-        label: "Q6 — MongoDB (week after Chapter 6)",
+        label: "Q6 — MongoDB · week of Dec 7",
         date: "2026-12-07",
       },
     };
@@ -108,8 +108,8 @@ describe("Fall 2026 Canvas calendar", () => {
       assert.ok(row, `${id} is missing from syllabus deadlines`);
       assert.equal(row.label, want.label);
       assert.equal(row.date, want.date);
-      assert.match(row.label, /week after Chapter \d/);
-      assert.doesNotMatch(row.label, /end of lecture/);
+      assert.match(row.label, /· week of /);
+      assert.doesNotMatch(row.label, /end of lecture|in person|online|Monday|Sunday|to be announced/i);
       assert.doesNotMatch(row.label, /\bdue\b/i);
       assert.doesNotMatch(row.label, /unlock/i);
       assert.doesNotMatch(row.label, /Sunday/i);
@@ -156,24 +156,14 @@ describe("Fall 2026 Canvas calendar", () => {
     assert.ok(quiz);
     assert.ok(exams);
     assert.match(quiz.description, /end of lecture/i);
+    assert.match(quiz.description, /open for the whole week/i);
     assert.match(quiz.description, /week after that chapter/i);
-    assert.match(quiz.description, /week of Sep 28/);
-    assert.match(quiz.description, /attendance is not required/i);
-    assert.match(quiz.description, /2026-09-28 through 2026-10-04/);
+    assert.doesNotMatch(quiz.description, /CS 4550|CS 5610/);
+    assert.doesNotMatch(quiz.description, /Sep 28|2026-09-28|Oct 12|Nov 11|Nov 25/);
+    assert.doesNotMatch(quiz.description, /Monday|Sunday|Wednesday/);
     assert.doesNotMatch(quiz.description, /original two weeks/);
     assert.doesNotMatch(quiz.description, /one-week shift/);
-    assert.match(
-      quiz.description,
-      /CS 5610-02: Q2 time to be announced \(no class Mon Oct 12\)/,
-    );
-    assert.match(
-      quiz.description,
-      /CS 4550: Q4 time to be announced \(no class Wed Nov 11\)/,
-    );
-    assert.match(
-      quiz.description,
-      /CS 4550: Q5 time to be announced \(no class Wed Nov 25\)/,
-    );
+    assert.doesNotMatch(quiz.description, /time to be announced/);
     assert.match(quiz.description, /10 questions/);
     assert.doesNotMatch(quiz.description, /unlocks Monday/);
     assert.doesNotMatch(quiz.description, /locks Sunday/);
@@ -205,21 +195,10 @@ describe("Fall 2026 Canvas calendar", () => {
     assert.doesNotMatch(studentCopy, /section starts later/i);
     assert.doesNotMatch(studentCopy, /chapter quizzes \(Q1–Q6\) are due Sunday/);
     assert.match(deadlinesNote, /Quizzes \(Q1–Q6\) are the week after each chapter’s assignment is due/);
-    assert.match(deadlinesNote, /end of their own lecture that week/);
-    assert.match(deadlinesNote, /CS 5610-02 on Monday, CS 4550 on Wednesday/);
-    assert.match(deadlinesNote, /attendance is not required/);
-    assert.match(deadlinesNote, /2026-09-28 through 2026-10-04 ET/);
-    assert.doesNotMatch(deadlinesNote, /labeled “today”/);
-    assert.match(deadlinesNote, /Q1 is the week of Sep 28/);
-    assert.match(
-      deadlinesNote,
-      /CS 4550: Q4 time to be announced \(no class Wed Nov 11\)/,
-    );
-    assert.match(
-      deadlinesNote,
-      /CS 5610-02: Q2 time to be announced \(no class Mon Oct 12\)/,
-    );
-    assert.doesNotMatch(deadlinesNote, /Tue Sep 29/);
+    assert.doesNotMatch(deadlinesNote, /end of lecture/i);
+    assert.doesNotMatch(deadlinesNote, /Monday through Sunday/);
+    assert.doesNotMatch(deadlinesNote, /time to be announced/);
+    assert.doesNotMatch(deadlinesNote, /CS 5610-02 on Monday/);
     assert.match(deadlinesNote, /X1 is taken in the second half of lecture the week of October 26/);
     assert.doesNotMatch(deadlinesNote, /X1 is due Sunday/);
     assert.doesNotMatch(deadlinesNote, /Quizzes \(Q1–Q6\) are due Sunday/);

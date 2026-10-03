@@ -202,9 +202,8 @@ describe("per-section take overrides", () => {
     const copy = answerWindowCopy(q1, "take_closed", duringWindow, "closed");
     assert.match(copy.title, /disabled for your section/i);
     assert.match(copy.paragraphs.join(" "), /your section/);
-    assert.match(copy.paragraphs.join(" "), /end of lecture that week/);
-    assert.match(copy.paragraphs.join(" "), /open Monday through Sunday 11:59pm ET/);
-    assert.doesNotMatch(copy.paragraphs.join(" "), /is due/);
+    assert.match(copy.paragraphs.join(" "), /week of Sep 28/);
+    assert.doesNotMatch(copy.paragraphs.join(" "), /end of lecture|Monday through Sunday|is due/i);
   });
 
   it("serializes override audit fields for the staff panel", () => {

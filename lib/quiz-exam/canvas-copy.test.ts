@@ -24,6 +24,7 @@ describe("Canvas quiz fallback copy", () => {
       assert.match(html, /ask your instructor or TA for permission/i);
       assert.doesNotMatch(html, /use this Canvas quiz instead of the website/i);
       assert.doesNotMatch(html, /take this Canvas quiz by default/i);
+      assert.doesNotMatch(html, /end of lecture|Monday through Sunday|in person|time to be announced/i);
       assert.doesNotMatch(html.replaceAll(url, ""), /Clerk|Kambaz|Lab [0-9]|wd-/i);
       assert.ok(html.indexOf(url) < html.indexOf(CANVAS_FALLBACK_PERMISSION_BLURB));
       if (quiz.quizId.startsWith("q")) {
