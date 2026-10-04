@@ -47,7 +47,11 @@ export default function KambazStyling() {
         In <SectionLink to="2.3" />{" "}the Tailwind lab imports the full library
         (<code>@import &quot;tailwindcss&quot;</code>), which includes{" "}
         <strong>Preflight</strong> — a base reset that would also wipe plain
-        HTML defaults elsewhere. <SectionLink to="2.2" />{" "}already loads theme
+        HTML defaults elsewhere. The book does not use{" "}
+        <code>@import &quot;tailwindcss&quot;</code>{" "}in <code>kambaz.css</code>{" "}
+        because it includes Preflight, Tailwind&apos;s reset, which would strip
+        the browser&apos;s default heading sizes, list bullets, and margins that
+        the Kambaz screens still rely on. <SectionLink to="2.2" />{" "}already loads theme
         and utilities, with no Preflight, from the Labs file{" "}
         <code>utilities.css</code>. Kambaz does not import that file. The same
         two lines open <code>kambaz.css</code>, then a few app-wide rules — a
