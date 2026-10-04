@@ -1,3 +1,3 @@
-/* Utilities + theme only — safe to import from book / Kambaz without Preflight reset */
+/* Theme + utilities without Preflight, for the Labs */
 @import "tailwindcss/theme" layer(theme);
 @import "tailwindcss/utilities" layer(utilities);

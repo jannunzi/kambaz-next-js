@@ -186,7 +186,7 @@ export default async function Assignments({
 }`,
     codeLanguage: "tsx",
     codeFile: "app/(kambaz)/courses/[cid]/assignments/page.tsx",
-    codeAddedLines: [[1, 3], [5, 12], [39, 56]],
+    codeAddedLines: [[1, 2], [4, 11], [38, 55]],
   },
   {
     id: "assignments-demo",
