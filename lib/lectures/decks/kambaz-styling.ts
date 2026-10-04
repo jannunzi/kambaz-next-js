@@ -23,12 +23,12 @@ export const KAMBAZ_STYLING_SLIDES: LectureSlide[] = [
   },
   {
     id: "no-preflight",
-    title: "Kambaz skips Preflight",
+    title: "Step 1: Tailwind without Preflight",
     kind: "content",
     bullets: [
-      "The Tailwind lab imported `@import \"tailwindcss\"` — that reset would wipe Labs HTML",
-      "Kambaz loads **theme + utilities only**",
-      "Import once from the Kambaz layout. Screens can import it too, but once is enough",
+      "Preflight is Tailwind's base reset: it strips browser defaults like heading sizes, margins, and list bullets",
+      "The §2.3 Tailwind lab used `@import \"tailwindcss\"`, which includes Preflight. That reset would also wipe plain HTML on the Labs pages",
+      "For Kambaz, create `utilities.css`, which loads only Tailwind's theme and utility classes",
     ],
     code: `/* Utilities + theme only — safe for Kambaz without Preflight reset */
 @import "tailwindcss/theme" layer(theme);
@@ -38,9 +38,10 @@ export const KAMBAZ_STYLING_SLIDES: LectureSlide[] = [
   },
   {
     id: "kambaz-css",
-    title: "kambaz.css sets the base",
+    title: "Step 2: kambaz.css sets the base",
     kind: "content",
     bullets: [
+      "This file adds no Tailwind. It sets the base that Preflight would have set",
       "Without Preflight the browser often falls back to Times",
       "A system sans stack, `color`, `line-height`, and `box-sizing`",
       "`font-sans` on the root still applies Tailwind’s system stack",
@@ -61,11 +62,12 @@ export const KAMBAZ_STYLING_SLIDES: LectureSlide[] = [
   },
   {
     id: "layout",
-    title: "Layout imports both files",
+    title: "Step 3: Layout imports both files",
     kind: "content",
     bullets: [
-      "Drop the Chapter 1 `<table>` wrapper",
-      "`KambazNavigation` is a sibling. Children sit in `wd-main-content-offset`",
+      "Line 2 is where Kambaz imports Tailwind (`utilities.css`); line 3 adds `kambaz.css`",
+      "Import both once in the layout so every Kambaz screen gets them",
+      "Drop the Chapter 1 `<table>` wrapper. `KambazNavigation` is a sibling; children sit in `wd-main-content-offset`",
       "`p-3` is the page gutter. The 120px left offset comes next, with the sidebar",
     ],
     code: `import { ReactNode } from "react";
