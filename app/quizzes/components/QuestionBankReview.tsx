@@ -9,6 +9,7 @@ import {
   type QuestionGroup,
   type QuestionType,
 } from "@/lib/question-bank/types";
+import { CANVAS_ONLY_QUIZ_SENTENCE, isCanvasOnlyQuiz } from "@/lib/quiz-exam/schedule";
 import PromptMarkup from "./PromptMarkup";
 import CodingPreview from "./CodingPreview";
 import ChoiceContent from "./ChoiceContent";
@@ -48,14 +49,19 @@ export default function QuestionBankReview({
   stats,
   studentDrawNote,
   chapterHref = "/book/ch1",
-  takeHref = "/quizzes/take/q1",
+  quizId,
+  takeHref = "/quizzes/take/q3",
 }: {
   bank: QuestionBank;
   stats: Stats;
   studentDrawNote?: string;
   chapterHref?: string;
+  quizId?: string;
   takeHref?: string;
 }) {
+  const reviewQuizId =
+    quizId ?? takeHref.split("/").filter(Boolean).pop() ?? "";
+  const canvasOnly = isCanvasOnlyQuiz(reviewQuizId);
   const [filter, setFilter] = useState<"all" | QuestionType>("all");
   const [openIds, setOpenIds] = useState<string[]>(() =>
     bank.groups.map((group) => group.id),
@@ -100,8 +106,14 @@ export default function QuestionBankReview({
         </p>
         <p className="mb-0 mt-1 text-sm">
           Author review only — not a student exam. Correct answers are visible
-          on purpose so the bank can be revised. Students take the graded
-          version at <Link href={takeHref}>{takeHref}</Link>.
+          on purpose so the bank can be revised.{" "}
+          {canvasOnly ? (
+            CANVAS_ONLY_QUIZ_SENTENCE
+          ) : (
+            <>
+              Students take the graded version at <Link href={takeHref}>{takeHref}</Link>.
+            </>
+          )}
         </p>
       </div>
 

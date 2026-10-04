@@ -1,8 +1,4 @@
 import Link from "next/link";
-import {
-  formatQuizDeadlineLabel,
-  quizLectureMeetingDayNote,
-} from "../data/deadlines";
 import { holidayMeetingNote } from "../data/holidays";
 import { formatAgendaDate, formatWeekOf } from "../data/dates";
 import type { AgendaGroup, AgendaRow, CourseSection } from "../data/types";
@@ -29,9 +25,6 @@ function dateLabel(row: AgendaRow): string {
   if (row.kind === "orientation") {
     return formatAgendaDate(row.date);
   }
-  if (row.deadlines.some((deadline) => deadline.kind === "quiz")) {
-    return formatQuizDeadlineLabel(row.date);
-  }
   return formatWeekOf(row.date);
 }
 
@@ -47,8 +40,7 @@ export default function AgendaTable({
       <p>
         Every section follows the same Canvas module sequence from the week of
         September 14, 2026, grouped by chapter. Dates are the shared Monday —
-        Week of Sep 14 through Week of Dec 14 — so Monday, Tuesday, and
-        Wednesday tabs show the same labels. CS 4550’s September 9 meeting is
+        Week of Sep 14 through Week of Dec 14. CS 4550’s September 9 meeting is
         orientation only and does not start Chapter 1. Each chapter spans two
         weeks. Chapter 4 is one Canvas module — “Ch 4 — Client state,
         Midterm/X1” — covering the weeks of Oct 26 and Nov 2. X1 is taken
@@ -62,14 +54,13 @@ export default function AgendaTable({
         <Link href="/slides/chatgpt-api">ChatGPT API</Link>, and{" "}
         <Link href="/slides/grok-api">Grok API</Link>
         ). X2 is the week of Dec 14, even though the last
-        day of classes is Dec 13. Quizzes are taken at the end of lecture at
-        the end of each chapter. {quizLectureMeetingDayNote}
+        day of classes is Dec 13. Quizzes are the week after each chapter’s
+        assignment is due.
       </p>
       <p>{holidayMeetingNote}</p>
       <p className="font-sans text-sm text-neutral-600">
-        Showing {section.tabLabel}. Use the section buttons at the top of the
-        page to switch. Due dates in the last column are the shared Canvas
-        dates when they fall on a meeting day.
+        Showing {section.tabLabel}. Due dates in the last column are the shared Canvas
+        dates when they fall in that week.
       </p>
       <div
         id="syllabus-agenda-panel"

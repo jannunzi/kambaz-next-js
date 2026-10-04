@@ -50,10 +50,10 @@ export type DeadlineKind = "assignment" | "quiz" | "exam" | "project";
 
 export type Deadline = {
   /**
-   * Shared calendar date. Quizzes use the Monday of that chapter’s closing
-   * week as the “Week of” label; students take the quiz at the end of their
-   * own section’s lecture that week, not a Sunday Canvas due. X1 uses the
-   * Monday of midterm week (2nd half of lecture). X2 uses its Sunday lock date.
+   * Shared calendar date. Quizzes use the Monday of the week after that
+   * chapter’s assignment is due (Piazza Post 33) as the “Week of” label.
+   * X1 uses the Monday of midterm week (2nd half of lecture). X2 uses its
+   * Sunday lock date.
    */
   date?: IsoDate;
   kind: DeadlineKind;

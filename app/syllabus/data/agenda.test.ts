@@ -248,17 +248,17 @@ describe("agenda Week of labels and chapter groups", () => {
     assert.equal(SHARED_CURRICULUM_END, "2026-12-14");
   });
 
-  it("puts chapter-end quizzes on the second Monday of each chapter", () => {
+  it("puts quizzes on the Monday after each chapter, the week after the assignment due", () => {
     const mon = buildAgenda(BY_ID["cs5610-02"]!);
     const quizById = (id: string) =>
       deadlines.find((deadline) => deadline.label.startsWith(`${id} `));
     const expected = [
-      { id: "Q1", monday: "2026-09-21" },
-      { id: "Q2", monday: "2026-10-05" },
-      { id: "Q3", monday: "2026-10-19" },
-      { id: "Q4", monday: "2026-11-02" },
-      { id: "Q5", monday: "2026-11-16" },
-      { id: "Q6", monday: "2026-11-30" },
+      { id: "Q1", monday: "2026-09-28" },
+      { id: "Q2", monday: "2026-10-12" },
+      { id: "Q3", monday: "2026-10-26" },
+      { id: "Q4", monday: "2026-11-09" },
+      { id: "Q5", monday: "2026-11-23" },
+      { id: "Q6", monday: "2026-12-07" },
     ];
     for (const { id, monday } of expected) {
       const quiz = quizById(id);

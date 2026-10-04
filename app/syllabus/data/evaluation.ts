@@ -11,7 +11,7 @@ export const evaluationItems: EvaluationItem[] = [
     label: "Quizzes (Q1–Q6)",
     weight: 10,
     description:
-      "Short in-class checks taken at the end of lecture at the end of each chapter on this course website (~10 questions, about 30 minutes). Q1 is at the end of Chapter 1’s two weeks, Q2 at the end of Chapter 2, and so on. Canvas is a staff-approved fallback if the site is unavailable — ask your instructor or TA before using it.",
+      "Short checks (~10 questions, about 30 minutes). Each quiz is the week after that chapter’s assignment is due. Quiz 1 and Quiz 2 are taken on Canvas. In person, the quiz is at the end of lecture that week. Online, the quiz is open for the whole week.",
   },
   {
     label: "Exams (X1–X2)",
@@ -44,6 +44,6 @@ export const gradeBands: GradeBand[] = [
 
 export const evaluationNotes = [
   "Weights sum to 100%. The category weights above are what enter the final average.",
-  "Graded quizzes and exams are taken online on this course website. Canvas is a staff-approved fallback if the site is unavailable — ask your instructor or TA before using it.",
+  "Quiz 1 and Quiz 2 are taken on Canvas. Exams are taken on this course website. For an exam, Canvas is a staff-approved fallback if the site is unavailable — ask your instructor or TA before using it.",
   "You must submit every assignment and the project to be eligible for a passing grade, even if a late penalty applies.",
 ];

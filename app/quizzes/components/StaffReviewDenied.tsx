@@ -1,13 +1,13 @@
 import Link from "next/link";
 import type { StaffAccessStatus } from "@/lib/roster/instructors";
+import { CANVAS_ONLY_QUIZ_SENTENCE } from "@/lib/quiz-exam/schedule";
 import StatusPanel from "./StatusPanel";
 
 function StudentExamLinks() {
   return (
     <p>
-      Students take the graded exam at{" "}
-      <Link href="/quizzes/take/q1">/quizzes/take/q1</Link>. Practice stays
-      public at <Link href="/book/practice">/book/practice</Link>.
+      {CANVAS_ONLY_QUIZ_SENTENCE} Practice stays public at{" "}
+      <Link href="/book/practice">/book/practice</Link>.
     </p>
   );
 }
@@ -45,8 +45,7 @@ export default function StaffReviewDenied({
       <StatusPanel title="403 Forbidden" tone="warn">
         <p>This page is for course staff only.</p>
         <p>
-          Students take the graded exam at{" "}
-          <Link href="/quizzes/take/q1">/quizzes/take/q1</Link>.
+          {CANVAS_ONLY_QUIZ_SENTENCE}
         </p>
         {impersonating ? (
           <p>

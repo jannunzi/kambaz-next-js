@@ -9,35 +9,34 @@ import type { Deadline, IsoDate } from "./types";
  * published A1–A3 Sundays. Do not invent A4–A6 Sunday dues — Jose is still
  * settling those with Canvas.
  *
- * Quizzes are taken at the end of lecture at the end of each chapter. The
- * quiz `date` is the shared Monday of that chapter’s closing week (the
- * “Week of” label). Students take the quiz at the end of their own
- * section’s lecture that week — not a Sunday Canvas due, not any weekday,
- * and not a calendar day labeled “today.” Website take windows stay in
- * `lib/quiz-exam/schedule.ts`.
+ * Quizzes (Piazza Post 33) are the week after that chapter’s assignment is
+ * due. The quiz `date` is the shared Monday of that week. Student-facing
+ * calendar and schedule entries name that week only. How a quiz is taken
+ * (in person at the end of lecture, online open for the whole week) is
+ * stated once on the Evaluation Quizzes row.
  *
- * X1 is taken in the second half of lecture the week of Oct 26 (Chapter 4
- * week 1 / midterm week), same pattern as chapter-end quizzes. The `date`
- * is that shared Monday. X2 is finals week (week of Dec 14) and locks
- * Sunday Dec 20. Project due is 2026-12-06; grading begins the week of
- * Dec 7.
+ * Q1 is the week of Sep 28 (the Monday after A1 due Sun Sep 27). Q3 shares
+ * the week of Oct 26 with X1; X1’s date is unchanged. X1 is the second half
+ * of lecture that week. X2 is finals week (week of Dec 14) and locks Sunday
+ * Dec 20. Project due is 2026-12-06; grading begins the week of Dec 7.
  */
+
+function quizLabel(title: string, date: IsoDate): string {
+  const week = formatWeekOf(date).replace(/^Week of /, "week of ");
+  return `${title} · ${week}`;
+}
+
 export const deadlines: Deadline[] = [
   { date: "2026-09-14", kind: "assignment", label: "A1 assigned — HTML" },
-  {
-    date: "2026-09-21",
-    kind: "quiz",
-    label: "Q1 — HTML (end of Chapter 1 lecture)",
-  },
   {
     date: "2026-09-27",
     kind: "assignment",
     label: "A1 due · A2 assigned — CSS & Tailwind",
   },
   {
-    date: "2026-10-05",
+    date: "2026-09-28",
     kind: "quiz",
-    label: "Q2 — CSS & Tailwind (end of Chapter 2 lecture)",
+    label: quizLabel("Q1 — HTML", "2026-09-28"),
   },
   {
     date: "2026-10-11",
@@ -45,9 +44,9 @@ export const deadlines: Deadline[] = [
     label: "A2 due · A3 assigned — JavaScript",
   },
   {
-    date: "2026-10-19",
+    date: "2026-10-12",
     kind: "quiz",
-    label: "Q3 — JavaScript (end of Chapter 3 lecture)",
+    label: quizLabel("Q2 — CSS & Tailwind", "2026-10-12"),
   },
   {
     date: "2026-10-25",
@@ -60,21 +59,26 @@ export const deadlines: Deadline[] = [
     label: "X1 — Midterm (2nd half of lecture)",
   },
   {
-    date: "2026-11-02",
+    date: "2026-10-26",
     kind: "quiz",
-    label: "Q4 — Client state (end of Chapter 4 lecture)",
+    label: quizLabel("Q3 — JavaScript", "2026-10-26"),
   },
   {
-    date: "2026-11-16",
+    date: "2026-11-09",
     kind: "quiz",
-    label: "Q5 — REST APIs (end of Chapter 5 lecture)",
+    label: quizLabel("Q4 — Client state", "2026-11-09"),
   },
   {
-    date: "2026-11-30",
+    date: "2026-11-23",
     kind: "quiz",
-    label: "Q6 — MongoDB (end of Chapter 6 lecture)",
+    label: quizLabel("Q5 — REST APIs", "2026-11-23"),
   },
   { date: "2026-12-06", kind: "project", label: "Project due" },
+  {
+    date: "2026-12-07",
+    kind: "quiz",
+    label: quizLabel("Q6 — MongoDB", "2026-12-07"),
+  },
   {
     date: "2026-12-20",
     kind: "exam",
@@ -82,17 +86,5 @@ export const deadlines: Deadline[] = [
   },
 ];
 
-/**
- * Student-facing: “Week of … · end of lecture” is each section’s own
- * meeting day that week (Piazza CS5610-02 Post 31).
- */
-export const quizLectureMeetingDayNote =
-  "“Week of … · end of lecture” means the end of your section’s own meeting that week — CS 5610-02 Mondays 6:00–9:00pm ET, CS 5610-09 Tuesdays 6:00–9:00pm ET (online), CS 4550-01 Wednesdays 6:00–9:00pm ET — not a calendar day labeled “today,” and not any weekday that week. Q1 in the week of Sep 21 is Mon Sep 21 for CS 5610-02, Tue Sep 22 for CS 5610-09, and Wed Sep 23 for CS 4550.";
-
-/** Shared deadlines / agenda Date label for Q1–Q6. */
-export function formatQuizDeadlineLabel(iso: IsoDate): string {
-  return `${formatWeekOf(iso)} · end of lecture (your section’s meeting day)`;
-}
-
 export const deadlinesNote =
-  `Assignment, exam, and project dates are one Canvas calendar for every section. Assignments are due Sunday 11:59pm ET. Quizzes (Q1–Q6) are taken at the end of lecture at the end of each chapter. ${quizLectureMeetingDayNote} X1 is taken in the second half of lecture the week of October 26. The project is due Sunday, December 6; grading begins the week of December 7. X2 is due Sunday 11:59pm ET the week of December 14 (finals week). A4–A6 due dates will be posted on Canvas.`;
+  "Assignment, exam, and project dates are one Canvas calendar for every section. Assignments are due Sunday 11:59pm ET. Quizzes (Q1–Q6) are the week after each chapter’s assignment is due. X1 is taken in the second half of lecture the week of October 26. The project is due Sunday, December 6; grading begins the week of December 7. X2 is due Sunday 11:59pm ET the week of December 14 (finals week). A4–A6 due dates will be posted on Canvas.";

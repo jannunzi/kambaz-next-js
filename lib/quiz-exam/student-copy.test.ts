@@ -1,10 +1,35 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
+import { CANVAS_ONLY_QUIZ_SENTENCE } from "./schedule";
 import { STUDENT_COPY } from "./student-copy";
 
 const quizTakePage = readFileSync(
   new URL("../../app/quizzes/take/[quizId]/page.tsx", import.meta.url),
+  "utf8",
+);
+const quizIndexPage = readFileSync(
+  new URL("../../app/quizzes/take/page.tsx", import.meta.url),
+  "utf8",
+);
+const quizzesDenied = readFileSync(
+  new URL("../../app/quizzes/components/StaffReviewDenied.tsx", import.meta.url),
+  "utf8",
+);
+const quizzesReview = readFileSync(
+  new URL("../../app/quizzes/(review)/page.tsx", import.meta.url),
+  "utf8",
+);
+const questionBankReview = readFileSync(
+  new URL("../../app/quizzes/components/QuestionBankReview.tsx", import.meta.url),
+  "utf8",
+);
+const quiz1ReviewPage = readFileSync(
+  new URL("../../app/quizzes/(review)/q1/page.tsx", import.meta.url),
+  "utf8",
+);
+const quiz2ReviewPage = readFileSync(
+  new URL("../../app/quizzes/(review)/q2/page.tsx", import.meta.url),
   "utf8",
 );
 const examForm = readFileSync(
@@ -67,6 +92,52 @@ describe("student-facing quiz copy", () => {
       STUDENT_COPY.signUpPageHint,
       /taking a graded quiz still requires your Canvas roster email/i,
     );
+  });
+
+  it("says closed Quiz 1 and Quiz 2 are taken on Canvas, not on this site", () => {
+    assert.equal(
+      CANVAS_ONLY_QUIZ_SENTENCE,
+      "Quiz 1 and Quiz 2 are taken on Canvas, not on this site.",
+    );
+    assert.match(quizTakePage, /isCanvasOnlyQuiz\(quizId\) && phase !== "take_open"/);
+    assert.match(quizIndexPage, /CANVAS_ONLY_QUIZ_SENTENCE/);
+    assert.match(quizIndexPage, /isCanvasOnlyQuiz\(quizId\)/);
+    assert.match(quizIndexPage, /Taken on Canvas/);
+    assert.doesNotMatch(quizIndexPage, /canvasQuizTakeUrl/);
+    assert.match(quizIndexPage, /Not open yet/);
+    assert.match(quizIndexPage, /"Open"/);
+    assert.doesNotMatch(quizIndexPage, /Take or review \$\{bank\.title\}[\s\S]*isCanvasOnlyQuiz/);
+    assert.match(quizzesReview, /CANVAS_ONLY_QUIZ_SENTENCE/);
+    assert.match(quizzesReview, /Taken on Canvas/);
+    assert.doesNotMatch(quizzesReview, /\/quizzes\/take\/q1/);
+    assert.doesNotMatch(quizzesReview, /\/quizzes\/take\/q2/);
+    assert.match(questionBankReview, /isCanvasOnlyQuiz/);
+    assert.match(questionBankReview, /CANVAS_ONLY_QUIZ_SENTENCE/);
+    assert.match(quizzesDenied, /CANVAS_ONLY_QUIZ_SENTENCE/);
+    assert.doesNotMatch(quizzesDenied, /later quizzes are on/i);
+    assert.doesNotMatch(quizIndexPage, /later quizzes are on/i);
+    assert.doesNotMatch(quizzesDenied, /\/quizzes\/take\/q1/);
+  });
+
+  it("does not link Quiz 1 or Quiz 2 to this site's take pages", () => {
+    const pages = [
+      quizIndexPage,
+      quizTakePage,
+      quizzesReview,
+      questionBankReview,
+      quiz1ReviewPage,
+      quiz2ReviewPage,
+    ];
+    for (const source of pages) {
+      assert.doesNotMatch(source, /href=["'{][^"'}]*\/quizzes\/take\/q1/);
+      assert.doesNotMatch(source, /href=["'{][^"'}]*\/quizzes\/take\/q2/);
+      assert.doesNotMatch(source, /canvasQuizTakeUrl/);
+    }
+    assert.match(questionBankReview, /quizId \?\? takeHref/);
+    assert.match(quiz1ReviewPage, /quizId="q1"/);
+    assert.match(quiz2ReviewPage, /quizId="q2"/);
+    assert.match(quizIndexPage, /Taken on Canvas/);
+    assert.doesNotMatch(quizIndexPage, /is on Canvas/);
   });
 
   it("does not put topic titles beside student question numbers", () => {
