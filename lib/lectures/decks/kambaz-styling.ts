@@ -7,7 +7,7 @@ export const KAMBAZ_STYLING_SLIDES: LectureSlide[] = [
     kind: "title",
     bullets: [
       "Chapter 2 · Kambaz Styling",
-      "§2.4 · Tailwind on the Kambaz shell — then each screen",
+      "§2.4 · Style all of Kambaz, then each screen",
     ],
   },
   {
@@ -15,20 +15,20 @@ export const KAMBAZ_STYLING_SLIDES: LectureSlide[] = [
     title: "Chapter 1 was unstyled on purpose",
     kind: "content",
     bullets: [
-      "Kambaz screens used tables to force columns. Functional, not CSS",
-      "§2.1.18–2.1.19 replaced table layout with Grid and Flex",
-      "Now dress the real app: utilities on the same markup, tables out",
-      "Each screen: target look → Chapter 1 prototype → code → live styled result",
+      "**Tailwind CSS** is a utility-first framework: you style by combining **utility classes**, small single-purpose classes like `p-3` or `flex`, in the markup",
+      "The **theme** is the design values — colors, spacing, and fonts — those utilities use",
+      "Chapter 1 forced columns with tables. §2.1.18–2.1.19 replaced that with CSS Grid and Flexbox layouts",
+      "Now restyle each Kambaz screen with utility classes on the same markup",
     ],
   },
   {
     id: "no-preflight",
-    title: "Kambaz skips Preflight",
+    title: "Step 1: Create kambaz.css",
     kind: "content",
     bullets: [
-      "The Tailwind lab imported `@import \"tailwindcss\"` — that reset would wipe Labs HTML",
-      "Kambaz loads **theme + utilities only**, at the top of `kambaz.css`",
-      "No Preflight. The layout imports that one file",
+      "**Preflight** is Tailwind's base reset. `@import \"tailwindcss\"` includes it",
+      "Kambaz skips Preflight because it would strip the default heading sizes, list bullets, and margins the Kambaz screens still rely on",
+      "`layer(...)` puts each import in a named cascade layer, and layer order decides which rules win",
     ],
     code: `@import "tailwindcss/theme" layer(theme);
 @import "tailwindcss/utilities" layer(utilities);`,
@@ -37,12 +37,11 @@ export const KAMBAZ_STYLING_SLIDES: LectureSlide[] = [
   },
   {
     id: "kambaz-css",
-    title: "kambaz.css sets the base",
+    title: "Step 2: kambaz.css sets the base",
     kind: "content",
     bullets: [
-      "Without Preflight the browser often falls back to Times",
-      "A system sans stack, `color`, `line-height`, and `box-sizing`",
-      "`font-sans` on the root still applies Tailwind’s system stack",
+      "Without Preflight the browser often falls back to Times, a serif font",
+      "Add a system sans-serif font, `color`, `line-height`, and `box-sizing`",
     ],
     code: `/* System sans-serif — Tailwind utilities alone
    do not set the body font */
@@ -69,12 +68,11 @@ export const KAMBAZ_STYLING_SLIDES: LectureSlide[] = [
   },
   {
     id: "layout",
-    title: "Layout imports kambaz.css",
+    title: "Step 3: Layout imports kambaz.css",
     kind: "content",
     bullets: [
-      "Drop the Chapter 1 `<table>` wrapper",
-      "`KambazNavigation` is a sibling. Children sit in `wd-main-content-offset`",
-      "`p-3` is the page gutter. The 120px left offset comes next, with the sidebar",
+      "The Kambaz layout imports only `./kambaz.css`, once",
+      "`font-sans` on the root applies Tailwind's system font even if the CSS rule is incomplete",
     ],
     code: `import { ReactNode } from "react";
 import "./kambaz.css";
@@ -92,16 +90,17 @@ export default function KambazLayout({
 }`,
     codeLanguage: "tsx",
     codeFile: "app/(kambaz)/layout.tsx",
-    codeAddedLines: [1, 2, 7, 11],
+    codeAddedLines: [2, 9, [11, 12]],
   },
   {
     id: "tables-out",
-    title: "Tables out of course chrome",
+    title: "Chapter 1 tables come out",
     kind: "content",
     bullets: [
-      "Also drop tables from `courses/[cid]/layout.tsx` and `home/page.tsx`",
-      "Replace them with `flex` so Course Nav and Course Status sit beside content",
-      "Hide order later: Status first (`hidden lg:block`), then both sidebars (`hidden md:block`)",
+      "Drop the Chapter 1 `<table>`: `KambazNavigation` now sits beside `wd-main-content-offset`",
+      "`p-3` pads the page. The next deck adds a 120px left offset for Kambaz Navigation",
+      "In the course layout and Home, `flex` puts Course Navigation and Course Status beside the content",
+      "`md:` (medium, 48rem) and `lg:` (large, 64rem) apply at that width and up. Course Status hides below `lg`, then Kambaz Navigation and Course Navigation below `md`",
     ],
   },
   {
@@ -109,8 +108,8 @@ export default function KambazLayout({
     title: "Coverage is §2.4.10",
     kind: "content",
     bullets: [
-      "Navigation, Dashboard, Course Nav, Modules, Home, People, Assignments",
-      "Assignment Editor and Account stay **On your own** — match the figures",
+      "§2.4 walks through Kambaz Navigation, Dashboard, Course Navigation, Modules, Home, People, and Assignments",
+      "Assignment Editor and Account stay **On your own**: match the figures and interactive demos in those sections",
       "Use the §2.4.10 checklist after you restyle, not instead of walking the screens",
     ],
   },
@@ -119,7 +118,7 @@ export default function KambazLayout({
     title: "Next: the black sidebar",
     kind: "title",
     bullets: [
-      "The shell loads utilities without resetting Labs HTML",
+      "Kambaz now loads the theme and utilities without Preflight",
       "§2.4.1: pin Kambaz Navigation as a fixed icon column",
     ],
   },
