@@ -7,15 +7,15 @@ import LiveDemo from "../../components/LiveDemo";
 import BookFigure from "../../components/BookFigure";
 import FigureLink from "../../components/FigureLink";
 import ContainFixed from "../../components/ContainFixed";
-import KambazNavigation from "@/app/(kambaz)/Navigation";
-import CourseNavigation from "@/app/(kambaz)/courses/[cid]/Navigation";
-import Dashboard from "@/app/(kambaz)/dashboard/page";
-import Modules from "@/app/(kambaz)/courses/[cid]/modules/page";
-import Home from "@/app/(kambaz)/courses/[cid]/home/page";
-import Assignments from "@/app/(kambaz)/courses/[cid]/assignments/page";
-import PeopleTable from "@/app/(kambaz)/courses/[cid]/people/table/page";
-import AssignmentEditor from "@/app/(kambaz)/courses/[cid]/assignments/[aid]/page";
-import Signin from "@/app/(kambaz)/account/signin/page";
+import KambazNavigation from "../embeds/_styled/Navigation";
+import CourseNavigation from "../embeds/_styled/courses/cid/Navigation";
+import Dashboard from "../embeds/_styled/dashboard/Dashboard";
+import Modules from "../embeds/_styled/courses/cid/modules/page";
+import Home from "../embeds/_styled/courses/cid/home/page";
+import Assignments from "../embeds/_styled/courses/cid/assignments/Assignments";
+import PeopleTable from "../embeds/_styled/courses/cid/people/PeopleTable";
+import AssignmentEditor from "../embeds/_styled/courses/cid/assignments/AssignmentEditor";
+import Signin from "../embeds/_styled/account/Signin";
 import PlainKambazNavigation from "@/app/book/ch1/embeds/PlainKambazNavigation";
 import PlainCourseNavigation from "@/app/book/ch1/embeds/PlainCourseNavigation";
 import DashboardDemo from "@/app/book/ch1/embeds/DashboardDemo";
@@ -398,7 +398,18 @@ export default function Dashboard() {
           subtitle="Full Stack software developer"
           image="/images/reactjs.jpg"
         />
-        {/* ...two more CourseCards... */}
+        <CourseCard
+          id="2345"
+          title="CS2345 Node JS"
+          subtitle="Server side JavaScript"
+          image="/images/nodejs.jpg"
+        />
+        <CourseCard
+          id="3456"
+          title="CS3456 MongoDB"
+          subtitle="NoSQL Databases"
+          image="/images/mongodb.jpg"
+        />
       </div>
     </div>
   );
@@ -711,35 +722,56 @@ export default function Lesson({
       </p>
       <CodeBlock
         language="tsx"
-        name="Modules toolbar"
+        name="Modules"
         file="app/(kambaz)/courses/[cid]/modules/page.tsx"
-      >{`<div className="mb-3 flex flex-wrap items-center gap-2">
-  <button
-    type="button"
-    className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
-  >
-    Collapse All
-  </button>
-  <button
-    type="button"
-    className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
-  >
-    View Progress
-  </button>
-  <select
-    defaultValue="publish-all"
-    className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
-  >
-    <option value="publish-all">Publish All</option>
-  </select>
-  <button
-    type="button"
-    className="rounded border border-red-600 bg-red-600 px-3 py-1.5 text-sm font-medium text-white"
-  >
-    + Module
-  </button>
-</div>
-{/* ...Module / Lesson tree... */}`}</CodeBlock>
+      >{`import Lesson from "./Lesson";
+import Module from "./Module";
+
+export default function Modules() {
+  return (
+    <div>
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
+        >
+          Collapse All
+        </button>
+        <button
+          type="button"
+          className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
+        >
+          View Progress
+        </button>
+        <select
+          defaultValue="publish-all"
+          className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
+        >
+          <option value="publish-all">Publish All</option>
+        </select>
+        <button
+          type="button"
+          className="rounded border border-red-600 bg-red-600 px-3 py-1.5 text-sm font-medium text-white"
+        >
+          + Module
+        </button>
+      </div>
+      <ul id="wd-modules" className="m-0 list-none p-0">
+        <Module title="Week 1, Lecture 1 - Course Introduction, Syllabus, Agenda">
+          <Lesson title="LEARNING OBJECTIVES">
+            <li className="wd-content-item">Introduction to the course</li>
+            <li className="wd-content-item">Learn what is Web Development</li>
+          </Lesson>
+          <Lesson title="READING">
+            <li className="wd-content-item">
+              Full Stack Developer - Chapter 1 - Introduction
+            </li>
+          </Lesson>
+        </Module>
+      </ul>
+    </div>
+  );
+}`}</CodeBlock>
       <p>
         With those classes in place, the live component looks like this:
       </p>
@@ -890,14 +922,21 @@ export default function CourseStatus() {
         language="tsx"
         name="Home"
         file="app/(kambaz)/courses/[cid]/home/page.tsx"
-      >{`<div id="wd-home" className="flex gap-4">
-  <div className="min-w-0 flex-1">
-    <Modules />
-  </div>
-  <div className="hidden w-[250px] shrink-0 lg:block">
-    <CourseStatus />
-  </div>
-</div>`}</CodeBlock>
+      >{`import Modules from "../modules/page";
+import CourseStatus from "./Status";
+
+export default function Home() {
+  return (
+    <div id="wd-home" className="flex gap-4">
+      <div className="min-w-0 flex-1">
+        <Modules />
+      </div>
+      <div className="hidden w-[250px] shrink-0 lg:block">
+        <CourseStatus />
+      </div>
+    </div>
+  );
+}`}</CodeBlock>
       <p>
         With those classes in place, the live component looks like this:
       </p>
@@ -1294,9 +1333,7 @@ export default function AssignmentEditor() {
         name="Your turn to style"
         file="app/(kambaz)/courses/[cid]/assignments/[aid]/page.tsx"
       >
-        <AssignmentEditor
-          params={Promise.resolve({ cid: "1234", aid: "123" })}
-        />
+        <AssignmentEditor />
       </LiveDemo>
       <OnYourOwn>
         Restyle{" "}
@@ -1367,35 +1404,40 @@ export default function AssignmentEditor() {
         language="tsx"
         name="Signin"
         file="app/(kambaz)/account/signin/page.tsx"
-      >{`<div id="wd-signin-screen" className="max-w-sm">
-  <h1 className="mb-3 text-2xl font-semibold">Sign in</h1>
-  <input
-    id="wd-username"
-    placeholder="username"
-    className="mb-2 w-full rounded border border-neutral-300 px-3 py-2"
-  />
-  <input
-    id="wd-password"
-    placeholder="password"
-    type="password"
-    className="mb-2 w-full rounded border border-neutral-300 px-3 py-2"
-  />
-  <Link
-    id="wd-signin-btn"
-    href="/account/profile"
-    className="mb-2 block w-full rounded bg-blue-600 px-3 py-2 text-center text-white no-underline"
-  >
-    Sign in
-  </Link>
-  <Link id="wd-signup-link" href="/account/signup">
-    Sign up
-  </Link>
-</div>`}</CodeBlock>
+      >{`import Link from "next/link";
+
+export default function Signin() {
+  return (
+    <div id="wd-signin-screen" className="max-w-sm">
+      <h1 className="mb-3 text-2xl font-semibold">Sign in</h1>
+      <input
+        id="wd-username"
+        placeholder="username"
+        className="mb-2 w-full rounded border border-neutral-300 px-3 py-2"
+      />
+      <input
+        id="wd-password"
+        placeholder="password"
+        type="password"
+        className="mb-2 w-full rounded border border-neutral-300 px-3 py-2"
+      />
+      <Link
+        id="wd-signin-btn"
+        href="/account/profile"
+        className="mb-2 block w-full rounded bg-blue-600 px-3 py-2 text-center text-white no-underline"
+      >
+        Sign in
+      </Link>
+      <Link id="wd-signup-link" href="/account/signup">
+        Sign up
+      </Link>
+    </div>
+  );
+}`}</CodeBlock>
       <p>
         With those patterns in place on Sign in, Sign up, Profile, and{" "}
         <code>account/Navigation.tsx</code>, the account section matches the target.
-        The demo below shows the current
-        Sign in file — still unstyled until the Tailwind classes land:
+        The demo below renders the Sign in markup from the listing above:
       </p>
       <LiveDemo
         mode="styled"

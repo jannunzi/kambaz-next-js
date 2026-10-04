@@ -6,7 +6,7 @@ import LiveDemo from "../../components/LiveDemo";
 import BookFigure from "../../components/BookFigure";
 import FigureLink from "../../components/FigureLink";
 import LocalUrl from "../../components/LocalUrl";
-import Dashboard from "@/app/(kambaz)/dashboard/page";
+import Dashboard from "../embeds/_styled/dashboard/Dashboard";
 import Link from "next/link";
 import { OnYourOwn, WithAI } from "../../components/Practice";
 import NestedExerciseList from "../../components/NestedExerciseList";
