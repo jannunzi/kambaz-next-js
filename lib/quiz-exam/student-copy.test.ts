@@ -24,6 +24,14 @@ const questionBankReview = readFileSync(
   new URL("../../app/quizzes/components/QuestionBankReview.tsx", import.meta.url),
   "utf8",
 );
+const quiz1ReviewPage = readFileSync(
+  new URL("../../app/quizzes/(review)/q1/page.tsx", import.meta.url),
+  "utf8",
+);
+const quiz2ReviewPage = readFileSync(
+  new URL("../../app/quizzes/(review)/q2/page.tsx", import.meta.url),
+  "utf8",
+);
 const examForm = readFileSync(
   new URL("../../app/quizzes/take/components/ExamForm.tsx", import.meta.url),
   "utf8",
@@ -94,7 +102,8 @@ describe("student-facing quiz copy", () => {
     assert.match(quizTakePage, /isCanvasOnlyQuiz\(quizId\) && phase !== "take_open"/);
     assert.match(quizIndexPage, /CANVAS_ONLY_QUIZ_SENTENCE/);
     assert.match(quizIndexPage, /isCanvasOnlyQuiz\(quizId\)/);
-    assert.match(quizIndexPage, /canvasQuizTakeUrl\(quizId\)/);
+    assert.match(quizIndexPage, /Taken on Canvas/);
+    assert.doesNotMatch(quizIndexPage, /canvasQuizTakeUrl/);
     assert.match(quizIndexPage, /Not open yet/);
     assert.match(quizIndexPage, /"Open"/);
     assert.doesNotMatch(quizIndexPage, /Take or review \$\{bank\.title\}[\s\S]*isCanvasOnlyQuiz/);
@@ -108,6 +117,27 @@ describe("student-facing quiz copy", () => {
     assert.doesNotMatch(quizzesDenied, /later quizzes are on/i);
     assert.doesNotMatch(quizIndexPage, /later quizzes are on/i);
     assert.doesNotMatch(quizzesDenied, /\/quizzes\/take\/q1/);
+  });
+
+  it("does not link Quiz 1 or Quiz 2 to this site's take pages", () => {
+    const pages = [
+      quizIndexPage,
+      quizTakePage,
+      quizzesReview,
+      questionBankReview,
+      quiz1ReviewPage,
+      quiz2ReviewPage,
+    ];
+    for (const source of pages) {
+      assert.doesNotMatch(source, /href=["'{][^"'}]*\/quizzes\/take\/q1/);
+      assert.doesNotMatch(source, /href=["'{][^"'}]*\/quizzes\/take\/q2/);
+      assert.doesNotMatch(source, /canvasQuizTakeUrl/);
+    }
+    assert.match(questionBankReview, /quizId \?\? takeHref/);
+    assert.match(quiz1ReviewPage, /quizId="q1"/);
+    assert.match(quiz2ReviewPage, /quizId="q2"/);
+    assert.match(quizIndexPage, /Taken on Canvas/);
+    assert.doesNotMatch(quizIndexPage, /is on Canvas/);
   });
 
   it("does not put topic titles beside student question numbers", () => {

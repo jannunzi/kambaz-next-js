@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import StaffOnly from "../components/StaffOnly";
 import {
-  canvasQuizTakeUrl,
   listExamBanks,
   quizDrawCount,
   quizTimeLimitMinutes,
@@ -90,20 +89,20 @@ export default function TakeQuizIndexPage() {
                   {syllabusTakeWindowSentence(schedule)}
                 </p>
               ) : null}
-              <Link
-                href={
-                  quizId === "q1" || quizId === "q2"
-                    ? canvasQuizTakeUrl(quizId)
-                    : `/quizzes/take/${quizId}`
-                }
-                className="book-practice-cta inline-block rounded border border-neutral-800 bg-neutral-800 px-3 py-2 text-sm"
-              >
-                {isCanvasOnlyQuiz(quizId)
-                  ? `${bank.title} is on Canvas`
-                  : quizId.startsWith("q")
+              {isCanvasOnlyQuiz(quizId) ? (
+                <p className="m-0 text-sm font-medium text-neutral-800">
+                  Taken on Canvas
+                </p>
+              ) : (
+                <Link
+                  href={`/quizzes/take/${quizId}`}
+                  className="book-practice-cta inline-block rounded border border-neutral-800 bg-neutral-800 px-3 py-2 text-sm"
+                >
+                  {quizId.startsWith("q")
                     ? "Open"
                     : `Take or review ${bank.title}`}
-              </Link>
+                </Link>
+              )}
             </li>
           );
         })}

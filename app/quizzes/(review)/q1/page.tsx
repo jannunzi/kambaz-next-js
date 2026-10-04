@@ -22,7 +22,7 @@ export default async function Quiz1BankPage() {
         bank={CHAPTER1_REVIEW_BANK}
         stats={stats}
         chapterHref="/book/ch1"
-        takeHref="/quizzes/take/q1"
+        quizId="q1"
         studentDrawNote={`Website Q1 draws ${WEBSITE_TRADITIONAL_DRAW_COUNT} traditional items plus ${WEBSITE_CODING_DRAW_COUNT} coding items (form attributes + a bullet list), about ${QUIZ_TIME_LIMIT_MINUTES.q1} minutes, 100 points. Canvas fallback stays ${WEBSITE_TRADITIONAL_DRAW_COUNT + WEBSITE_CODING_DRAW_COUNT} traditional groups only — Canvas cannot run the coding grader.`}
       />
     );

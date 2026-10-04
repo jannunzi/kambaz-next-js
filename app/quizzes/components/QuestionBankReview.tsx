@@ -49,14 +49,19 @@ export default function QuestionBankReview({
   stats,
   studentDrawNote,
   chapterHref = "/book/ch1",
-  takeHref = "/quizzes/take/q1",
+  quizId,
+  takeHref = "/quizzes/take/q3",
 }: {
   bank: QuestionBank;
   stats: Stats;
   studentDrawNote?: string;
   chapterHref?: string;
+  quizId?: string;
   takeHref?: string;
 }) {
+  const reviewQuizId =
+    quizId ?? takeHref.split("/").filter(Boolean).pop() ?? "";
+  const canvasOnly = isCanvasOnlyQuiz(reviewQuizId);
   const [filter, setFilter] = useState<"all" | QuestionType>("all");
   const [openIds, setOpenIds] = useState<string[]>(() =>
     bank.groups.map((group) => group.id),
@@ -102,13 +107,13 @@ export default function QuestionBankReview({
         <p className="mb-0 mt-1 text-sm">
           Author review only — not a student exam. Correct answers are visible
           on purpose so the bank can be revised.{" "}
-          {isCanvasOnlyQuiz(takeHref.split("/").filter(Boolean).pop() ?? "")
-            ? CANVAS_ONLY_QUIZ_SENTENCE
-            : (
-              <>
-                Students take the graded version at <Link href={takeHref}>{takeHref}</Link>.
-              </>
-            )}
+          {canvasOnly ? (
+            CANVAS_ONLY_QUIZ_SENTENCE
+          ) : (
+            <>
+              Students take the graded version at <Link href={takeHref}>{takeHref}</Link>.
+            </>
+          )}
         </p>
       </div>
 
