@@ -6,9 +6,8 @@ import StatusPanel from "./StatusPanel";
 function StudentExamLinks() {
   return (
     <p>
-      {CANVAS_ONLY_QUIZ_SENTENCE} Later quizzes are on the course website at{" "}
-      <Link href="/quizzes/take">/quizzes/take</Link>. Practice stays public
-      at <Link href="/book/practice">/book/practice</Link>.
+      {CANVAS_ONLY_QUIZ_SENTENCE} Practice stays public at{" "}
+      <Link href="/book/practice">/book/practice</Link>.
     </p>
   );
 }
@@ -46,8 +45,7 @@ export default function StaffReviewDenied({
       <StatusPanel title="403 Forbidden" tone="warn">
         <p>This page is for course staff only.</p>
         <p>
-          {CANVAS_ONLY_QUIZ_SENTENCE} Later quizzes are on the course website
-          at <Link href="/quizzes/take">/quizzes/take</Link>.
+          {CANVAS_ONLY_QUIZ_SENTENCE}
         </p>
         {impersonating ? (
           <p>

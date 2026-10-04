@@ -458,7 +458,7 @@ export function formatEasternCivilTimestamp(date: Date | string): string {
   return `${parts.year}-${pad(parts.month)}-${pad(parts.day)}T${pad(parts.hour)}:${pad(parts.minute)}:${pad(parts.second)}`;
 }
 
-/** Q1 and Q2 are taken on Canvas. Later quizzes stay on this site. */
+/** Q1 and Q2 are taken on Canvas. */
 export function isCanvasOnlyQuiz(quizId: string): boolean {
   return quizId === "q1" || quizId === "q2";
 }

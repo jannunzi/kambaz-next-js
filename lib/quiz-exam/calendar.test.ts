@@ -159,14 +159,15 @@ describe("Fall 2026 Canvas calendar", () => {
     assert.match(quiz.description, /open for the whole week/i);
     assert.match(quiz.description, /week after that chapter/i);
     assert.match(quiz.description, /Quiz 1 and Quiz 2 are taken on Canvas/);
-    assert.match(quiz.description, /Later quizzes are on this course website/);
+    assert.doesNotMatch(quiz.description, /later quizzes are on/i);
+    assert.doesNotMatch(quiz.description, /course website/i);
     assert.match(
       evaluationNotes.join(" "),
       /Quiz 1 and Quiz 2 are taken on Canvas/,
     );
-    assert.match(
+    assert.doesNotMatch(
       evaluationNotes.join(" "),
-      /Later quizzes and exams are taken on this course website/,
+      /later quizzes are (taken )?on/i,
     );
     assert.doesNotMatch(quiz.description, /CS 4550|CS 5610/);
     assert.doesNotMatch(quiz.description, /Sep 28|2026-09-28|Oct 12|Nov 11|Nov 25/);

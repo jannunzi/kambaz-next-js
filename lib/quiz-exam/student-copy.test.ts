@@ -88,7 +88,8 @@ describe("student-facing quiz copy", () => {
     assert.match(quizIndexPage, /isCanvasOnlyQuiz\(quizId\)/);
     assert.doesNotMatch(quizIndexPage, /Take or review \$\{bank\.title\}[\s\S]*isCanvasOnlyQuiz/);
     assert.match(quizzesDenied, /CANVAS_ONLY_QUIZ_SENTENCE/);
-    assert.match(quizzesDenied, /Later quizzes are on the course website/);
+    assert.doesNotMatch(quizzesDenied, /later quizzes are on/i);
+    assert.doesNotMatch(quizIndexPage, /later quizzes are on/i);
     assert.doesNotMatch(quizzesDenied, /\/quizzes\/take\/q1/);
   });
 
