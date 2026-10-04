@@ -29,6 +29,7 @@ export const KAMBAZ_STYLING_SLIDES: LectureSlide[] = [
       "**Preflight** is Tailwind's base reset. `@import \"tailwindcss\"` includes it",
       "Kambaz skips Preflight because it would strip the default heading sizes, list bullets, and margins the Kambaz screens still rely on",
       "So `kambaz.css` opens with only the theme and utilities",
+      "`layer(...)` puts each import in a named cascade layer (theme, utilities), and the layer order decides which rules win",
     ],
     code: `@import "tailwindcss/theme" layer(theme);
 @import "tailwindcss/utilities" layer(utilities);`,
@@ -100,7 +101,7 @@ export default function KambazLayout({
       "Drop the Chapter 1 `<table>`: `KambazNavigation` now sits beside `wd-main-content-offset`",
       "`p-3` pads the page. The next deck adds a 120px left offset for Kambaz Navigation",
       "In the course layout and Home, `flex` puts Course Navigation and Course Status beside the content",
-      "`md:` (medium, 48rem) and `lg:` (large, 64rem) apply at that width and up. Course Status hides below `lg`, then both navigation sidebars below `md`",
+      "`md:` (medium, 48rem) and `lg:` (large, 64rem) apply at that width and up. Course Status hides below `lg`, then Kambaz Navigation and Course Navigation below `md`",
     ],
   },
   {
@@ -109,7 +110,7 @@ export default function KambazLayout({
     kind: "content",
     bullets: [
       "§2.4 walks through Kambaz Navigation, Dashboard, Course Navigation, Modules, Home, People, and Assignments",
-      "Assignment Editor and Account are **On your own**, with no worked code, so match the figures",
+      "Assignment Editor and Account stay **On your own**: match the figures and interactive demos in those sections",
       "Use the §2.4.10 checklist after you restyle, not instead of walking the screens",
     ],
   },
