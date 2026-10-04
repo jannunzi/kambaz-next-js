@@ -64,20 +64,22 @@ export default function KambazStyling() {
       >{`@import "tailwindcss/theme" layer(theme);
 @import "tailwindcss/utilities" layer(utilities);
 
-/*
- * Base look for the live app. Book styled demos get a
- * sans stack from \`.book-live-demo-styled\`. Kambaz only
- * loads Tailwind utilities (no Preflight), so without
- * this the browser default (Times) shows through.
- */
+/* System sans-serif — Tailwind utilities alone
+   do not set the body font */
 #wd-kambaz {
-  font-family: system-ui, -apple-system, "Segoe UI",
-    Roboto, "Helvetica Neue", "Noto Sans",
-    "Liberation Sans", Arial, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    "Noto Sans",
+    "Liberation Sans",
+    Arial,
+    sans-serif;
   color: #212529;
   line-height: 1.5;
 }
-
 #wd-kambaz,
 #wd-kambaz * {
   box-sizing: border-box;
