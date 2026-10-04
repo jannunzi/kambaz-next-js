@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CANVAS_ONLY_QUIZ_SENTENCE } from "@/lib/quiz-exam/schedule";
 import InstructorPeopleLink from "../components/InstructorPeopleLink";
 import { renderStaffReview } from "../components/render-staff-review";
 
@@ -19,10 +20,7 @@ export default async function QuizzesIndexPage() {
         visible. These pages are not student exams.
       </p>
       <p>
-        Students take the graded version at{" "}
-        <Link href="/quizzes/take">/quizzes/take</Link>
-        {" "}
-        (Clerk sign-in + Canvas roster). Practice self-checks stay on{" "}
+        {CANVAS_ONLY_QUIZ_SENTENCE} Practice self-checks stay on{" "}
         <Link href="/book/practice">/book/practice</Link>.
       </p>
       <ul className="list-disc pl-5">
@@ -31,7 +29,7 @@ export default async function QuizzesIndexPage() {
           {" "}
           <span className="text-sm text-amber-800">Review draft</span>
           {" · "}
-          <Link href="/quizzes/take/q1">Student exam</Link>
+          <span>Taken on Canvas</span>
           {" · "}
           <Link href="/quizzes/staff/q1/attempts">Staff attempts</Link>
         </li>
@@ -40,7 +38,7 @@ export default async function QuizzesIndexPage() {
           {" "}
           <span className="text-sm text-amber-800">Review draft</span>
           {" · "}
-          <Link href="/quizzes/take/q2">Student exam</Link>
+          <span>Taken on Canvas</span>
           {" · "}
           <Link href="/quizzes/staff/q2/attempts">Staff attempts</Link>
         </li>

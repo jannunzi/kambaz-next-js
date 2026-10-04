@@ -271,6 +271,49 @@ describe("answer-window copy", () => {
     }
   });
 
+  it("shows the Canvas message for closed Q1 and Q2 when answers are off", () => {
+    for (const id of ["q1", "q2"]) {
+      const schedule = getQuizSchedule(id);
+      assert.ok(schedule, id);
+      const noAttempt = answerWindowCopy(
+        schedule,
+        "take_closed",
+        schedule.takeUnlockAt,
+        "closed",
+        "off",
+      );
+      assert.equal(noAttempt.title, "Taken on Canvas");
+      assert.deepEqual(noAttempt.paragraphs, [CANVAS_ONLY_QUIZ_SENTENCE]);
+      assert.doesNotMatch(
+        noAttempt.paragraphs.join(" "),
+        /disabled for your section|still has to enable|answer key/i,
+      );
+
+      const withAttempt = answerWindowCopy(
+        schedule,
+        "submitted_waiting",
+        schedule.answersOpenAt,
+        "closed",
+        "off",
+      );
+      assert.equal(withAttempt.title, "Taken on Canvas");
+      assert.deepEqual(withAttempt.paragraphs, [CANVAS_ONLY_QUIZ_SENTENCE]);
+      assert.doesNotMatch(
+        withAttempt.paragraphs.join(" "),
+        /available|hid the answer key|still has to enable/i,
+      );
+
+      const answersOn = answerWindowCopy(
+        schedule,
+        "take_closed",
+        schedule.takeUnlockAt,
+        "closed",
+        "on",
+      );
+      assert.deepEqual(answersOn.paragraphs, [CANVAS_ONLY_QUIZ_SENTENCE]);
+    }
+  });
+
   it("derives every answer date in student copy from the computed windows", () => {
     for (const id of ["q3", "q4", "q5", "q6", "x1", "x2"]) {
       const schedule = getQuizSchedule(id);

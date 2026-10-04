@@ -16,6 +16,14 @@ const quizzesDenied = readFileSync(
   new URL("../../app/quizzes/components/StaffReviewDenied.tsx", import.meta.url),
   "utf8",
 );
+const quizzesReview = readFileSync(
+  new URL("../../app/quizzes/(review)/page.tsx", import.meta.url),
+  "utf8",
+);
+const questionBankReview = readFileSync(
+  new URL("../../app/quizzes/components/QuestionBankReview.tsx", import.meta.url),
+  "utf8",
+);
 const examForm = readFileSync(
   new URL("../../app/quizzes/take/components/ExamForm.tsx", import.meta.url),
   "utf8",
@@ -86,7 +94,16 @@ describe("student-facing quiz copy", () => {
     assert.match(quizTakePage, /isCanvasOnlyQuiz\(quizId\) && phase !== "take_open"/);
     assert.match(quizIndexPage, /CANVAS_ONLY_QUIZ_SENTENCE/);
     assert.match(quizIndexPage, /isCanvasOnlyQuiz\(quizId\)/);
+    assert.match(quizIndexPage, /canvasQuizTakeUrl\(quizId\)/);
+    assert.match(quizIndexPage, /Not open yet/);
+    assert.match(quizIndexPage, /"Open"/);
     assert.doesNotMatch(quizIndexPage, /Take or review \$\{bank\.title\}[\s\S]*isCanvasOnlyQuiz/);
+    assert.match(quizzesReview, /CANVAS_ONLY_QUIZ_SENTENCE/);
+    assert.match(quizzesReview, /Taken on Canvas/);
+    assert.doesNotMatch(quizzesReview, /\/quizzes\/take\/q1/);
+    assert.doesNotMatch(quizzesReview, /\/quizzes\/take\/q2/);
+    assert.match(questionBankReview, /isCanvasOnlyQuiz/);
+    assert.match(questionBankReview, /CANVAS_ONLY_QUIZ_SENTENCE/);
     assert.match(quizzesDenied, /CANVAS_ONLY_QUIZ_SENTENCE/);
     assert.doesNotMatch(quizzesDenied, /later quizzes are on/i);
     assert.doesNotMatch(quizIndexPage, /later quizzes are on/i);

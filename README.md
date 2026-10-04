@@ -52,7 +52,7 @@ a “Search on YouTube” fallback. Results are cached for 24 hours.
 
 Anyone may browse the book, syllabus, labs, practice, assignments, and terms —
 signed in or not. **Only Canvas-roster students** can start or submit a graded
-quiz at `/quizzes/take/q1`. Author review (answers shown) at `/quizzes` and
+quiz at `/quizzes/take/q3`. Author review (answers shown) at `/quizzes` and
 `/quizzes/q1`, and staff attempt review at `/quizzes/staff/q1/attempts`,
 are **staff only** (`INSTRUCTOR_EMAILS` + `TA_EMAILS`, same as `/people`).
 
@@ -265,19 +265,19 @@ changed.
 `answersVisible` omitted or `"schedule"` follows the calendar. Take
 `mode` and `answersVisible` are independent fields on the same document.
 
-**How to try:** Sign in as staff → `/quizzes/take/q1` → for CS4550 set
+**How to try:** Sign in as staff → `/quizzes/take/q3` → for CS4550 set
 **Answers visible to students: On** → submit (or reopen) as a student →
 review shows marks and the key → staff sets **Off** → refresh the take
 URL → score remains, marks/key are gone. Then open
-`/quizzes/staff/q1/attempts` and confirm staff still sees answers.
+`/quizzes/staff/q3/attempts` and confirm staff still sees answers.
 
 ### Staff attempt review + grade overrides
 
 Staff (`INSTRUCTOR_EMAILS` / `TA_EMAILS`, instructor view — not **View as
-student**) browse submissions at **`/quizzes/staff/q1/attempts`**. The
-graded take page (`/quizzes/take/q1`) also links here for signed-in staff.
+student**) browse submissions at **`/quizzes/staff/q3/attempts`**. The
+graded take page (`/quizzes/take/q3`) also links here for signed-in staff.
 
-**How to try:** Sign in as staff → open `/quizzes/staff/q1/attempts` →
+**How to try:** Sign in as staff → open `/quizzes/staff/q3/attempts` →
 select `asd@asd.com` → see that student’s answers with correct / wrong /
 partial marks → override a question (this student, all students who drew
 it, or custom points for that student). Existing Atlas documents are
@@ -343,7 +343,7 @@ traditional groups.
 
 ### Answer review windows (same student URL)
 
-After submit, students return to **the same URL** (`/quizzes/take/q1`, etc.).
+After submit, students return to **the same URL** (`/quizzes/take/q3`, etc.).
 Unlock is **class-wide** (wall-clock ET → stored as ISO UTC in
 `lib/quiz-exam/schedule.ts`), not “one week after *your* submit”.
 

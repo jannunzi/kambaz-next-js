@@ -495,6 +495,17 @@ export function answerWindowCopy(
   const close = review ? formatEasternDateTime(review.closeAt) : "";
   const answersOverride = activeAnswersVisibleOverride(answersVisible);
 
+  if (
+    isCanvasOnlyQuiz(schedule.quizId) &&
+    (phase === "take_closed" || override === "closed")
+  ) {
+    return {
+      title: "Taken on Canvas",
+      paragraphs: [CANVAS_ONLY_QUIZ_SENTENCE],
+      tone: "warn",
+    };
+  }
+
   if (answersOverride === "on" && phase !== "take_open" && phase !== "take_closed") {
     return {
       title: "Answers are visible",

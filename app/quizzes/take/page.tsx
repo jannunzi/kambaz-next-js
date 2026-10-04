@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import StaffOnly from "../components/StaffOnly";
 import {
+  canvasQuizTakeUrl,
   listExamBanks,
   quizDrawCount,
   quizTimeLimitMinutes,
@@ -11,6 +12,7 @@ import {
   CANVAS_ONLY_QUIZ_SENTENCE,
   getQuizSchedule,
   isCanvasOnlyQuiz,
+  quizWeekOfLabel,
   syllabusTakeWindowSentence,
 } from "@/lib/quiz-exam/schedule";
 import QuizAccessOverrides from "./components/QuizAccessOverrides";
@@ -79,18 +81,28 @@ export default function TakeQuizIndexPage() {
                 <p className="text-sm text-neutral-700">
                   {CANVAS_ONLY_QUIZ_SENTENCE}
                 </p>
+              ) : quizId.startsWith("q") ? (
+                <p className="text-sm text-neutral-700">
+                  This quiz is the week of {quizWeekOfLabel(quizId)}. Not open yet.
+                </p>
               ) : schedule ? (
                 <p className="text-sm text-neutral-700">
                   {syllabusTakeWindowSentence(schedule)}
                 </p>
               ) : null}
               <Link
-                href={`/quizzes/take/${quizId}`}
+                href={
+                  quizId === "q1" || quizId === "q2"
+                    ? canvasQuizTakeUrl(quizId)
+                    : `/quizzes/take/${quizId}`
+                }
                 className="book-practice-cta inline-block rounded border border-neutral-800 bg-neutral-800 px-3 py-2 text-sm"
               >
                 {isCanvasOnlyQuiz(quizId)
                   ? `${bank.title} is on Canvas`
-                  : `Take or review ${bank.title}`}
+                  : quizId.startsWith("q")
+                    ? "Open"
+                    : `Take or review ${bank.title}`}
               </Link>
             </li>
           );

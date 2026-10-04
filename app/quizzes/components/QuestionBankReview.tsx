@@ -9,6 +9,7 @@ import {
   type QuestionGroup,
   type QuestionType,
 } from "@/lib/question-bank/types";
+import { CANVAS_ONLY_QUIZ_SENTENCE, isCanvasOnlyQuiz } from "@/lib/quiz-exam/schedule";
 import PromptMarkup from "./PromptMarkup";
 import CodingPreview from "./CodingPreview";
 import ChoiceContent from "./ChoiceContent";
@@ -100,8 +101,14 @@ export default function QuestionBankReview({
         </p>
         <p className="mb-0 mt-1 text-sm">
           Author review only — not a student exam. Correct answers are visible
-          on purpose so the bank can be revised. Students take the graded
-          version at <Link href={takeHref}>{takeHref}</Link>.
+          on purpose so the bank can be revised.{" "}
+          {isCanvasOnlyQuiz(takeHref.split("/").filter(Boolean).pop() ?? "")
+            ? CANVAS_ONLY_QUIZ_SENTENCE
+            : (
+              <>
+                Students take the graded version at <Link href={takeHref}>{takeHref}</Link>.
+              </>
+            )}
         </p>
       </div>
 
