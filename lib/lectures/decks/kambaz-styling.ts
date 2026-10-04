@@ -15,10 +15,10 @@ export const KAMBAZ_STYLING_SLIDES: LectureSlide[] = [
     title: "Chapter 1 was unstyled on purpose",
     kind: "content",
     bullets: [
-      "**Tailwind CSS** is a utility-first framework: small, single-purpose utility classes like `p-3` or `flex`",
+      "**Tailwind CSS** is a utility-first framework: you style by combining small, single-purpose classes like `p-3` or `flex` in the markup",
       "The **theme** is the design values — colors, spacing, and fonts — those utilities use",
-      "Chapter 1 forced columns with tables. §2.1.18–2.1.19 replaced that with Grid and Flex",
-      "Dress the same markup with utilities. Each screen: look, prototype, code, live result",
+      "Chapter 1 forced columns with tables. §2.1.18–2.1.19 replaced that with CSS Grid and Flexbox layouts",
+      "Now restyle each Kambaz screen with utility classes on the same markup",
     ],
   },
   {
@@ -40,7 +40,7 @@ export const KAMBAZ_STYLING_SLIDES: LectureSlide[] = [
     title: "Step 2: kambaz.css sets the base",
     kind: "content",
     bullets: [
-      "No Tailwind: font, color, box-sizing Preflight would set",
+      "It sets the font, color, and box-sizing Preflight would.",
     ],
     code: `/* System sans-serif — Tailwind utilities alone do not set the body font */
 #wd-kambaz {
@@ -84,13 +84,13 @@ export default function KambazLayout({
   },
   {
     id: "tables-out",
-    title: "Tables out of course chrome",
+    title: "Tables out of the course layout",
     kind: "content",
     bullets: [
-      "Drop the Chapter 1 `<table>` wrapper. `KambazNavigation` is a sibling; children sit in `wd-main-content-offset`",
-      "`p-3` is the page gutter. The 120px left offset comes next, with the sidebar",
+      "Drop the Chapter 1 `<table>`. `KambazNavigation` sits beside the content wrapper, `wd-main-content-offset`",
+      "`p-3` is the page gutter. The 120px left offset comes next",
       "Also drop tables from `courses/[cid]/layout.tsx` and `home/page.tsx`, and lay them out with `flex`",
-      "Hide order later: Status first (`hidden lg:block`), then both sidebars (`hidden md:block`)",
+      "`md:` (medium, 48rem) and `lg:` (large, 64rem) apply at that width and up. Hide Course Status first (`hidden lg:block`), then both sidebars (`hidden md:block`)",
     ],
   },
   {
