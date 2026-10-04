@@ -18,6 +18,7 @@ import {
   canRevealAnswers,
   getAnswerRevealPhase,
   getQuizSchedule,
+  isCanvasOnlyQuiz,
   isTakeWindowOpen,
   scheduleToIso,
   syllabusTakeWindowSentence,
@@ -188,7 +189,7 @@ export default async function TakeExamPage({ params }: PageProps) {
       <h1 className="mt-0 text-3xl font-semibold tracking-tight">
         {bank.title}
       </h1>
-      {schedule ? (
+      {schedule && !(isCanvasOnlyQuiz(quizId) && phase !== "take_open") ? (
         <p className="mt-3 mb-0 text-sm text-neutral-700">
           {syllabusTakeWindowSentence(schedule)}
         </p>

@@ -458,6 +458,14 @@ export function formatEasternCivilTimestamp(date: Date | string): string {
   return `${parts.year}-${pad(parts.month)}-${pad(parts.day)}T${pad(parts.hour)}:${pad(parts.minute)}:${pad(parts.second)}`;
 }
 
+/** Q1 and Q2 are taken on Canvas. Later quizzes stay on this site. */
+export function isCanvasOnlyQuiz(quizId: string): boolean {
+  return quizId === "q1" || quizId === "q2";
+}
+
+export const CANVAS_ONLY_QUIZ_SENTENCE =
+  "Quiz 1 and Quiz 2 are taken on Canvas, not on this site.";
+
 /** Student-facing take window. Dates are display-only; staff still enable taking. */
 export function syllabusTakeWindowSentence(schedule: QuizSchedule): string {
   const staffNote = "The instructor or a TA still has to enable it.";
@@ -505,6 +513,19 @@ export function answerWindowCopy(
         "The instructor or a TA hid the answer key for your section. Correct and incorrect marks, solutions, and the expected answers are not shown.",
         "Your score is still available on this page.",
       ],
+      tone: "warn",
+    };
+  }
+
+  if (
+    isCanvasOnlyQuiz(schedule.quizId) &&
+    phase !== "take_open" &&
+    answersOverride !== "on" &&
+    answersOverride !== "off"
+  ) {
+    return {
+      title: "Taken on Canvas",
+      paragraphs: [CANVAS_ONLY_QUIZ_SENTENCE],
       tone: "warn",
     };
   }

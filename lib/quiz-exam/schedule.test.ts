@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   addEasternDays,
+  CANVAS_ONLY_QUIZ_SENTENCE,
   answerWindowCopy,
   canRevealAnswers,
   etWallTimeToUtc,
@@ -239,8 +240,39 @@ describe("answer-window copy", () => {
     assert.match(syllabusTakeWindowSentence(q2), /week of Oct 12/);
   });
 
+  it("tells closed Quiz 1 and Quiz 2 they are on Canvas, with no answer dates", () => {
+    for (const id of ["q1", "q2"]) {
+      const schedule = getQuizSchedule(id);
+      assert.ok(schedule, id);
+      for (const phase of [
+        "take_closed",
+        "submitted_waiting",
+        "answers_open",
+        "answers_closed",
+      ] as const) {
+        const copy = answerWindowCopy(schedule, phase, schedule.answersOpenAt);
+        const text = copy.paragraphs.join(" ");
+        assert.equal(text, CANVAS_ONLY_QUIZ_SENTENCE, `${id} ${phase}`);
+        assert.equal(copy.paragraphs.length, 1, `${id} ${phase}`);
+        assert.doesNotMatch(
+          text,
+          /available|review window|answer key|October|November|December|week of/i,
+          `${id} ${phase}`,
+        );
+      }
+      const enabled = answerWindowCopy(
+        schedule,
+        "take_open",
+        schedule.takeUnlockAt,
+        "open",
+      );
+      assert.match(enabled.paragraphs.join(" "), /week of/);
+      assert.doesNotMatch(enabled.paragraphs.join(" "), /taken on Canvas/);
+    }
+  });
+
   it("derives every answer date in student copy from the computed windows", () => {
-    for (const id of ["q1", "q2", "q3", "q4", "q5", "q6", "x1", "x2"]) {
+    for (const id of ["q3", "q4", "q5", "q6", "x1", "x2"]) {
       const schedule = getQuizSchedule(id);
       assert.ok(schedule, id);
       const windows = visibleAnswerWindows(schedule);

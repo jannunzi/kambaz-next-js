@@ -8,7 +8,9 @@ import {
   STUDENT_COPY,
 } from "@/lib/quiz-exam";
 import {
+  CANVAS_ONLY_QUIZ_SENTENCE,
   getQuizSchedule,
+  isCanvasOnlyQuiz,
   syllabusTakeWindowSentence,
 } from "@/lib/quiz-exam/schedule";
 import QuizAccessOverrides from "./components/QuizAccessOverrides";
@@ -44,9 +46,10 @@ export default function TakeQuizIndexPage() {
         Graded quizzes
       </h1>
       <p className="rounded-lg border border-sky-300 bg-sky-50 px-4 py-3 text-sky-950">
-        {STUDENT_COPY.takeIndexLead} After you submit, the same URL is
-        how you come back for your score and — during the class-wide review
-        week — the answers. Practice self-checks stay on{" "}
+        {CANVAS_ONLY_QUIZ_SENTENCE} Later quizzes are on this site.{" "}
+        {STUDENT_COPY.takeIndexLead} After you submit a later quiz, the same
+        URL is how you come back for your score and — during the class-wide
+        review week — the answers. Practice self-checks stay on{" "}
         <Link href="/book/practice">/book/practice</Link>.
         <StaffOnly>
           {" "}
@@ -73,7 +76,11 @@ export default function TakeQuizIndexPage() {
                 {minutes ? ` · about ${minutes} minutes` : ""}
                 {" · 100 points"}
               </p>
-              {schedule ? (
+              {isCanvasOnlyQuiz(quizId) ? (
+                <p className="text-sm text-neutral-700">
+                  {CANVAS_ONLY_QUIZ_SENTENCE}
+                </p>
+              ) : schedule ? (
                 <p className="text-sm text-neutral-700">
                   {syllabusTakeWindowSentence(schedule)}
                 </p>
@@ -82,7 +89,9 @@ export default function TakeQuizIndexPage() {
                 href={`/quizzes/take/${quizId}`}
                 className="book-practice-cta inline-block rounded border border-neutral-800 bg-neutral-800 px-3 py-2 text-sm"
               >
-                Take or review {bank.title}
+                {isCanvasOnlyQuiz(quizId)
+                  ? `${bank.title} is on Canvas`
+                  : `Take or review ${bank.title}`}
               </Link>
             </li>
           );

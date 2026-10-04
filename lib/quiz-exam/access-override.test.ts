@@ -199,11 +199,14 @@ describe("per-section take overrides", () => {
   });
 
   it("uses section-closed copy instead of the date-window message", () => {
-    const copy = answerWindowCopy(q1, "take_closed", duringWindow, "closed");
+    const q3 = getQuizSchedule("q3");
+    assert.ok(q3);
+    const copy = answerWindowCopy(q3, "take_closed", duringWindow, "closed");
     assert.match(copy.title, /disabled for your section/i);
     assert.match(copy.paragraphs.join(" "), /your section/);
-    assert.match(copy.paragraphs.join(" "), /week of Sep 28/);
+    assert.match(copy.paragraphs.join(" "), /week of Oct 26/);
     assert.doesNotMatch(copy.paragraphs.join(" "), /end of lecture|Monday through Sunday|is due/i);
+    assert.doesNotMatch(copy.paragraphs.join(" "), /taken on Canvas/);
   });
 
   it("serializes override audit fields for the staff panel", () => {
