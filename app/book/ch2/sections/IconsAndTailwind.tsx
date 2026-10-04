@@ -68,7 +68,7 @@ export default function IconsAndTailwind() {
           language="css"
           name="Tailwind utilities"
           file="app/labs/lab2/tailwind/utilities.css"
-        >{`/* Utilities + theme only — safe to import from book / Kambaz without Preflight reset */
+        >{`/* Theme + utilities without Preflight, for the Labs */
 @import "tailwindcss/theme" layer(theme);
 @import "tailwindcss/utilities" layer(utilities);`}</CodeBlock>
         <p>
