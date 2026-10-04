@@ -5,10 +5,9 @@ import CodeBlock from "../../components/CodeBlock";
 import LiveDemo from "../../components/LiveDemo";
 import BookFigure from "../../components/BookFigure";
 import FigureLink from "../../components/FigureLink";
-import LocalUrl from "../../components/LocalUrl";
 import OfficialLink from "../../components/OfficialLink";
 import { OnYourOwn, WithAI } from "../../components/Practice";
-import Dashboard from "@/app/(kambaz)/dashboard/page";
+import Dashboard from "../embeds/_styled/dashboard/Dashboard";
 import Link from "next/link";
 import KambazModules from "./KambazModules";
 import KambazAccount from "./KambazAccount";
@@ -612,13 +611,10 @@ export default function CourseCard({
   );
 }`}</CodeBlock>
           <p>
-            The live dashboard below is the same component as{" "}
-            <LocalUrl href="/dashboard" />. Add a course, confirm the
-            published count increases, Edit a title, Update, then
-            Delete. Because the array lives in Zustand, a course you add
-            here is the same object the course layout will look up in{" "}
-            <SectionLink to="4.10.3" /> — open the new card after Add
-            and confirm the breadcrumb shows the name you typed.
+            The dashboard below renders the Zustand listing above. Add a
+            course, confirm the published count increases, Edit a title,
+            Update, then Delete. In your app that same store is what the
+            course layout reads in <SectionLink to="4.10.3" />.
           </p>
           <LiveDemo
             name="Dashboard"

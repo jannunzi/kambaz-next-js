@@ -80,6 +80,7 @@ export default function CourseCard({
     id: "grid",
     title: "One column, then 2 / 3 / 4",
     kind: "content",
+    density: "dense",
     bullets: [
       "`grid-cols-1` default, `sm:grid-cols-2`, `xl:grid-cols-3`, `2xl:grid-cols-4`",
       "`gap-8` is ~32px — the 30–40px gutter the target shots show",

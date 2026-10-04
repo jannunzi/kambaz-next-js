@@ -10,12 +10,10 @@ import ContainFixed from "../../components/ContainFixed";
 import KambazNavigation from "../embeds/_styled/Navigation";
 import CourseNavigation from "../embeds/_styled/courses/cid/Navigation";
 import Dashboard from "../embeds/_styled/dashboard/Dashboard";
-import Modules from "../embeds/_styled/courses/cid/modules/page";
 import Home from "../embeds/_styled/courses/cid/home/page";
 import Assignments from "../embeds/_styled/courses/cid/assignments/Assignments";
 import PeopleTable from "../embeds/_styled/courses/cid/people/PeopleTable";
 import AssignmentEditor from "../embeds/_styled/courses/cid/assignments/AssignmentEditor";
-import Signin from "../embeds/_styled/account/Signin";
 import PlainKambazNavigation from "@/app/book/ch1/embeds/PlainKambazNavigation";
 import PlainCourseNavigation from "@/app/book/ch1/embeds/PlainCourseNavigation";
 import DashboardDemo from "@/app/book/ch1/embeds/DashboardDemo";
@@ -46,13 +44,14 @@ export default function KambazStyling() {
       <p>
         In <SectionLink to="2.3" />{" "}the Tailwind lab imports the full library
         (<code>@import &quot;tailwindcss&quot;</code>), which includes Preflight.{" "}
-        <SectionLink to="2.2" />{" "}explains that reset and why{" "}
-        <code>kambaz.css</code>{" "}does not use that import. The same section
-        already loads the theme and utilities, with no Preflight, from the Labs
-        file <code>utilities.css</code>. Kambaz does not import that file. The same
-        two lines open <code>kambaz.css</code>, then a few app-wide rules — a
-        system sans-serif base (without Preflight the browser often falls back
-        to Times), <code>box-sizing</code>, and later the fixed-sidebar offset.
+        <SectionLink to="2.2" />{" "}defines that reset. Kambaz screens rely on
+        the browser&apos;s default heading sizes, bullets, and margins, and
+        Preflight would strip them, so <code>kambaz.css</code>{" "}skips the full
+        import. The file opens with the theme and utilities layers and no
+        Preflight, then a few app-wide rules — a system sans-serif base
+        (without Preflight the browser often falls back to Times),{" "}
+        <code>box-sizing</code>, and later the fixed-sidebar offset. Kambaz
+        does not import the Labs file <code>utilities.css</code>.
         The Kambaz layout imports only <code>kambaz.css</code>, once. Putting{" "}
         <code>font-sans</code>{" "}on the root as well means Tailwind&apos;s
         system stack applies even if the CSS rule is incomplete:
@@ -415,7 +414,7 @@ export default function Dashboard() {
   );
 }`}</CodeBlock>
       <p>
-        With those classes in place, the live component looks like this:
+        With those classes in place, the screen looks like this:
       </p>
       <LiveDemo
         mode="styled"
@@ -576,7 +575,7 @@ export default function CourseNavigation({ cid }: { cid: string }) {
   font-weight: 600;
 }`}</CodeBlock>
       <p>
-        With those classes in place, the live component looks like this:
+        With those classes in place, the screen looks like this:
       </p>
       <LiveDemo
         mode="styled"
@@ -722,65 +721,70 @@ export default function Lesson({
       </p>
       <CodeBlock
         language="tsx"
-        name="Modules"
+        name="Modules toolbar"
         file="app/(kambaz)/courses/[cid]/modules/page.tsx"
-      >{`import Lesson from "./Lesson";
-import Module from "./Module";
-
-export default function Modules() {
-  return (
-    <div>
-      <div className="mb-3 flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
-        >
-          Collapse All
-        </button>
-        <button
-          type="button"
-          className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
-        >
-          View Progress
-        </button>
-        <select
-          defaultValue="publish-all"
-          className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
-        >
-          <option value="publish-all">Publish All</option>
-        </select>
-        <button
-          type="button"
-          className="rounded border border-red-600 bg-red-600 px-3 py-1.5 text-sm font-medium text-white"
-        >
-          + Module
-        </button>
-      </div>
-      <ul id="wd-modules" className="m-0 list-none p-0">
-        <Module title="Week 1, Lecture 1 - Course Introduction, Syllabus, Agenda">
-          <Lesson title="LEARNING OBJECTIVES">
-            <li className="wd-content-item">Introduction to the course</li>
-            <li className="wd-content-item">Learn what is Web Development</li>
-          </Lesson>
-          <Lesson title="READING">
-            <li className="wd-content-item">
-              Full Stack Developer - Chapter 1 - Introduction
-            </li>
-          </Lesson>
-        </Module>
-      </ul>
-    </div>
-  );
-}`}</CodeBlock>
+      >{`<div className="mb-3 flex flex-wrap items-center gap-2">
+  <button
+    type="button"
+    className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
+  >
+    Collapse All
+  </button>
+  <button
+    type="button"
+    className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
+  >
+    View Progress
+  </button>
+  <select
+    defaultValue="publish-all"
+    className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
+  >
+    <option value="publish-all">Publish All</option>
+  </select>
+  <button
+    type="button"
+    className="rounded border border-red-600 bg-red-600 px-3 py-1.5 text-sm font-medium text-white"
+  >
+    + Module
+  </button>
+</div>
+{/* ...Module / Lesson tree... */}`}</CodeBlock>
       <p>
-        With those classes in place, the live component looks like this:
+        With those classes in place, the screen looks like this:
       </p>
       <LiveDemo
         mode="styled"
         name="Styled result"
         file="app/(kambaz)/courses/[cid]/modules/page.tsx"
       >
-        <Modules />
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
+          >
+            Collapse All
+          </button>
+          <button
+            type="button"
+            className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
+          >
+            View Progress
+          </button>
+          <select
+            defaultValue="publish-all"
+            className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
+          >
+            <option value="publish-all">Publish All</option>
+          </select>
+          <button
+            type="button"
+            className="rounded border border-red-600 bg-red-600 px-3 py-1.5 text-sm font-medium text-white"
+          >
+            + Module
+          </button>
+        </div>
+        {/* ...Module / Lesson tree... */}
       </LiveDemo>
       <p>The finished Modules screen is expected to:</p>
       <ul>
@@ -938,7 +942,7 @@ export default function Home() {
   );
 }`}</CodeBlock>
       <p>
-        With those classes in place, the live component looks like this:
+        With those classes in place, the screen looks like this:
       </p>
       <LiveDemo
         mode="styled"
@@ -1033,7 +1037,7 @@ export default function PeopleTable() {
   );
 }`}</CodeBlock>
       <p>
-        With those classes in place, the live component looks like this.
+        With those classes in place, the screen looks like this.
         The People link in the Course Navigation sidebar should reach this
         table:
       </p>
@@ -1193,7 +1197,7 @@ export default async function Assignments({
   );
 }`}</CodeBlock>
       <p>
-        With those classes in place, the live component looks like this:
+        With those classes in place, the screen looks like this:
       </p>
       <LiveDemo
         mode="styled"
@@ -1404,36 +1408,30 @@ export default function AssignmentEditor() {
         language="tsx"
         name="Signin"
         file="app/(kambaz)/account/signin/page.tsx"
-      >{`import Link from "next/link";
-
-export default function Signin() {
-  return (
-    <div id="wd-signin-screen" className="max-w-sm">
-      <h1 className="mb-3 text-2xl font-semibold">Sign in</h1>
-      <input
-        id="wd-username"
-        placeholder="username"
-        className="mb-2 w-full rounded border border-neutral-300 px-3 py-2"
-      />
-      <input
-        id="wd-password"
-        placeholder="password"
-        type="password"
-        className="mb-2 w-full rounded border border-neutral-300 px-3 py-2"
-      />
-      <Link
-        id="wd-signin-btn"
-        href="/account/profile"
-        className="mb-2 block w-full rounded bg-blue-600 px-3 py-2 text-center text-white no-underline"
-      >
-        Sign in
-      </Link>
-      <Link id="wd-signup-link" href="/account/signup">
-        Sign up
-      </Link>
-    </div>
-  );
-}`}</CodeBlock>
+      >{`<div id="wd-signin-screen" className="max-w-sm">
+  <h1 className="mb-3 text-2xl font-semibold">Sign in</h1>
+  <input
+    id="wd-username"
+    placeholder="username"
+    className="mb-2 w-full rounded border border-neutral-300 px-3 py-2"
+  />
+  <input
+    id="wd-password"
+    placeholder="password"
+    type="password"
+    className="mb-2 w-full rounded border border-neutral-300 px-3 py-2"
+  />
+  <Link
+    id="wd-signin-btn"
+    href="/account/profile"
+    className="mb-2 block w-full rounded bg-blue-600 px-3 py-2 text-center text-white no-underline"
+  >
+    Sign in
+  </Link>
+  <Link id="wd-signup-link" href="/account/signup">
+    Sign up
+  </Link>
+</div>`}</CodeBlock>
       <p>
         With those patterns in place on Sign in, Sign up, Profile, and{" "}
         <code>account/Navigation.tsx</code>, the account section matches the target.
@@ -1444,7 +1442,30 @@ export default function Signin() {
         name="Your turn to style"
         file="app/(kambaz)/account/signin/page.tsx"
       >
-        <Signin />
+        <div id="wd-signin-screen" className="max-w-sm">
+          <h1 className="mb-3 text-2xl font-semibold">Sign in</h1>
+          <input
+            id="wd-username"
+            placeholder="username"
+            className="mb-2 w-full rounded border border-neutral-300 px-3 py-2"
+          />
+          <input
+            id="wd-password"
+            placeholder="password"
+            type="password"
+            className="mb-2 w-full rounded border border-neutral-300 px-3 py-2"
+          />
+          <Link
+            id="wd-signin-btn"
+            href="/account/profile"
+            className="mb-2 block w-full rounded bg-blue-600 px-3 py-2 text-center text-white no-underline"
+          >
+            Sign in
+          </Link>
+          <Link id="wd-signup-link" href="/account/signup">
+            Sign up
+          </Link>
+        </div>
       </LiveDemo>
       <p>
         Sign up and Profile follow the same way, reusing the classes above

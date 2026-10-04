@@ -61,6 +61,7 @@ export default function Dashboard() {
     id: "card",
     title: "CourseCard encodes _id in the href",
     kind: "content",
+    density: "dense",
     bullets: [
       "Destructure `_id`, `name`, `description`, and `image`",
       "`href={\`/courses/${_id}/home\`}` — later screens look the course up",

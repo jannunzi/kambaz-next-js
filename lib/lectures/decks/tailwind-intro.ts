@@ -83,6 +83,7 @@ export default function TailwindLab() {
     id: "link-it",
     title: "Link it from Lab 2",
     kind: "content",
+    density: "dense",
     bullets: [
       "Link to `/labs/lab2/tailwind` from the main Lab 2 page so both are reachable from the Labs table of contents",
       "Use a plain `<a>`, not `next/link`. Client navigation keeps this page's Preflight CSS after Back",

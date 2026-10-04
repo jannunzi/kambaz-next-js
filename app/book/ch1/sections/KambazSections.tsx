@@ -14,7 +14,7 @@ import AssignmentEditorDemo from "../embeds/AssignmentEditorDemo";
 import DemoSignin from "../embeds/DemoSignin";
 import DemoSignup from "../embeds/DemoSignup";
 import DemoProfile from "../embeds/DemoProfile";
-import AccountNavigation from "@/app/(kambaz)/account/Navigation";
+import AccountNavigation from "../embeds/_styled/AccountNavigation";
 import Link from "next/link";
 
 export default function KambazSections() {

@@ -59,15 +59,20 @@ export default function IconsAndTailwind() {
           import path and component name to copy.
         </p>
         <p>
-          Tailwind&apos;s <strong>theme</strong> layer is its design tokens:
-          colors, spacing, and fonts, stored as CSS variables.{" "}
-          <strong>Utilities</strong> are the classes you put on an element,
-          such as <code>p-4</code> and <code>text-lg</code>. Writing{" "}
+          CSS <strong>cascade layers</strong> are named groups of styles.
+          When two rules conflict, the one in a later layer wins. Writing{" "}
           <code>layer(...)</code> on an import puts that CSS in a named cascade
-          layer, so the order of those styles stays predictable.{" "}
-          <strong>Preflight</strong> is Tailwind&apos;s base reset. It strips
-          the browser&apos;s default heading sizes, margins, list bullets, and
-          button styles.
+          layer, so the order of those styles stays predictable. A{" "}
+          <strong>design token</strong> is a named value a design reuses, such
+          as a color or a spacing step. A <strong>CSS variable</strong> is a
+          custom property the browser stores, written <code>--name</code> and
+          read with <code>var(--name)</code>. Tailwind&apos;s{" "}
+          <strong>theme</strong> layer holds those design tokens — colors,
+          spacing, and fonts — as CSS variables. <strong>Utilities</strong>{" "}
+          are the classes you put on an element, such as <code>p-4</code> and{" "}
+          <code>text-lg</code>. <strong>Preflight</strong> is Tailwind&apos;s
+          base reset. It strips the browser&apos;s default heading sizes,
+          margins, list bullets, and button styles.
         </p>
         <p>
           The sampler below uses utilities such as <code>flex</code> and{" "}
@@ -193,9 +198,19 @@ export default function TailwindLab() {
 }`}</CodeBlock>
         <p>
           Link to <LocalUrl href="/labs/lab2/tailwind">/labs/lab2/tailwind</LocalUrl>{" "}from the main Lab 2 page so
-          both are reachable from the Labs table of contents, then work
-          through the utility categories below one component at a time.
+          both are reachable from the Labs table of contents. Use a plain{" "}
+          <code>&lt;a&gt;</code>, not <code>next/link</code>. The Tailwind lab
+          loads full Tailwind with Preflight, and a full page load keeps it
+          from leaking into other pages on Back. Then work through the utility
+          categories below one component at a time.
         </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab2 Tailwind link"
+          file="app/labs/lab2/page.tsx"
+        >{`<p>
+  <a href="/labs/lab2/tailwind">Open Tailwind CSS lab →</a>
+</p>`}</CodeBlock>
 
         <h3
           id="sec-2-3-1"
