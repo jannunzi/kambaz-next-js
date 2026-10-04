@@ -28,7 +28,7 @@ export const KAMBAZ_STYLING_SLIDES: LectureSlide[] = [
     bullets: [
       "**Preflight** is Tailwind's base reset. `@import \"tailwindcss\"` includes it",
       "Kambaz skips Preflight because it would strip the default heading sizes, list bullets, and margins the Kambaz screens still rely on",
-      "`layer(...)` puts each import in a named cascade layer (theme, utilities), and the layer order decides which rules win",
+      "`layer(...)` puts each import in a named cascade layer, and layer order decides which rules win",
     ],
     code: `@import "tailwindcss/theme" layer(theme);
 @import "tailwindcss/utilities" layer(utilities);`,
