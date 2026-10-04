@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import "@/app/labs/lab2/tailwind/utilities.css";
 import "../../kambaz.css";
 
 const LINKS = [

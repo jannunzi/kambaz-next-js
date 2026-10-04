@@ -1,4 +1,3 @@
-import "@/app/labs/lab2/tailwind/utilities.css";
 import Modules from "../modules/page";
 import CourseStatus from "./Status";
 

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import "@/app/labs/lab2/tailwind/utilities.css";
 import * as db from "../../../../database";
 import * as client from "../../../client";
 import PeopleTable from "../Table";

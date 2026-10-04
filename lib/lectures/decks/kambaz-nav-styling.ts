@@ -35,7 +35,6 @@ export const KAMBAZ_NAV_STYLING_SLIDES: LectureSlide[] = [
 import { AiOutlineDashboard } from "react-icons/ai";
 import { FaRegCircleUser } from "react-icons/fa6";
 import Link from "next/link";
-import "@/app/labs/lab2/tailwind/utilities.css";
 
 export default function KambazNavigation() {
   return (

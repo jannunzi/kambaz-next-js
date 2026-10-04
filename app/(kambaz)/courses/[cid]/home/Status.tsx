@@ -8,7 +8,6 @@ import {
 } from "react-icons/md";
 import { BiImport } from "react-icons/bi";
 import { FaFileImport } from "react-icons/fa";
-import "@/app/labs/lab2/tailwind/utilities.css";
 
 export default function CourseStatus() {
   return (

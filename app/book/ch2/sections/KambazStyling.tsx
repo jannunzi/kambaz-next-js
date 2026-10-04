@@ -1,4 +1,3 @@
-import "@/app/labs/lab2/tailwind/utilities.css";
 import SectionLink from "../../components/SectionLink";
 import ChapterLink from "../../components/ChapterLink";
 import Section from "../../components/Section";
@@ -48,34 +47,40 @@ export default function KambazStyling() {
         In <SectionLink to="2.3" />{" "}the Tailwind lab imports the full library
         (<code>@import &quot;tailwindcss&quot;</code>), which includes{" "}
         <strong>Preflight</strong> — a base reset that would also wipe plain
-        HTML defaults elsewhere. For Kambaz we use a smaller entry that loads
-        only the theme and utilities:
-      </p>
-      <CodeBlock
-        language="css"
-        name="Tailwind utilities"
-        file="app/labs/lab2/tailwind/utilities.css"
-      >{`/* Utilities + theme only — safe for Kambaz without Preflight reset */
-@import "tailwindcss/theme" layer(theme);
-@import "tailwindcss/utilities" layer(utilities);`}</CodeBlock>
-      <p>
-        If we import that file once from the Kambaz layout (individual screens can
-        import it too, but once at the layout is enough), and pair it with{" "}
-        <code>kambaz.css</code>{" "}for a few app-wide rules — a system
-        sans-serif base (without Preflight the browser often falls back to
-        Times), <code>box-sizing</code>, and later the fixed-sidebar offset —
-        the shell stays consistent. Putting <code>font-sans</code>{" "}on the root
-        as well means Tailwind&apos;s system stack applies even if the CSS rule
-        is incomplete:
+        HTML defaults elsewhere. The book does not use{" "}
+        <code>@import &quot;tailwindcss&quot;</code>{" "}in <code>kambaz.css</code>{" "}
+        because it includes Preflight, Tailwind&apos;s reset, which would strip
+        the browser&apos;s default heading sizes, list bullets, and margins that
+        the Kambaz screens still rely on. <SectionLink to="2.2" />{" "}already loads theme
+        and utilities, with no Preflight, from the Labs file{" "}
+        <code>utilities.css</code>. Kambaz does not import that file. The same
+        two lines open <code>kambaz.css</code>, then a few app-wide rules — a
+        system sans-serif base (without Preflight the browser often falls back
+        to Times), <code>box-sizing</code>, and later the fixed-sidebar offset.
+        The Kambaz layout imports only <code>kambaz.css</code>, once. Putting{" "}
+        <code>font-sans</code>{" "}on the root as well means Tailwind&apos;s
+        system stack applies even if the CSS rule is incomplete:
       </p>
       <CodeBlock
         language="css"
         name="Kambaz base"
         file="app/(kambaz)/kambaz.css"
-      >{`/* System sans-serif — Tailwind utilities alone do not set the body font */
+      >{`@import "tailwindcss/theme" layer(theme);
+@import "tailwindcss/utilities" layer(utilities);
+
+/* System sans-serif — Tailwind utilities alone
+   do not set the body font */
 #wd-kambaz {
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
-    "Noto Sans", "Liberation Sans", Arial, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    "Noto Sans",
+    "Liberation Sans",
+    Arial,
+    sans-serif;
   color: #212529;
   line-height: 1.5;
 }
@@ -88,7 +93,6 @@ export default function KambazStyling() {
         name="KambazLayout"
         file="app/(kambaz)/layout.tsx"
       >{`import { ReactNode } from "react";
-import "@/app/labs/lab2/tailwind/utilities.css";
 import "./kambaz.css";
 import KambazNavigation from "./Navigation";
 
@@ -168,7 +172,6 @@ export default function KambazLayout({
 import { AiOutlineDashboard } from "react-icons/ai";
 import { FaRegCircleUser } from "react-icons/fa6";
 import Link from "next/link";
-import "@/app/labs/lab2/tailwind/utilities.css";
 
 export default function KambazNavigation() {
   return (
@@ -380,8 +383,7 @@ export default function CourseCard({
         language="tsx"
         name="Dashboard"
         file="app/(kambaz)/dashboard/page.tsx"
-      >{`import "@/app/labs/lab2/tailwind/utilities.css";
-import CourseCard from "./CourseCard";
+      >{`import CourseCard from "./CourseCard";
 
 export default function Dashboard() {
   return (
@@ -500,7 +502,6 @@ export default function Dashboard() {
       >{`"use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import "@/app/labs/lab2/tailwind/utilities.css";
 import "../../kambaz.css";
 
 export default function CourseNavigation({ cid }: { cid: string }) {
@@ -549,6 +550,7 @@ export default function CourseNavigation({ cid }: { cid: string }) {
   flex-direction: column;
   width: 100%;
 }
+
 .list-group.wd > .list-group-item {
   display: block;
   padding: 0.4rem 0.75rem;
@@ -559,6 +561,7 @@ export default function CourseNavigation({ cid }: { cid: string }) {
   background-color: transparent;
   white-space: nowrap;
 }
+
 .list-group.wd > .list-group-item.active {
   color: black;
   background-color: white;
@@ -1096,8 +1099,7 @@ export default function AssignmentItem({
         language="tsx"
         name="Assignments"
         file="app/(kambaz)/courses/[cid]/assignments/page.tsx"
-      >{`import "@/app/labs/lab2/tailwind/utilities.css";
-import { FaPlus, FaSearch } from "react-icons/fa";
+      >{`import { FaPlus, FaSearch } from "react-icons/fa";
 import AssignmentItem from "./AssignmentItem";
 
 export default async function Assignments({

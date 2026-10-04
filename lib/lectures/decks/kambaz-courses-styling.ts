@@ -33,7 +33,6 @@ export const KAMBAZ_COURSES_STYLING_SLIDES: LectureSlide[] = [
     code: `"use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import "@/app/labs/lab2/tailwind/utilities.css";
 import "../../kambaz.css";
 
 export default function CourseNavigation({ cid }: { cid: string }) {
@@ -85,6 +84,7 @@ export default function CourseNavigation({ cid }: { cid: string }) {
   flex-direction: column;
   width: 100%;
 }
+
 .list-group.wd > .list-group-item {
   display: block;
   padding: 0.4rem 0.75rem;
@@ -95,6 +95,7 @@ export default function CourseNavigation({ cid }: { cid: string }) {
   background-color: transparent;
   white-space: nowrap;
 }
+
 .list-group.wd > .list-group-item.active {
   color: black;
   background-color: white;

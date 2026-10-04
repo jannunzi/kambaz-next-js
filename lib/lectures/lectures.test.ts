@@ -2396,10 +2396,11 @@ describe("lecture decks", () => {
 
     const shell = slideText("kambaz-styling");
     assert.match(shell, /tailwindcss\/theme/);
-    assert.match(shell, /utilities\.css/);
+    assert.match(shell, /tailwindcss\/utilities/);
     assert.match(shell, /kambaz\.css/);
     assert.match(shell, /wd-main-content-offset/);
     assert.match(shell, /font-sans/);
+    assert.doesNotMatch(shell, /labs\/lab2\/tailwind\/utilities\.css/);
 
     const nav = slideText("kambaz-nav-styling");
     assert.match(nav, /wd-kambaz-navigation/);

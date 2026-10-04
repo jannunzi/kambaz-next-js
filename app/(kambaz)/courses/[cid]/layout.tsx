@@ -3,7 +3,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { FaAlignJustify } from "react-icons/fa6";
-import "@/app/labs/lab2/tailwind/utilities.css";
 import CourseNavigation from "./Navigation";
 import Breadcrumb from "./Breadcrumb";
 import type { Course } from "@/app/api/kambaz/types";
