@@ -314,7 +314,6 @@ export { emptyCourse };`}</CodeBlock>
         >{`"use client";
 
 import { useState } from "react";
-import "@/app/labs/lab2/tailwind/utilities.css";
 import CourseCard from "./CourseCard";
 import {
   emptyCourse,
@@ -684,7 +683,6 @@ export default function CourseCard({
 import { ReactNode, useState } from "react";
 import { useParams } from "next/navigation";
 import { FaAlignJustify } from "react-icons/fa6";
-import "@/app/labs/lab2/tailwind/utilities.css";
 import CourseNavigation from "./Navigation";
 import Breadcrumb from "./Breadcrumb";
 import { useCoursesStore } from "../../store/coursesStore";

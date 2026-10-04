@@ -56,8 +56,23 @@ export default function IconsAndTailwind() {
             react-icons.github.io/react-icons
           </a>{" "}
           and search by keyword or icon family — each result page shows the
-          import path and component name to copy. Try a handful from
-          different families in one component:
+          import path and component name to copy. The sampler below uses
+          Tailwind class names such as <code>flex</code> and{" "}
+          <code>text-3xl</code>. Those classes are not browser defaults. The
+          full library, including its <strong>Preflight</strong> reset, is
+          scoped to the Tailwind lab in <SectionLink to="2.3" />. For this
+          sampler, add a smaller file that loads only the theme and utilities
+          — no Preflight — and import it from the component:
+        </p>
+        <CodeBlock
+          language="css"
+          name="Tailwind utilities"
+          file="app/labs/lab2/tailwind/utilities.css"
+        >{`/* Utilities + theme only — safe to import from book / Kambaz without Preflight reset */
+@import "tailwindcss/theme" layer(theme);
+@import "tailwindcss/utilities" layer(utilities);`}</CodeBlock>
+        <p>
+          Try a handful of icons from different families in one component:
         </p>
         <CodeBlock
           language="tsx"
@@ -90,8 +105,9 @@ export default function ReactIconsSampler() {
           <code>ai</code>, <code>fa6</code>, and <code>vsc</code>{" "}each group
           icons by their source library. The parent uses{" "}
           <code>text-3xl</code>{" "}so each icon (sized in <code>em</code>)
-          scales up; that utility comes from Tailwind, introduced properly
-          in <SectionLink to="2.3" />. Icon components also accept ordinary{" "}
+          scales up; that utility comes from the file above, and{" "}
+          <SectionLink to="2.3" />{" "}covers the rest of the library. Icon
+          components also accept ordinary{" "}
           <code>className</code>, <code>style</code>, and{" "}
           <code>size</code>{" "}props like any other element:
         </p>

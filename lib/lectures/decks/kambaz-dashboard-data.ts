@@ -30,8 +30,7 @@ export const KAMBAZ_DASHBOARD_DATA_SLIDES: LectureSlide[] = [
       "`{…course}` passes every field the card destructures",
       "Add or rename a course in JSON — the grid updates, `CourseCard` does not",
     ],
-    code: `import "@/app/labs/lab2/tailwind/utilities.css";
-import CourseCard from "./CourseCard";
+    code: `import CourseCard from "./CourseCard";
 import * as db from "../database";
 
 export default function Dashboard() {
@@ -55,7 +54,7 @@ export default function Dashboard() {
 }`,
     codeLanguage: "tsx",
     codeFile: "app/(kambaz)/dashboard/page.tsx",
-    codeHighlightLines: [3, 6, 11, [17, 19]],
+    codeHighlightLines: [2, 5, 10, [16, 18]],
     embed: "kambaz-styled-dashboard",
   },
   {

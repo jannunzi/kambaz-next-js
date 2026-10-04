@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import "@/app/labs/lab2/tailwind/utilities.css";
+import "@/app/(kambaz)/kambaz.css";
 import { isClerkConfigured } from "@/lib/config";
 import { safeReturnPath } from "@/lib/auth/must-change-password";
 import PasswordChangeFields from "./PasswordChangeFields";

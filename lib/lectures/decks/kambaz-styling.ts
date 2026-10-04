@@ -27,14 +27,13 @@ export const KAMBAZ_STYLING_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "The Tailwind lab imported `@import \"tailwindcss\"` — that reset would wipe Labs HTML",
-      "Kambaz loads **theme + utilities only**",
-      "Import once from the Kambaz layout. Screens can import it too, but once is enough",
+      "Kambaz loads **theme + utilities only**, at the top of `kambaz.css`",
+      "No Preflight. The layout imports that one file",
     ],
-    code: `/* Utilities + theme only — safe for Kambaz without Preflight reset */
-@import "tailwindcss/theme" layer(theme);
+    code: `@import "tailwindcss/theme" layer(theme);
 @import "tailwindcss/utilities" layer(utilities);`,
     codeLanguage: "css",
-    codeFile: "app/labs/lab2/tailwind/utilities.css",
+    codeFile: "app/(kambaz)/kambaz.css",
   },
   {
     id: "kambaz-css",
@@ -45,13 +44,20 @@ export const KAMBAZ_STYLING_SLIDES: LectureSlide[] = [
       "A system sans stack, `color`, `line-height`, and `box-sizing`",
       "`font-sans` on the root still applies Tailwind’s system stack",
     ],
-    code: `/* System sans-serif — Tailwind utilities alone do not set the body font */
+    code: `/*
+ * Base look for the live app. Book styled demos get a
+ * sans stack from \`.book-live-demo-styled\`. Kambaz only
+ * loads Tailwind utilities (no Preflight), so without
+ * this the browser default (Times) shows through.
+ */
 #wd-kambaz {
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
-    "Noto Sans", "Liberation Sans", Arial, sans-serif;
+  font-family: system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", "Noto Sans",
+    "Liberation Sans", Arial, sans-serif;
   color: #212529;
   line-height: 1.5;
 }
+
 #wd-kambaz,
 #wd-kambaz * {
   box-sizing: border-box;
@@ -61,7 +67,7 @@ export const KAMBAZ_STYLING_SLIDES: LectureSlide[] = [
   },
   {
     id: "layout",
-    title: "Layout imports both files",
+    title: "Layout imports kambaz.css",
     kind: "content",
     bullets: [
       "Drop the Chapter 1 `<table>` wrapper",
@@ -69,7 +75,6 @@ export const KAMBAZ_STYLING_SLIDES: LectureSlide[] = [
       "`p-3` is the page gutter. The 120px left offset comes next, with the sidebar",
     ],
     code: `import { ReactNode } from "react";
-import "@/app/labs/lab2/tailwind/utilities.css";
 import "./kambaz.css";
 import KambazNavigation from "./Navigation";
 
@@ -85,7 +90,7 @@ export default function KambazLayout({
 }`,
     codeLanguage: "tsx",
     codeFile: "app/(kambaz)/layout.tsx",
-    codeAddedLines: [1, [2, 3], 8, 12],
+    codeAddedLines: [1, 2, 7, 11],
   },
   {
     id: "tables-out",

@@ -1,4 +1,3 @@
-import "@/app/labs/lab2/tailwind/utilities.css";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import AssignmentItem from "./AssignmentItem";
 import * as db from "../../../database";

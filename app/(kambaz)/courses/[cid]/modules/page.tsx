@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import "@/app/labs/lab2/tailwind/utilities.css";
 import Module from "./Module";
 import Lesson from "./Lesson";
 import ModuleControlButtons from "./ModuleControlButtons";

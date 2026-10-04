@@ -85,8 +85,7 @@ export default function CourseCard({
       "`gap-8` is ~32px — the 30–40px gutter the target shots show",
       "Existing `CourseCard` calls stay the same",
     ],
-    code: `import "@/app/labs/lab2/tailwind/utilities.css";
-import CourseCard from "./CourseCard";
+    code: `import CourseCard from "./CourseCard";
 
 export default function Dashboard() {
   return (

@@ -73,7 +73,6 @@ import { LiaBookSolid, LiaCogSolid } from "react-icons/lia";
 import { FaInbox, FaRegCircleUser } from "react-icons/fa6";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import "@/app/labs/lab2/tailwind/utilities.css";
 
 const LINKS = [
   { label: "Dashboard", path: "/dashboard", icon: AiOutlineDashboard },
@@ -221,8 +220,7 @@ export { courses, modules, assignments, users, enrollments };`}</CodeBlock>
           language="tsx"
           name="Dashboard"
           file="app/(kambaz)/dashboard/page.tsx"
-        >{`import "@/app/labs/lab2/tailwind/utilities.css";
-import CourseCard from "./CourseCard";
+        >{`import CourseCard from "./CourseCard";
 import * as db from "../database";
 
 export default function Dashboard() {
@@ -352,7 +350,6 @@ export default function CourseCard({
           file="app/(kambaz)/courses/[cid]/layout.tsx"
         >{`import { ReactNode } from "react";
 import { FaAlignJustify } from "react-icons/fa6";
-import "@/app/labs/lab2/tailwind/utilities.css";
 import CourseNavigation from "./Navigation";
 import Breadcrumb from "./Breadcrumb";
 import { courses } from "../../database";
@@ -434,7 +431,6 @@ export default async function CoursesLayout({
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import "@/app/labs/lab2/tailwind/utilities.css";
 import "../../kambaz.css";
 
 const LINKS = [
@@ -593,7 +589,6 @@ export default function Breadcrumb({
         >{`"use client";
 
 import { useParams } from "next/navigation";
-import "@/app/labs/lab2/tailwind/utilities.css";
 import Module from "./Module";
 import Lesson from "./Lesson";
 import * as db from "../../../database";
@@ -686,8 +681,7 @@ export default function Modules() {
           language="tsx"
           name="Assignments"
           file="app/(kambaz)/courses/[cid]/assignments/page.tsx"
-        >{`import "@/app/labs/lab2/tailwind/utilities.css";
-import { FaPlus, FaSearch } from "react-icons/fa";
+        >{`import { FaPlus, FaSearch } from "react-icons/fa";
 import AssignmentItem from "./AssignmentItem";
 import * as db from "../../../database";
 
@@ -896,7 +890,6 @@ export default async function AssignmentEditor({
           name="PeopleTable"
           file="app/(kambaz)/courses/[cid]/people/table/page.tsx"
         >{`import { FaUserCircle } from "react-icons/fa";
-import "@/app/labs/lab2/tailwind/utilities.css";
 import * as db from "../../../../database";
 
 export default async function PeopleTable({

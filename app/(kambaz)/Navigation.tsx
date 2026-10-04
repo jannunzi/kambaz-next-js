@@ -6,7 +6,6 @@ import { LiaBookSolid, LiaCogSolid } from "react-icons/lia";
 import { FaInbox, FaRegCircleUser } from "react-icons/fa6";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import "@/app/labs/lab2/tailwind/utilities.css";
 
 const LINKS = [
   { label: "Dashboard", path: "/dashboard", icon: AiOutlineDashboard },

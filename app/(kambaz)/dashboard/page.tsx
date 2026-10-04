@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import "@/app/labs/lab2/tailwind/utilities.css";
 import CourseCard from "./CourseCard";
 import { emptyCourse, type Course } from "@/app/api/kambaz/types";
 import { useAccountContext } from "../account/AccountContext";

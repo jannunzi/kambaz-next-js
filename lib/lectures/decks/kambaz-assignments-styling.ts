@@ -126,8 +126,7 @@ export default function AssignmentItem({
       "Magnifying-glass icon is `absolute` inside a `relative` wrapper",
       "Gray group header reuses the module-title treatment",
     ],
-    code: `import "@/app/labs/lab2/tailwind/utilities.css";
-import { FaPlus, FaSearch } from "react-icons/fa";
+    code: `import { FaPlus, FaSearch } from "react-icons/fa";
 import AssignmentItem from "./AssignmentItem";
 
 export default async function Assignments({
