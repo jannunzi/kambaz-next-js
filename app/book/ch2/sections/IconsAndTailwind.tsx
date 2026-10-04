@@ -56,13 +56,26 @@ export default function IconsAndTailwind() {
             react-icons.github.io/react-icons
           </a>{" "}
           and search by keyword or icon family — each result page shows the
-          import path and component name to copy. The sampler below uses
-          Tailwind class names such as <code>flex</code> and{" "}
+          import path and component name to copy.
+        </p>
+        <p>
+          Tailwind&apos;s <strong>theme</strong> layer is its design tokens:
+          colors, spacing, and fonts, stored as CSS variables.{" "}
+          <strong>Utilities</strong> are the classes you put on an element,
+          such as <code>p-4</code> and <code>text-lg</code>. Writing{" "}
+          <code>layer(...)</code> on an import puts that CSS in a named cascade
+          layer, so the order of those styles stays predictable.{" "}
+          <strong>Preflight</strong> is Tailwind&apos;s base reset. It strips
+          the browser&apos;s default heading sizes, margins, list bullets, and
+          button styles.
+        </p>
+        <p>
+          The sampler below uses utilities such as <code>flex</code> and{" "}
           <code>text-3xl</code>. Those classes are not browser defaults. The
-          full library, including its <strong>Preflight</strong> reset, is
-          scoped to the Tailwind lab in <SectionLink to="2.3" />. For this
-          sampler, add a smaller file that loads only the theme and utilities
-          — no Preflight — and import it from the component:
+          full library, including Preflight, is scoped to the Tailwind lab in{" "}
+          <SectionLink to="2.3" />. For this sampler, add a smaller file that
+          loads only the theme and utilities — no Preflight — and import it
+          from the component:
         </p>
         <CodeBlock
           language="css"
