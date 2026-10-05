@@ -80,7 +80,6 @@ export default function CourseCard({
     id: "grid",
     title: "One column, then 2 / 3 / 4",
     kind: "content",
-    density: "dense",
     bullets: [
       "`grid-cols-1` default, `sm:grid-cols-2`, `xl:grid-cols-3`, `2xl:grid-cols-4`",
       "`gap-8` is ~32px — the 30–40px gutter the target shots show",
@@ -105,18 +104,7 @@ export default function Dashboard() {
           subtitle="Full Stack software developer"
           image="/images/reactjs.jpg"
         />
-        <CourseCard
-          id="2345"
-          title="CS2345 Node JS"
-          subtitle="Server side JavaScript"
-          image="/images/nodejs.jpg"
-        />
-        <CourseCard
-          id="3456"
-          title="CS3456 MongoDB"
-          subtitle="NoSQL Databases"
-          image="/images/mongodb.jpg"
-        />
+        {/* ...two more CourseCards... */}
       </div>
     </div>
   );

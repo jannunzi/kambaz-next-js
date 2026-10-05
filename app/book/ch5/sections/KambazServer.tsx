@@ -5,7 +5,7 @@ import OfficialLink from "../../components/OfficialLink";
 import CodeBlock from "../../components/CodeBlock";
 import LiveDemo from "../../components/LiveDemo";
 import { OnYourOwn, WithAI } from "../../components/Practice";
-import Dashboard from "../embeds/_styled/dashboard/Dashboard";
+import MemoryDashboard from "../embeds/MemoryDashboard";
 
 export default function KambazServer() {
   return (
@@ -1131,7 +1131,7 @@ export default function Dashboard() {
             file="app/(kambaz)/dashboard/page.tsx"
             mode="styled"
           >
-            <Dashboard />
+            <MemoryDashboard />
           </LiveDemo>
           <OnYourOwn>
             Sign in, Add a course, refresh, and confirm it is still

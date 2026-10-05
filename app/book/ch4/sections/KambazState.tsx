@@ -547,12 +547,12 @@ export default function Dashboard() {
             caption="Figure 4.10.2d — Editing a course"
           />
           <p>
-            To practice the card buttons, update{" "}
-            <code>CourseCard</code>{" "}so it accepts{" "}
-            <code>onEdit</code>{" "}and <code>onDelete</code>{" "}and
-            wires both clicks through{" "}
-            <code>preventDefault</code>. Confirm Edit fills the form
-            and Delete removes the card:
+            To practice the card buttons, keep the image, title, and
+            description from the <ChapterLink to={3} />{" "}card, then
+            accept <code>onEdit</code>{" "}and <code>onDelete</code>{" "}and
+            wire both clicks through <code>preventDefault</code>. Style
+            Edit like Update and Delete as a red button. Confirm Edit
+            fills the form and Delete removes the card:
           </p>
           <CodeBlock
             language="tsx"
@@ -584,28 +584,49 @@ export default function CourseCard({
         href={\`/courses/\${_id}/home\`}
         className="wd-dashboard-course-link block text-neutral-900 no-underline"
       >
-        {/* image, title, description */}
-        <button type="button">Go</button>
-        <button
-          type="button"
-          id="wd-edit-course-click"
-          onClick={(event) => {
-            event.preventDefault();
-            onEdit();
-          }}
-        >
-          Edit
-        </button>
-        <button
-          type="button"
-          id="wd-delete-course-click"
-          onClick={(event) => {
-            event.preventDefault();
-            onDelete();
-          }}
-        >
-          Delete
-        </button>
+        <Image
+          src={image}
+          width={300}
+          height={160}
+          alt={name}
+          className="h-40 w-full object-cover"
+        />
+        <div className="p-4">
+          <h5 className="wd-dashboard-course-title m-0 mb-2 truncate text-lg font-semibold whitespace-nowrap">
+            {name}
+          </h5>
+          <p className="wd-dashboard-course-description m-0 mb-3 h-[100px] overflow-hidden text-sm text-neutral-600">
+            {description}
+          </p>
+          <button
+            type="button"
+            className="inline-flex items-center justify-center rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white"
+          >
+            Go
+          </button>
+          <button
+            type="button"
+            id="wd-edit-course-click"
+            className="ms-2 inline-flex items-center justify-center rounded bg-yellow-400 px-3 py-1.5 text-sm font-medium"
+            onClick={(event) => {
+              event.preventDefault();
+              onEdit();
+            }}
+          >
+            Edit
+          </button>
+          <button
+            type="button"
+            id="wd-delete-course-click"
+            className="ms-2 inline-flex items-center justify-center rounded bg-red-600 px-3 py-1.5 text-sm font-medium text-white"
+            onClick={(event) => {
+              event.preventDefault();
+              onDelete();
+            }}
+          >
+            Delete
+          </button>
+        </div>
       </Link>
     </div>
   );

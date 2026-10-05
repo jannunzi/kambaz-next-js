@@ -61,16 +61,12 @@ export default function Dashboard() {
     id: "card",
     title: "CourseCard encodes _id in the href",
     kind: "content",
-    density: "dense",
     bullets: [
       "Destructure `_id`, `name`, `description`, and `image`",
       "`href={\`/courses/${_id}/home\`}` — later screens look the course up",
       "The Go button is inside the same `Link`",
     ],
-    code: `import Link from "next/link";
-import Image from "next/image";
-
-export default function CourseCard({
+    code: `export default function CourseCard({
   _id,
   name,
   description,
@@ -87,13 +83,8 @@ export default function CourseCard({
         href={\`/courses/\${_id}/home\`}
         className="wd-dashboard-course-link block text-neutral-900 no-underline"
       >
-        <Image
-          src={image}
-          width={300}
-          height={160}
-          alt={name}
-          className="h-40 w-full object-cover"
-        />
+        <Image src={image} width={300} height={160} alt={name}
+          className="h-40 w-full object-cover" />
         <div className="p-4">
           <h5 className="wd-dashboard-course-title m-0 mb-2 truncate text-lg font-semibold whitespace-nowrap">
             {name}
@@ -101,10 +92,8 @@ export default function CourseCard({
           <p className="wd-dashboard-course-description m-0 mb-3 h-[100px] overflow-hidden text-sm text-neutral-600">
             {description}
           </p>
-          <button
-            type="button"
-            className="inline-flex items-center justify-center rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white"
-          >
+          <button type="button"
+            className="inline-flex items-center justify-center rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white">
             Go
           </button>
         </div>
@@ -114,7 +103,7 @@ export default function CourseCard({
 }`,
     codeLanguage: "tsx",
     codeFile: "app/(kambaz)/dashboard/CourseCard.tsx",
-    codeHighlightLines: [[4, 8], 18],
+    codeHighlightLines: [[1, 5], 15],
   },
   {
     id: "recap",

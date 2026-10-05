@@ -5,7 +5,7 @@ import OfficialLink from "../../components/OfficialLink";
 import CodeBlock from "../../components/CodeBlock";
 import LiveDemo from "../../components/LiveDemo";
 import { OnYourOwn, WithAI } from "../../components/Practice";
-import Dashboard from "../../ch5/embeds/_styled/dashboard/Dashboard";
+import MemoryDashboard from "../../ch5/embeds/MemoryDashboard";
 
 export default function KambazDb() {
   return (
@@ -826,7 +826,7 @@ export default function Dashboard() {
             file="app/(kambaz)/dashboard/page.tsx"
             mode="styled"
           >
-            <Dashboard />
+            <MemoryDashboard />
           </LiveDemo>
         </Section>
       </Section>
