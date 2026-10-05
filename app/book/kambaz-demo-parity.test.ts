@@ -4,6 +4,7 @@ import { describe, it } from "node:test";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import LinksNavigation from "./ch3/embeds/_styled/Navigation";
+import AsDashboardPath from "../slides/_components/embeds/AsDashboardPath";
 
 function read(path: string): string {
   return readFileSync(new URL(`../../${path}`, import.meta.url), "utf8");
@@ -264,8 +265,8 @@ describe("Kambaz book demos match the code block they show", () => {
     )) {
       if (file.endsWith(".json")) {
         const name = file.slice(file.lastIndexOf("/") + 1);
-        const listing = `app/book/listings/database/${name}`;
-        if (!blocks.some((block) => block.body.includes(name)) || read(file) !== read(listing)) {
+        const live = `app/(kambaz)/database/${name}`;
+        if (!blocks.some((block) => block.body.includes(name)) || read(file) !== read(live)) {
           untied.push(file);
         }
         continue;
@@ -350,12 +351,14 @@ describe("Kambaz book demos match the code block they show", () => {
       read(`${linksImport[1].replace(/^@\//, "")}.tsx`).trim(),
       codeBlock("app/book/ch3/sections/KambazData.tsx", "KambazNavigation").trim(),
     );
+    const linksBody = fnBody(styling, "KambazLinksNavEmbed");
     assert.match(
-      fnBody(styling, "KambazLinksNavEmbed"),
-      /<LinksNavigation pathname="\/dashboard"\s*\/>/,
+      linksBody,
+      /<AsDashboardPath>\s*<LinksNavigation\s*\/>\s*<\/AsDashboardPath>/,
     );
+    assert.doesNotMatch(linksBody, /pathname=/);
     const linksHtml = renderToStaticMarkup(
-      createElement(LinksNavigation, { pathname: "/dashboard" }),
+      createElement(AsDashboardPath, null, createElement(LinksNavigation)),
     );
     assert.match(linksHtml, /id="wd-dashboard-link"[^>]*bg-white text-red-600/);
     assert.match(linksHtml, /id="wd-courses-link"[^>]*bg-white text-red-600/);
@@ -370,6 +373,13 @@ describe("Kambaz book demos match the code block they show", () => {
     assert.ok(
       styling.replace(/\s+/g, " ").includes(signin.replace(/\s+/g, " ").trim()),
       "signin embed JSX drifted from the Signin code block",
+    );
+  });
+
+  it("keeps the chapter 3 navigation listing identical to the app", () => {
+    assert.equal(
+      codeBlock("app/book/ch3/sections/KambazData.tsx", "KambazNavigation").trim(),
+      read("app/(kambaz)/Navigation.tsx").trim(),
     );
   });
 

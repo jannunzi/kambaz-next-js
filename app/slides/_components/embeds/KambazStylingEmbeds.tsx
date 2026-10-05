@@ -10,6 +10,7 @@ import PeopleTable from "@/app/book/ch2/embeds/_styled/courses/cid/people/People
 import AssignmentItem from "@/app/book/ch2/embeds/_styled/courses/cid/assignments/AssignmentItem";
 import Link from "next/link";
 import { FaPlus, FaSearch } from "react-icons/fa";
+import AsDashboardPath from "./AsDashboardPath";
 import LectureDemoFrame from "./LectureDemoFrame";
 
 export function KambazStyledNavEmbed() {
@@ -37,7 +38,9 @@ export function KambazLinksNavEmbed() {
     <LectureDemoFrame label="Navigation.tsx" url="/dashboard">
       <div className="font-sans text-sm [&_nav]:!top-auto [&_nav]:!bottom-auto [&_nav]:!block [&_nav]:!h-auto [&_nav]:!relative">
         <ContainFixed height="auto">
-          <LinksNavigation pathname="/dashboard" />
+          <AsDashboardPath>
+            <LinksNavigation />
+          </AsDashboardPath>
           <div
             className="wd-main-content-offset p-3 text-neutral-500"
             style={{ marginLeft: 120 }}
