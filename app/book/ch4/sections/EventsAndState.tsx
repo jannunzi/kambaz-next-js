@@ -11,7 +11,7 @@ import CounterBroken from "@/app/labs/lab4/CounterBroken";
 import Counter from "@/app/labs/lab4/Counter";
 import BooleanStateVariables from "@/app/labs/lab4/BooleanStateVariables";
 import StringStateVariables from "@/app/labs/lab4/StringStateVariables";
-import ClientDateDemo from "../../components/ClientDateDemo";
+import DateStateVariable from "@/app/labs/lab4/DateStateVariable";
 import ObjectStateVariable from "@/app/labs/lab4/ObjectStateVariable";
 import ArrayStateVariable from "@/app/labs/lab4/ArrayStateVariable";
 
@@ -615,19 +615,25 @@ export default function StringStateVariables() {
         <p>
           The <code>DateStateVariable</code>{" "}component illustrates how
           to work with date state variables. The{" "}
-          <code>startDate</code>{" "}state variable is initialized to the
-          current date using <code>new Date()</code>, which has a string
-          representation that is not what an HTML date input expects. HTML
-          date inputs speak <code>YYYY-MM-DD</code>. A JavaScript{" "}
-          <code>Date</code>{" "}does not. The{" "}
-          <code>dateObjectToHtmlDateString</code>{" "}function converts a{" "}
-          <code>Date</code>{" "}object into that format so the field&apos;s{" "}
-          <code>value</code>{" "}attribute matches what the browser
-          picker requires. Changes in the date field are handled by the{" "}
-          <code>onChange</code>{" "}attribute, which constructs a new{" "}
-          <code>Date</code>{" "}from <code>e.target.value</code>{" "}and
-          updates the state with the <code>setStartDate</code>{" "}mutator.
-          To practice with date state, create the{" "}
+          <code>startDate</code>{" "}state variable is initialized to a
+          fixed local date,{" "}
+          <code>new Date(2026, 0, 15, 10, 30)</code>. Those arguments are
+          the year, month, day, hour, and minute. Months count from 0, so
+          this is January 15, 2026 at 10:30. A <code>Date</code>&apos;s text
+          is not what an HTML date input expects. HTML date inputs speak{" "}
+          <code>YYYY-MM-DD</code>. A JavaScript <code>Date</code>{" "}does
+          not. The <code>dateObjectToHtmlDateString</code>{" "}function
+          converts a <code>Date</code>{" "}object into that format so the
+          field&apos;s <code>value</code>{" "}attribute matches what the
+          browser picker requires. Changes in the date field are handled
+          by the <code>onChange</code>{" "}attribute, which passes the
+          field&apos;s <code>YYYY-MM-DD</code>{" "}text to{" "}
+          <code>htmlDateStringToDate</code>. That function reads the year,
+          month, and day as numbers and builds a local{" "}
+          <code>Date</code>{" "}with{" "}
+          <code>new Date(year, month - 1, day, 0, 0)</code>, then updates
+          the state with the <code>setStartDate</code>{" "}mutator. To
+          practice with date state, create the{" "}
           <code>DateStateVariable</code>{" "}component below and import it
           from the Lab 4 page. Confirm the browser displays as shown.
         </p>
@@ -646,18 +652,23 @@ function dateObjectToHtmlDateString(date: Date) {
   return \`\${year}-\${month}-\${day}\`;
 }
 
+function htmlDateStringToDate(dateString: string) {
+  const [year, month, day] = dateString.split("-").map(Number);
+  return new Date(year, month - 1, day, 0, 0);
+}
+
 export default function DateStateVariable() {
-  const [startDate, setStartDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(new Date(2026, 0, 15, 10, 30));
   return (
     <div id="wd-date-state-variables">
       <h2>Date State Variables</h2>
-      <h3>{JSON.stringify(startDate)}</h3>
+      <h3>{startDate.toDateString()}</h3>
       <h3>{dateObjectToHtmlDateString(startDate)}</h3>
       <input
         type="date"
         className="rounded border border-neutral-300 px-3 py-1.5"
         value={dateObjectToHtmlDateString(startDate)}
-        onChange={(e) => setStartDate(new Date(e.target.value))}
+        onChange={(e) => setStartDate(htmlDateStringToDate(e.target.value))}
         id="wd-start-date"
       />
       <hr />
@@ -665,8 +676,7 @@ export default function DateStateVariable() {
   );
 }`}</CodeBlock>
         <p>
-          The first heading shows the raw date object through{" "}
-          <code>JSON.stringify</code>; the second shows the{" "}
+          The first heading shows the date as text; the second shows the{" "}
           <code>YYYY-MM-DD</code>{" "}string the picker understands. Pick a
           new date and confirm both headings update. Assignment due dates
           and course start dates in Kambaz will use this same conversion
@@ -677,14 +687,14 @@ export default function DateStateVariable() {
           file="app/labs/lab4/DateStateVariable.tsx"
           mode="styled"
         >
-          <ClientDateDemo />
+          <DateStateVariable />
         </LiveDemo>
         <OnYourOwn>
           Add an <code>endDate</code>{" "}state value and a second date input.
           Show both formatted strings.
         </OnYourOwn>
         <WithAI
-          prompt={`In app/labs/lab4/DateStateVariable.tsx, keep any extra date I added. After startDate, add const [dueDate, setDueDate] = useState(new Date()) with a type="date" input id="wd-due-date" bound the same way as startDate. Do not rename my personal date.`}
+          prompt={`In app/labs/lab4/DateStateVariable.tsx, keep any extra date I added. After startDate, add const [dueDate, setDueDate] = useState(new Date(2026, 0, 22, 10, 30)) with a type="date" input id="wd-due-date" bound the same way as startDate. Do not rename my personal date.`}
         >
           Ask the assistant to add one extra sample date field:
         </WithAI>

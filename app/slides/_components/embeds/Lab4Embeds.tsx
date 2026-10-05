@@ -7,7 +7,7 @@ import CounterBroken from "@/app/labs/lab4/CounterBroken";
 import Counter from "@/app/labs/lab4/Counter";
 import BooleanStateVariables from "@/app/labs/lab4/BooleanStateVariables";
 import StringStateVariables from "@/app/labs/lab4/StringStateVariables";
-import BrowserDateState from "@/app/labs/lab4/BrowserDateState";
+import DateStateVariable from "@/app/labs/lab4/DateStateVariable";
 import ObjectStateVariable from "@/app/labs/lab4/ObjectStateVariable";
 import ArrayStateVariable from "@/app/labs/lab4/ArrayStateVariable";
 import ParentStateComponent from "@/app/labs/lab4/ParentStateComponent";
@@ -106,7 +106,7 @@ export function StringStateEmbed() {
 export function DateStateEmbed() {
   return (
     <Lab4Demo label="DateStateVariable.tsx">
-      <BrowserDateState />
+      <DateStateVariable />
     </Lab4Demo>
   );
 }

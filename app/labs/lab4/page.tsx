@@ -7,7 +7,7 @@ import CounterBroken from "./CounterBroken";
 import Counter from "./Counter";
 import BooleanStateVariables from "./BooleanStateVariables";
 import StringStateVariables from "./StringStateVariables";
-import BrowserDateState from "./BrowserDateState";
+import DateStateVariable from "./DateStateVariable";
 import ObjectStateVariable from "./ObjectStateVariable";
 import ArrayStateVariable from "./ArrayStateVariable";
 import ParentStateComponent from "./ParentStateComponent";
@@ -32,7 +32,7 @@ export default function Lab4() {
       <Counter />
       <BooleanStateVariables />
       <StringStateVariables />
-      <BrowserDateState />
+      <DateStateVariable />
       <ObjectStateVariable />
       <ArrayStateVariable />
       <ParentStateComponent />
