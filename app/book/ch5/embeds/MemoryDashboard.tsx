@@ -92,12 +92,12 @@ export default function MemoryDashboard() {
         id="wd-dashboard-courses"
         className="grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
       >
-        {courses.map((item) => (
+        {courses.map((c) => (
           <CourseCard
-            key={item._id}
-            {...item}
-            onEdit={() => setCourse(item)}
-            onDelete={() => deleteCourse(item._id)}
+            key={c._id}
+            {...c}
+            onEdit={() => setCourse(c)}
+            onDelete={() => deleteCourse(c._id)}
           />
         ))}
       </div>

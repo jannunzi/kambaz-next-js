@@ -52,7 +52,7 @@ export default function Kambaz() {
           hand. Replace that repetition with an array of labels, paths, and
           icons, then <code>map</code>{" "}it — the same pattern as the Labs
           TOC in <SectionLink to="3.7.2" />. Account stays a special case
-          (white-on-red when active). Courses intentionally points at{" "}
+          (red text on white when active). Courses intentionally points at{" "}
           <code>/dashboard</code>, because you only reach a course from a
           dashboard card.
         </p>

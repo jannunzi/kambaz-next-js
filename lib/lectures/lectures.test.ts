@@ -1758,7 +1758,7 @@ describe("lecture decks", () => {
         "path-links": "js-path-parameters",
         "todo-list": "js-todo-list",
       },
-      "kambaz-database": { nav: "kambaz-styled-nav" },
+      "kambaz-database": { nav: "kambaz-links-nav" },
       "kambaz-dashboard-data": { page: "kambaz-styled-dashboard" },
       "kambaz-courses-data": { "course-nav": "kambaz-styled-course-nav" },
       "kambaz-modules-data": { page: "kambaz-styled-modules" },

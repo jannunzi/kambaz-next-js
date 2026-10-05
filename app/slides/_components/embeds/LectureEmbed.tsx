@@ -89,6 +89,7 @@ import {
   KambazStyledCourseNavEmbed,
   KambazStyledDashboardEmbed,
   KambazStyledHomeEmbed,
+  KambazLinksNavEmbed,
   KambazStyledModulesEmbed,
   KambazStyledNavEmbed,
   KambazStyledPeopleEmbed,
@@ -331,6 +332,8 @@ export default function LectureEmbed({ id }: { id: LectureEmbedId }) {
       return <TailwindResponsiveEmbed />;
     case "kambaz-styled-nav":
       return <KambazStyledNavEmbed />;
+    case "kambaz-links-nav":
+      return <KambazLinksNavEmbed />;
     case "kambaz-styled-dashboard":
       return <KambazStyledDashboardEmbed />;
     case "kambaz-styled-course-nav":
