@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import CourseSiteHeader from "@/app/course-info/CourseSiteHeader";
-import { AccountProvider } from "@/app/(kambaz)/account/AccountContext";
+import { AccountProvider } from "@/lib/account/AccountContext";
 import BookTOC from "./TOC";
 import BookAffiliateBanner from "./components/BookAffiliateBanner";
 import "./book.css";

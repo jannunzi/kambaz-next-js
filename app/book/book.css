@@ -122,7 +122,8 @@
   padding-left: 1.4rem;
 }
 
-.book-shell a {
+/* Live demos and lecture frames set their own link colors. */
+.book-shell a:not(:where(.book-live-figure a, .lecture-demo-frame a)) {
   color: #1d4ed8;
 }
 

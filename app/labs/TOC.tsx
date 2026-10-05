@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -17,13 +18,17 @@ const LINKS = [
 
 export default function TOC() {
   const pathname = usePathname() ?? "";
+  // /labs/lab2/tailwind imports full Tailwind, including Preflight. Leaving that
+  // route with <Link> keeps the reset in the document, so Kambaz stays unstyled.
+  const hard = pathname.startsWith("/labs/lab2/tailwind");
   return (
     <ul>
       {LINKS.map((link) => (
         <li key={link.id}>
-          <Link
+          <TocAnchor
             href={link.href}
             id={link.id}
+            hard={hard}
             className={
               link.match(pathname)
                 ? "rounded bg-blue-600 px-2 py-0.5 text-white no-underline"
@@ -31,69 +36,96 @@ export default function TOC() {
             }
           >
             {link.label}
-          </Link>
+          </TocAnchor>
         </li>
       ))}
       <li>
-        <Link href="/labs/lab1/intermediates" id="wd-lab1-intermediates-link">
+        <TocAnchor href="/labs/lab1/intermediates" id="wd-lab1-intermediates-link" hard={hard}>
           Lab 1 Steps
-        </Link>
+        </TocAnchor>
       </li>
       <li>
-        <Link href="/book/ch1" id="wd-book-ch1-link">
+        <TocAnchor href="/book/ch1" id="wd-book-ch1-link" hard={hard}>
           Book Ch1
-        </Link>
+        </TocAnchor>
       </li>
       <li>
-        <Link href="/labs/lab2/intermediates" id="wd-lab2-intermediates-link">
+        <TocAnchor href="/labs/lab2/intermediates" id="wd-lab2-intermediates-link" hard={hard}>
           Lab 2 Steps
-        </Link>
+        </TocAnchor>
       </li>
       <li>
-        <Link href="/book/ch2" id="wd-book-ch2-link">
+        <TocAnchor href="/book/ch2" id="wd-book-ch2-link" hard={hard}>
           Book Ch2
-        </Link>
+        </TocAnchor>
       </li>
       <li>
-        <Link href="/labs/lab3/intermediates" id="wd-lab3-intermediates-link">
+        <TocAnchor href="/labs/lab3/intermediates" id="wd-lab3-intermediates-link" hard={hard}>
           Lab 3 Steps
-        </Link>
+        </TocAnchor>
       </li>
       <li>
-        <Link href="/book/ch3" id="wd-book-ch3-link">
+        <TocAnchor href="/book/ch3" id="wd-book-ch3-link" hard={hard}>
           Book Ch3
-        </Link>
+        </TocAnchor>
       </li>
       <li>
-        <Link href="/labs/lab4/intermediates" id="wd-lab4-intermediates-link">
+        <TocAnchor href="/labs/lab4/intermediates" id="wd-lab4-intermediates-link" hard={hard}>
           Lab 4 Steps
-        </Link>
+        </TocAnchor>
       </li>
       <li>
-        <Link href="/book/ch4" id="wd-book-ch4-link">
+        <TocAnchor href="/book/ch4" id="wd-book-ch4-link" hard={hard}>
           Book Ch4
-        </Link>
+        </TocAnchor>
       </li>
       <li>
-        <Link href="/labs/lab5/intermediates" id="wd-lab5-intermediates-link">
+        <TocAnchor href="/labs/lab5/intermediates" id="wd-lab5-intermediates-link" hard={hard}>
           Lab 5 Steps
-        </Link>
+        </TocAnchor>
       </li>
       <li>
-        <Link href="/book/ch5" id="wd-book-ch5-link">
+        <TocAnchor href="/book/ch5" id="wd-book-ch5-link" hard={hard}>
           Book Ch5
-        </Link>
+        </TocAnchor>
       </li>
       <li>
-        <Link href="/labs/lab6/intermediates" id="wd-lab6-intermediates-link">
+        <TocAnchor href="/labs/lab6/intermediates" id="wd-lab6-intermediates-link" hard={hard}>
           Lab 6 Steps
-        </Link>
+        </TocAnchor>
       </li>
       <li>
-        <Link href="/book/ch6" id="wd-book-ch6-link">
+        <TocAnchor href="/book/ch6" id="wd-book-ch6-link" hard={hard}>
           Book Ch6
-        </Link>
+        </TocAnchor>
       </li>
     </ul>
+  );
+}
+
+function TocAnchor({
+  href,
+  id,
+  className,
+  hard,
+  children,
+}: {
+  href: string;
+  id: string;
+  className?: string;
+  hard: boolean;
+  children: ReactNode;
+}) {
+  if (hard) {
+    return (
+      <a href={href} id={id} className={className}>
+        {children}
+      </a>
+    );
+  }
+  return (
+    <Link href={href} id={id} className={className}>
+      {children}
+    </Link>
   );
 }

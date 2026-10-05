@@ -1,12 +1,11 @@
 import ContainFixed from "@/app/book/components/ContainFixed";
-import KambazNavigation from "@/app/(kambaz)/Navigation";
-import CourseNavigation from "@/app/(kambaz)/courses/[cid]/Navigation";
-import CourseStatus from "@/app/(kambaz)/courses/[cid]/home/Status";
-import Module from "@/app/(kambaz)/courses/[cid]/modules/Module";
-import Lesson from "@/app/(kambaz)/courses/[cid]/modules/Lesson";
-import AssignmentItem from "@/app/(kambaz)/courses/[cid]/assignments/AssignmentItem";
-import PeopleTable from "@/app/(kambaz)/courses/[cid]/people/Table";
-import "@/app/(kambaz)/kambaz.css";
+import KambazNavigation from "@/app/book/ch2/embeds/_styled/Navigation";
+import CourseNavigation from "@/app/book/ch3/embeds/_styled/courses/cid/Navigation";
+import PeopleTable from "@/app/book/ch2/embeds/_styled/courses/cid/people/PeopleTable";
+import CourseStatus from "@/app/book/ch2/embeds/_styled/courses/cid/home/Status";
+import Module from "@/app/book/ch2/embeds/_styled/courses/cid/modules/Module";
+import Lesson from "@/app/book/ch2/embeds/_styled/courses/cid/modules/Lesson";
+import AssignmentItem from "@/app/book/ch2/embeds/_styled/courses/cid/assignments/AssignmentItem";
 import Image from "next/image";
 import Link from "next/link";
 import { FaPlus, FaSearch } from "react-icons/fa";
@@ -207,50 +206,7 @@ export function KambazStyledPeopleEmbed() {
       url="/courses/1234/people/table"
     >
       <div className="font-sans">
-        <PeopleTable
-          users={[
-            {
-              _id: "1",
-              firstName: "Tony",
-              lastName: "Stark",
-              loginId: "001234561S",
-              section: "S101",
-              role: "STUDENT",
-              lastActivity: "2020-10-01",
-              totalActivity: "10:21:32",
-            },
-            {
-              _id: "2",
-              firstName: "Bruce",
-              lastName: "Wayne",
-              loginId: "001234562S",
-              section: "S101",
-              role: "STUDENT",
-              lastActivity: "2020-11-02",
-              totalActivity: "23:32:23",
-            },
-            {
-              _id: "3",
-              firstName: "Steve",
-              lastName: "Rogers",
-              loginId: "001234563S",
-              section: "S101",
-              role: "STUDENT",
-              lastActivity: "2020-10-02",
-              totalActivity: "13:21:32",
-            },
-            {
-              _id: "4",
-              firstName: "Natasha",
-              lastName: "Romanoff",
-              loginId: "001234564S",
-              section: "S101",
-              role: "TA",
-              lastActivity: "2020-11-05",
-              totalActivity: "11:22:33",
-            },
-          ]}
-        />
+        <PeopleTable />
       </div>
     </LectureDemoFrame>
   );
@@ -320,7 +276,7 @@ export function KambazStyledAssignmentsEmbed() {
 export function KambazStyledSigninEmbed() {
   return (
     <LectureDemoFrame label="account/signin/page.tsx" url="/account/signin">
-      <div id="wd-signin-screen" className="max-w-sm font-sans">
+      <div id="wd-signin-screen" className="max-w-sm">
         <h1 className="mb-3 text-2xl font-semibold">Sign in</h1>
         <input
           id="wd-username"

@@ -32,6 +32,15 @@ export default function LocalUrl({
   const label =
     children ??
     (path === "/" ? ORIGIN : `${ORIGIN}${path}`);
+  // Full load into the Tailwind lab. Its CSS includes Preflight, which Next.js
+  // keeps in the document after a client-side visit.
+  if (path === "/labs/lab2/tailwind" || path.startsWith("/labs/lab2/tailwind/")) {
+    return (
+      <a href={path} className={className}>
+        {label}
+      </a>
+    );
+  }
   return (
     <Link href={path} className={className}>
       {label}

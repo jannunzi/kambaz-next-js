@@ -83,19 +83,19 @@ export default function TailwindLab() {
     id: "link-it",
     title: "Link it from Lab 2",
     kind: "content",
+    density: "dense",
     bullets: [
       "Link to `/labs/lab2/tailwind` from the main Lab 2 page so both are reachable from the Labs table of contents",
+      "Use a plain `<a>`, not `next/link`. Client navigation keeps this page's Preflight CSS after Back",
       "Both routes stay in the Labs TOC — CSS first, then utilities",
       "Work through spacing, type, color, responsive, filters, and grid one component at a time",
     ],
-    code: `import Link from "next/link";
-
-<p>
-  <Link href="/labs/lab2/tailwind">Open Tailwind CSS lab →</Link>
+    code: `<p>
+  <a href="/labs/lab2/tailwind">Open Tailwind CSS lab →</a>
 </p>`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/page.tsx",
-    codeAddedLines: [1],
+    codeAddedLines: [2],
   },
   {
     id: "tailwind-and-icons",

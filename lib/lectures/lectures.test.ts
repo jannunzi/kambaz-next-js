@@ -3237,4 +3237,82 @@ describe("lecture decks", () => {
     assert.ok(server);
     assert.deepEqual(server.addedLines, [[3, 6]]);
   });
+
+  it("marks assignments toolbar lines that differ from the previous listing", () => {
+    const slide = findSlide("kambaz-assignments-styling", "toolbar");
+    const file = slide.codeFile;
+    assert.equal(file, "app/(kambaz)/courses/[cid]/assignments/page.tsx");
+    let previous: string | null = null;
+    for (const slug of listLectureSlugs()) {
+      const deck = getLectureDeck(slug);
+      assert.ok(deck);
+      for (const row of deck.slides) {
+        if (slug === "kambaz-assignments-styling" && row.id === "toolbar") {
+          assert.ok(previous, "a prior slide lists assignments/page.tsx");
+          assert.deepEqual(slide.codeAddedLines, addedLineMarks(previous, slide.code ?? ""));
+          return;
+        }
+        for (const block of lectureSlideCodeBlocks(row)) {
+          if (block.file === file && block.code) previous = block.code;
+        }
+      }
+    }
+    assert.fail("toolbar slide not found in lecture order");
+  });
 });
+
+/** Lines in `next` that are new or changed versus `prev` (exact line equality). */
+function addedLineMarks(prev: string, next: string): Array<number | [number, number]> {
+  const before = prev.replace(/\n$/, "").split("\n");
+  const after = next.replace(/\n$/, "").split("\n");
+  const n = before.length;
+  const m = after.length;
+  const dp = Array.from({ length: n + 1 }, () => new Uint16Array(m + 1));
+  for (let i = n - 1; i >= 0; i--) {
+    for (let j = m - 1; j >= 0; j--) {
+      dp[i][j] =
+        before[i] === after[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+    }
+  }
+  const kept = new Set<number>();
+  let i = 0;
+  let j = 0;
+  while (i < n && j < m) {
+    if (before[i] === after[j]) {
+      kept.add(j + 1);
+      i += 1;
+      j += 1;
+    } else if (dp[i + 1][j] >= dp[i][j + 1]) {
+      i += 1;
+    } else {
+      j += 1;
+    }
+  }
+  const changed: number[] = [];
+  for (let line = 1; line <= m; line++) {
+    if (!kept.has(line)) changed.push(line);
+  }
+  const marks: Array<number | [number, number]> = [];
+  let start: number | null = null;
+  let end: number | null = null;
+  const flush = () => {
+    if (start == null || end == null) return;
+    marks.push(start === end ? start : [start, end]);
+    start = null;
+    end = null;
+  };
+  for (const line of changed) {
+    if (start == null || end == null) {
+      start = end = line;
+      continue;
+    }
+    if (line === end + 1) {
+      end = line;
+      continue;
+    }
+    flush();
+    start = end = line;
+  }
+  flush();
+  return marks;
+}

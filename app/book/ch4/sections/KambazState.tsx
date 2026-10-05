@@ -5,10 +5,9 @@ import CodeBlock from "../../components/CodeBlock";
 import LiveDemo from "../../components/LiveDemo";
 import BookFigure from "../../components/BookFigure";
 import FigureLink from "../../components/FigureLink";
-import LocalUrl from "../../components/LocalUrl";
 import OfficialLink from "../../components/OfficialLink";
 import { OnYourOwn, WithAI } from "../../components/Practice";
-import Dashboard from "@/app/(kambaz)/dashboard/page";
+import Dashboard from "../embeds/_styled/dashboard/Dashboard";
 import Link from "next/link";
 import KambazModules from "./KambazModules";
 import KambazAccount from "./KambazAccount";
@@ -548,12 +547,12 @@ export default function Dashboard() {
             caption="Figure 4.10.2d — Editing a course"
           />
           <p>
-            To practice the card buttons, update{" "}
-            <code>CourseCard</code>{" "}so it accepts{" "}
-            <code>onEdit</code>{" "}and <code>onDelete</code>{" "}and
-            wires both clicks through{" "}
-            <code>preventDefault</code>. Confirm Edit fills the form
-            and Delete removes the card:
+            To practice the card buttons, keep the image, title, and
+            description from the <ChapterLink to={3} />{" "}card, then
+            accept <code>onEdit</code>{" "}and <code>onDelete</code>{" "}and
+            wire both clicks through <code>preventDefault</code>. Style
+            Edit like Update and Delete as a red button. Confirm Edit
+            fills the form and Delete removes the card:
           </p>
           <CodeBlock
             language="tsx"
@@ -585,40 +584,58 @@ export default function CourseCard({
         href={\`/courses/\${_id}/home\`}
         className="wd-dashboard-course-link block text-neutral-900 no-underline"
       >
-        {/* image, title, description */}
-        <button type="button">Go</button>
-        <button
-          type="button"
-          id="wd-edit-course-click"
-          onClick={(event) => {
-            event.preventDefault();
-            onEdit();
-          }}
-        >
-          Edit
-        </button>
-        <button
-          type="button"
-          id="wd-delete-course-click"
-          onClick={(event) => {
-            event.preventDefault();
-            onDelete();
-          }}
-        >
-          Delete
-        </button>
+        <Image
+          src={image}
+          width={300}
+          height={160}
+          alt={name}
+          className="h-40 w-full object-cover"
+        />
+        <div className="p-4">
+          <h5 className="wd-dashboard-course-title m-0 mb-2 truncate text-lg font-semibold whitespace-nowrap">
+            {name}
+          </h5>
+          <p className="wd-dashboard-course-description m-0 mb-3 h-[100px] overflow-hidden text-sm text-neutral-600">
+            {description}
+          </p>
+          <button
+            type="button"
+            className="inline-flex items-center justify-center rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white"
+          >
+            Go
+          </button>
+          <button
+            type="button"
+            id="wd-edit-course-click"
+            className="ms-2 inline-flex items-center justify-center rounded bg-yellow-400 px-3 py-1.5 text-sm font-medium"
+            onClick={(event) => {
+              event.preventDefault();
+              onEdit();
+            }}
+          >
+            Edit
+          </button>
+          <button
+            type="button"
+            id="wd-delete-course-click"
+            className="ms-2 inline-flex items-center justify-center rounded bg-red-600 px-3 py-1.5 text-sm font-medium text-white"
+            onClick={(event) => {
+              event.preventDefault();
+              onDelete();
+            }}
+          >
+            Delete
+          </button>
+        </div>
       </Link>
     </div>
   );
 }`}</CodeBlock>
           <p>
-            The live dashboard below is the same component as{" "}
-            <LocalUrl href="/dashboard" />. Add a course, confirm the
-            published count increases, Edit a title, Update, then
-            Delete. Because the array lives in Zustand, a course you add
-            here is the same object the course layout will look up in{" "}
-            <SectionLink to="4.10.3" /> — open the new card after Add
-            and confirm the breadcrumb shows the name you typed.
+            The dashboard below renders the Zustand listing above. Add a
+            course, confirm the published count increases, Edit a title,
+            Update, then Delete. In your app that same store is what the
+            course layout reads in <SectionLink to="4.10.3" />.
           </p>
           <LiveDemo
             name="Dashboard"

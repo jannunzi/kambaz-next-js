@@ -1,5 +1,4 @@
 import "./index.css";
-import Link from "next/link";
 import ForegroundColors from "./ForegroundColors";
 import BackgroundColors from "./BackgroundColors";
 import Borders from "./Borders";
@@ -23,7 +22,8 @@ export default function Lab2() {
     <div id="wd-lab2">
       <h2>Lab 2 - Cascading Style Sheets</h2>
       <p>
-        <Link href="/labs/lab2/tailwind">Open Tailwind CSS lab →</Link>
+        {/* Full document load. A client-side Link would keep this route's Preflight CSS after Back. */}
+        <a href="/labs/lab2/tailwind">Open Tailwind CSS lab →</a>
       </p>
 
       <h3>Styling with the STYLE attribute</h3>
