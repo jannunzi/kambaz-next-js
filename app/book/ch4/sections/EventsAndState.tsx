@@ -11,7 +11,7 @@ import CounterBroken from "@/app/labs/lab4/CounterBroken";
 import Counter from "@/app/labs/lab4/Counter";
 import BooleanStateVariables from "@/app/labs/lab4/BooleanStateVariables";
 import StringStateVariables from "@/app/labs/lab4/StringStateVariables";
-import DateStateVariable from "@/app/labs/lab4/DateStateVariable";
+import ClientDateDemo from "../../components/ClientDateDemo";
 import ObjectStateVariable from "@/app/labs/lab4/ObjectStateVariable";
 import ArrayStateVariable from "@/app/labs/lab4/ArrayStateVariable";
 
@@ -651,10 +651,9 @@ export default function DateStateVariable() {
   return (
     <div id="wd-date-state-variables">
       <h2>Date State Variables</h2>
-      <h3 suppressHydrationWarning>{JSON.stringify(startDate)}</h3>
-      <h3 suppressHydrationWarning>{dateObjectToHtmlDateString(startDate)}</h3>
+      <h3>{JSON.stringify(startDate)}</h3>
+      <h3>{dateObjectToHtmlDateString(startDate)}</h3>
       <input
-        suppressHydrationWarning
         type="date"
         className="rounded border border-neutral-300 px-3 py-1.5"
         value={dateObjectToHtmlDateString(startDate)}
@@ -678,7 +677,7 @@ export default function DateStateVariable() {
           file="app/labs/lab4/DateStateVariable.tsx"
           mode="styled"
         >
-          <DateStateVariable />
+          <ClientDateDemo />
         </LiveDemo>
         <OnYourOwn>
           Add an <code>endDate</code>{" "}state value and a second date input.

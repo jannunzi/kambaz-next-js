@@ -14,10 +14,9 @@ export default function DateStateVariable() {
   return (
     <div id="wd-date-state-variables">
       <h2>Date State Variables</h2>
-      <h3 suppressHydrationWarning>{JSON.stringify(startDate)}</h3>
-      <h3 suppressHydrationWarning>{dateObjectToHtmlDateString(startDate)}</h3>
+      <h3>{JSON.stringify(startDate)}</h3>
+      <h3>{dateObjectToHtmlDateString(startDate)}</h3>
       <input
-        suppressHydrationWarning
         type="date"
         className="rounded border border-neutral-300 px-3 py-1.5"
         value={dateObjectToHtmlDateString(startDate)}

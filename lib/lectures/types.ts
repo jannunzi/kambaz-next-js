@@ -552,6 +552,7 @@ export const LECTURE_EMBED_IDS = [
   "tw-responsive-spacing",
   "tw-responsive",
   "kambaz-styled-nav",
+  "kambaz-links-nav",
   "kambaz-styled-dashboard",
   "kambaz-styled-course-nav",
   "kambaz-styled-modules",

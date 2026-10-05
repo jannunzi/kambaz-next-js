@@ -104,7 +104,18 @@ export default function Dashboard() {
           subtitle="Full Stack software developer"
           image="/images/reactjs.jpg"
         />
-        {/* ...two more CourseCards... */}
+        <CourseCard
+          id="2345"
+          title="CS2345 Node JS"
+          subtitle="Server side JavaScript"
+          image="/images/nodejs.jpg"
+        />
+        <CourseCard
+          id="3456"
+          title="CS3456 MongoDB"
+          subtitle="NoSQL Databases"
+          image="/images/mongodb.jpg"
+        />
       </div>
     </div>
   );

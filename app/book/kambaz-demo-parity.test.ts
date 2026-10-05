@@ -146,14 +146,9 @@ const SNAPSHOTS: Array<{ book: string; name: string; file: string }> = [
     file: "app/book/ch4/embeds/_styled/store/coursesStore.ts",
   },
   {
-    book: "app/book/ch5/sections/KambazServer.tsx",
-    name: "Dashboard",
-    file: "app/book/ch5/embeds/_styled/dashboard/Dashboard.tsx",
-  },
-  {
-    book: "app/book/ch6/sections/KambazDb.tsx",
-    name: "Dashboard",
-    file: "app/book/ch5/embeds/_styled/dashboard/Dashboard.tsx",
+    book: "app/book/ch3/sections/KambazData.tsx",
+    name: "KambazNavigation",
+    file: "app/book/ch3/embeds/_styled/Navigation.tsx",
   },
   {
     book: "app/book/ch3/sections/KambazData.tsx",
@@ -252,7 +247,7 @@ describe("Kambaz book demos match the code block they show", () => {
     const files = roots.flatMap((root) => walk(root));
     files.push("app/book/layout.tsx");
     const live =
-      /(?:from\s+|import\s*\(\s*|import\s+|@import\s+)["'][^"']*\(kambaz\)|readFile(?:Sync)?\([^)]*\(kambaz\)/;
+      /(?:from\s+|import\s*\(\s*|import\s+|require\s*\(\s*|@import\s+)["'][^"']*\(kambaz\)|readFile(?:Sync)?\([^)]*\(kambaz\)/;
     const offenders = files.filter((file) => live.test(read(file)));
     assert.deepEqual(offenders, []);
   });
@@ -266,7 +261,10 @@ describe("Kambaz book demos match the code block they show", () => {
     )) {
       if (file.endsWith(".json")) {
         const name = file.slice(file.lastIndexOf("/") + 1);
-        if (!blocks.some((block) => block.body.includes(name))) untied.push(file);
+        const live = `app/(kambaz)/database/${name}`;
+        if (!blocks.some((block) => block.body.includes(name)) || read(file) !== read(live)) {
+          untied.push(file);
+        }
         continue;
       }
       const text = read(file).trim();
@@ -285,22 +283,79 @@ describe("Kambaz book demos match the code block they show", () => {
 
   it("catches hand-edited Kambaz JSX inside slide embeds", () => {
     const styling = read("app/slides/_components/embeds/KambazStylingEmbeds.tsx");
-    const navImport = styling.match(
-      /import CourseNavigation from "([^"]+)"/,
+    const book = "app/book/ch2/sections/KambazStyling.tsx";
+    assert.equal(
+      read("app/book/ch2/embeds/_styled/dashboard/Dashboard.tsx").trim(),
+      codeBlock(book, "Dashboard").trim(),
     );
+    assert.equal(
+      read("app/book/ch2/embeds/_styled/dashboard/CourseCard.tsx").trim(),
+      codeBlock(book, "CourseCard").trim(),
+    );
+    assert.doesNotMatch(styling, /function StyledCourseCard|h-\[72px\]/);
+    assert.match(fnBody(styling, "KambazStyledDashboardEmbed"), /<Dashboard\s*\/>/);
+
+    assert.equal(
+      read("app/book/ch2/embeds/_styled/courses/cid/modules/page.tsx").trim(),
+      codeBlock(book, "Modules page").trim(),
+    );
+    const modulesBody = fnBody(styling, "KambazStyledModulesEmbed");
+    assert.match(modulesBody, /<Modules\s*\/>/);
+    assert.doesNotMatch(modulesBody, /Collapse All/);
+
+    assert.equal(
+      innerMarkup(fnBody(styling, "KambazStyledHomeEmbed")),
+      demoBodyAfter(book, "Home"),
+    );
+    assert.equal(
+      read("app/book/ch2/embeds/_styled/courses/cid/home/page.tsx").trim(),
+      codeBlock(book, "Home").trim(),
+    );
+
+    assert.equal(
+      markupFrom(fnBody(styling, "KambazStyledAssignmentsEmbed"), 'id="wd-assignments"'),
+      markupFrom(codeBlock(book, "Assignments"), 'id="wd-assignments"'),
+    );
+    assert.doesNotMatch(fnBody(styling, "KambazStyledAssignmentsEmbed"), /A2 - CSS/);
+
+    const navImport = styling.match(/import CourseNavigation from "([^"]+)"/);
     assert.ok(navImport);
     const navFile = `${navImport[1].replace(/^@\//, "")}.tsx`;
     assert.equal(
       read(navFile).trim(),
       codeBlock("app/book/ch3/sections/KambazData.tsx", "CourseNavigation").trim(),
     );
-    assert.match(read(navFile), /segment === "home"/);
+    const linksImport = styling.match(/import LinksNavigation from "([^"]+)"/);
+    assert.ok(linksImport);
+    assert.equal(
+      read(`${linksImport[1].replace(/^@\//, "")}.tsx`).trim(),
+      codeBlock("app/book/ch3/sections/KambazData.tsx", "KambazNavigation").trim(),
+    );
+    assert.match(fnBody(styling, "KambazLinksNavEmbed"), /<LinksNavigation\s*\/>/);
     assert.match(styling, /<PeopleTable\s*\/>/);
-    assert.doesNotMatch(styling, /<table|list-group-item|wd-course-home-link/);
-    const signin = codeBlock("app/book/ch2/sections/KambazStyling.tsx", "Signin");
+    assert.equal(
+      (read("app/book/ch2/embeds/_styled/courses/cid/people/PeopleTable.tsx").match(/odd:bg-neutral-50/g) ?? []).length,
+      4,
+    );
+    const signin = codeBlock(book, "Signin");
     assert.ok(
       styling.replace(/\s+/g, " ").includes(signin.replace(/\s+/g, " ").trim()),
       "signin embed JSX drifted from the Signin code block",
+    );
+  });
+
+  it("keeps the dashboard slide listings identical to the book", () => {
+    assert.equal(
+      slideCode("lib/lectures/decks/kambaz-dashboard-styling.ts", "grid").trim(),
+      codeBlock("app/book/ch2/sections/KambazStyling.tsx", "Dashboard").trim(),
+    );
+    assert.equal(
+      slideCode("lib/lectures/decks/kambaz-dashboard-data.ts", "card").trim(),
+      codeBlock("app/book/ch3/sections/KambazData.tsx", "CourseCard").trim(),
+    );
+    assert.equal(
+      slideCode("lib/lectures/decks/kambaz-assignments-styling.ts", "people-tsx").trim(),
+      codeBlock("app/book/ch2/sections/KambazStyling.tsx", "PeopleTable").trim(),
     );
   });
 
@@ -316,14 +371,12 @@ describe("Kambaz book demos match the code block they show", () => {
         .filter((line) => line.trimStart().startsWith("import"))
         .join("\n");
       assert.match(imports, /MemoryDashboard/);
-      assert.doesNotMatch(imports, /_styled\/dashboard\/Dashboard|axios/);
+      assert.doesNotMatch(imports, /_styled\/dashboard\/Dashboard/);
     }
     const demo = read("app/book/ch5/embeds/MemoryDashboard.tsx");
     assert.doesNotMatch(demo, /axios|httpServer|fetch\(/);
-    assert.match(
-      read("app/book/ch5/embeds/_styled/dashboard/Dashboard.tsx"),
-      /axios/,
-    );
+    const listing = codeBlock("app/book/ch5/sections/KambazServer.tsx", "Dashboard");
+    assert.equal(jsxReturn(demo), jsxReturn(listing));
   });
 });
 
@@ -336,9 +389,57 @@ function walk(rel: string): string[] {
   for (const name of readdirSync(repoPath(rel))) {
     const child = `${rel}/${name}`;
     if (statSync(repoPath(child)).isDirectory()) out.push(...walk(child));
-    else if (/\.(tsx|ts|css|js|jsx)$/.test(name)) out.push(child);
+    else if (/\.(tsx|ts|css|js|jsx|json)$/.test(name)) out.push(child);
   }
   return out;
+}
+
+function fnBody(src: string, name: string): string {
+  const at = src.indexOf(`function ${name}`);
+  assert.ok(at > 0, name);
+  const next = src.indexOf("\nexport function ", at + 10);
+  return next === -1 ? src.slice(at) : src.slice(at, next);
+}
+
+function markupFrom(source: string, startToken: string): string {
+  const tokenAt = source.indexOf(startToken);
+  assert.ok(tokenAt > 0, startToken);
+  const open = source.lastIndexOf("<div", tokenAt);
+  const lineStart = source.lastIndexOf("\n", open) + 1;
+  let depth = 0;
+  for (let i = open; i < source.length; i++) {
+    if (source.startsWith("<div", i)) {
+      depth++;
+      i += 3;
+      continue;
+    }
+    if (source.startsWith("</div>", i)) {
+      depth--;
+      if (depth === 0) return dedent(source.slice(lineStart, i + "</div>".length));
+      i += 5;
+      continue;
+    }
+  }
+  throw new Error(`unbalanced markup for ${startToken}`);
+}
+
+function innerMarkup(body: string): string {
+  return markupFrom(body, 'className="flex gap-4"');
+}
+
+function jsxReturn(source: string): string {
+  const at = source.lastIndexOf("return (");
+  assert.ok(at > 0, "return");
+  const start = source.indexOf("(", at);
+  let depth = 0;
+  for (let i = start; i < source.length; i++) {
+    if (source[i] === "(") depth++;
+    else if (source[i] === ")") {
+      depth--;
+      if (depth === 0) return dedent(source.slice(start + 1, i));
+    }
+  }
+  throw new Error("unbalanced return");
 }
 
 function dedent(text: string): string {

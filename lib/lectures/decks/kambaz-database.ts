@@ -55,7 +55,7 @@ export const KAMBAZ_DATABASE_SLIDES: LectureSlide[] = [
     codeLanguage: "tsx",
     codeFile: "app/(kambaz)/Navigation.tsx",
     codeHighlightLines: [[1, 7], [9, 22]],
-    embed: "kambaz-styled-nav",
+    embed: "kambaz-links-nav",
   },
   {
     id: "client",
