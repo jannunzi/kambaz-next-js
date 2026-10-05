@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { createElement, Fragment, isValidElement, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, it } from "node:test";
@@ -15,6 +16,8 @@ import Counter from "../Counter";
 import BooleanStateVariables from "../BooleanStateVariables";
 import StringStateVariables from "../StringStateVariables";
 import DateStateVariable from "../DateStateVariable";
+import BrowserDateState from "../BrowserDateState";
+import Lab4 from "../page";
 import ObjectStateVariable from "../ObjectStateVariable";
 import ArrayStateVariable from "../ArrayStateVariable";
 import ParentStateComponent from "../ParentStateComponent";
@@ -39,6 +42,7 @@ const clientComponents = new Set<unknown>([
   BooleanStateVariables,
   StringStateVariables,
   DateStateVariable,
+  BrowserDateState,
   ObjectStateVariable,
   ArrayStateVariable,
   ParentStateComponent,
@@ -153,4 +157,30 @@ describe("Lab 4 intermediate routes", () => {
       }
     });
   }
+
+  it("mounts DateStateVariable in the browser so new Date() is not prerendered", () => {
+    const read = (rel: string) => readFileSync(new URL(rel, import.meta.url), "utf8");
+    const loader = read("../BrowserDateState.tsx");
+    assert.match(loader, /ssr:\s*false/);
+    assert.match(loader, /import\("\.\/DateStateVariable"\)/);
+    assert.doesNotMatch(read("../DateStateVariable.tsx"), /suppressHydrationWarning/);
+
+    const lab = read("../page.tsx");
+    assert.match(lab, /<BrowserDateState\s*\/>/);
+    assert.doesNotMatch(lab, /from ["']\.\/DateStateVariable["']/);
+
+    const step = read("./[slug]/page.tsx");
+    assert.match(step, /DateStateVariable:\s*BrowserDateState/);
+    assert.doesNotMatch(step, /from ["']\.\.\/\.\.\/DateStateVariable["']/);
+
+    const stamped = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
+    const labHtml = markup(createElement(Lab4));
+    assert.match(labHtml, /id="wd-date-state-variables"/);
+    assert.doesNotMatch(labHtml, stamped);
+
+    const stepHtml = markup(createElement(BrowserDateState));
+    assert.match(stepHtml, /id="wd-date-state-variables"/);
+    assert.doesNotMatch(stepHtml, stamped);
+    assert.doesNotMatch(stepHtml, /Date State Variables/);
+  });
 });

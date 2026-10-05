@@ -6,7 +6,7 @@ import CounterBroken from "../../CounterBroken";
 import Counter from "../../Counter";
 import BooleanStateVariables from "../../BooleanStateVariables";
 import StringStateVariables from "../../StringStateVariables";
-import DateStateVariable from "../../DateStateVariable";
+import BrowserDateState from "../../BrowserDateState";
 import ObjectStateVariable from "../../ObjectStateVariable";
 import ArrayStateVariable from "../../ArrayStateVariable";
 import ParentStateComponent from "../../ParentStateComponent";
@@ -26,7 +26,7 @@ const STEPS: Record<string, ComponentType> = {
   Counter,
   BooleanStateVariables,
   StringStateVariables,
-  DateStateVariable,
+  DateStateVariable: BrowserDateState,
   ObjectStateVariable,
   ArrayStateVariable,
   ParentStateComponent,

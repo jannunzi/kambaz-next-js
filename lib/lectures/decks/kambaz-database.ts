@@ -27,7 +27,7 @@ export const KAMBAZ_DATABASE_SLIDES: LectureSlide[] = [
     kind: "demo",
     bullets: [
       "Replace handwritten links with `LINKS` — label, path, icon",
-      "Account stays a special case (white-on-red when active)",
+      "Account stays a special case (red text on white when active)",
       "Courses points at `/dashboard` — you reach a course from a card",
     ],
     code: `const LINKS = [

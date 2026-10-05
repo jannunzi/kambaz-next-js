@@ -15,8 +15,13 @@ const LINKS = [
   { label: "Labs", path: "/labs", icon: LiaCogSolid },
 ] as const;
 
-export default function KambazNavigation() {
-  const pathname = usePathname() ?? "";
+export default function KambazNavigation({
+  pathname: pathnameProp,
+}: {
+  pathname?: string;
+} = {}) {
+  const livePath = usePathname() ?? "";
+  const pathname = pathnameProp ?? livePath;
   const accountActive = pathname.includes("/account");
 
   return (

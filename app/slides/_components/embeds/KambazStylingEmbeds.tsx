@@ -1,7 +1,8 @@
 import ContainFixed from "@/app/book/components/ContainFixed";
 import KambazNavigation from "@/app/book/ch2/embeds/_styled/Navigation";
 import LinksNavigation from "@/app/book/ch3/embeds/_styled/Navigation";
-import CourseNavigation from "@/app/book/ch3/embeds/_styled/courses/cid/Navigation";
+import CourseNavigation from "@/app/book/ch2/embeds/_styled/courses/cid/Navigation";
+import FullCourseNavigation from "@/app/book/ch3/embeds/_styled/courses/cid/Navigation";
 import Dashboard from "@/app/book/ch2/embeds/_styled/dashboard/Dashboard";
 import Modules from "@/app/book/ch2/embeds/_styled/courses/cid/modules/page";
 import Home from "@/app/book/ch2/embeds/_styled/courses/cid/home/page";
@@ -36,7 +37,7 @@ export function KambazLinksNavEmbed() {
     <LectureDemoFrame label="Navigation.tsx" url="/dashboard">
       <div className="font-sans text-sm [&_nav]:!top-auto [&_nav]:!bottom-auto [&_nav]:!block [&_nav]:!h-auto [&_nav]:!relative">
         <ContainFixed height="auto">
-          <LinksNavigation />
+          <LinksNavigation pathname="/dashboard" />
           <div
             className="wd-main-content-offset p-3 text-neutral-500"
             style={{ marginLeft: 120 }}
@@ -67,7 +68,7 @@ export function KambazStyledCourseNavEmbed() {
       url="/courses/1234/home"
     >
       <div className="w-[140px] font-sans">
-        <CourseNavigation cid="1234" />
+        <FullCourseNavigation cid="1234" />
       </div>
     </LectureDemoFrame>
   );

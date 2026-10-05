@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { describe, it } from "node:test";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import LinksNavigation from "./ch3/embeds/_styled/Navigation";
 
 function read(path: string): string {
   return readFileSync(new URL(`../../${path}`, import.meta.url), "utf8");
@@ -261,8 +264,8 @@ describe("Kambaz book demos match the code block they show", () => {
     )) {
       if (file.endsWith(".json")) {
         const name = file.slice(file.lastIndexOf("/") + 1);
-        const live = `app/(kambaz)/database/${name}`;
-        if (!blocks.some((block) => block.body.includes(name)) || read(file) !== read(live)) {
+        const listing = `app/book/listings/database/${name}`;
+        if (!blocks.some((block) => block.body.includes(name)) || read(file) !== read(listing)) {
           untied.push(file);
         }
         continue;
@@ -293,14 +296,17 @@ describe("Kambaz book demos match the code block they show", () => {
       codeBlock(book, "CourseCard").trim(),
     );
     assert.doesNotMatch(styling, /function StyledCourseCard|h-\[72px\]/);
-    assert.match(fnBody(styling, "KambazStyledDashboardEmbed"), /<Dashboard\s*\/>/);
+    assert.match(
+      fnBody(styling, "KambazStyledDashboardEmbed"),
+      /<div className="font-sans">\s*<Dashboard\s*\/>\s*<\/div>/,
+    );
 
     assert.equal(
       read("app/book/ch2/embeds/_styled/courses/cid/modules/page.tsx").trim(),
       codeBlock(book, "Modules page").trim(),
     );
     const modulesBody = fnBody(styling, "KambazStyledModulesEmbed");
-    assert.match(modulesBody, /<Modules\s*\/>/);
+    assert.match(modulesBody, /<div className="font-sans">\s*<Modules\s*\/>\s*<\/div>/);
     assert.doesNotMatch(modulesBody, /Collapse All/);
 
     assert.equal(
@@ -312,26 +318,49 @@ describe("Kambaz book demos match the code block they show", () => {
       codeBlock(book, "Home").trim(),
     );
 
+    const assignmentsBody = fnBody(styling, "KambazStyledAssignmentsEmbed");
     assert.equal(
-      markupFrom(fnBody(styling, "KambazStyledAssignmentsEmbed"), 'id="wd-assignments"'),
+      markupFrom(assignmentsBody, 'id="wd-assignments"'),
       markupFrom(codeBlock(book, "Assignments"), 'id="wd-assignments"'),
     );
-    assert.doesNotMatch(fnBody(styling, "KambazStyledAssignmentsEmbed"), /A2 - CSS/);
+    assert.match(
+      assignmentsBody,
+      /<div className="font-sans">\s*<div id="wd-assignments">/,
+    );
+    assert.doesNotMatch(assignmentsBody, /A2 - CSS/);
 
     const navImport = styling.match(/import CourseNavigation from "([^"]+)"/);
     assert.ok(navImport);
     const navFile = `${navImport[1].replace(/^@\//, "")}.tsx`;
     assert.equal(
       read(navFile).trim(),
+      codeBlock(book, "CourseNavigation").trim(),
+    );
+    const fullNavImport = styling.match(/import FullCourseNavigation from "([^"]+)"/);
+    assert.ok(fullNavImport);
+    assert.equal(
+      read(`${fullNavImport[1].replace(/^@\//, "")}.tsx`).trim(),
       codeBlock("app/book/ch3/sections/KambazData.tsx", "CourseNavigation").trim(),
     );
+    assert.match(fnBody(styling, "KambazStyledCourseNavEmbed"), /<FullCourseNavigation cid="1234"\s*\/>/);
+    assert.doesNotMatch(fnBody(styling, "KambazStyledHomeEmbed"), /FullCourseNavigation/);
     const linksImport = styling.match(/import LinksNavigation from "([^"]+)"/);
     assert.ok(linksImport);
     assert.equal(
       read(`${linksImport[1].replace(/^@\//, "")}.tsx`).trim(),
       codeBlock("app/book/ch3/sections/KambazData.tsx", "KambazNavigation").trim(),
     );
-    assert.match(fnBody(styling, "KambazLinksNavEmbed"), /<LinksNavigation\s*\/>/);
+    assert.match(
+      fnBody(styling, "KambazLinksNavEmbed"),
+      /<LinksNavigation pathname="\/dashboard"\s*\/>/,
+    );
+    const linksHtml = renderToStaticMarkup(
+      createElement(LinksNavigation, { pathname: "/dashboard" }),
+    );
+    assert.match(linksHtml, /id="wd-dashboard-link"[^>]*bg-white text-red-600/);
+    assert.match(linksHtml, /id="wd-courses-link"[^>]*bg-white text-red-600/);
+    assert.match(linksHtml, /id="wd-account-link"[^>]*bg-black text-white/);
+    assert.match(linksHtml, /id="wd-calendar-link"[^>]*bg-black text-white/);
     assert.match(styling, /<PeopleTable\s*\/>/);
     assert.equal(
       (read("app/book/ch2/embeds/_styled/courses/cid/people/PeopleTable.tsx").match(/odd:bg-neutral-50/g) ?? []).length,

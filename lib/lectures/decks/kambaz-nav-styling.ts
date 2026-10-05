@@ -16,7 +16,7 @@ export const KAMBAZ_NAV_STYLING_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "Chapter 1’s sidebar was a plain vertical list of links",
-      "Target: narrow black column, red icons, active tile white-on-red",
+      "Target: narrow black column, red icons, active tile red text on white when active",
       "Account icon is white when idle. Active route: white background, red text",
       "Optional Northeastern logo above Account — `/images/NEU.png`",
     ],
