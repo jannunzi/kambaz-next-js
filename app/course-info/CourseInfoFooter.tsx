@@ -7,7 +7,7 @@ export type { CourseInfoHref } from "./links";
 export default function CourseInfoFooter({
   current,
 }: {
-  current?: CourseInfoHref;
+  current?: CourseInfoHref | "/privacy";
 }) {
   return (
     <nav
@@ -24,6 +24,12 @@ export default function CourseInfoFooter({
           )}
         </span>
       ))}
+      {" · "}
+      {current === "/privacy" ? (
+        <span className="text-neutral-800">Privacy</span>
+      ) : (
+        <Link href="/privacy">Privacy</Link>
+      )}
     </nav>
   );
 }
