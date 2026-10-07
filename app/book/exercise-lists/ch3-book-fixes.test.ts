@@ -150,4 +150,26 @@ describe("Chapter 3 book fixes (A3 walkthrough)", () => {
     assert.ok(page);
     assert.equal(page.body.trim(), read("app/labs/lab3/page.tsx").trim());
   });
+  it("shows app/labs/lab3/page.tsx at every early Lab 3 step, growing in the same order as the finished file", () => {
+    const complete = blocks(STYLING).find((block) => block.name === "Lab3 (complete)");
+    assert.ok(complete);
+    const finalImports = complete.body.split("\n").filter((line) => line.startsWith("import "));
+    const steps = blocks("app/book/ch3/sections/JsBasics.tsx").filter((block) => block.file === "app/labs/lab3/page.tsx");
+    assert.deepEqual(
+      steps.map((block) => block.name),
+      ["3.2.1", "3.2.2", "3.2.3", "3.2.4", "3.2.5", "3.2.6", "3.2.7"].map((section) => `Lab3 (after ${section})`),
+    );
+    let previous = 0;
+    for (const step of steps) {
+      const imports = step.body.split("\n").filter((line) => line.startsWith("import "));
+      assert.ok(imports.length > previous, step.name);
+      previous = imports.length;
+      assert.deepEqual(imports, finalImports.slice(0, imports.length), step.name);
+      const names = imports.map((line) => line.match(/^import (\w+) from/)?.[1]);
+      const rendered = [...step.body.matchAll(/^ {6}<(\w+) \/>$/gm)].map((match) => match[1]);
+      assert.deepEqual(rendered, names, step.name);
+      assert.match(step.body, /export default function Lab3\(\) \{\n  return \(\n    <div id="wd-lab3">\n      <h2>Lab 3<\/h2>\n/, step.name);
+      for (const name of names) assert.ok(complete.body.includes(`      <${name} />\n`), name);
+    }
+  });
 });
