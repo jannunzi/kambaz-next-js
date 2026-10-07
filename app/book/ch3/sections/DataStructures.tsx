@@ -165,8 +165,8 @@ export default function DataStructures() {
         title="3.4.2 Adding and Removing From Arrays"
       >
         <p>
-          In most languages arrays are immutable, whereas in JavaScript
-          elements can easily be added and removed from arrays. The{" "}
+          In many languages an array has a fixed size, whereas in
+          JavaScript elements can easily be added and removed. The{" "}
           <code>push()</code>{" "}function appends elements at the end of an
           array. The <code>splice()</code>{" "}function removes or adds
           elements anywhere in the array. To practice adding and removing
@@ -790,9 +790,12 @@ export default function DataStructures() {
           caption="Figure 3.4.12c — House object in the console"
         />
         <OnYourOwn>
-          Log <code>house.owners</code>{" "}
-          from <code>House.tsx</code>{" "}and confirm the two-string array
-          appears in the console.
+          Log <code>house.owners</code>{" "}from <code>House.tsx</code>{" "}and
+          confirm the two-string array appears in the console. Then show
+          it on the page too: under bathrooms add an{" "}
+          <code>&lt;h5&gt;owners&lt;/h5&gt;</code>{" "}heading followed by{" "}
+          <code>{`{house.owners.join(", ")}`}</code>, which reads{" "}
+          <code>Alice, Bob</code>.
         </OnYourOwn>
         <WithAI
           prompt={`In app/labs/lab3/House.tsx, keep console.log(house) and any console.log(house.owners) I added. Also console.log(house.address.city). Do not remove my owners log.`}
@@ -1175,16 +1178,19 @@ export default function DestructingImports() {
           <DestructingImports />
         </LiveDemo>
         <OnYourOwn>
-          Import only <code>add</code>{" "}in a
-          one-line experiment in the same file (or a comment) and confirm
-          you can still call <code>Math.divide</code>{" "}through the default
-          import.
+          Add a fifth table row for <code>add(10, 20)</code>{" "}that uses all
+          three import styles — <code>Math.add(10, 20)</code>,{" "}
+          <code>Matematica.add(10, 20)</code>, and{" "}
+          <code>add(10, 20)</code>{" "}— so each cell shows <code>30</code>.
+          Don&apos;t import <code>add</code>{" "}a second time: line 1 already
+          imports it by name, and a second import of the same name in one
+          file is a duplicate-identifier error.
         </OnYourOwn>
         <WithAI
-          prompt={`In app/labs/lab3/Math.ts, keep the existing named exports. Add export function remainder(a: number, b: number): number { return a % b; } and include remainder on the default Math object. In app/labs/lab3/DestructingImports.tsx, add one table row that shows Math.remainder(10, 3), Matematica.remainder(10, 3), and remainder(10, 3) — import remainder named if needed. Do not remove my add-only import experiment.`}
+          prompt={`In app/labs/lab3/Math.ts, keep the existing named exports. Add export function remainder(a: number, b: number): number { return a % b; } and include remainder on the default Math object. In app/labs/lab3/DestructingImports.tsx, add remainder to the existing named import on line 1 (do not add a second import line for it), then add one table row that shows Math.remainder(10, 3), Matematica.remainder(10, 3), and remainder(10, 3). Do not remove my add(10, 20) row.`}
         >
-          Ask the assistant to add a sample <code>remainder</code>{" "}export
-          and table row — you still try the add-only import yourself:
+          Ask the assistant to add a <code>remainder</code>{" "}export and a
+          sixth table row whose three cells each show <code>1</code>:
         </WithAI>
       </Section>
 
@@ -1208,8 +1214,14 @@ export default function DestructingImports() {
           language="tsx"
           name="OptionalChaining"
           file="app/labs/lab3/OptionalChaining.tsx"
-        >{`export default function OptionalChaining() {
-  const house = {
+        >{`type House = {
+  bedrooms: number;
+  address?: { street: string; city: string; zip?: string };
+  garage?: { cars: number };
+};
+
+export default function OptionalChaining() {
+  const house: House = {
     bedrooms: 4,
     address: {
       street: "Via Roma",
@@ -1233,7 +1245,13 @@ export default function DestructingImports() {
           <code>?? &quot;n/a&quot;</code>{" "}fills in the fallback — the same
           pattern the assignment editor uses for{" "}
           <code>assignment?.title ?? &quot;&quot;</code>{" "}in{" "}
-          <SectionLink to="3.9.8.1" />:
+          <SectionLink to="3.9.8.1" />. The <code>House</code>{" "}type marks{" "}
+          <code>address</code>, <code>zip</code>, and <code>garage</code>{" "}
+          optional with <code>?</code>. TypeScript only lets you read a
+          property the type declares, even through <code>?.</code>, so
+          without the type, <code>house.garage?.cars</code>{" "}below would
+          work in <code>npm run dev</code>{" "}but fail{" "}
+          <code>next build</code>{" "}(and your Vercel deploy):
         </p>
         <LiveDemo
           name="OptionalChaining"
@@ -1242,16 +1260,18 @@ export default function DestructingImports() {
           <OptionalChaining />
         </LiveDemo>
         <OnYourOwn>
-          Read{" "}
-          <code>house.garage?.cars ?? 0</code>{" "}and display it — there is no{" "}
-          <code>garage</code>, so the fallback should appear.
+          Add a line under the others that displays{" "}
+          <code>house.garage?.cars ?? 0</code>, labeled the same way as the
+          existing lines. There is no <code>garage</code>{" "}on this house,
+          so it reads <code>house.garage?.cars ?? 0 = 0</code>. Run{" "}
+          <code>npm run build</code>{" "}once to confirm it still builds.
         </OnYourOwn>
         <WithAI
           prompt={`In app/labs/lab3/OptionalChaining.tsx, keep any house.garage?.cars ?? 0 display I added. After the existing lines, also interpolate house.address?.zip ?? "unknown" so the missing zip uses the fallback. Do not remove my garage line.`}
         >
-          Paste this prompt so the assistant adds one extra sample{" "}
-          <code>?.</code>/<code>??</code>{" "}line — leave the garage fallback
-          as yours:
+          Paste this prompt so the assistant adds a zip line that reads{" "}
+          <code>unknown</code>{" "}(this house has no zip). Your garage line
+          stays:
         </WithAI>
       </Section>
     </Section>

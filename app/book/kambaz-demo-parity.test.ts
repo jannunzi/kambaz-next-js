@@ -378,7 +378,7 @@ describe("Kambaz book demos match the code block they show", () => {
       createElement(AsDashboardPath, null, createElement(LinksNavigation)),
     );
     assert.match(linksHtml, /id="wd-dashboard-link"[^>]*bg-white text-red-600/);
-    assert.match(linksHtml, /id="wd-courses-link"[^>]*bg-white text-red-600/);
+    assert.match(linksHtml, /id="wd-courses-link"[^>]*bg-black text-white/);
     assert.match(linksHtml, /id="wd-account-link"[^>]*bg-black text-white/);
     assert.match(linksHtml, /id="wd-calendar-link"[^>]*bg-black text-white/);
     assert.match(styling, /<PeopleTable\s*\/>/);

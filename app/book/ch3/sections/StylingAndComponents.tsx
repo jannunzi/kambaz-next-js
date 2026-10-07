@@ -120,14 +120,19 @@ export default function Classes() {
             Set <code>color</code>{" "}to{" "}
             <code>&quot;yellow&quot;</code>{" "}and <code>dangerous</code>{" "}to{" "}
             <code>false</code>, confirm the last two boxes change, then
-            restore the values above.
+            restore the values above. Then add a box of your own after the
+            fifth: a new <code>const</code>{" "}picks{" "}
+            <code>wd-bg-green</code>{" "}or <code>wd-bg-yellow</code>{" "}with a
+            ternary, and the box text names the color it shows. The
+            Classes section then has six colored boxes.
           </OnYourOwn>
           <WithAI
             prompt={`In app/labs/lab3/Classes.tsx, keep color as "blue" and dangerous as true. After the existing boxes, add a sixth div whose className uses a new const shade = "green" as \`wd-bg-\${shade} wd-fg-black wd-padding-10px\` and the text "Dynamic Green background". Do not flip color or dangerous.`}
           >
-            Ask the assistant to add one extra dynamic-class box — you still
-            flip <code>color</code>{" "}and <code>dangerous</code>{" "}yourself,
-            then restore them:
+            Ask the assistant to add one more dynamic-class box, Dynamic
+            Green background, after yours. The Classes section then has
+            seven colored boxes, and <code>color</code>{" "}and{" "}
+            <code>dangerous</code>{" "}keep their values:
           </WithAI>
         </Section>
 
@@ -194,15 +199,18 @@ export default function Classes() {
             <Styles />
           </LiveDemo>
           <OnYourOwn>
-            Declare a <code>bgGreen</code>{" "}
-            object (spread <code>colorBlack</code>{" "}and{" "}
-            <code>padding10px</code>) and apply it to a fourth box.
+            Declare a <code>bgGreen</code>{" "}object with{" "}
+            <code>backgroundColor: &quot;lightgreen&quot;</code>{" "}that
+            spreads <code>colorBlack</code>{" "}and <code>padding10px</code>,
+            and apply it to a fourth box with the text{" "}
+            <code>Green background</code>. The Styles section then has four
+            colored boxes.
           </OnYourOwn>
           <WithAI
             prompt={`In app/labs/lab3/Styles.tsx, keep bgGreen if I already added it. After the existing boxes, add const bgGray = { backgroundColor: "lightgray", ...colorBlack, ...padding10px } and a fifth div style={bgGray} with the text "Gray background". Do not overwrite bgGreen.`}
           >
-            Paste this prompt so the assistant adds a sample gray box — leave
-            the green one as yours:
+            Paste this prompt so the assistant adds a fifth box, Gray
+            background. Your green box stays:
           </WithAI>
         </Section>
       </Section>
@@ -222,9 +230,11 @@ export default function Classes() {
           need interactivity or browser APIs, you must explicitly turn a
           component into a <strong>Client Component</strong>{" "}by adding{" "}
           <code>&quot;use client&quot;</code>{" "}at the top of the file.
-          Client Components run only in the browser, allowing hooks, event
-          handlers, and browser globals — but they lose direct server
-          access. The two simple examples below highlight exactly what
+          Client Components are still rendered once on the server to
+          produce the first HTML, then hydrate and keep running in the
+          browser. That is what allows hooks, event handlers, and browser
+          globals — but they lose direct server access such as the
+          filesystem. The two simple examples below highlight exactly what
           each side can and cannot do.
         </p>
 
@@ -235,20 +245,21 @@ export default function Classes() {
         >
           <p>
             This Client Component below is marked with the{" "}
-            <code>&quot;use client&quot;</code>{" "}directive at the top,
-            which forces it to execute exclusively in the browser rather
-            than on the server. The directive must be the first statement
-            in the file. This allows safe use of browser-only features,
+            <code>&quot;use client&quot;</code>{" "}directive at the top.
+            The directive must be the first statement in the file. Next.js
+            still renders the component on the server for the first HTML
+            (open View Source on <code>/labs/lab3</code>{" "}and you will find
+            the pathname text there), then hydrates it so it keeps running
+            in the browser. The directive is what allows client features
             such as hooks from <code>next/navigation</code>. In this
             example, the component uses the <code>usePathname()</code>{" "}
-            hook to read the current route. This hook is client-only and
-            would cause a server-side error if the component were treated
-            as a Server Component. Removing the directive would result in
-            a build or runtime failure because{" "}
-            <code>usePathname()</code>{" "}is not available during server
-            rendering. The code renders a simple heading and displays the
-            current pathname. Create <code>ClientComponentDemo.tsx</code>,
-            import it into Lab 3, and confirm it renders as shown:
+            hook to read the current route. Hooks like this only work in
+            Client Components: remove the directive and{" "}
+            <code>next dev</code>{" "}or <code>next build</code>{" "}stops with an
+            error saying the hook needs <code>&quot;use client&quot;</code>.
+            The code renders a simple heading and displays the current
+            pathname. Create <code>ClientComponentDemo.tsx</code>, import it
+            into Lab 3, and confirm it renders as shown:
           </p>
           <CodeBlock
             language="tsx"
@@ -279,15 +290,19 @@ export default function ClientComponentDemo() {
             <ClientComponentDemo />
           </LiveDemo>
           <OnYourOwn>
-            Temporarily remove{" "}
-            <code>&quot;use client&quot;</code>{" "}and confirm the error,
-            then put the directive back.
+            Temporarily remove <code>&quot;use client&quot;</code>{" "}and
+            confirm the error, then put the directive back. Then add a
+            second paragraph under the pathname that shows its length,{" "}
+            <code>{`<p>Pathname length: {pathname.length}</p>`}</code>{" "}—
+            on <code>/labs/lab3</code>{" "}it reads{" "}
+            <code>Pathname length: 10</code>.
           </OnYourOwn>
           <WithAI
             prompt={`In app/labs/lab3/ClientComponentDemo.tsx, keep "use client" as the first statement. After the pathname paragraph, add a second <p>Last segment: {pathname.split("/").pop()}</p>. Do not remove the directive.`}
           >
-            Ask the assistant to display one extra pathname snippet — you still
-            remove and restore <code>&quot;use client&quot;</code>{" "}yourself:
+            Ask the assistant to show the last path segment. On{" "}
+            <code>/labs/lab3</code>{" "}the new line reads{" "}
+            <code>Last segment: lab3</code>:
           </WithAI>
         </Section>
 
@@ -361,6 +376,13 @@ export default function ServerComponentDemo() {
             hooks, clicks, and anything that reads the address bar.
           </p>
           <p>
+            On your Vercel deployment, Lab 3 is prerendered when the site
+            is built, so the render time and the file list show the moment
+            of the build and don&apos;t change on refresh. In{" "}
+            <code>npm run dev</code>{" "}the page renders on every request, so
+            the time updates there.
+          </p>
+          <p>
             The <code>try</code>/<code>catch</code>{" "}around{" "}
             <code>readdirSync</code>{" "}is how JavaScript handles a call that
             might throw. If the folder is missing, the{" "}
@@ -370,10 +392,11 @@ export default function ServerComponentDemo() {
             call — can fail.
           </p>
           <OnYourOwn>
-            Log one extra{" "}
-            <code>process</code>{" "}field (for example{" "}
-            <code>process.arch</code>) into the JSON the component
-            stringifies.
+            Add <code>process.arch</code>{" "}to the object the component
+            stringifies, next to <code>platform</code>,{" "}
+            <code>nodeVersion</code>, and <code>serverRenderTime</code>. The
+            Server Information block then shows four keys, including{" "}
+            <code>&quot;arch&quot;</code>.
           </OnYourOwn>
           <WithAI
             prompt={`In app/labs/lab3/ServerComponentDemo.tsx, keep any extra process field I already added. Include process.pid in the JSON.stringify object next to platform, nodeVersion, and serverRenderTime. Do not remove my extra field or the try/catch around readdirSync.`}
@@ -524,13 +547,24 @@ export default function Highlight({ children }: { children: ReactNode }) {
           title="3.7.2 Working with the Pathname"
         >
           <p>
-            <code>usePathname</code>{" "}returns the current URL path so
-            navigation can highlight the active screen. The Labs table of
-            contents is already a client component: it maps a{" "}
-            <code>LINKS</code>{" "}array and applies Tailwind classes when a
-            link&apos;s <code>match</code>{" "}function says the pathname
-            belongs to that lab. Read
-            the file you already maintain:
+            <code>usePathname</code>{" "}returns the current URL path from
+            the address bar so a Client Component can adapt to where the
+            user is — which screen, which lab, which section. One common
+            use is highlighting the active item in a nav, and that is what
+            the Labs table of contents does next. Your Chapter 1{" "}
+            <code>app/labs/TOC.tsx</code>{" "}is still a Server Component
+            with the links written out by hand: no{" "}
+            <code>&quot;use client&quot;</code>, no <code>LINKS</code>, and no{" "}
+            <code>match</code>. <strong>Replace the whole file</strong>{" "}with
+            the client version below. It maps a <code>LINKS</code>{" "}array,
+            and when a link&apos;s <code>match</code>{" "}function says the
+            pathname belongs to that lab, it gives that link an inline style
+            object (<SectionLink to="3.5.2" />) and{" "}
+            <code>aria-current=&quot;page&quot;</code>. The Labs pages
+            don&apos;t load Tailwind, so Tailwind classes would have no
+            visible effect here. If your Chapter 1 TOC has extra links you
+            added yourself, add each one to <code>LINKS</code>{" "}with{" "}
+            <code>match: () =&gt; false</code>:
           </p>
           <CodeBlock
             language="tsx"
@@ -549,77 +583,60 @@ const LINKS = [
   { href: "/", id: "wd-kambaz-link", label: "Kambaz", match: () => false },
 ] as const;
 
+const activeStyle = {
+  backgroundColor: "#2563eb",
+  color: "white",
+  borderRadius: "4px",
+  padding: "2px 8px",
+  textDecoration: "none",
+};
+
 export default function TOC() {
   const pathname = usePathname() ?? "";
   return (
     <ul>
-      {LINKS.map((link) => (
-        <li key={link.id}>
-          <Link
-            href={link.href}
-            id={link.id}
-            className={
-              link.match(pathname)
-                ? "rounded bg-blue-600 px-2 py-0.5 text-white no-underline"
-                : undefined
-            }
-          >
-            {link.label}
-          </Link>
-        </li>
-      ))}
-      <li>
-        <Link href="/labs/lab1/intermediates" id="wd-lab1-intermediates-link">
-          Lab 1 Steps
-        </Link>
-      </li>
-      <li>
-        <Link href="/book/ch1" id="wd-book-ch1-link">
-          Book Ch1
-        </Link>
-      </li>
-      <li>
-        <Link href="/labs/lab2/intermediates" id="wd-lab2-intermediates-link">
-          Lab 2 Steps
-        </Link>
-      </li>
-      <li>
-        <Link href="/book/ch2" id="wd-book-ch2-link">
-          Book Ch2
-        </Link>
-      </li>
-      <li>
-        <Link href="/labs/lab3/intermediates" id="wd-lab3-intermediates-link">
-          Lab 3 Steps
-        </Link>
-      </li>
-      <li>
-        <Link href="/book/ch3" id="wd-book-ch3-link">
-          Book Ch3
-        </Link>
-      </li>
+      {LINKS.map((link) => {
+        const active = link.match(pathname);
+        return (
+          <li key={link.id}>
+            <Link
+              href={link.href}
+              id={link.id}
+              style={active ? activeStyle : undefined}
+              aria-current={active ? "page" : undefined}
+            >
+              {link.label}
+            </Link>
+          </li>
+        );
+      })}
     </ul>
   );
 }`}</CodeBlock>
           <p>
             The file starts with <code>&quot;use client&quot;</code>{" "}because{" "}
             <code>usePathname</code>{" "}reads the address bar. Each mapped{" "}
-            <code>Link</code>{" "}uses <code>key={"{link.id}"}</code>. Visit{" "}
-            <LocalUrl href="/labs/lab3" />{" "}and confirm the Lab 3 item
-            picks up the blue pill classes; Lab 1 and Lab 2 should do the
-            same on their routes.
+            <code>li</code>{" "}uses <code>key={"{link.id}"}</code>. Visit{" "}
+            <LocalUrl href="/labs/lab3" />{" "}and confirm the Lab 3 item is
+            a blue pill with white text while the other links stay plain
+            blue links; Lab 1 and Lab 2 should do the same on their routes.
+            The book&apos;s own Labs menu on this site has extra course-site
+            links (book chapters, intermediate steps) that your project
+            doesn&apos;t have, so leave those out.
           </p>
           <OnYourOwn>
-            If Lab 3 is not yet in{" "}
-            <code>LINKS</code>, add it with a <code>match</code>{" "}that
-            uses <code>includes(&quot;/lab3&quot;)</code>, and confirm the
-            highlight follows you between labs.
+            Make sure the TOC shows on every Lab page (it lives in{" "}
+            <code>app/labs/layout.tsx</code>) and lists Home, Lab 1, Lab 2,
+            Lab 3, and Kambaz. Open <code>/labs/lab1</code>, then{" "}
+            <code>/labs/lab3</code>: on each page only that lab&apos;s link is
+            the blue pill, and the pill moves when you change labs.
           </OnYourOwn>
           <WithAI
-            prompt={`In app/labs/TOC.tsx, keep the existing LINKS entries including Lab 3. After the Lab 3 object, add { href: "/labs/lab4", id: "wd-lab4-link", label: "Lab 4", match: (p: string) => p.includes("/lab4") }. Do not remove or rename my Lab 3 link.`}
+            prompt={`In app/labs/TOC.tsx, keep the existing LINKS entries including Lab 3. After the Kambaz object, add { href: "https://kambaz.dev/book/ch3", id: "wd-book-ch3-link", label: "Book Ch3", match: () => false } so the TOC links to this chapter of the book. Do not remove or rename my Lab 3 link, and keep the active style on the current lab.`}
           >
-            Paste this prompt so the assistant adds a sample Lab 4 TOC entry —
-            you still confirm Lab 3 highlights on its own route:
+            Paste this prompt so the assistant adds a Book Ch3 link to the
+            TOC. It opens this chapter on kambaz.dev and is never
+            highlighted; Lab 3 is still the pill on <code>/labs/lab3</code>:
           </WithAI>
         </Section>
 
@@ -687,8 +704,12 @@ export default function PathParameters() {
             <code>3 + 4 = 7</code>.
           </p>
           <OnYourOwn>
-            Add a third link that encodes two
-            numbers of your choice and confirm the add page sums them.
+            Add a third <code>Link</code>{" "}to{" "}
+            <code>/labs/lab3/add/&lt;a&gt;/&lt;b&gt;</code>{" "}with two numbers
+            of your choice, with link text such as <code>10 + 15</code>.
+            Clicking it opens a page that prints the sum, for example{" "}
+            <code>10 + 15 = 25</code>. Path Parameters then shows three
+            links.
           </OnYourOwn>
           <WithAI
             prompt={`In app/labs/lab3/PathParameters.tsx, keep the 1+2 and 3+4 links and any third link I added. After them, add <Link href="/labs/lab3/add/5/6">5 + 6</Link>. Do not change app/labs/lab3/add/[a]/[b]/page.tsx or overwrite my numbers.`}
@@ -782,18 +803,22 @@ export default function TodoList() {
 }`}</CodeBlock>
           <p>
             Import <code>TodoList</code>{" "}into Lab 3. Each row is a checkbox
-            whose default matches <code>todo.done</code>:
+            whose default matches <code>todo.done</code>. The Tailwind
+            classes on <code>TodoItem</code>{" "}and <code>TodoList</code>{" "}do
+            nothing on your Labs pages, which don&apos;t load Tailwind, so
+            your list looks like the plain demo below — that is expected:
           </p>
           <LiveDemo name="TodoList" file="app/labs/lab3/todos/TodoList.tsx">
             <TodoList />
           </LiveDemo>
           <OnYourOwn>
-            Add a fourth object to{" "}
-            <code>todos.json</code>{" "}with a unique title and confirm a
-            fourth row appears — then put a <code>key</code>{" "}on every
-            mapped <code>TodoItem</code>{" "}if it is missing. Log the{" "}
-            <code>todos</code>{" "}array from <code>TodoList.tsx</code>{" "}and
-            confirm the objects appear in the console (
+            Add a fourth object to <code>todos.json</code>{" "}with a unique
+            title, a status, and <code>&quot;done&quot;: false</code>. The
+            Todo List then shows four checkbox rows, at least one checked
+            and at least one unchecked. Keep a <code>key</code>{" "}on every
+            mapped <code>TodoItem</code>. Log the <code>todos</code>{" "}array
+            from <code>TodoList.tsx</code>{" "}and confirm the objects appear
+            in the console (
             <SectionLink to="3.4.12" />
             ).
           </OnYourOwn>
@@ -812,9 +837,113 @@ export default function TodoList() {
             Import each component into <code>app/labs/lab3/page.tsx</code>{" "}
             in order. Each topic is listed once, with Lab,{" "}
             <strong>On your own</strong>, and <strong>With AI</strong>{" "}
-            nested as a/b/c. Give every mapped JSX sibling a{" "}
-            <code>key</code>.
+            nested as a/b/c. Each item says what your deployed{" "}
+            <code>/labs/lab3</code>{" "}page must show. Give every mapped JSX
+            sibling a <code>key</code>, and keep the <code>wd-*</code>{" "}ids
+            from the listings — the ids help us test your work, but a
+            missing id never costs points on its own.
           </p>
+          <p>
+            When you are done, the Lab 3 page imports and renders every
+            component in book order, each under its own heading. Your On
+            your own and With AI additions live inside those components (or
+            right after them on the page, for the extra{" "}
+            <code>Add</code>, <code>Square</code>, and{" "}
+            <code>Highlight</code>{" "}instances):
+          </p>
+          <CodeBlock
+            language="tsx"
+            name="Lab3 (complete)"
+            file="app/labs/lab3/page.tsx"
+          >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+import ReduceFunction from "./ReduceFunction";
+import JsonStringify from "./JsonStringify";
+import House from "./House";
+import Spreader from "./Spreader";
+import Destructing from "./Destructing";
+import FunctionDestructing from "./FunctionDestructing";
+import DestructingImports from "./DestructingImports";
+import OptionalChaining from "./OptionalChaining";
+import Classes from "./Classes";
+import Styles from "./Styles";
+import ClientComponentDemo from "./ClientComponentDemo";
+import ServerComponentDemo from "./ServerComponentDemo";
+import Add from "./Add";
+import Square from "./Square";
+import Highlight from "./Highlight";
+import PathParameters from "./PathParameters";
+import TodoList from "./todos/TodoList";
+
+export default function Lab3() {
+  console.log("Hello World!");
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+      <ReduceFunction />
+      <JsonStringify />
+      <House />
+      <Spreader />
+      <Destructing />
+      <FunctionDestructing />
+      <DestructingImports />
+      <OptionalChaining />
+      <Classes />
+      <Styles />
+      <ClientComponentDemo />
+      <ServerComponentDemo />
+      <Add a={3} b={4} />
+      <h4>Square of 4</h4>
+      <Square>4</Square>
+      <hr />
+      <Highlight>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </Highlight>
+      <PathParameters />
+      <TodoList />
+    </div>
+  );
+}`}</CodeBlock>
           <NestedExerciseList groups={CH3_LAB_EXERCISES} />
         </Section>
       </Section>
