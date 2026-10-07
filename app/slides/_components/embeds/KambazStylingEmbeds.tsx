@@ -6,8 +6,8 @@ import FullCourseNavigation from "@/app/book/ch3/embeds/_styled/courses/cid/Navi
 import Dashboard from "@/app/book/ch2/embeds/_styled/dashboard/Dashboard";
 import Ch3Dashboard from "@/app/book/ch3/embeds/_styled/dashboard/Dashboard";
 import Ch3Modules from "@/app/book/ch3/embeds/_styled/courses/cid/modules/page";
-import Ch3Assignments from "@/app/book/ch3/embeds/_styled/courses/cid/assignments/page";
-import Ch3PeopleTable from "@/app/book/ch3/embeds/_styled/courses/cid/people/table/page";
+import Ch3Assignments from "./ch3/AssignmentsScreen";
+import Ch3PeopleTable from "./ch3/PeopleTableScreen";
 import Modules from "@/app/book/ch2/embeds/_styled/courses/cid/modules/page";
 import Home from "@/app/book/ch2/embeds/_styled/courses/cid/home/page";
 import PeopleTable from "@/app/book/ch2/embeds/_styled/courses/cid/people/PeopleTable";
@@ -241,8 +241,11 @@ export function KambazCh3ModulesEmbed() {
   );
 }
 
-/** Chapter 3 data-driven Assignments snapshot (filter assignments.json by cid). */
-export async function KambazCh3AssignmentsEmbed() {
+/**
+ * Chapter 3 data-driven Assignments for RS101.
+ * Sync twin — see `ch3/AssignmentsScreen`. The async §3.9.8 page is not mounted here.
+ */
+export function KambazCh3AssignmentsEmbed() {
   const cid = "RS101";
   return (
     <LectureDemoFrame
@@ -250,14 +253,17 @@ export async function KambazCh3AssignmentsEmbed() {
       url={`/courses/${cid}/assignments`}
     >
       <div className="font-sans">
-        <Ch3Assignments params={Promise.resolve({ cid })} />
+        <Ch3Assignments cid={cid} />
       </div>
     </LectureDemoFrame>
   );
 }
 
-/** Chapter 3 data-driven PeopleTable snapshot (users ⋈ enrollments by cid). */
-export async function KambazCh3PeopleEmbed() {
+/**
+ * Chapter 3 data-driven PeopleTable for RS101.
+ * Sync twin — see `ch3/PeopleTableScreen`. The async §3.9.9 page is not mounted here.
+ */
+export function KambazCh3PeopleEmbed() {
   const cid = "RS101";
   return (
     <LectureDemoFrame
@@ -265,7 +271,7 @@ export async function KambazCh3PeopleEmbed() {
       url={`/courses/${cid}/people/table`}
     >
       <div className="font-sans">
-        <Ch3PeopleTable params={Promise.resolve({ cid })} />
+        <Ch3PeopleTable cid={cid} />
       </div>
     </LectureDemoFrame>
   );
