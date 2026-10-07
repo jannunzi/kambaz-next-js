@@ -87,7 +87,7 @@ export default function ReactIconsSampler() {
     title: "Live ReactIconsSampler",
     kind: "demo",
     bullets: [
-      "An **em** is relative to the parent's font size. Each icon is sized in `em`, so the parent's text size scales it.",
+      "React Icons are sized in **em**, a length relative to the element's own font size. An icon inherits its parent's size, so a bigger font on the parent gives bigger icons.",
       "Six icons, one row, sized by the parent `text-3xl`",
       "Import the sampler into Lab 2 so it stays on the growing page",
     ],

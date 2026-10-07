@@ -102,6 +102,7 @@ export default function CourseNavigation({ cid }: { cid: string }) {
       "`params` is a Promise — mark the layout `async` and `await params`",
       "Wrapper `wd-courses`. Heading shows `Courses {cid}`",
       "Nav left, `{children}` right — same table chrome as Account",
+      "If `npm run dev` works but `npm run build` fails with *uncached or runtime data during prerendering*, the project was created with Next.js 16.4: delete the `cacheComponents: true,` and `partialPrefetching: true,` lines from `next.config.ts`",
     ],
     code: `import { ReactNode } from "react";
 import CourseNavigation from "./Navigation";

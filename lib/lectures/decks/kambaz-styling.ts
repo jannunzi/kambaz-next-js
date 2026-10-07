@@ -72,7 +72,7 @@ export const KAMBAZ_STYLING_SLIDES: LectureSlide[] = [
     title: "Step 3: Layout imports kambaz.css",
     kind: "content",
     bullets: [
-      "The Kambaz layout imports only `./kambaz.css`, once",
+      "The Kambaz layout imports `./kambaz.css`. Next.js bundles the file only once, even if another component imports it too",
       "`font-sans` on the root applies Tailwind's system font even if the CSS rule is incomplete",
     ],
     code: `import { ReactNode } from "react";

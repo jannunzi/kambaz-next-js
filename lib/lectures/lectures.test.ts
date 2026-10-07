@@ -1218,7 +1218,7 @@ describe("lecture decks", () => {
     assert.equal(counts["kambaz-courses"], 8);
     assert.equal(counts["kambaz-modules"], 12);
     assert.equal(counts["kambaz-assignments"], 12);
-    assert.equal(counts["css-intro"], 22);
+    assert.equal(counts["css-intro"], 23);
     assert.equal(counts["css-colors"], 10);
     assert.equal(counts["css-box-model"], 18);
     assert.equal(counts["css-size-and-position"], 22);
@@ -1231,12 +1231,12 @@ describe("lecture decks", () => {
     assert.equal(counts["tailwind-spacing"], 8);
     assert.equal(counts["tailwind-typography"], 7);
     assert.equal(counts["tailwind-colors"], 6);
-    assert.equal(counts["tailwind-filters-and-grid"], 15);
+    assert.equal(counts["tailwind-filters-and-grid"], 20);
     assert.equal(counts["tailwind-responsive"], 23);
     assert.equal(counts["kambaz-styling"], 8);
-    assert.equal(counts["kambaz-nav-styling"], 7);
+    assert.equal(counts["kambaz-nav-styling"], 11);
     assert.equal(counts["kambaz-dashboard-styling"], 7);
-    assert.equal(counts["kambaz-courses-styling"], 16);
+    assert.equal(counts["kambaz-courses-styling"], 17);
     assert.equal(counts["kambaz-assignments-styling"], 9);
     assert.equal(counts["kambaz-account-styling"], 8);
     assert.equal(counts["intro-to-javascript"], 8);
@@ -2329,6 +2329,27 @@ describe("lecture decks", () => {
     assert.match(findSlide("react-icons", "sampler").code ?? "", /^import "@\/app\/labs\/lab2\/tailwind\/utilities\.css";/);
     assert.match(utilitiesCss.bullets?.join("\n") ?? "", /\*\*Preflight\*\*/);
     assert.match(utilitiesCss.bullets?.join("\n") ?? "", /\*\*utilities\*\*/);
+    // §2.3.7's finished Lab 2 page, split at its blank lines, closes Lecture 6.
+    const finishedIds = [
+      "lab2-final-imports",
+      "lab2-final-intro",
+      "lab2-final-selectors",
+      "lab2-final-structure",
+      "lab2-final-samples",
+    ];
+    const finished = finishedIds.map((id) => {
+      const slide = findSlide("tailwind-filters-and-grid", id);
+      assert.equal(slide.codeFile, "app/labs/lab2/page.tsx");
+      assert.ok(slide.title.length <= 42);
+      return slide.code ?? "";
+    });
+    assert.equal(
+      finished.join("\n\n"),
+      bookCodeBlock("app/book/ch2/sections/IconsAndTailwind.tsx", "Lab2 (finished)", "app/labs/lab2/page.tsx"),
+    );
+    const gridIds = getLectureDeck("tailwind-filters-and-grid")!.slides.map((slide) => slide.id);
+    assert.deepEqual(gridIds.slice(-6), [...finishedIds, "next-up"]);
+    assert.match(findSlide("css-size-and-position", "absolute-tsx").code ?? "", /<br \/><br \/>/);
 
     const intro = slideText("tailwind-intro");
     assert.match(intro, /@import "tailwindcss"/);
@@ -2470,21 +2491,27 @@ describe("lecture decks", () => {
     assert.match(courses, /wd-course-status/);
     assert.doesNotMatch(courses, /react-bootstrap/i);
     assert.doesNotMatch(courses, /\bd-flex\b/);
-    // §2.4.5's full Modules page listing, split at the toolbar, carries the list styles.
-    const modulesParts = ["modules-page", "modules-list"].map((id) => {
-      const slide = findSlide("kambaz-courses-styling", id);
-      assert.equal(slide.codeFile, "app/(kambaz)/courses/[cid]/modules/page.tsx");
-      return slide.code ?? "";
-    });
+    // Chapter 2 Kambaz slides copy the book listings exactly (split at natural boundaries).
+    const KAMBAZ_BOOK = "app/book/ch2/sections/KambazStyling.tsx";
+    const joinedCode = (deck: string, ids: string[], file: string) =>
+      ids
+        .map((id) => {
+          const slide = findSlide(deck, id);
+          assert.equal(slide.codeFile, file, `${deck} ${id}`);
+          assert.ok(slide.title.length <= 42, `${deck} ${id}`);
+          return slide.code ?? "";
+        })
+        .join("\n");
+    // §2.4.4 shows the full Modules page right after the toolbar; it carries the list styles.
+    const modulesFile = "app/(kambaz)/courses/[cid]/modules/page.tsx";
     assert.equal(
-      modulesParts.join("\n"),
-      bookCodeBlock(
-        "app/book/ch2/sections/KambazStyling.tsx",
-        "Modules page",
-        "app/(kambaz)/courses/[cid]/modules/page.tsx",
-      ),
+      joinedCode("kambaz-courses-styling", ["modules-page", "modules-list"], modulesFile),
+      bookCodeBlock(KAMBAZ_BOOK, "Modules page", modulesFile),
     );
-    assert.match(modulesParts[1], /^ {6}<ul id="wd-modules" className="m-0 list-none p-0">/);
+    assert.match(
+      findSlide("kambaz-courses-styling", "modules-list").code ?? "",
+      /^ {6}<ul id="wd-modules" className="m-0 list-none p-0">/,
+    );
     assert.deepEqual(findSlide("kambaz-courses-styling", "modules-list").codeAddedLines, [1]);
     assert.deepEqual(
       findSlide("kambaz-courses-styling", "toolbar").codeHighlightLines,
@@ -2492,13 +2519,41 @@ describe("lecture decks", () => {
     );
     assert.equal(findSlide("kambaz-courses-styling", "toolbar").codeAddedLines, undefined);
     const coursesIds = getLectureDeck("kambaz-courses-styling")!.slides.map((slide) => slide.id);
-    const fullAt = coursesIds.indexOf("modules-page");
-    assert.deepEqual(coursesIds.slice(fullAt - 1, fullAt + 3), [
-      "flex-layouts",
+    const toolbarAt = coursesIds.indexOf("toolbar");
+    assert.deepEqual(coursesIds.slice(toolbarAt, toolbarAt + 4), [
+      "toolbar",
       "modules-page",
       "modules-list",
-      "home-demo",
+      "modules-demo",
     ]);
+    // Course Navigation keeps the Chapter 1 order (Modules before Assignments).
+    const courseNavFile = "app/(kambaz)/courses/[cid]/Navigation.tsx";
+    const courseNav = joinedCode("kambaz-courses-styling", ["course-nav", "course-nav-rest"], courseNavFile);
+    assert.equal(courseNav, bookCodeBlock(KAMBAZ_BOOK, "CourseNavigation", courseNavFile));
+    assert.ok(courseNav.indexOf("wd-course-modules-link") < courseNav.indexOf("wd-course-assignments-link"));
+    assert.match(findSlide("kambaz-courses-styling", "course-nav").bullets?.join("\n") ?? "", /use client/);
+    const statusFile = "app/(kambaz)/courses/[cid]/home/Status.tsx";
+    assert.equal(
+      findSlide("kambaz-courses-styling", "status").code,
+      bookCodeBlock(KAMBAZ_BOOK, "CourseStatus", statusFile),
+    );
+    const homeFile = "app/(kambaz)/courses/[cid]/home/page.tsx";
+    assert.equal(
+      findSlide("kambaz-courses-styling", "flex-layouts").codeBlocks?.find((block) => block.file === homeFile)?.code,
+      bookCodeBlock(KAMBAZ_BOOK, "Home", homeFile),
+    );
+    // The full sidebar: NEU link, six tiles, white Account icon, no "use client".
+    const navFile = "app/(kambaz)/Navigation.tsx";
+    const sidebar = joinedCode(
+      "kambaz-nav-styling",
+      ["tsx", "neu-link", "account-dashboard", "courses-calendar", "inbox-labs"],
+      navFile,
+    );
+    assert.equal(sidebar, bookCodeBlock(KAMBAZ_BOOK, "KambazNavigation", navFile));
+    assert.doesNotMatch(sidebar, /use client/);
+    assert.match(sidebar, /id="wd-neu-link"/);
+    assert.match(sidebar, /<FaRegCircleUser className="inline-block text-3xl text-white" \/>/);
+    assert.doesNotMatch(slideText("kambaz-nav-styling"), /Optional Northeastern/);
 
     const assignments = slideText("kambaz-assignments-styling");
     assert.match(assignments, /wd-people-table/);

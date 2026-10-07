@@ -176,6 +176,7 @@ export default function MediaQueriesDemo() {
     bullets: [
       "You now know why a layout can change at a breakpoint",
       "A breakpoint is just a `min-width` or `max-width` condition inside `@media`",
+      "The ranges share their edges: at exactly 1000px or 1250px two blocks match, and the later block in the file wins (source order, §2.1.6)",
     ],
   },
   {

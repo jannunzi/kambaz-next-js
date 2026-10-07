@@ -16,24 +16,25 @@ export const KAMBAZ_NAV_STYLING_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "Chapter 1’s sidebar was a plain vertical list of links",
-      "Target: narrow black column, red icons, active tile: red text on white",
-      "Account icon is white when idle. Active route: white background, red text",
-      "Optional Northeastern logo above Account — `/images/NEU.png`",
+      "Target: narrow black column of icon-and-label tiles with red icons",
+      "Account's icon is white. Dashboard is highlighted: white background, red text",
+      "Keep every Chapter 1 link in order, with the Northeastern logo first",
     ],
   },
   {
     id: "tsx",
-    title: "Tiles with React Icons",
+    title: "Pin a fixed black column",
     kind: "content",
     bullets: [
       "`fixed top-0 bottom-0` stretches the bar and takes it out of flow",
       "`hidden md:block` hides it on small viewports",
       "`z-20` keeps it above the scrolling page",
+      "Inside the `nav`, keep every Chapter 1 link in the same order",
     ],
-    code: `"use client";
-
-import { AiOutlineDashboard } from "react-icons/ai";
-import { FaRegCircleUser } from "react-icons/fa6";
+    code: `import { AiOutlineDashboard } from "react-icons/ai";
+import { IoCalendarOutline } from "react-icons/io5";
+import { LiaBookSolid, LiaCogSolid } from "react-icons/lia";
+import { FaInbox, FaRegCircleUser } from "react-icons/fa6";
 import Link from "next/link";
 
 export default function KambazNavigation() {
@@ -41,8 +42,48 @@ export default function KambazNavigation() {
     <nav
       id="wd-kambaz-navigation"
       className="fixed bottom-0 top-0 z-20 hidden w-[120px] bg-black md:block"
-    >
-      <Link
+    >`,
+    codeLanguage: "tsx",
+    codeFile: "app/(kambaz)/Navigation.tsx",
+  },
+  {
+    id: "neu-link",
+    title: "Northeastern logo link first",
+    kind: "content",
+    bullets: [
+      "`wd-neu-link` from Chapter 1 now shows the logo instead of the word Northeastern",
+      "If `public/images/NEU.png` isn't in your project yet, save any Northeastern logo there under that name",
+      "The `eslint-disable` comment only silences ESLint's suggestion to use `next/image`",
+    ],
+    code: `      <a
+        href="https://www.northeastern.edu/"
+        id="wd-neu-link"
+        target="_blank"
+        rel="noreferrer"
+        className="block bg-black py-3 text-center"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/NEU.png"
+          width={75}
+          height={75}
+          alt="Northeastern University"
+          className="mx-auto"
+        />
+      </a>`,
+    codeLanguage: "tsx",
+    codeFile: "app/(kambaz)/Navigation.tsx",
+  },
+  {
+    id: "account-dashboard",
+    title: "Account and Dashboard tiles",
+    kind: "content",
+    bullets: [
+      "Every link is the same black tile with a red icon, except Account, whose icon is white",
+      "Dashboard is highlighted by hand: `bg-white text-red-600`, while every other tile says `bg-black text-white`",
+      "So Dashboard stays highlighted on every Kambaz page, even on Account or Labs. That's expected for A2",
+    ],
+    code: `      <Link
         href="/account"
         id="wd-account-link"
         className="block bg-black py-3 text-center text-sm text-white no-underline"
@@ -59,8 +100,65 @@ export default function KambazNavigation() {
         <AiOutlineDashboard className="inline-block text-3xl text-red-600" />
         <br />
         Dashboard
+      </Link>`,
+    codeLanguage: "tsx",
+    codeFile: "app/(kambaz)/Navigation.tsx",
+  },
+  {
+    id: "courses-calendar",
+    title: "Courses and Calendar tiles",
+    kind: "content",
+    bullets: [
+      "Same black tile, white label, and red icon as the rest",
+      "Courses → `LiaBookSolid` from `react-icons/lia`. Calendar → `IoCalendarOutline` from `react-icons/io5`",
+    ],
+    code: `      <Link
+        href="/dashboard"
+        id="wd-course-link"
+        className="block bg-black py-3 text-center text-sm text-white no-underline"
+      >
+        <LiaBookSolid className="inline-block text-3xl text-red-600" />
+        <br />
+        Courses
       </Link>
-      {/* ...Courses, Calendar, Inbox, Labs... */}
+      <Link
+        href="/calendar"
+        id="wd-calendar-link"
+        className="block bg-black py-3 text-center text-sm text-white no-underline"
+      >
+        <IoCalendarOutline className="inline-block text-3xl text-red-600" />
+        <br />
+        Calendar
+      </Link>`,
+    codeLanguage: "tsx",
+    codeFile: "app/(kambaz)/Navigation.tsx",
+  },
+  {
+    id: "inbox-labs",
+    title: "Inbox and Labs tiles close the bar",
+    kind: "content",
+    bullets: [
+      "Inbox → `FaInbox` from `react-icons/fa6`. Labs → `LiaCogSolid` from `react-icons/lia`",
+      "Labs links to `/labs`, the Labs page from Chapter 1",
+    ],
+    code: `      <Link
+        href="/inbox"
+        id="wd-inbox-link"
+        className="block bg-black py-3 text-center text-sm text-white no-underline"
+      >
+        <FaInbox className="inline-block text-3xl text-red-600" />
+        <br />
+        Inbox
+      </Link>
+      <Link
+        href="/labs"
+        id="wd-labs-link"
+        className="block bg-black py-3 text-center text-sm text-white no-underline"
+      >
+        <LiaCogSolid className="inline-block text-3xl text-red-600" />
+        <br />
+        Labs
+      </Link>
     </nav>
   );
 }`,
@@ -92,7 +190,7 @@ export default function KambazNavigation() {
     bullets: [
       "Pin the sidebar as a fixed black column of icon-and-label tiles so Kambaz scrolls beside it.",
       "In this preview the sidebar stays in the frame. On the Kambaz page, `fixed` pins it to the window",
-      "Idle tiles: black + white text. Dashboard is the active white/red tile",
+      "Black tiles with white text. Dashboard is the highlighted white/red tile",
     ],
     embed: "kambaz-styled-nav",
   },
@@ -102,8 +200,8 @@ export default function KambazNavigation() {
     kind: "content",
     bullets: [
       "About 110–120 pixels wide",
-      "Red icons, except Account (white when idle)",
-      "Active link: white background, red text",
+      "Red icons, except the Account icon, which is white",
+      "One link highlighted with a white background and red text (Dashboard, for now). The others black with white text",
       "Icons and labels centered in the bar",
     ],
   },

@@ -26,9 +26,9 @@ export const KAMBAZ_COURSES_STYLING_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "Keep it ~140px — labels only, no icons",
-      "Idle links red. Active: black text + 3px left border",
-      "`usePathname` + `startsWith` so `/assignments/123` still lights Assignments",
-      "`.list-group` lives in `kambaz.css` — write the selectors; do not import a kit",
+      "Keep the Chapter 1 order: Home, Modules, Piazza, Zoom, Assignments, Quizzes, Grades, People",
+      "A **hook** such as `usePathname` needs the browser. **`\"use client\"`** on the first line makes the component run there too, so the hook works",
+      "`usePathname` returns the current URL path. Each link compares it with its own `href`",
     ],
     code: `"use client";
 import Link from "next/link";
@@ -38,6 +38,7 @@ import "../../kambaz.css";
 export default function CourseNavigation({ cid }: { cid: string }) {
   const pathname = usePathname() ?? "";
   const home = \`/courses/\${cid}/home\`;
+  const modules = \`/courses/\${cid}/modules\`;
   const assignments = \`/courses/\${cid}/assignments\`;
   return (
     <div id="wd-courses-navigation" className="wd list-group rounded-none text-lg">
@@ -53,6 +54,31 @@ export default function CourseNavigation({ cid }: { cid: string }) {
         Home
       </Link>
       <Link
+        href={modules}
+        id="wd-course-modules-link"
+        className={
+          pathname === modules
+            ? "list-group-item active border-0"
+            : "list-group-item border-0 text-red-600"
+        }
+      >
+        Modules
+      </Link>`,
+    codeLanguage: "tsx",
+    codeFile: "app/(kambaz)/courses/[cid]/Navigation.tsx",
+  },
+  {
+    id: "course-nav-rest",
+    title: "Assignments stays lit on nested paths",
+    kind: "content",
+    bullets: [
+      "Idle links red. Active: black text + 3px left border",
+      "`startsWith` so `/assignments/123` still lights Assignments",
+      "Piazza, Zoom, Quizzes, Grades, and People follow the same pattern",
+      "`.list-group` lives in `kambaz.css` — write the selectors; do not import a kit",
+    ],
+    code: `      {/* ...Piazza and Zoom, same pattern... */}
+      <Link
         href={assignments}
         id="wd-course-assignments-link"
         className={
@@ -63,7 +89,7 @@ export default function CourseNavigation({ cid }: { cid: string }) {
       >
         Assignments
       </Link>
-      {/* ...Modules, Piazza, Zoom, Quizzes, Grades, People... */}
+      {/* ...Quizzes, Grades, People, same pattern... */}
     </div>
   );
 }`,
@@ -247,99 +273,12 @@ export default function Lesson({
     codeHighlightLines: [1, 4, 10, 16, 22],
   },
   {
-    id: "modules-demo",
-    title: "Live styled Modules",
-    kind: "demo",
-    bullets: [
-      "Gray module bar, green lesson border, checkmark on the right",
-      "The Module / Lesson tree from Chapter 1 stays — only classes change",
-    ],
-    embed: "kambaz-styled-modules",
-  },
-  {
-    id: "status",
-    title: "Course Status button stack",
-    kind: "content",
-    bullets: [
-      "Home already shows the styled Modules list, so only the Course Status column remains.",
-      "Unpublish / Publish share a two-column `flex` row",
-      "The rest are full-width bordered buttons with React Icons",
-    ],
-    code: `import { FaCheckCircle } from "react-icons/fa";
-import { MdDoNotDisturbAlt } from "react-icons/md";
-
-export default function CourseStatus() {
-  return (
-    <div id="wd-course-status">
-      <h2 className="mb-3 text-xl font-semibold">Course Status</h2>
-      <div className="flex gap-1">
-        <button
-          type="button"
-          className="inline-flex min-w-0 flex-1 items-center justify-center rounded border border-neutral-300 bg-white px-1.5 py-1.5 text-xs"
-        >
-          <MdDoNotDisturbAlt className="me-1 shrink-0 text-base" /> Unpublish
-        </button>
-        <button
-          type="button"
-          className="inline-flex min-w-0 flex-1 items-center justify-center rounded bg-green-600 px-1.5 py-1.5 text-xs text-white hover:bg-green-700"
-        >
-          <FaCheckCircle className="me-1 shrink-0 text-base" /> Publish
-        </button>
-      </div>
-      <button
-        type="button"
-        className="mb-1 flex w-full items-center rounded border border-neutral-300 bg-white px-3 py-2 text-left text-sm"
-      >
-        {/* icon */} Import Existing Content
-      </button>
-      {/* ...repeat full-width bordered buttons for Import from Commons,
-             Choose Home Page, and the rest... */}
-    </div>
-  );
-}`,
-    codeLanguage: "tsx",
-    codeFile: "app/(kambaz)/courses/[cid]/home/Status.tsx",
-    codeAddedLines: [[1, 2], 17, [22, 29]],
-  },
-  {
-    id: "flex-layouts",
-    title: "Flex replaces the last tables",
-    kind: "content",
-    bullets: [
-      "Course layout: nav `hidden md:block` at 140px, children `flex-1`",
-      "Home: Modules `flex-1`, Status `hidden lg:block` at 250px",
-      "Status vanishes first. Both sidebars leave together below `md`",
-    ],
-    code: `<div className="flex gap-4">
-  <div className="hidden w-[140px] shrink-0 md:block">
-    <CourseNavigation cid={cid} />
-  </div>
-  <div className="min-w-0 flex-1">{children}</div>
-</div>`,
-    codeLanguage: "tsx",
-    codeFile: "app/(kambaz)/courses/[cid]/layout.tsx",
-    codeBlocks: [
-      {
-        file: "app/(kambaz)/courses/[cid]/home/page.tsx",
-        language: "tsx",
-        code: `<div id="wd-home" className="flex gap-4">
-  <div className="min-w-0 flex-1">
-    <Modules />
-  </div>
-  <div className="hidden w-[250px] shrink-0 lg:block">
-    <CourseStatus />
-  </div>
-</div>`,
-      },
-    ],
-  },
-  {
     id: "modules-page",
-    title: "The full Modules page, part 1",
+    title: "Modules page: toolbar above the tree",
     kind: "content",
     bullets: [
-      "Home imports the Modules page, which mounts the toolbar from §2.4.4 and the same module tree",
-      "Part 1: the imports and the toolbar row inside one wrapper `div`",
+      "Put the toolbar above the module tree in `modules/page.tsx`",
+      "Part 1: the imports, the wrapper `div`, and the toolbar row",
     ],
     code: `import Lesson from "./Lesson";
 import Module from "./Module";
@@ -378,12 +317,12 @@ export default function Modules() {
   },
   {
     id: "modules-list",
-    title: "The full Modules page, part 2",
+    title: "Modules page: the module tree",
     kind: "content",
     bullets: [
-      "Part 2: the same file continues below the toolbar with the `Module` / `Lesson` tree",
-      "A `ul` gets a default margin, bullets, and 40px of left padding from the browser",
-      "`m-0 list-none p-0` removes all three, so modules line up under the toolbar",
+      "The tree is the same `Module` / `Lesson` markup from Chapter 1",
+      "The only new class: `m-0 list-none p-0` on `<ul id=\"wd-modules\">` removes the bullets and left indent, so modules line up with the toolbar",
+      "The listing shows one module to save space. Keep every Chapter 1 module and lesson where the comments say so",
     ],
     code: `      <ul id="wd-modules" className="m-0 list-none p-0">
         <Module title="Week 1, Lecture 1 - Course Introduction, Syllabus, Agenda">
@@ -396,7 +335,9 @@ export default function Modules() {
               Full Stack Developer - Chapter 1 - Introduction
             </li>
           </Lesson>
+          {/* ...keep the rest of your Chapter 1 lessons (SLIDES, ...) */}
         </Module>
+        {/* ...keep your other Chapter 1 modules (Week 2, ...) */}
       </ul>
     </div>
   );
@@ -404,6 +345,100 @@ export default function Modules() {
     codeLanguage: "tsx",
     codeFile: "app/(kambaz)/courses/[cid]/modules/page.tsx",
     codeAddedLines: [1],
+  },
+  {
+    id: "modules-demo",
+    title: "Live styled Modules",
+    kind: "demo",
+    bullets: [
+      "Gray module bar, green lesson border, checkmark on the right",
+      "The Module / Lesson tree from Chapter 1 stays — only classes change",
+    ],
+    embed: "kambaz-styled-modules",
+  },
+  {
+    id: "status",
+    title: "Course Status button stack",
+    kind: "content",
+    bullets: [
+      "Home already shows the styled Modules list, so only the Course Status column remains.",
+      "Unpublish / Publish share a two-column `flex` row",
+      "The rest are full-width bordered buttons with React Icons",
+    ],
+    code: `import { FaCheckCircle } from "react-icons/fa";
+import { MdDoNotDisturbAlt } from "react-icons/md";
+
+export default function CourseStatus() {
+  return (
+    <div id="wd-course-status">
+      <h2 className="mb-3 text-xl font-semibold">Course Status</h2>
+      <div className="mb-1 flex gap-1">
+        <button
+          type="button"
+          className="inline-flex min-w-0 flex-1 items-center justify-center rounded border border-neutral-300 bg-white px-1.5 py-1.5 text-xs"
+        >
+          <MdDoNotDisturbAlt className="me-1 shrink-0 text-base" /> Unpublish
+        </button>
+        <button
+          type="button"
+          className="inline-flex min-w-0 flex-1 items-center justify-center rounded bg-green-600 px-1.5 py-1.5 text-xs text-white hover:bg-green-700"
+        >
+          <FaCheckCircle className="me-1 shrink-0 text-base" /> Publish
+        </button>
+      </div>
+      <button
+        type="button"
+        className="mb-1 flex w-full items-center rounded border border-neutral-300 bg-white px-3 py-2 text-left text-sm"
+      >
+        {/* icon */} Import Existing Content
+      </button>
+      {/* ...repeat full-width bordered buttons for Import from Commons,
+             Choose Home Page, and the rest... */}
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/(kambaz)/courses/[cid]/home/Status.tsx",
+    codeAddedLines: [[1, 2], 17, [22, 29]],
+  },
+  {
+    id: "flex-layouts",
+    title: "Flex replaces the last tables",
+    kind: "content",
+    bullets: [
+      "Course layout: nav `hidden md:block` at 140px, children `flex-1`",
+      "Home imports the Modules page from §2.4.4: Modules `flex-1`, Status `hidden lg:block` at 250px",
+      "Status vanishes first. Both sidebars leave together below `md`",
+    ],
+    code: `<div className="flex gap-4">
+  <div className="hidden w-[140px] shrink-0 md:block">
+    <CourseNavigation cid={cid} />
+  </div>
+  <div className="min-w-0 flex-1">{children}</div>
+</div>`,
+    codeLanguage: "tsx",
+    codeFile: "app/(kambaz)/courses/[cid]/layout.tsx",
+    codeBlocks: [
+      {
+        file: "app/(kambaz)/courses/[cid]/home/page.tsx",
+        language: "tsx",
+        code: `import Modules from "../modules/page";
+import CourseStatus from "./Status";
+
+export default function Home() {
+  return (
+    <div id="wd-home" className="flex gap-4">
+      <div className="min-w-0 flex-1">
+        <Modules />
+      </div>
+      <div className="hidden w-[250px] shrink-0 lg:block">
+        <CourseStatus />
+      </div>
+    </div>
+  );
+}`,
+      },
+    ],
   },
   {
     id: "home-demo",
