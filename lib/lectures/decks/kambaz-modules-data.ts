@@ -83,7 +83,7 @@ export default function Modules() {
     codeLanguage: "tsx",
     codeFile: "app/(kambaz)/courses/[cid]/modules/page.tsx",
     codeHighlightLines: [9, 10, [41, 45]],
-    embed: "kambaz-styled-modules",
+    embed: "kambaz-ch3-modules",
   },
   {
     id: "pattern",

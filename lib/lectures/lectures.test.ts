@@ -1772,12 +1772,12 @@ describe("lecture decks", () => {
         "todo-list": "js-todo-list",
       },
       "kambaz-database": { nav: "kambaz-links-nav" },
-      "kambaz-dashboard-data": { page: "kambaz-styled-dashboard" },
+      "kambaz-dashboard-data": { page: "kambaz-ch3-dashboard" },
       "kambaz-courses-data": { "course-nav": "kambaz-styled-course-nav" },
-      "kambaz-modules-data": { page: "kambaz-styled-modules" },
+      "kambaz-modules-data": { page: "kambaz-ch3-modules" },
       "kambaz-assignments-data": {
-        list: "kambaz-styled-assignments",
-        people: "kambaz-styled-people",
+        list: "kambaz-ch3-assignments",
+        people: "kambaz-ch3-people",
       },
       "click-events": {
         "lab4-stub": "lab4-stub",
@@ -1863,16 +1863,6 @@ describe("lecture decks", () => {
       for (const slide of deck.slides) {
         if (slide.embed) used.add(slide.embed);
       }
-    }
-    // §3.9 data-driven snapshots registered for Sandy to retarget ch3 decks
-    // off the ch2 kambaz-styled-* embeds without breaking ch2 styling decks.
-    for (const id of [
-      "kambaz-ch3-dashboard",
-      "kambaz-ch3-modules",
-      "kambaz-ch3-assignments",
-      "kambaz-ch3-people",
-    ] as const) {
-      used.add(id);
     }
     assert.deepEqual(
       [...LECTURE_EMBED_IDS].sort(),

@@ -55,7 +55,7 @@ export default function Dashboard() {
     codeLanguage: "tsx",
     codeFile: "app/(kambaz)/dashboard/page.tsx",
     codeHighlightLines: [2, 5, 10, [16, 18]],
-    embed: "kambaz-styled-dashboard",
+    embed: "kambaz-ch3-dashboard",
   },
   {
     id: "card",

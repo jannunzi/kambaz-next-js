@@ -101,7 +101,7 @@ export default async function Assignments({
     codeLanguage: "tsx",
     codeFile: "app/(kambaz)/courses/[cid]/assignments/page.tsx",
     codeHighlightLines: [[10, 13], [55, 63]],
-    embed: "kambaz-styled-assignments",
+    embed: "kambaz-ch3-assignments",
   },
   {
     id: "editor",
@@ -247,7 +247,7 @@ export default async function PeopleTable({
     codeLanguage: "tsx",
     codeFile: "app/(kambaz)/courses/[cid]/people/table/page.tsx",
     codeHighlightLines: [[11, 15], 31],
-    embed: "kambaz-styled-people",
+    embed: "kambaz-ch3-people",
   },
   {
     id: "recap",
