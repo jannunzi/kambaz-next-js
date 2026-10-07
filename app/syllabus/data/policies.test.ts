@@ -36,8 +36,27 @@ describe("regrade policy", () => {
     );
   });
 
-  it("does not add rules beyond the prior-assignment window", () => {
-    assert.doesNotMatch(text, /penalty|cap|quiz|exam|percent|%|Canvas|email/i);
+  it("lets quizzes be rechecked, not retaken, within one week of the quiz grade", () => {
+    assert.match(
+      text,
+      /Quizzes \(Q1–Q6\) can also be regraded within one week from when the quiz grade is posted/,
+    );
+    assert.match(text, /cannot be retaken or resubmitted/);
+    assert.match(text, /only a recheck of how your existing answers were graded/);
+  });
+
+  it("sends regrade requests as a private Piazza post to Instructors", () => {
+    assert.match(
+      text,
+      /regrade for an assignment or a quiz, make a private post to Instructors on Piazza/,
+    );
+  });
+
+  it("does not add rules beyond the prior-assignment and quiz windows", () => {
+    assert.doesNotMatch(
+      text,
+      /penalty|waive|late|cap|exam|percent|%|Canvas|email|online|in person/i,
+    );
   });
 
   it("renders the section after late policy and before assignments", () => {
