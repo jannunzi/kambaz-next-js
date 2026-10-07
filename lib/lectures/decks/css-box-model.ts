@@ -82,7 +82,7 @@ export const CSS_BOX_MODEL_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "`padding-top` / `-right` / `-bottom` / `-left`, or one `padding` for all sides",
-      "Keep a fat border and a yellow fill so you can *see* the gap",
+      "Keep a fat border and a yellow fill so you can **see** the gap",
     ],
     code: `.wd-padded-top-left {
   padding-top: 50px;

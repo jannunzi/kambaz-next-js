@@ -149,11 +149,20 @@ export default async function CoursesLayout({
     title: "If npm run build fails on Next.js 16.4",
     kind: "content",
     bullets: [
-      "Symptom: `npm run dev` works, but `npm run build` or the Vercel deploy fails with *Next.js encountered URL data `usePathname()` in a Client Component outside of `<Suspense>`*",
-      "Further down the log: *Next.js encountered uncached or runtime data during prerendering*",
+      "`npm run dev` works, but `npm run build` or the Vercel deploy fails",
+      "First error: “Next.js encountered URL data `usePathname()` in a Client Component outside of `<Suspense>`”",
+      "Further down: “Next.js encountered uncached or runtime data during prerendering”",
+    ],
+  },
+  {
+    id: "next-16-4-build-fix-steps",
+    title: "Fixing the Next.js 16.4 build",
+    kind: "content",
+    bullets: [
       "Check `package.json`: `\"next\": \"16.4.0\"` means the project was created with Next.js 16.4",
-      "Fix: open `next.config.ts` and delete **both** the `cacheComponents: true,` and `partialPrefetching: true,` lines, then build again",
-      "Deleting only the first line fails with *`partialPrefetching` requires `cacheComponents` to be enabled*",
+      "In `next.config.ts`, delete **both** `cacheComponents: true,` and `partialPrefetching: true,`",
+      "Deleting only the first fails with “`partialPrefetching` requires `cacheComponents` to be enabled”",
+      "Then run `npm run build` again",
     ],
   },
   {
