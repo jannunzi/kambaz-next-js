@@ -93,6 +93,10 @@ export type StaffStudentRow = {
   vercelUrl?: string;
   lastCheckedAt?: string;
   checkResults?: AssignmentCheckResult[];
+  /** Checker version that produced checkResults. */
+  checkerVersion?: string;
+  /** Submission time (`updatedAt`, else `createdAt`) as ISO. */
+  submittedAt?: string;
   staffGrade?: AssignmentStaffGrade;
   /** Older submissions for the same student. The row itself is the newest. */
   priorSubmissions?: PriorSubmissionNote[];
@@ -312,6 +316,8 @@ function rowFromSubmission(
         : new Date(doc.lastCheckedAt).toISOString()
       : undefined,
     checkResults: doc.checkResults,
+    checkerVersion: doc.checkerVersion,
+    submittedAt: submissionStamp(doc) || undefined,
     staffGrade: doc.staffGrade,
     priorSubmissions: undefined,
   };

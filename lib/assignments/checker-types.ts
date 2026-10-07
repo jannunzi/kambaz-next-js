@@ -1,4 +1,5 @@
 import type { A1RubricAutoSpec } from "./a1-rubric-types";
+import type { StructureFallback } from "./a1-structure";
 import type { AssignmentId, RubricGroupId } from "./types";
 
 export type CheckerManualRow = {
@@ -17,6 +18,8 @@ export type CheckerLabsNav = {
   anyIds?: readonly string[];
   /** Anchor href pathnames that must all be present. */
   allHrefs?: readonly string[];
+  /** Passes on page structure when the ids are missing. */
+  structurePassed?: (labsHtml: string, siteHost?: string) => boolean;
   passMessage: string;
   failMessage: string;
 };
@@ -26,6 +29,18 @@ export type CheckerLabsNav = {
  */
 export type AssignmentChecker = {
   assignmentId: AssignmentId;
+  /**
+   * Version of the grading rules. Bump it whenever a check changes what it
+   * passes or fails, so stored results and exports show which rules ran.
+   */
+  rulesVersion: string;
+  /**
+   * When true, a missing wd-* id never fails a row by itself: the row falls
+   * back to `structureFallbacks`, and a row with no fallback becomes
+   * "Needs TA review" (not a fail, no points taken off).
+   */
+  idsOptional?: boolean;
+  structureFallbacks?: Readonly<Record<string, StructureFallback>>;
   seedPaths: readonly string[];
   followupCap: number;
   /**
@@ -55,6 +70,8 @@ export type AssignmentChecker = {
       linkLabel: string;
       linkPassMessage: string;
       linkFailMessage: string;
+      /** Passes on page structure when the wd-github id is missing. */
+      linkStructurePassed?: (labsHtml: string) => boolean;
     };
     name?: {
       criterionId: string;

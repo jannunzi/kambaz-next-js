@@ -1,4 +1,6 @@
-import { evaluateRubricSpec } from "./a1-rubric";
+import { evaluateRubricSpec, specUsesIds } from "./a1-rubric";
+import type { A1RubricAutoSpec } from "./a1-rubric-types";
+import type { StructureContext } from "./a1-structure";
 import type { AssignmentChecker } from "./checker-types";
 import type {
   AssignmentCheckProbes,
@@ -11,6 +13,7 @@ import {
 } from "./fetch-classify";
 import { htmlHasAllIds, htmlHasAnchorPath, htmlHasAnyId, htmlHasId } from "./html";
 import { hasUsableNameQuery, htmlHasStudentName, type NameQuery } from "./names";
+import { NEEDS_RECHECK_ROW_MESSAGE, needsReviewMessage } from "./check-status";
 import { ASSIGNMENT_STUDENT_COPY } from "./student-copy";
 import {
   a2GithubSchemeMessage,
@@ -41,6 +44,112 @@ function labsNavPassed(
     !rule.allHrefs?.length ||
     rule.allHrefs.every((path) => htmlHasAnchorPath(html, path, siteHost));
   return allOk && anyOk && hrefsOk;
+}
+
+/**
+ * The deploy could not be opened, so nothing on it was checked. Every
+ * deploy-dependent row is skipped and flagged so no score is implied.
+ */
+function pushNeedsRecheckRows(
+  results: AssignmentCheckResult[],
+  config: AssignmentChecker,
+): void {
+  const { delivery } = config;
+  const rows: { id: string; label: string; criterionId: string; groupId: string }[] = [
+    {
+      id: delivery.labsNav.criterionId,
+      label: delivery.labsNav.label,
+      criterionId: delivery.labsNav.criterionId,
+      groupId: delivery.labsNav.groupId,
+    },
+    {
+      id: `${delivery.github.criterionId}-link`,
+      label: delivery.github.linkLabel,
+      criterionId: delivery.github.criterionId,
+      groupId: delivery.github.groupId,
+    },
+  ];
+  if (delivery.name) {
+    rows.push({
+      id: delivery.name.criterionId,
+      label: delivery.name.label,
+      criterionId: delivery.name.criterionId,
+      groupId: delivery.name.groupId,
+    });
+  }
+  for (const spec of config.autoSpecs) {
+    rows.push({
+      id: spec.criterionId,
+      label: spec.label,
+      criterionId: spec.criterionId,
+      groupId: spec.groupId,
+    });
+  }
+  for (const row of rows) {
+    results.push(
+      check(row.id, row.label, false, NEEDS_RECHECK_ROW_MESSAGE, {
+        criterionId: row.criterionId,
+        groupId: row.groupId,
+        skipped: true,
+        needsRecheck: true,
+      }),
+    );
+  }
+  for (const row of config.manualRows) {
+    results.push(
+      check(row.id, row.label, false, ASSIGNMENT_STUDENT_COPY.manualCheckHint, {
+        criterionId: row.id,
+        groupId: row.groupId,
+        skipped: true,
+      }),
+    );
+  }
+}
+
+/**
+ * Primary rule first (ids and other requirements). When ids are optional and
+ * the primary rule misses, fall back to page structure. A miss with no
+ * reliable structure is "Needs TA review": not a fail, no points taken off.
+ */
+function judgeSpec(
+  config: AssignmentChecker,
+  spec: A1RubricAutoSpec,
+  html: string,
+  ctx: StructureContext,
+): AssignmentCheckResult {
+  const extra = { criterionId: spec.criterionId, groupId: spec.groupId };
+  const primary = evaluateRubricSpec(spec, html, { siteHost: ctx.siteHost });
+  if (primary.passed || !config.idsOptional) {
+    return check(spec.criterionId, spec.label, primary.passed, primary.message, extra);
+  }
+  const fallback = config.structureFallbacks?.[spec.criterionId];
+  if (!fallback) {
+    if (specUsesIds(spec)) {
+      return check(spec.criterionId, spec.label, true, needsReviewMessage(), {
+        ...extra,
+        needsReview: true,
+      });
+    }
+    return check(spec.criterionId, spec.label, false, primary.message, extra);
+  }
+  const verdict = fallback.test(ctx);
+  if (verdict === true) {
+    return check(
+      spec.criterionId,
+      spec.label,
+      true,
+      `Found ${fallback.looksFor} on the page.`,
+      extra,
+    );
+  }
+  if (verdict === "review" || fallback.onMiss === "review") {
+    return check(spec.criterionId, spec.label, true, needsReviewMessage(fallback.looksFor), {
+      ...extra,
+      needsReview: true,
+    });
+  }
+  // A real structural miss. Keep the book's instruction (which names the id).
+  return check(spec.criterionId, spec.label, false, spec.failMessage, extra);
 }
 
 export async function runChecker(
@@ -164,6 +273,11 @@ export async function runChecker(
   }
 
   if (!vercel.ok) {
+    results[results.length - 1] = {
+      ...results[results.length - 1],
+      needsRecheck: true,
+    };
+    pushNeedsRecheckRows(results, config);
     return results;
   }
 
@@ -182,9 +296,10 @@ export async function runChecker(
         "Deployment opens without signing in",
         false,
         crawled.message,
-        { criterionId: delivery.vercelCriterionId, groupId: "delivery" },
+        { criterionId: delivery.vercelCriterionId, groupId: "delivery", needsRecheck: true },
       ),
     );
+    pushNeedsRecheckRows(results, config);
     return results;
   }
 
@@ -198,15 +313,22 @@ export async function runChecker(
       openedOk
         ? "The deployment responded successfully."
         : deployOpenFailureMessage(opened),
-      { criterionId: delivery.vercelCriterionId, groupId: "delivery" },
+      {
+        criterionId: delivery.vercelCriterionId,
+        groupId: "delivery",
+        ...(openedOk ? {} : { needsRecheck: true }),
+      },
     ),
   );
 
   if (!openedOk) {
+    pushNeedsRecheckRows(results, config);
     return results;
   }
 
-  const labsNav = labsNavPassed(crawled.labsHtml, delivery.labsNav, siteHost);
+  const labsNav =
+    labsNavPassed(crawled.labsHtml, delivery.labsNav, siteHost) ||
+    Boolean(delivery.labsNav.structurePassed?.(crawled.labsHtml, siteHost));
   results.push(
     check(
       delivery.labsNav.criterionId,
@@ -220,13 +342,19 @@ export async function runChecker(
     ),
   );
 
-  const githubHook = htmlHasId(crawled.labsHtml, "wd-github");
+  const githubById = htmlHasId(crawled.labsHtml, "wd-github");
+  const githubHook =
+    githubById || Boolean(delivery.github.linkStructurePassed?.(crawled.labsHtml));
   results.push(
     check(
       `${delivery.github.criterionId}-link`,
       delivery.github.linkLabel,
       githubHook,
-      githubHook ? delivery.github.linkPassMessage : delivery.github.linkFailMessage,
+      githubHook
+        ? githubById
+          ? delivery.github.linkPassMessage
+          : "Found a GitHub link on Labs."
+        : delivery.github.linkFailMessage,
       {
         criterionId: delivery.github.criterionId,
         groupId: delivery.github.groupId,
@@ -266,6 +394,15 @@ export async function runChecker(
     }
   }
 
+  const structure: StructureContext = {
+    labsHtml: crawled.labsHtml,
+    allHtml: crawled.allHtml,
+    pages: crawled.pages.flatMap((page) =>
+      page.result.ok ? [{ path: page.path, html: page.result.html }] : [],
+    ),
+    siteHost,
+  };
+
   for (const spec of config.autoSpecs) {
     let html: string;
     if (spec.pagePath) {
@@ -289,13 +426,7 @@ export async function runChecker(
       const scope = spec.htmlScope ?? (spec.groupId === "lab" ? "labs" : "all");
       html = scope === "labs" ? crawled.labsHtml || crawled.allHtml : crawled.allHtml;
     }
-    const judged = evaluateRubricSpec(spec, html, { siteHost });
-    results.push(
-      check(spec.criterionId, spec.label, judged.passed, judged.message, {
-        criterionId: spec.criterionId,
-        groupId: spec.groupId,
-      }),
-    );
+    results.push(judgeSpec(config, spec, html, structure));
   }
 
   for (const row of config.manualRows) {

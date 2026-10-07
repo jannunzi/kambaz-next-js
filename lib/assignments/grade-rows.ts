@@ -34,7 +34,7 @@ export type AssignmentGradeView = {
   savedAt: string;
 };
 
-export type RowFill = "green" | "red" | "yellow" | "neutral";
+export type RowFill = "green" | "red" | "yellow" | "neutral" | "review";
 
 export type RowPresentation = {
   fill: RowFill;
@@ -55,6 +55,8 @@ export const GRADE_ROW_COPY = {
   changedSinceGraded: "changed since last graded",
   checkedByStaff: "Checked by staff at grading",
   auto: "Auto",
+  needsReview: "Needs TA review",
+  needsReviewLegend: "Needs TA review (not marked wrong, no points taken off)",
 } as const;
 
 export function defaultPointsFor(overridePassed: boolean, maxPoints: number): number {
@@ -151,6 +153,8 @@ export function sanitizeCheckResults(
             ? row.groupId
             : undefined,
         skipped: Boolean(row.skipped),
+        ...(row.needsReview ? { needsReview: true } : {}),
+        ...(row.needsRecheck ? { needsRecheck: true } : {}),
       },
     ];
   });
@@ -369,6 +373,7 @@ const FILL_CLASS: Record<RowFill, string> = {
   red: "border-red-700 bg-red-50 text-red-950",
   yellow: "border-amber-700 bg-amber-100 text-amber-950",
   neutral: "border-neutral-300 bg-white text-neutral-950",
+  review: "border-dashed border-amber-600 bg-amber-50 text-amber-950",
 };
 
 /**
@@ -399,6 +404,8 @@ export function rowPresentation(input: {
   audience: GradeAudience;
   manual: boolean;
   skipped?: boolean;
+  /** Auto could not confirm the row; it keeps its points until staff look. */
+  needsReview?: boolean;
 }): RowPresentation {
   const changed = input.scored && input.changed;
   if (!input.scored || (input.audience === "student" && input.manual)) {
@@ -425,6 +432,16 @@ export function rowPresentation(input: {
         : GRADE_ROW_COPY.override,
       mark: "override",
       className: className("yellow", changed),
+    };
+  }
+
+  if (input.needsReview && !input.skipped) {
+    return {
+      fill: "review",
+      changed,
+      label: GRADE_ROW_COPY.needsReview,
+      mark: "",
+      className: className("review", changed),
     };
   }
 

@@ -95,8 +95,14 @@ const A1_KAMBAZ_AUTO_SPECS: A1RubricAutoSpec[] = [
     label: "Assignments screen",
     kind: "ids",
     requireAnyIds: ["wd-assignments", "wd-assignment-list"],
-    passMessage: "Found Assignments screen ids.",
-    failMessage: "Assignments should use id wd-assignments.",
+    // An empty list is not an Assignments screen: it needs at least one link.
+    requireDescendantTagInAnyId: {
+      ids: ["wd-assignments", "wd-assignment-list"],
+      tag: "a",
+    },
+    passMessage: "Found the Assignments list with assignment links.",
+    failMessage:
+      "Assignments should use id wd-assignments and list assignments that link to /courses/:cid/assignments/:aid.",
   },
   {
     criterionId: "a1-kambaz-editor",
@@ -166,16 +172,14 @@ export function evaluateRubricSpec(
       missing.push(`<${tag}> inside #${id}`);
     }
   }
-
-  if (missing.length === 0 && spec.requireAllIds?.length) {
-    return { passed: true, message: spec.passMessage };
+  if (spec.requireDescendantTagInAnyId) {
+    const { ids, tag } = spec.requireDescendantTagInAnyId;
+    if (!ids.some((id) => htmlIdContainsTag(html, id, tag))) {
+      missing.push(`<${tag}> inside ${ids.map((id) => `#${id}`).join(" or ")}`);
+    }
   }
-  if (
-    missing.length === 0 &&
-    (spec.requireAnyIds?.length ||
-      spec.headingLevels?.length ||
-      spec.requireHtmlIncludes?.length)
-  ) {
+
+  if (missing.length === 0 && specHasRequirement(spec)) {
     return { passed: true, message: spec.passMessage };
   }
   if (missing.length === 0) {
@@ -185,6 +189,31 @@ export function evaluateRubricSpec(
     passed: false,
     message: `${spec.failMessage} Missing: ${missing.join(", ")}.`,
   };
+}
+
+/** True when the spec names at least one thing to look for. */
+export function specHasRequirement(spec: A1RubricAutoSpec): boolean {
+  return Boolean(
+    spec.requireAllIds?.length ||
+      spec.requireAnyIds?.length ||
+      spec.headingLevels?.length ||
+      spec.requireHtmlIncludes?.length ||
+      spec.requireAnchorPaths?.length ||
+      spec.requireClassTokens?.length ||
+      spec.requireClassTokenPatterns?.length ||
+      spec.requireDescendantTag ||
+      spec.requireDescendantTagInAnyId,
+  );
+}
+
+/** True when the spec's primary rule depends on wd-* ids. */
+export function specUsesIds(spec: A1RubricAutoSpec): boolean {
+  return Boolean(
+    spec.requireAllIds?.length ||
+      spec.requireAnyIds?.length ||
+      spec.requireDescendantTag ||
+      spec.requireDescendantTagInAnyId,
+  );
 }
 
 export function isManualA1Criterion(criterionId: string): boolean {

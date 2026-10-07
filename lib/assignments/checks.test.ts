@@ -158,7 +158,7 @@ function htmlForPath(url: string): string {
     return '<div id="wd-assignments-editor"><input id="wd-name" /></div>';
   }
   if (/\/courses\/[^/]+\/assignments/i.test(url)) {
-    return '<div id="wd-assignments"></div>';
+    return '<div id="wd-assignments"><ul id="wd-assignment-list"><li><a href="/courses/1234/assignments/123">A1</a></li></ul></div>';
   }
   return "<html><body>Home</body></html>";
 }

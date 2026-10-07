@@ -23,6 +23,11 @@ import {
 } from "../submission-actions";
 import { runStaffAssignmentChecks } from "../staff-actions";
 import SubmittedConfirmation from "./SubmittedConfirmation";
+import {
+  checkRunStatus,
+  needsRecheckReason,
+  NEEDS_RECHECK_LABEL,
+} from "@/lib/assignments/check-status";
 
 export type { SubmissionGateReason };
 
@@ -119,6 +124,9 @@ export default function A1SubmissionForm({
     setSubmission(result.submission);
     setSavedToAccount(result.persisted);
     onSubmission?.(result.submission);
+    if (result.persisted && result.submission.checkResults?.length) {
+      onResults?.(result.submission.checkResults);
+    }
     setNote(result.persisted ? null : ASSIGNMENT_STUDENT_COPY.savedButNotPersisted);
   }
 
@@ -216,6 +224,21 @@ export default function A1SubmissionForm({
       ) : null}
       {!staffReview && showSubmitted && submission ? (
         <SubmittedConfirmation submission={submission} />
+      ) : null}
+      {savedToAccount && checkRunStatus(submission?.checkResults) === "needs_recheck" ? (
+        <div
+          role="status"
+          data-check-status="needs-recheck"
+          className="mb-3 rounded-lg border-2 border-amber-500 bg-amber-50 px-4 py-3 font-sans text-sm text-amber-950"
+        >
+          <p className="m-0 font-semibold">
+            {NEEDS_RECHECK_LABEL}: the submitted deploy could not be opened at the last check
+            {checkedAt ? ` (${checkedAt})` : ""}. Nothing was scored; this is not a grade.
+          </p>
+          {needsRecheckReason(submission?.checkResults) ? (
+            <p className="mb-0 mt-1">{needsRecheckReason(submission?.checkResults)}</p>
+          ) : null}
+        </div>
       ) : null}
 
       <form

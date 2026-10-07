@@ -23,6 +23,13 @@ export type A1LabExerciseAuto = {
   requireAnyIds?: string[];
   headingLevels?: number[];
   requireHtmlIncludes?: string[];
+  /** Anchor href pathnames that must all be present (relative or absolute). */
+  requireAnchorPaths?: string[];
+  /**
+   * Read only this page (for example `/labs/lab1`) instead of every Labs
+   * page joined together.
+   */
+  pagePath?: string;
   passMessage: string;
   failMessage: string;
 };
@@ -478,6 +485,8 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
         points: 2,
         auto: {
           kind: "ids",
+          // Either the id or a real link to /labs/lab4 passes (structure fallback
+          // in a1-structure.ts).
           requireAnyIds: ["wd-lab4-link"],
           passMessage: "Found a Lab 4 link (wd-lab4-link).",
           failMessage: "Link Lab 4 from Labs (id wd-lab4-link).",
@@ -492,7 +501,7 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
         points: 2,
         auto: {
           kind: "ids",
-          requireHtmlIncludes: ["/labs/lab5"],
+          requireAnchorPaths: ["/labs/lab5"],
           passMessage: "Found a Lab 5 index link.",
           failMessage: "Add a Lab 5 placeholder and link it from the Labs index.",
         },
@@ -513,9 +522,13 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
         points: 3,
         auto: {
           kind: "ids",
+          // Read Lab 1 itself: the TOC must wrap lab pages via the layout, so
+          // TOC links on the Labs index alone do not count.
+          pagePath: "/labs/lab1",
           requireAnyIds: ["wd-home-link", "wd-lab1-link", "wd-lab2-link"],
-          passMessage: "Found Labs TOC / navigation ids.",
-          failMessage: "Labs TOC should include wd-home-link or wd-lab1-link.",
+          passMessage: "Found the Labs TOC on the Lab 1 page.",
+          failMessage:
+            "Labs TOC should include wd-home-link or wd-lab1-link, and app/labs/layout.tsx should show it on every lab page (Lab 1 has no TOC links).",
         },
         verifyHash: "wd-home-link",
       },
@@ -603,6 +616,8 @@ export function a1LabAutoSpecs(): A1RubricAutoSpec[] {
       requireAnyIds: auto.requireAnyIds,
       headingLevels: auto.headingLevels,
       requireHtmlIncludes: auto.requireHtmlIncludes,
+      requireAnchorPaths: auto.requireAnchorPaths,
+      pagePath: auto.pagePath,
       passMessage: auto.passMessage,
       failMessage: auto.failMessage,
     };

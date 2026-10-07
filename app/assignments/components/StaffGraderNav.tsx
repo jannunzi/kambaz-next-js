@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { formatPointsPercent } from "@/lib/assignments/grade";
+import { checkRunStatus, needsReviewCriterionIds } from "@/lib/assignments/check-status";
 import {
   adjacentStaffStudentKeys,
   countStaffGradeFilters,
@@ -31,8 +32,15 @@ function studentStatus(row: StaffStudentRow): string {
   return "ungraded";
 }
 
+function checkNote(row: StaffStudentRow): string {
+  if (!row.hasSubmission || hasStaffGradeSave(row.staffGrade)) return "";
+  if (checkRunStatus(row.checkResults) === "needs_recheck") return " · needs re-check";
+  const review = needsReviewCriterionIds(row.checkResults).length;
+  return review ? ` · ${review} to review` : "";
+}
+
 function studentOptionLabel(row: StaffStudentRow): string {
-  return `${row.name} · ${studentStatus(row)}`;
+  return `${row.name} · ${studentStatus(row)}${checkNote(row)}`;
 }
 
 function selectedScore(row: StaffStudentRow): string {

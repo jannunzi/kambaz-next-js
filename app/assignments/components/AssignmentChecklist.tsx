@@ -17,6 +17,12 @@ import {
   type GradeAudience,
 } from "@/lib/assignments/grade-rows";
 import { formatPointsPercent } from "@/lib/assignments/grade";
+import {
+  checkRunStatus,
+  needsRecheckReason,
+  needsReviewCriterionIds,
+  NEEDS_RECHECK_SUMMARY,
+} from "@/lib/assignments/check-status";
 import { ASSIGNMENT_STUDENT_COPY } from "@/lib/assignments/student-copy";
 import type { AssignmentHubItem, RubricCriterion } from "@/lib/assignments/types";
 import { criterionVerifyUrl } from "@/lib/assignments/verify-urls";
@@ -44,9 +50,11 @@ function isManualCriterion(assignmentId: string, criterionId: string): boolean {
 function Legend({
   audience,
   showChanged,
+  showReview,
 }: {
   audience: GradeAudience;
   showChanged: boolean;
+  showReview: boolean;
 }) {
   return (
     <ul className="mb-0 mt-3 flex list-none flex-wrap gap-x-4 gap-y-2 p-0 font-sans text-sm text-neutral-900">
@@ -58,6 +66,12 @@ function Legend({
         <span className="inline-block size-3 border border-red-700 bg-red-50" aria-hidden />
         <span>✗ {GRADE_ROW_COPY.noCredit}</span>
       </li>
+      {showReview ? (
+        <li className="inline-flex items-center gap-2">
+          <span className="inline-block size-3 border border-dashed border-amber-600 bg-amber-50" aria-hidden />
+          <span>{GRADE_ROW_COPY.needsReviewLegend}</span>
+        </li>
+      ) : null}
       {audience === "staff" ? (
         <li className="inline-flex items-center gap-2">
           <span className="inline-block size-3 border border-amber-700 bg-amber-100" aria-hidden />
@@ -107,6 +121,7 @@ function CriterionRow({
     audience,
     manual,
     skipped: Boolean(result?.skipped),
+    needsReview: Boolean(result?.needsReview),
   });
   const checkMessage = visibleCheckMessage({
     message: result?.message,
@@ -118,9 +133,9 @@ function CriterionRow({
   const pointsId = `points-${criterion.id}`;
   const verifyHref = criterionVerifyUrl(vercelUrl, criterion.id);
   const staff = audience === "staff";
-  const showAuto = scored && (staff || !manual);
+  const showAuto = scored && (staff || !manual) && !result?.needsRecheck;
   const scoreLabel =
-    !scored || (audience === "student" && manual)
+    !scored || (audience === "student" && manual) || result?.needsRecheck
       ? `${criterion.points} pts`
       : staff
         ? formatPointsPercent(row.points, row.maxPoints)
@@ -281,6 +296,13 @@ export default function AssignmentChecklist({
   const staffPoints = gradePoints(rows);
   const studentPoints = studentAutoPoints(rows, manualIds);
   const headerPoints = audience === "staff" ? staffPoints : studentPoints;
+  const runStatus = checkRunStatus(results);
+  const recheck = scored && runStatus === "needs_recheck";
+  const recheckReason = recheck ? needsRecheckReason(results) : null;
+  const reviewIds = recheck ? [] : needsReviewCriterionIds(results);
+  const reviewPoints = criteria
+    .filter((criterion) => reviewIds.includes(criterion.id))
+    .reduce((sum, criterion) => sum + criterion.points, 0);
 
   if (!rubric) return null;
 
@@ -305,7 +327,9 @@ export default function AssignmentChecklist({
       ) : null}
       <div className="mb-4 rounded-lg border border-neutral-300 bg-white px-4 py-3 font-sans text-neutral-950 shadow-sm">
         <p className="m-0 text-base font-semibold tracking-tight">
-          {scored
+          {recheck
+            ? NEEDS_RECHECK_SUMMARY
+            : scored
             ? audience === "staff"
               ? formatPointsPercent(headerPoints.earnedPoints, headerPoints.totalPoints)
               : `Auto checks ${formatPointsPercent(headerPoints.earnedPoints, headerPoints.totalPoints)}`
@@ -313,6 +337,21 @@ export default function AssignmentChecklist({
               ? "No checks yet. Run to score this page. Checkmarks stay on this page only."
               : "Checked by staff at grading. This page does not save checkmarks or award points."}
         </p>
+        {recheckReason ? (
+          <p className="mb-0 mt-1 text-sm" data-check-status="needs-recheck">
+            {recheckReason}
+          </p>
+        ) : null}
+        {reviewIds.length > 0 ? (
+          <p
+            className="mb-0 mt-1 rounded border border-dashed border-amber-600 bg-amber-50 px-2 py-1 text-sm text-amber-950"
+            data-check-status="needs-review"
+          >
+            {audience === "staff"
+              ? `${reviewIds.length} item${reviewIds.length === 1 ? "" : "s"} (${reviewPoints} pts) need TA review. They keep their points until you look at them on the deploy.`
+              : `${reviewIds.length} item${reviewIds.length === 1 ? "" : "s"} will be checked by staff. They are not marked wrong and no points are taken off.`}
+          </p>
+        ) : null}
         {savedPoints ? (
           <p className="mb-0 mt-1 text-sm">
             Staff grade {formatPointsPercent(savedPoints.earnedPoints, savedPoints.totalPoints)}
@@ -322,13 +361,19 @@ export default function AssignmentChecklist({
               : ""}
           </p>
         ) : null}
-        {live && savedPoints && audience === "staff" ? (
+        {live && savedPoints && audience === "staff" && !recheck ? (
           <p className="mb-0 mt-1 text-sm font-semibold">
             Saved {formatPointsPercent(savedPoints.earnedPoints, savedPoints.totalPoints)} · This run{" "}
             {formatPointsPercent(staffPoints.earnedPoints, staffPoints.totalPoints)}
           </p>
         ) : null}
-        {scored ? <Legend audience={audience} showChanged={Boolean(savedPoints)} /> : null}
+        {scored && !recheck ? (
+          <Legend
+            audience={audience}
+            showChanged={Boolean(savedPoints)}
+            showReview={reviewIds.length > 0}
+          />
+        ) : null}
         <p className="mb-0 mt-2 text-sm text-neutral-800">
           {audience === "staff"
             ? "Auto is the checker result and cannot be edited. Override and points are saved only when you click Save. Run does not change a saved grade."
@@ -350,7 +395,7 @@ export default function AssignmentChecklist({
             <h2 className="mt-0 mb-1 font-sans text-xl font-semibold tracking-tight">
               {group.title}
             </h2>
-            {scored ? (
+            {scored && !recheck ? (
               <p className="mt-0 mb-3 font-sans text-sm text-neutral-700">
                 {formatPointsPercent(groupPoints.earnedPoints, groupPoints.totalPoints)}
               </p>

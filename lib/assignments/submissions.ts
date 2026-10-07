@@ -66,6 +66,11 @@ async function readyStore(): Promise<SubmissionStore> {
   return mongoSubmissionStore(collection);
 }
 
+/** Indexed submission store for server actions that batch their own writes. */
+export async function assignmentSubmissionStore(): Promise<SubmissionStore> {
+  return readyStore();
+}
+
 export async function readAssignmentSubmission(
   clerkUserId: string,
   assignmentId: AssignmentId,
@@ -92,6 +97,7 @@ export async function writeAssignmentSubmission(input: {
   vercelUrl: string;
   checkResults?: AssignmentSubmissionDoc["checkResults"];
   checked?: boolean;
+  checkerVersion?: string;
   identity?: AssignmentSubmissionIdentity;
   staffGrade?: AssignmentStaffGrade | null;
 }): Promise<AssignmentSubmissionDoc> {

@@ -19,6 +19,7 @@ import A1SubmissionForm, { type SubmissionGateReason } from "./A1SubmissionForm"
 import AssignmentChecklist from "./AssignmentChecklist";
 import { AssignmentViewer } from "./AssignmentViewer";
 import StaffGraderNav from "./StaffGraderNav";
+import StaffBatchTools from "./StaffBatchTools";
 
 export default function A1WorkArea({
   serverUserId,
@@ -43,7 +44,7 @@ export default function A1WorkArea({
     <AssignmentViewer serverUserId={serverUserId} authEnabled={authEnabled}>
       {(viewerUserId) => (
         <A1WorkSession
-          key={`${viewerUserId ?? "out"}:${props.selectedStudent?.key ?? "self"}:${props.initialGrade?.savedAt ?? "none"}:${props.initialSubmission?.updatedAt ?? "none"}`}
+          key={`${viewerUserId ?? "out"}:${props.selectedStudent?.key ?? "self"}:${props.initialGrade?.savedAt ?? "none"}:${props.initialSubmission?.updatedAt ?? "none"}:${props.initialSubmission?.lastCheckedAt ?? "none"}`}
           {...props}
           initialSubmission={
             viewerUserId === serverUserId ? props.initialSubmission : null
@@ -81,12 +82,23 @@ function A1WorkSession({
   selectedFilter?: string;
 }) {
   const staffMode = Boolean(selectedStudent);
+  const criteriaForInit = assignment.rubric ? listRubricCriteria(assignment.rubric) : [];
+  // Staff opening an ungraded submission start from its stored check run
+  // (from Submit or "Re-run all and save"), so Save can record it as is.
+  const storedResults =
+    staffMode && !initialGrade && initialSubmission?.checkResults?.length
+      ? initialSubmission.checkResults
+      : null;
   const [submission, setSubmission] = useState(initialSubmission);
   const [deployUrl, setDeployUrl] = useState(initialSubmission?.vercelUrl ?? "");
   const [savedGrade, setSavedGrade] = useState(initialGrade);
-  const [draft, setDraft] = useState<CriterionGradeRow[] | null>(null);
-  const [live, setLive] = useState(false);
-  const [liveResults, setLiveResults] = useState<AssignmentCheckResult[] | null>(null);
+  const [draft, setDraft] = useState<CriterionGradeRow[] | null>(() =>
+    storedResults ? gradeRowsFromResults(criteriaForInit, storedResults) : null,
+  );
+  const [live, setLive] = useState(Boolean(storedResults));
+  const [liveResults, setLiveResults] = useState<AssignmentCheckResult[] | null>(
+    storedResults,
+  );
   const [gradeNote, setGradeNote] = useState<string | null>(null);
   const [gradeError, setGradeError] = useState<string | null>(null);
   const [pendingGrade, setPendingGrade] = useState(false);
@@ -167,6 +179,16 @@ function A1WorkSession({
           selectedSection={selectedSection}
           selectedFilter={selectedFilter}
         />
+      ) : null}
+      {staffQueue && !impersonating ? (
+        <StaffBatchTools assignmentId={assignment.id} />
+      ) : null}
+      {storedResults && submission?.lastCheckedAt ? (
+        <p className="mb-3 font-sans text-sm text-neutral-700">
+          Showing the stored check from {new Date(submission.lastCheckedAt).toLocaleString()}
+          {submission.checkerVersion ? ` (checker ${submission.checkerVersion})` : ""}. Run checks again
+          for a live result.
+        </p>
       ) : null}
 
       {staffMode && selectedStudent && !selectedStudent.hasSubmission ? (

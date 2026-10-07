@@ -22,9 +22,18 @@ import {
 import { resolveNameQuery } from "@/lib/assignments/names";
 import { ASSIGNMENT_STUDENT_COPY } from "@/lib/assignments/student-copy";
 import {
+  assignmentSubmissionStore,
   findSubmissionForStaffStudent,
+  listSubmissionsForAssignment,
   writeAssignmentSubmission,
 } from "@/lib/assignments/submissions";
+import { getChecker } from "@/lib/assignments/checkers";
+import { checkerVersionLabel } from "@/lib/assignments/checker-version";
+import {
+  clampBatch,
+  rerunCheckBatch,
+  type RerunBatchResult,
+} from "@/lib/assignments/rerun";
 import {
   toSubmissionView,
   type AssignmentSubmissionView,
@@ -293,4 +302,65 @@ export async function saveAssignmentGrade(input: {
     console.error("assignment grade save failed", message);
     return { ok: false, code: "invalid", message };
   }
+}
+
+export type RerunAllActionResult =
+  | ({ ok: true } & RerunBatchResult)
+  | {
+      ok: false;
+      code: "forbidden" | "not_configured" | "invalid";
+      message: string;
+    };
+
+/**
+ * Staff "Re-run all and save", one batch per call. The client calls again
+ * with `nextOffset` until it is null. Each submission's check results are
+ * replaced and stamped with the checker version; the submission time, URLs,
+ * and any staff grade are not changed. View as student cannot run it.
+ */
+export async function rerunAssignmentChecksBatch(input: {
+  assignmentId: string;
+  offset: number;
+  limit?: number;
+}): Promise<RerunAllActionResult> {
+  const authz = await authorizeStaffGrader();
+  if (!authz.ok) {
+    const { code, message } = authz.result;
+    return { ok: false, code: code === "not_found" ? "invalid" : code, message };
+  }
+  if (!authz.persist) {
+    return {
+      ok: false,
+      code: "forbidden",
+      message: "Stop viewing as a student to re-run and save checks.",
+    };
+  }
+  if (!isAssignmentId(input.assignmentId) || !supportsUrlSubmission(input.assignmentId)) {
+    return { ok: false, code: "invalid", message: ASSIGNMENT_STUDENT_COPY.unknownAssignment };
+  }
+  const checker = getChecker(input.assignmentId);
+  if (!checker) {
+    return { ok: false, code: "invalid", message: ASSIGNMENT_STUDENT_COPY.unknownAssignment };
+  }
+  const assignmentId = input.assignmentId as AssignmentId;
+  const { offset, limit } = clampBatch(input.offset, input.limit);
+  const [store, docs] = await Promise.all([
+    assignmentSubmissionStore(),
+    listSubmissionsForAssignment(assignmentId),
+  ]);
+  const batch = await rerunCheckBatch({
+    store,
+    docs: docs.filter((doc) => doc.vercelUrl?.trim()),
+    offset,
+    limit,
+    checkerVersion: checkerVersionLabel(checker.rulesVersion),
+    runChecks: (doc) =>
+      runConfiguredChecks(assignmentId, {
+        githubUrl: doc.githubUrl ?? "",
+        vercelUrl: doc.vercelUrl,
+        nameQuery: resolveNameQuery({ rosterName: doc.name }),
+        probes: { getHtml: fetchDeployHtml, probeUrl: probeGithubRepo },
+      }),
+  });
+  return { ok: true, ...batch };
 }

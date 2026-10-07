@@ -7,7 +7,13 @@ import {
   A1_MANUAL_CRITERION_IDS,
   A1_RUBRIC_AUTO_SPECS,
 } from "./a1-rubric";
+import {
+  A1_STRUCTURE_FALLBACKS,
+  a1GithubLinkStructurePassed,
+  a1LabsNavStructurePassed,
+} from "./a1-structure";
 import type { AssignmentChecker } from "./checker-types";
+import { A1_CHECKER_RULES_VERSION } from "./checker-version";
 import { ASSIGNMENT_STUDENT_COPY } from "./student-copy";
 import { A1_SEED_PATHS } from "./urls";
 
@@ -69,6 +75,9 @@ for (const id of manualIds) autoIds.delete(id);
 
 export const A1_CHECKER: AssignmentChecker = {
   assignmentId: "a1",
+  rulesVersion: A1_CHECKER_RULES_VERSION,
+  idsOptional: true,
+  structureFallbacks: A1_STRUCTURE_FALLBACKS,
   seedPaths: A1_SEED_PATHS,
   followupCap: A1_CHECKER_FOLLOWUP_CAP,
   verifyPaths: A1_VERIFY_PATHS,
@@ -92,6 +101,7 @@ export const A1_CHECKER: AssignmentChecker = {
       groupId: "lab",
       label: "Labs navigation",
       anyIds: ["wd-lab1-link", "wd-labs", "wd-kambaz-link", "wd-home-link"],
+      structurePassed: a1LabsNavStructurePassed,
       passMessage: ASSIGNMENT_STUDENT_COPY.labsOk,
       failMessage: ASSIGNMENT_STUDENT_COPY.labsMissing,
     },
@@ -101,6 +111,7 @@ export const A1_CHECKER: AssignmentChecker = {
       linkLabel: "GitHub link on Labs",
       linkPassMessage: "Found a wd-github link on Labs.",
       linkFailMessage: "Add a public repo link with id wd-github on Labs.",
+      linkStructurePassed: a1GithubLinkStructurePassed,
     },
     name: {
       criterionId: "a1-delivery-name-section",
