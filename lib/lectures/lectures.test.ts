@@ -1851,6 +1851,16 @@ describe("lecture decks", () => {
         if (slide.embed) used.add(slide.embed);
       }
     }
+    // §3.9 data-driven snapshots registered for Sandy to retarget ch3 decks
+    // off the ch2 kambaz-styled-* embeds without breaking ch2 styling decks.
+    for (const id of [
+      "kambaz-ch3-dashboard",
+      "kambaz-ch3-modules",
+      "kambaz-ch3-assignments",
+      "kambaz-ch3-people",
+    ] as const) {
+      used.add(id);
+    }
     assert.deepEqual(
       [...LECTURE_EMBED_IDS].sort(),
       [...used].sort(),

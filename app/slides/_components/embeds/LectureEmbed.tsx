@@ -85,6 +85,10 @@ import {
   TailwindTypographyEmbed,
 } from "./TailwindLabEmbeds";
 import {
+  KambazCh3AssignmentsEmbed,
+  KambazCh3DashboardEmbed,
+  KambazCh3ModulesEmbed,
+  KambazCh3PeopleEmbed,
   KambazStyledAssignmentsEmbed,
   KambazStyledCourseNavEmbed,
   KambazStyledDashboardEmbed,
@@ -346,6 +350,14 @@ export default function LectureEmbed({ id }: { id: LectureEmbedId }) {
       return <KambazStyledPeopleEmbed />;
     case "kambaz-styled-assignments":
       return <KambazStyledAssignmentsEmbed />;
+    case "kambaz-ch3-dashboard":
+      return <KambazCh3DashboardEmbed />;
+    case "kambaz-ch3-modules":
+      return <KambazCh3ModulesEmbed />;
+    case "kambaz-ch3-assignments":
+      return <KambazCh3AssignmentsEmbed />;
+    case "kambaz-ch3-people":
+      return <KambazCh3PeopleEmbed />;
     case "kambaz-styled-signin":
       return <KambazStyledSigninEmbed />;
     case "lab3-stub":
