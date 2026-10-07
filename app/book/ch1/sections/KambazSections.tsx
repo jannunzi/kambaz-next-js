@@ -854,6 +854,16 @@ export default async function CoursesLayout({
           in the heading and the Course Navigation sidebar on the left. Placeholder
           links such as Piazza should render their simple heading pages.
         </p>
+        <p>
+          If <code>npm run dev</code>{" "}works but <code>npm run build</code>{" "}or
+          your Vercel deploy fails with{" "}
+          <em>Next.js encountered uncached or runtime data during prerendering</em>
+          , your project was created with Next.js 16.4. Delete the{" "}
+          <code>cacheComponents: true,</code>{" "}and{" "}
+          <code>partialPrefetching: true,</code>{" "}lines from{" "}
+          <code>next.config.ts</code>{" "}as described in{" "}
+          <SectionLink to="1.2.4" />, then build again.
+        </p>
       </Section>
 
       <Section
