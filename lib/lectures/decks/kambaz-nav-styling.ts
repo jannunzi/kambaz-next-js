@@ -47,7 +47,7 @@ export default function KambazNavigation() {
         id="wd-account-link"
         className="block bg-black py-3 text-center text-sm text-white no-underline"
       >
-        <FaRegCircleUser className="inline-block text-3xl text-red-500" />
+        <FaRegCircleUser className="inline-block text-3xl text-white" />
         <br />
         Account
       </Link>
