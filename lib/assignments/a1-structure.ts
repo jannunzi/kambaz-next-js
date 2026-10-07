@@ -76,14 +76,27 @@ export type StructureTarget =
   /** Every fetched page joined (navigation links). */
   | { kind: "site" };
 
+/**
+ * What a structure test can conclude. Besides pass/fail, a test that reads
+ * other pages too (A3 compares screens) may say one of them couldn't be
+ * opened ("unreachable": re-check, points kept) or that it has no reliable
+ * signal on this deploy ("review": TA review behind its gate).
+ */
+export type StructureVerdict = boolean | "unreachable" | "review";
+
 export type StructureFallback = {
   /** Short description of what the check looks for (staff-facing). */
   looksFor: string;
   /** Student-facing: what we looked for and did not find. Never names an id. */
   missMessage: string;
   target: StructureTarget;
-  test: (html: string, ctx: StructureContext) => boolean;
+  test: (html: string, ctx: StructureContext) => StructureVerdict;
   onMiss: "fail" | "review";
+  /**
+   * Grade on structure only: the spec's id rule never runs, so an element
+   * with the book's id earns nothing by itself (A3).
+   */
+  structureOnly?: boolean;
 };
 
 export type PageState = "ok" | "missing" | "unreachable";
@@ -187,7 +200,7 @@ export function targetPages(ctx: StructureContext, target: StructureTarget): Tar
 export function runFallback(
   fallback: StructureFallback,
   ctx: StructureContext,
-): { verdict: boolean | PageState; target: TargetPages } {
+): { verdict: boolean | PageState | "review"; target: TargetPages } {
   const target = targetPages(ctx, fallback.target);
   if (target.state !== "ok") return { verdict: target.state, target };
   if (fallback.target.kind === "labs") {
@@ -196,7 +209,13 @@ export function runFallback(
   if (fallback.target.kind === "site") {
     return { verdict: fallback.test(ctx.allHtml, ctx), target };
   }
-  return { verdict: target.pages.some((page) => fallback.test(page.html, ctx)), target };
+  // One matching page with everything passes. Otherwise a page that
+  // couldn't be read outranks "no reliable signal", which outranks a miss.
+  const verdicts = target.pages.map((page) => fallback.test(page.html, ctx));
+  if (verdicts.includes(true)) return { verdict: true, target };
+  if (verdicts.includes("unreachable")) return { verdict: "unreachable", target };
+  if (verdicts.includes("review")) return { verdict: "review", target };
+  return { verdict: false, target };
 }
 
 const COURSE_HOME = /^\/courses\/[^/]+\/home$/i;

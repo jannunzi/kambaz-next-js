@@ -2,6 +2,7 @@ import { evaluateRubricSpec, specUsesIds } from "./a1-rubric";
 import type { A1RubricAutoSpec } from "./a1-rubric-types";
 import {
   isDefiniteNotFound,
+  isUnreachable,
   runFallback,
   targetPages,
   type StructureContext,
@@ -237,11 +238,13 @@ function judgeSpec(
   }
   const html =
     targetSpec.kind === "site" ? ctx.allHtml : target.pages.map((page) => page.html).join("\n");
-  const primary = evaluateRubricSpec(spec, html, {
-    siteHost: ctx.siteHost,
-    idPresent: (source, id) => idPresent(config, source, id),
-  });
-  if (primary.passed) return { kind: "pass", message: primary.message };
+  const primary = fallback?.structureOnly
+    ? null
+    : evaluateRubricSpec(spec, html, {
+        siteHost: ctx.siteHost,
+        idPresent: (source, id) => idPresent(config, source, id),
+      });
+  if (primary?.passed) return { kind: "pass", message: primary.message };
 
   if (!fallback) {
     if (specUsesIds(spec)) {
@@ -251,12 +254,22 @@ function judgeSpec(
         missMessage: spec.failMessage,
       });
     }
-    return missVerdict(target, { kind: "fail", message: primary.message });
+    return missVerdict(target, { kind: "fail", message: primary?.message ?? spec.failMessage });
   }
   const { verdict } = runFallback(fallback, ctx);
   if (verdict === true) return { kind: "pass", message: `Found ${fallback.looksFor}.` };
-  if (verdict === "unreachable") return { kind: "unreachable", message: unreachablePageMessage(target) };
-  if (verdict === false && fallback.onMiss === "review") {
+  if (verdict === "unreachable") {
+    // A cross-page test (A3) may have needed a page outside its target.
+    const elsewhere = (ctx.attempted ?? []).filter(isUnreachable);
+    return {
+      kind: "unreachable",
+      message:
+        target.unreachable.length === 0 && elsewhere.length > 0
+          ? partlyUnreachableMessage(elsewhere)
+          : unreachablePageMessage(target),
+    };
+  }
+  if (verdict === "review" || (verdict === false && fallback.onMiss === "review")) {
     return missVerdict(target, {
       kind: "review",
       message: needsReviewMessage(fallback.looksFor),

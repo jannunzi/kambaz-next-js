@@ -18,6 +18,13 @@
  */
 export const A1_CHECKER_RULES_VERSION = "a1-rules-v2";
 export const A2_CHECKER_RULES_VERSION = "a2-rules-v1";
+/**
+ * A3 history:
+ *   v1: structure-only checks (no ids, no fixed text), cross-screen
+ *       consistency for Kambaz, path-parameter probes, Needs re-check for
+ *       pages that couldn't be opened.
+ */
+export const A3_CHECKER_RULES_VERSION = "a3-rules-v1";
 
 /** Short commit of the running deployment, when Vercel provides it. */
 export function deployedCommit(env: Record<string, string | undefined> = process.env): string {
