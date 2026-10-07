@@ -360,11 +360,11 @@ describe("TailwindGrids", () => {
     );
     const incremental = steps.filter((step) => step.code.trim() !== file.trim());
     const pasted = incremental.map((step) => step.code).join("\n");
-    assert.match(pasted, /<h2>Tailwind Grids<\/h2>/);
+    assert.match(pasted, /<h2 className="text-2xl font-bold">Tailwind Grids<\/h2>/);
     assert.match(pasted, /export default function TailwindGrids/);
     assert.match(pasted, /<h3 className="mt-6 text-3xl font-bold">4 Columns Grid<\/h3>/);
     assert.match(pasted, /<h3 className="mt-6 text-3xl font-bold">3 Columns Grid<\/h3>/);
-    assert.match(pasted, /<h2>Grid system<\/h2>/);
+    assert.match(pasted, /<h2 className="text-2xl font-bold">Grid system<\/h2>/);
     assert.match(incremental[1]?.prose ?? "", /paste the tsx below after the 4 Columns Grid/i);
     assert.match(incremental[2]?.prose ?? "", /paste the tsx below after the 3 Columns Grid/i);
     assert.equal(norm(assembleSteps(steps) ?? ""), norm(file));
@@ -432,5 +432,71 @@ describe("Lab 2 lecture listings of a whole component", () => {
       }
     }
     assert.deepEqual(mismatches, []);
+  });
+});
+
+describe("A2 book clarity (Quentin's student walkthrough)", () => {
+  it("shows the finished Lab 2 page.tsx with every sample import (site-only ScreenSizeLabel aside)", () => {
+    const listing = LAB2_BOOKS.flatMap(bookSteps).filter(
+      (step) => step.file === "app/labs/lab2/page.tsx" && step.code.includes("<ReactIconsSampler />"),
+    );
+    assert.equal(listing.length, 1);
+    const disk = read("app/labs/lab2/page.tsx")
+      .replace('import ScreenSizeLabel from "./ScreenSizeLabel";\n', "")
+      .replace("      <ScreenSizeLabel />\n", "")
+      .trim();
+    assert.equal(listing[0]!.code.trim(), disk);
+    for (const name of [
+      "ForegroundColors", "BackgroundColors", "Borders", "Padding", "Margins", "BoxModel",
+      "Corners", "Dimensions", "Display", "Positions", "Zindex", "Float", "GridLayout",
+      "Flex", "MediaQueriesDemo", "ReactIconsSampler",
+    ]) {
+      assert.match(listing[0]!.code, new RegExp(`import ${name} from "\\./${name}";`), name);
+      assert.match(listing[0]!.code, new RegExp(`<${name} />`), name);
+    }
+  });
+
+  it("gives every Tailwind-lab heading size/weight classes (Preflight resets bare headings)", () => {
+    for (const file of ["TailwindFilters", "TailwindGrids"]) {
+      const src = read(`app/labs/lab2/tailwind/${file}.tsx`);
+      assert.doesNotMatch(src, /<h[1-6]>/, file);
+    }
+    const tailwindSection = read("app/book/ch2/sections/IconsAndTailwind.tsx");
+    // §2.3.1–2.3.6 load full Tailwind; §2.3.7's Lab 2 page listing does not.
+    const from = tailwindSection.indexOf('id="sec-2-3"');
+    const to = tailwindSection.indexOf('id="sec-2-3-7"');
+    assert.ok(from > 0 && to > from);
+    assert.doesNotMatch(tailwindSection.slice(from, to), /<h[1-6]>/);
+  });
+
+  it("scopes the 2.1.2 practice tag rules to #wd-lab2 and explains specificity correctly", () => {
+    const basics = read("app/book/ch2/sections/CssBasics.tsx");
+    assert.match(basics, /#wd-lab2 h3/);
+    assert.match(basics, /#wd-lab2 h2/);
+    assert.doesNotMatch(basics, /not merely exist alongside it/);
+    assert.match(basics, /Order only\s+breaks ties/);
+    assert.doesNotMatch(basics, /\.selector-2 \.selector3/);
+  });
+
+  it("names the class after its real width and drops per-component index.css imports", () => {
+    assert.doesNotMatch(read("app/labs/lab2/index.css"), /wd-width-75px/);
+    assert.match(read("app/labs/lab2/index.css"), /\.wd-width-110px \{\s*\/\*[^*]*\*\/\s*width: 110px;/);
+    for (const file of ["Flex", "Float"]) {
+      assert.doesNotMatch(read(`app/labs/lab2/${file}.tsx`), /import "\.\/index\.css"/, file);
+    }
+  });
+
+  it("says exactly which Vercel URL to submit for A2 (the -git-a2- branch URL)", () => {
+    const delivery = read("app/book/ch2/sections/Delivery.tsx");
+    assert.match(delivery, /webdev-client-git-a2-/);
+    assert.match(delivery, /branch URL/);
+    assert.doesNotMatch(delivery, /enable deployments for all branches/);
+    assert.doesNotMatch(delivery, /Tailwind, and Tailwind version/);
+  });
+
+  it("never mentions late waivers in Chapter 2", () => {
+    for (const file of readdirSync(new URL("./ch2/sections/", import.meta.url))) {
+      assert.doesNotMatch(read(`app/book/ch2/sections/${file}`), /waiver/i, file);
+    }
   });
 });

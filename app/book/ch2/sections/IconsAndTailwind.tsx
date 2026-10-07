@@ -90,6 +90,13 @@ export default function IconsAndTailwind() {
 @import "tailwindcss/theme" layer(theme);
 @import "tailwindcss/utilities" layer(utilities);`}</CodeBlock>
         <p>
+          One side effect you may notice in DevTools: once this file loads,
+          the <code>min-h-full flex flex-col</code>{" "}classes that{" "}
+          <code>create-next-app</code>{" "}put on <code>&lt;body&gt;</code>{" "}in{" "}
+          <code>app/layout.tsx</code>{" "}start working, so the Lab 2 body becomes
+          a flex column. It doesn&apos;t change how Lab 2 looks, so leave it.
+        </p>
+        <p>
           Try a handful of icons from different families in one component:
         </p>
         <CodeBlock
@@ -122,8 +129,11 @@ export default function ReactIconsSampler() {
           family through a different package path — <code>fa</code>,{" "}
           <code>ai</code>, <code>fa6</code>, and <code>vsc</code>{" "}each group
           icons by their source library. The parent uses{" "}
-          <code>text-3xl</code>{" "}so each icon (sized in <code>em</code>)
-          scales up; that utility comes from the file above, and{" "}
+          <code>text-3xl</code>{" "}so each icon scales up. React Icons are
+          sized in <strong>em</strong>, a length relative to the
+          element&apos;s own font size (1em is the current font size, so an
+          icon inherits whatever size its parent sets). That&apos;s why a
+          bigger font on the parent gives bigger icons; that utility comes from the file above, and{" "}
           <SectionLink to="2.3" />{" "}covers the rest of the library. Icon
           components also accept ordinary{" "}
           <code>className</code>, <code>style</code>, and{" "}
@@ -196,6 +206,16 @@ export default function TailwindLab() {
     </div>
   );
 }`}</CodeBlock>
+        <p>
+          Notice the <code>text-4xl font-bold</code>{" "}on the{" "}
+          <code>h1</code>. Full Tailwind includes Preflight (
+          <SectionLink to="2.2" />), which resets every heading to the size
+          and weight of body text, so on this page a heading only looks like a
+          heading when you give it classes. That&apos;s why every heading in
+          the listings below carries its own size and weight classes, such as{" "}
+          <code>text-2xl font-bold</code>. Leave one off and that heading
+          renders as plain 16px text, unlike the figures.
+        </p>
         <p>
           Link to <LocalUrl href="/labs/lab2/tailwind">/labs/lab2/tailwind</LocalUrl>{" "}from the main Lab 2 page so
           both are reachable from the Labs table of contents. Use a plain{" "}
@@ -901,7 +921,7 @@ export default function TailwindLab() {
   const src = "/images/reactjs.jpg";
   return (
     <div>
-      <h2>Blurs</h2>
+      <h2 className="text-2xl font-bold">Blurs</h2>
       <div className="flex">
         <img className="blur-none w-1/4" src={src} alt="blur none" />
         <img className="blur-sm w-1/4" src={src} alt="blur sm" />
@@ -941,7 +961,7 @@ export default function TailwindLab() {
           <code>contrast-*</code> — on the same image.
         </OnYourOwn>
         <WithAI
-          prompt={`In app/labs/lab2/tailwind/TailwindFilters.tsx, keep my personal second filter row unchanged. After the sample blur row, add another sample row with id wd-ai-filters that demos grayscale, grayscale-0, brightness-50, and brightness-150 on the same image (w-1/4 each) under an h3 "Grayscale and brightness". Not my personal row.`}
+          prompt={`In app/labs/lab2/tailwind/TailwindFilters.tsx, keep my personal second filter row unchanged. After the sample blur row, add another sample row with id wd-ai-filters that demos grayscale, grayscale-0, brightness-50, and brightness-150 on the same image (w-1/4 each) under an h3 "Grayscale and brightness" with className "text-lg font-bold". Not my personal row.`}
         >
           Paste this prompt to add a third sample filter row — then confirm it
           uses a different filter family than blur:
@@ -969,7 +989,7 @@ export default function TailwindLab() {
         >{`export default function TailwindGrids() {
   return (
     <div>
-      <h2>Tailwind Grids</h2>
+      <h2 className="text-2xl font-bold">Tailwind Grids</h2>
       <div>
         <h3 className="mt-6 text-3xl font-bold">4 Columns Grid</h3>
         <div className="grid grid-cols-4 gap-4">
@@ -1019,32 +1039,32 @@ export default function TailwindLab() {
           name="TailwindGrids"
           file="app/labs/lab2/tailwind/TailwindGrids.tsx"
         >{`      <div id="wd-tailwind-grid-system" className="mt-6">
-        <h2>Grid system</h2>
+        <h2 className="text-2xl font-bold">Grid system</h2>
         <div className="grid grid-cols-2 gap-2">
           <div className="bg-red-500 text-white">
-            <h3>Left half</h3>
+            <h3 className="text-lg font-bold">Left half</h3>
           </div>
           <div className="bg-blue-500 text-white">
-            <h3>Right half</h3>
+            <h3 className="text-lg font-bold">Right half</h3>
           </div>
         </div>
         <div className="grid grid-cols-12 gap-2 mt-2">
           <div className="col-span-4 bg-yellow-500">
-            <h3>One third</h3>
+            <h3 className="text-lg font-bold">One third</h3>
           </div>
           <div className="col-span-8 bg-green-500 text-white">
-            <h3>Two thirds</h3>
+            <h3 className="text-lg font-bold">Two thirds</h3>
           </div>
         </div>
         <div className="grid grid-cols-12 gap-2 mt-2">
           <div className="col-span-2 bg-black text-white">
-            <h3>Sidebar</h3>
+            <h3 className="text-lg font-bold">Sidebar</h3>
           </div>
           <div className="col-span-8 bg-gray-500 text-white">
-            <h3>Main content</h3>
+            <h3 className="text-lg font-bold">Main content</h3>
           </div>
           <div className="col-span-2 bg-blue-400">
-            <h3>Sidebar</h3>
+            <h3 className="text-lg font-bold">Sidebar</h3>
           </div>
         </div>
       </div>`}</CodeBlock>
@@ -1064,7 +1084,7 @@ export default function TailwindLab() {
         >{`export default function TailwindGrids() {
   return (
     <div>
-      <h2>Tailwind Grids</h2>
+      <h2 className="text-2xl font-bold">Tailwind Grids</h2>
       <div>
         <h3 className="mt-6 text-3xl font-bold">4 Columns Grid</h3>
         <div className="grid grid-cols-4 gap-4">
@@ -1088,32 +1108,32 @@ export default function TailwindLab() {
         </div>
       </div>
       <div id="wd-tailwind-grid-system" className="mt-6">
-        <h2>Grid system</h2>
+        <h2 className="text-2xl font-bold">Grid system</h2>
         <div className="grid grid-cols-2 gap-2">
           <div className="bg-red-500 text-white">
-            <h3>Left half</h3>
+            <h3 className="text-lg font-bold">Left half</h3>
           </div>
           <div className="bg-blue-500 text-white">
-            <h3>Right half</h3>
+            <h3 className="text-lg font-bold">Right half</h3>
           </div>
         </div>
         <div className="grid grid-cols-12 gap-2 mt-2">
           <div className="col-span-4 bg-yellow-500">
-            <h3>One third</h3>
+            <h3 className="text-lg font-bold">One third</h3>
           </div>
           <div className="col-span-8 bg-green-500 text-white">
-            <h3>Two thirds</h3>
+            <h3 className="text-lg font-bold">Two thirds</h3>
           </div>
         </div>
         <div className="grid grid-cols-12 gap-2 mt-2">
           <div className="col-span-2 bg-black text-white">
-            <h3>Sidebar</h3>
+            <h3 className="text-lg font-bold">Sidebar</h3>
           </div>
           <div className="col-span-8 bg-gray-500 text-white">
-            <h3>Main content</h3>
+            <h3 className="text-lg font-bold">Main content</h3>
           </div>
           <div className="col-span-2 bg-blue-400">
-            <h3>Sidebar</h3>
+            <h3 className="text-lg font-bold">Sidebar</h3>
           </div>
         </div>
       </div>
@@ -1165,6 +1185,119 @@ export default function TailwindLab() {
           and <strong>With AI</strong>{" "}nested as a/b/c when that
           section has those blocks.
         </p>
+        <p>
+          Here is the finished <code>app/labs/lab2/page.tsx</code>{" "}with every
+          sample from <SectionLink to="2.1" />{" "}and <SectionLink to="2.2" />{" "}
+          imported in order, plus the link to the Tailwind lab from{" "}
+          <SectionLink to="2.3" />. Compare it with yours: a missing import
+          means a missing sample on <code>/labs/lab2</code>. Your{" "}
+          <strong>On your own</strong>{" "}and <strong>With AI</strong>{" "}additions
+          go on top of this, and the Tailwind samples stay in{" "}
+          <code>app/labs/lab2/tailwind/page.tsx</code>:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab2 (finished)"
+          file="app/labs/lab2/page.tsx"
+        >{`import "./index.css";
+import ForegroundColors from "./ForegroundColors";
+import BackgroundColors from "./BackgroundColors";
+import Borders from "./Borders";
+import Padding from "./Padding";
+import Margins from "./Margins";
+import BoxModel from "./BoxModel";
+import Corners from "./Corners";
+import Dimensions from "./Dimensions";
+import Display from "./Display";
+import Positions from "./Positions";
+import Zindex from "./Zindex";
+import Float from "./Float";
+import GridLayout from "./GridLayout";
+import Flex from "./Flex";
+import MediaQueriesDemo from "./MediaQueriesDemo";
+import ReactIconsSampler from "./ReactIconsSampler";
+
+export default function Lab2() {
+  return (
+    <div id="wd-lab2">
+      <h2>Lab 2 - Cascading Style Sheets</h2>
+      <p>
+        <a href="/labs/lab2/tailwind">Open Tailwind CSS lab →</a>
+      </p>
+
+      <h3>Styling with the STYLE attribute</h3>
+      <p>
+        Style attribute allows configuring look and feel right on the element.
+        Although it&apos;s very convenient it is considered bad practice and you
+        should avoid using the style attribute
+      </p>
+
+      <div id="wd-css-id-selectors">
+        <h3>ID selectors</h3>
+        <p id="wd-id-selector-1">
+          Instead of changing the look and feel of all the elements of the same
+          name, e.g., P, we can refer to a specific element by its ID
+        </p>
+        <p id="wd-id-selector-2">
+          Here&apos;s another paragraph using a different ID and a different look
+          and feel
+        </p>
+      </div>
+
+      <div id="wd-css-class-selectors">
+        <h3>Class selectors</h3>
+        <p className="wd-class-selector">
+          Instead of using IDs to refer to elements, you can use an element&apos;s
+          CLASS attribute
+        </p>
+        <h4 className="wd-class-selector">
+          This heading has same style as paragraph above
+        </h4>
+      </div>
+
+      <div id="wd-css-document-structure">
+        <div className="wd-selector-1">
+          <h3>Document structure selectors</h3>
+          <div className="wd-selector-2">
+            Selectors can be combined to refer elements in particular places in
+            the document
+            <p className="wd-selector-3">
+              This paragraph&apos;s red background is referenced as
+              <br />
+              .wd-selector-1 .wd-selector-3
+              <br />
+              meaning the descendant of some ancestor.
+              <br />
+              <span className="wd-selector-4">
+                Whereas this span is a direct child of its parent
+              </span>
+              <br />
+              You can combine these relationships to create specific styles
+              depending on the document structure
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <ForegroundColors />
+      <BackgroundColors />
+      <Borders />
+      <Padding />
+      <Margins />
+      <BoxModel />
+      <Corners />
+      <Dimensions />
+      <Display />
+      <Positions />
+      <Zindex />
+      <Float />
+      <GridLayout />
+      <Flex />
+      <MediaQueriesDemo />
+      <ReactIconsSampler />
+    </div>
+  );
+}`}</CodeBlock>
         <NestedExerciseList groups={CH2_LAB_EXERCISES} />
       </Section>
     </>

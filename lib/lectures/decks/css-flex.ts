@@ -47,7 +47,7 @@ export const CSS_FLEX_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "`display: flex` lines children up in a row with no floats, clearing, or percentage math.",
-      "The next steps add `wd-flex-grow-1`, then `wd-width-75px`, and reprint the file",
+      "The next steps add `wd-flex-grow-1`, then `wd-width-110px`, and reprint the file",
     ],
     code: `export default function Flex() {
   return (
@@ -133,11 +133,11 @@ export const CSS_FLEX_SLIDES: LectureSlide[] = [
     title: "Pin a column, grow the last",
     kind: "content",
     bullets: [
-      "`wd-width-75px` sets `width: 110px` and `flex-shrink: 0`",
+      "`wd-width-110px` sets `width: 110px` and `flex-shrink: 0`",
       "The name says 75. The declaration is 110 so “Column 1” plus padding fits",
       "Column 2 stays natural. Column 3 (`wd-flex-grow-1`) takes the rest",
     ],
-    code: `.wd-width-75px {
+    code: `.wd-width-110px {
   /* Room for "Column 1" + 10px padding under border-box */
   width: 110px;
   flex-shrink: 0;
@@ -152,17 +152,15 @@ export const CSS_FLEX_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "Pin the first column to a fixed width and let the last column absorb what is left.",
-      "Column 1 gains `wd-width-75px`. Column 3 keeps `wd-flex-grow-1`",
+      "Column 1 gains `wd-width-110px`. Column 3 keeps `wd-flex-grow-1`",
       "This is the finished `Flex.tsx`",
     ],
-    code: `import "./index.css";
-
-export default function Flex() {
+    code: `export default function Flex() {
   return (
     <div id="wd-css-flex">
       <h2>Flex</h2>
       <div className="wd-flex-row-container">
-        <div className="wd-bg-color-yellow wd-width-75px">Column 1</div>
+        <div className="wd-bg-color-yellow wd-width-110px">Column 1</div>
         <div className="wd-bg-color-blue wd-fg-color-white">Column 2</div>
         <div className="wd-bg-color-red wd-fg-color-white wd-flex-grow-1">
           Column 3
