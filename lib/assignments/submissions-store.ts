@@ -16,6 +16,12 @@ export type AssignmentStaffGrade = {
   gradedByEmail?: string;
   gradedByClerkUserId?: string;
   gradedAt: Date | string;
+  /**
+   * The student's submission time (`updatedAt`) staff were grading when
+   * they saved. A later submission means the grade is out of date.
+   * Missing on saves made before Oct 7, 2026.
+   */
+  gradedSubmissionAt?: Date | string;
   /** Auto result, override, and points for each criterion. */
   rows?: CriterionGradeRow[];
   /** Autograder output captured with this grade. Run does not replace it. */
@@ -71,6 +77,19 @@ export type SubmissionStore = {
     assignmentId: AssignmentId,
     fields: Pick<AssignmentSubmissionDoc, "checkResults" | "lastCheckedAt" | "checkerVersion">,
   ): Promise<boolean>;
+  /**
+   * Write only the staff-grade fields of an existing submission ($set on
+   * staffGrade, plus checkResults / lastCheckedAt when given). Never touches
+   * the submission time (`updatedAt`), URLs or identity, so a staff Save
+   * can't make a submission look new, and a student resubmitting at the
+   * same moment isn't overwritten. Returns false when no doc matched.
+   */
+  setStaffGrade?(
+    clerkUserId: string,
+    assignmentId: AssignmentId,
+    fields: Pick<AssignmentSubmissionDoc, "staffGrade"> &
+      Partial<Pick<AssignmentSubmissionDoc, "checkResults" | "lastCheckedAt">>,
+  ): Promise<boolean>;
   listByAssignment?(
     assignmentId: AssignmentId,
   ): Promise<AssignmentSubmissionDoc[]>;
@@ -87,6 +106,7 @@ export function toStaffGradeView(
   return {
     ...grade,
     gradedAt: toIso(grade.gradedAt),
+    ...(grade.gradedSubmissionAt ? { gradedSubmissionAt: toIso(grade.gradedSubmissionAt) } : {}),
   };
 }
 
@@ -210,6 +230,67 @@ export async function recordAssignmentCheckRun(
       checkResults: input.checkResults,
       checked: true,
       checkerVersion: input.checkerVersion,
+      preserveUpdatedAt: true,
+    },
+    now,
+  );
+}
+
+function validTime(value: Date | string | undefined | null): number | null {
+  if (!value) return null;
+  const ms = value instanceof Date ? value.getTime() : new Date(value).getTime();
+  return Number.isFinite(ms) && ms > 0 ? ms : null;
+}
+
+/**
+ * Store a staff grade on an existing submission. The submission time
+ * (`updatedAt`), URLs and identity are never changed: a staff Save is not a
+ * submission. The grade records `gradedSubmissionAt`, the submission time
+ * staff were grading (`seenSubmittedAt` from the page, never later than the
+ * stored one), so a resubmission that lands while staff grade still shows
+ * as "resubmitted after grading".
+ *
+ * Check results are written to the submission only when the Save carries
+ * some (an empty run never clears the stored check).
+ */
+export async function recordStaffGrade(
+  store: SubmissionStore,
+  input: {
+    clerkUserId: string;
+    assignmentId: AssignmentId;
+    staffGrade: AssignmentStaffGrade;
+    checkResults?: AssignmentCheckResult[];
+    /** The submission time on the grader's screen (ISO), if known. */
+    seenSubmittedAt?: string | Date | null;
+  },
+  now: Date = new Date(),
+): Promise<AssignmentSubmissionDoc | null> {
+  const existing = await store.find(input.clerkUserId, input.assignmentId);
+  if (!existing) return null;
+  const stored = validTime(existing.updatedAt) ?? validTime(existing.createdAt);
+  const seen = validTime(input.seenSubmittedAt);
+  const basis = seen != null && stored != null ? Math.min(seen, stored) : (stored ?? seen);
+  const staffGrade: AssignmentStaffGrade = {
+    ...input.staffGrade,
+    ...(basis != null ? { gradedSubmissionAt: new Date(basis) } : {}),
+  };
+  const checked = Boolean(input.checkResults?.length);
+  if (store.setStaffGrade) {
+    const matched = await store.setStaffGrade(input.clerkUserId, input.assignmentId, {
+      staffGrade,
+      ...(checked ? { checkResults: input.checkResults, lastCheckedAt: now } : {}),
+    });
+    return matched ? store.find(input.clerkUserId, input.assignmentId) : null;
+  }
+  return upsertAssignmentSubmission(
+    store,
+    {
+      clerkUserId: existing.clerkUserId,
+      assignmentId: existing.assignmentId,
+      githubUrl: existing.githubUrl,
+      vercelUrl: existing.vercelUrl,
+      ...(checked ? { checkResults: input.checkResults, checked: true } : {}),
+      staffGrade,
       preserveUpdatedAt: true,
     },
     now,
