@@ -243,7 +243,11 @@ describe("A1 GitHub item: transient never costs a point", () => {
           checkResults: graded.results,
         } as unknown as StaffStudentRow,
       });
-      assert.equal(exportRow.points, 125);
+      // Full auto points (manual items wait for staff), flagged, not ready.
+      assert.equal(exportRow.autoPoints, 113);
+      assert.equal(exportRow.points, 113);
+      assert.equal(exportRow.readyForCanvas, false);
+      assert.match(exportRow.readyReason, /need TA review/);
       assert.equal(exportRow.confidence, "needs_review");
       assert.equal(exportRow.items["a1-delivery-github"], "review");
       assert.equal(exportRow.feedback, "");

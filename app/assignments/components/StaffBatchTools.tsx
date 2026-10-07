@@ -92,6 +92,11 @@ export default function StaffBatchTools({ assignmentId }: { assignmentId: string
           Most-missed items (CSV)
         </a>
       </div>
+      <p className="mb-0 mt-2 text-sm text-neutral-800">
+        Load into Canvas only rows with ready_for_canvas = yes, using canvas_percent. A row is
+        ready once staff have graded the manual items and nothing needs TA review or a
+        re-check. A saved staff grade replaces the auto score.
+      </p>
       {progress ? (
         <p className="mb-0 mt-2 text-sm text-neutral-800" role="status">
           Re-checked {progress.processed} of {progress.total}. {progress.scored} scored,{" "}

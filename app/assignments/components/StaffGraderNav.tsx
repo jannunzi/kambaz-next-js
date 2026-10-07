@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { formatPointsPercent } from "@/lib/assignments/grade";
+import { getAssignment } from "@/lib/assignments/catalog";
+import { finalGradeForStaffRow } from "@/lib/assignments/final-grade";
 import { checkRunStatus, needsReviewCriterionIds } from "@/lib/assignments/check-status";
 import {
   adjacentStaffStudentKeys,
@@ -43,13 +44,14 @@ function studentOptionLabel(row: StaffStudentRow): string {
   return `${row.name} · ${studentStatus(row)}${checkNote(row)}`;
 }
 
-function selectedScore(row: StaffStudentRow): string {
+/** Same grade and percentage as the export (finalGrade); a % only when ready for Canvas. */
+function selectedScore(assignmentId: string, row: StaffStudentRow): string {
   if (!hasStaffGradeSave(row.staffGrade) || !row.staffGrade) return "";
-  const score = formatPointsPercent(
-    row.staffGrade.earnedPoints,
-    row.staffGrade.totalPoints,
-  );
-  return score === "—" ? "" : score;
+  const assignment = getAssignment(assignmentId);
+  if (!assignment?.rubric) return "";
+  const final = finalGradeForStaffRow(assignmentId, assignment.rubric, row);
+  if (final.ready) return final.canvasScore;
+  return final.points == null ? "" : `${final.points} / ${final.maxPoints} · not ready for Canvas`;
 }
 
 export default function StaffGraderNav({
@@ -79,7 +81,7 @@ export default function StaffGraderNav({
   const submitted = visible.filter((row) => row.hasSubmission).length;
   const selectedRow =
     findStaffStudent(visible, selectedKey) ?? findStaffStudent(queue, selectedKey);
-  const score = selectedRow ? selectedScore(selectedRow) : "";
+  const score = selectedRow ? selectedScore(assignmentId, selectedRow) : "";
   const prior = selectedRow ? priorSubmissionLabel(selectedRow.priorSubmissions) : "";
 
   function go(

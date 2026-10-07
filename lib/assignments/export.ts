@@ -1,34 +1,35 @@
 /**
- * Staff export for loading auto-graded assignment scores into Canvas.
+ * Staff export for loading assignment scores into Canvas.
  *
  * One row per submission (roster students with a submission, plus unmatched
- * submissions). Scores are points and percent. A row's `confidence` says how
- * it can be loaded:
- *   - full_marks: every item earned; load as is.
- *   - confident_deduction: some auto items were missed, the total is at least
- *     CONFIDENT_DEDUCTION_FLOOR, and nothing needs review; load with feedback.
- *   - needs_review: anything that needs a person first (an item that needs TA
- *     review, a deploy that could not be opened, no stored check, a duplicate
- *     or unmatched submission, or a total below the floor).
+ * submissions). The score comes from `finalGrade` (final-grade.ts), the same
+ * function the student page and staff view use, so every screen agrees.
+ *
+ * Nothing goes to Canvas until the student is fully graded:
+ *   - `ready_for_canvas` is "yes" only when staff graded every manual item,
+ *     no item still needs TA review or a re-check, and the submission
+ *     matches one roster student with no duplicate. `ready_reason` says why
+ *     not. `canvas_percent` (points / max, one decimal) is filled only when
+ *     ready.
+ *   - Manual points are never credited automatically: `manual_points` is the
+ *     staff-entered value, blank until staff graded every manual item.
+ *   - A saved staff grade replaces the auto score.
+ *
+ * `confidence`:
+ *   - full_marks: ready, every point earned; load as is.
+ *   - confident_deduction: ready, some points lost; load with feedback.
+ *   - needs_review: not ready (see ready_reason).
  */
 import { criterionCoverage } from "./checkers";
 import { latestResultByCriterion } from "./checks";
-import {
-  checkRunStatus,
-  needsRecheckReason,
-  needsReviewCriterionIds,
-  type CheckRunStatus,
-} from "./check-status";
-import { COURSE_SITE_ORIGIN, listRubricCriteria, rubricPointTotal } from "./catalog";
+import { needsReviewCriterionIds, type CheckRunStatus } from "./check-status";
+import { COURSE_SITE_ORIGIN, listRubricCriteria } from "./catalog";
 import type { AssignmentCheckResult } from "./check-types";
-import { formatPointsPercent, pointsPercent } from "./grade";
+import { finalGradeForStaffRow } from "./final-grade";
 import { hasStaffGradeSave, type StaffStudentRow } from "./staff";
 import type { AssignmentRubric, RubricCriterion } from "./types";
 
 export type ExportConfidence = "full_marks" | "confident_deduction" | "needs_review";
-
-/** A total below this many points always needs review. */
-export const CONFIDENT_DEDUCTION_FLOOR = 113;
 
 export type ItemOutcome = "pass" | "fail" | "review" | "recheck" | "manual" | "not_checked";
 
@@ -46,18 +47,27 @@ export type SubmissionExportRow = {
   checkStatus: CheckRunStatus;
   autoPoints: number | null;
   autoMax: number;
-  manualPointsCredited: number | null;
+  /** Staff-entered manual points; null until staff graded every manual item. */
+  manualPoints: number | null;
+  manualMax: number;
+  /** Current points: the staff grade when saved, else auto (+ staff manual). */
   points: number | null;
   maxPoints: number;
-  percent: number | null;
+  /** "120 / 125 (96.0%)" when ready; "113 / 125 (grading in progress)" before. */
   score: string;
+  readyForCanvas: boolean;
+  /** Why the row isn't ready, or "fully graded". */
+  readyReason: string;
+  /** points / max to one decimal, only when ready. */
+  canvasPercent: number | null;
+  /** "staff" when a saved staff grade sets the score. */
+  scoreSource: "staff" | "auto";
   confidence: ExportConfidence;
   reviewReasons: string[];
   needsReviewItems: string[];
   lostItems: string[];
   feedback: string;
   staffPoints: number | null;
-  staffPercent: number | null;
   staffGradedBy: string;
   staffGradedAt: string;
   items: Record<string, ItemOutcome>;
@@ -111,58 +121,31 @@ export function buildSubmissionExportRow(input: {
   const { assignmentId, rubric, row } = input;
   const criteria = listRubricCriteria(rubric);
   const results = row.checkResults ?? [];
-  const status = checkRunStatus(results);
   const latest = latestResultByCriterion(results);
-  const maxPoints = rubricPointTotal(rubric);
+  const grade = row.staffGrade && hasStaffGradeSave(row.staffGrade) ? row.staffGrade : undefined;
+  const final = finalGradeForStaffRow(assignmentId, rubric, row);
 
   const items: Record<string, ItemOutcome> = {};
-  let autoPoints = 0;
-  let autoMax = 0;
-  let manualPoints = 0;
   const lost: { criterion: RubricCriterion; result?: AssignmentCheckResult }[] = [];
-  const unchecked: string[] = [];
   for (const criterion of criteria) {
     const result = latest.get(criterion.id);
     const outcome = itemOutcome(assignmentId, criterion, result);
     items[criterion.id] = outcome;
-    if (outcome === "manual") {
-      manualPoints += criterion.points;
-      continue;
-    }
-    autoMax += criterion.points;
-    if (outcome === "pass" || outcome === "review") autoPoints += criterion.points;
-    else if (outcome === "fail") lost.push({ criterion, result });
-    else if (outcome === "not_checked") unchecked.push(criterion.id);
+    if (outcome === "fail") lost.push({ criterion, result });
   }
 
-  const scored = status === "scored";
-  // Manual rows are checked by staff at grading and are not deducted here.
-  const points = scored ? autoPoints + manualPoints : null;
-  const percent = points == null ? null : pointsPercent(points, maxPoints);
-  const reviewItems = needsReviewCriterionIds(results);
-
-  const reasons: string[] = [];
-  if (status === "not_checked") reasons.push("not checked yet");
-  if (status === "needs_recheck") {
-    reasons.push(`needs re-check: ${shortReason(needsRecheckReason(results) ?? undefined)}`);
-  }
-  if (scored && reviewItems.length) reasons.push(`${reviewItems.length} item(s) need TA review`);
-  if (scored && unchecked.length) reasons.push(`${unchecked.length} item(s) not checked`);
-  if (row.priorSubmissions?.length) {
-    reasons.push(`duplicate submission (${row.priorSubmissions.length + 1} on file)`);
-  }
-  if (row.unmatched) reasons.push("submission does not match a roster student");
-  if (points != null && points < CONFIDENT_DEDUCTION_FLOOR) {
-    reasons.push(`total below ${CONFIDENT_DEDUCTION_FLOOR}`);
-  }
-
-  const confidence: ExportConfidence = reasons.length
+  const scored = final.checkStatus === "scored";
+  const confidence: ExportConfidence = !final.ready
     ? "needs_review"
-    : points === maxPoints
+    : final.points === final.maxPoints
       ? "full_marks"
       : "confident_deduction";
+  const score = final.ready
+    ? final.canvasScore
+    : final.points == null
+      ? ""
+      : `${final.points} / ${final.maxPoints} (grading in progress)`;
 
-  const grade = row.staffGrade && hasStaffGradeSave(row.staffGrade) ? row.staffGrade : undefined;
   return {
     name: row.name,
     email: row.email,
@@ -174,21 +157,24 @@ export function buildSubmissionExportRow(input: {
     submittedAt: isoOrEmpty(row.submittedAt),
     lastCheckedAt: isoOrEmpty(row.lastCheckedAt),
     checkerVersion: row.checkerVersion ?? "",
-    checkStatus: status,
-    autoPoints: scored ? autoPoints : null,
-    autoMax,
-    manualPointsCredited: scored ? manualPoints : null,
-    points,
-    maxPoints,
-    percent,
-    score: points == null ? "" : formatPointsPercent(points, maxPoints),
+    checkStatus: final.checkStatus,
+    autoPoints: final.autoPoints,
+    autoMax: final.autoMax,
+    manualPoints: final.manualPoints,
+    manualMax: final.manualMax,
+    points: final.points,
+    maxPoints: final.maxPoints,
+    score,
+    readyForCanvas: final.ready,
+    readyReason: final.ready ? "fully graded" : final.reasons.join("; "),
+    canvasPercent: final.canvasPercent,
+    scoreSource: final.source,
     confidence,
-    reviewReasons: reasons,
-    needsReviewItems: reviewItems,
+    reviewReasons: final.reasons,
+    needsReviewItems: needsReviewCriterionIds(results),
     lostItems: lost.map(({ criterion }) => criterion.id),
     feedback: scored ? lost.map(({ criterion, result }) => feedbackLine(criterion, result)).join("\n") : "",
     staffPoints: grade ? grade.earnedPoints : null,
-    staffPercent: grade ? pointsPercent(grade.earnedPoints, grade.totalPoints) : null,
     staffGradedBy: grade?.gradedByEmail ?? "",
     staffGradedAt: grade ? isoOrEmpty(grade.gradedAt) : "",
     items,
@@ -229,18 +215,20 @@ const SUBMISSION_COLUMNS = [
   "check_status",
   "auto_points",
   "auto_max",
-  "manual_points_credited",
+  "manual_points",
+  "manual_max",
   "points",
   "max_points",
-  "percent",
   "score",
+  "score_source",
+  "ready_for_canvas",
+  "ready_reason",
+  "canvas_percent",
   "confidence",
-  "review_reasons",
   "needs_review_items",
   "lost_items",
   "feedback",
   "staff_points",
-  "staff_percent",
   "staff_graded_by",
   "staff_graded_at",
 ] as const;
@@ -265,18 +253,20 @@ export function submissionExportCsv(
     row.checkStatus,
     row.autoPoints,
     row.autoMax,
-    row.manualPointsCredited,
+    row.manualPoints,
+    row.manualMax,
     row.points,
     row.maxPoints,
-    row.percent == null ? "" : row.percent.toFixed(1),
     row.score,
+    row.scoreSource,
+    row.readyForCanvas ? "yes" : "no",
+    row.readyReason,
+    row.canvasPercent == null ? "" : row.canvasPercent.toFixed(1),
     row.confidence,
-    row.reviewReasons.join("; "),
     row.needsReviewItems.join(" "),
     row.lostItems.join(" "),
     row.feedback,
     row.staffPoints,
-    row.staffPercent == null ? "" : row.staffPercent.toFixed(1),
     row.staffGradedBy,
     row.staffGradedAt,
     ...criteria.map((criterion) => row.items[criterion.id] ?? ""),

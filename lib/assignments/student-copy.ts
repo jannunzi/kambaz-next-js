@@ -22,6 +22,8 @@ export const ASSIGNMENT_STUDENT_COPY = {
   signInHint: COURSE_WEBSITE_ACCOUNT_COPY.assignmentSignInHint,
   syncProgress:
     "Sign up if you don’t have a course-website account yet, then Sign in with the same Northeastern email you use on Canvas to sync progress.",
+  gradingInProgress:
+    "Grading in progress. Staff still grade the manual items; your grade and percentage show here when grading is done, the same score that goes to Canvas.",
   checksNotSaved:
     "Run checks updates this page only. Checkmarks stay on this page only. Sign up if you don’t have a course-website account yet, then Sign in with the same Northeastern email you use on Canvas to submit your GitHub and Vercel URLs.",
   urlSubmitWhen:

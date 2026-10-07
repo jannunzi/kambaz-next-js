@@ -16,7 +16,7 @@ import {
   type CriterionGradeRow,
   type GradeAudience,
 } from "@/lib/assignments/grade-rows";
-import { formatPointsPercent } from "@/lib/assignments/grade";
+import { finalGrade, gradingInProgressText } from "@/lib/assignments/final-grade";
 import {
   checkRunStatus,
   needsRecheckReason,
@@ -41,6 +41,14 @@ function DeployTitle({
       {children}
     </a>
   );
+}
+
+/**
+ * Item and group totals show points only. The only percentage on this page
+ * is the final grade from finalGrade(), so it always matches Canvas.
+ */
+function pointsLabel(earned: number, total: number): string {
+  return `${earned} / ${total} pts`;
 }
 
 function isManualCriterion(assignmentId: string, criterionId: string): boolean {
@@ -138,8 +146,8 @@ function CriterionRow({
     !scored || (audience === "student" && manual) || result?.needsRecheck
       ? `${criterion.points} pts`
       : staff
-        ? formatPointsPercent(row.points, row.maxPoints)
-        : formatPointsPercent(row.autoPassed ? row.maxPoints : 0, row.maxPoints);
+        ? pointsLabel(row.points, row.maxPoints)
+        : pointsLabel(row.autoPassed ? row.maxPoints : 0, row.maxPoints);
   return (
     <div
       className={`rounded-md border px-3 py-3 ${presentation.className}`}
@@ -255,6 +263,7 @@ export default function AssignmentChecklist({
   results = [],
   audience,
   savedPoints = null,
+  roster,
   vercelUrl,
   onOverride,
   onPoints,
@@ -267,6 +276,8 @@ export default function AssignmentChecklist({
   results?: AssignmentCheckResult[];
   audience: GradeAudience;
   savedPoints?: { earnedPoints: number; totalPoints: number; savedAt?: string; gradedByEmail?: string } | null;
+  /** Roster flags for the Canvas readiness line (staff screens). */
+  roster?: { unmatched?: boolean; duplicates?: number };
   vercelUrl?: string;
   onOverride?: (criterionId: string, checked: boolean) => void;
   onPoints?: (criterionId: string, points: number) => void;
@@ -304,6 +315,17 @@ export default function AssignmentChecklist({
     .filter((criterion) => reviewIds.includes(criterion.id))
     .reduce((sum, criterion) => sum + criterion.points, 0);
 
+  // The one grade every screen shows (and the export sends to Canvas).
+  const final = rubric
+    ? finalGrade({
+        assignmentId: assignment.id,
+        rubric,
+        results,
+        staff: savedPoints ? { earnedPoints: savedPoints.earnedPoints, rows: savedRows } : null,
+        roster,
+      })
+    : null;
+
   if (!rubric) return null;
 
   function rowFor(criterion: RubricCriterion): CriterionGradeRow {
@@ -331,8 +353,12 @@ export default function AssignmentChecklist({
             ? NEEDS_RECHECK_SUMMARY
             : scored
             ? audience === "staff"
-              ? formatPointsPercent(headerPoints.earnedPoints, headerPoints.totalPoints)
-              : `Auto checks ${formatPointsPercent(headerPoints.earnedPoints, headerPoints.totalPoints)}`
+              ? `This grade: ${headerPoints.earnedPoints} / ${headerPoints.totalPoints} points`
+              : final?.ready
+                ? `Grade ${final.canvasScore}`
+                : final
+                  ? gradingInProgressText(final)
+                  : `Auto checks ${headerPoints.earnedPoints} / ${headerPoints.totalPoints} points · grading in progress`
             : supportsUrlSubmission(assignment.id)
               ? "No checks yet. Run to score this page. Checkmarks stay on this page only."
               : "Checked by staff at grading. This page does not save checkmarks or award points."}
@@ -352,9 +378,19 @@ export default function AssignmentChecklist({
               : `${reviewIds.length} item${reviewIds.length === 1 ? "" : "s"} will be checked by staff. They are not marked wrong and no points are taken off.`}
           </p>
         ) : null}
-        {savedPoints ? (
+        {final && audience === "staff" && supportsUrlSubmission(assignment.id) ? (
+          <p className="mb-0 mt-1 text-sm" data-canvas-ready={final.ready ? "yes" : "no"}>
+            {final.ready
+              ? `Canvas: ready · ${final.canvasScore}`
+              : `Canvas: not ready (${final.reasons.join("; ") || "not checked yet"})`}
+          </p>
+        ) : null}
+        {final && audience === "student" && scored && !recheck && !final.ready ? (
+          <p className="mb-0 mt-1 text-sm">{ASSIGNMENT_STUDENT_COPY.gradingInProgress}</p>
+        ) : null}
+        {savedPoints && audience === "staff" ? (
           <p className="mb-0 mt-1 text-sm">
-            Staff grade {formatPointsPercent(savedPoints.earnedPoints, savedPoints.totalPoints)}
+            Staff grade {savedPoints.earnedPoints} / {savedPoints.totalPoints} points
             {savedPoints.gradedByEmail ? ` · saved by ${savedPoints.gradedByEmail}` : ""}
             {savedPoints.savedAt
               ? ` · ${new Date(savedPoints.savedAt).toLocaleString()}`
@@ -363,8 +399,8 @@ export default function AssignmentChecklist({
         ) : null}
         {live && savedPoints && audience === "staff" && !recheck ? (
           <p className="mb-0 mt-1 text-sm font-semibold">
-            Saved {formatPointsPercent(savedPoints.earnedPoints, savedPoints.totalPoints)} · This run{" "}
-            {formatPointsPercent(staffPoints.earnedPoints, staffPoints.totalPoints)}
+            Saved {savedPoints.earnedPoints} / {savedPoints.totalPoints} · This run{" "}
+            {staffPoints.earnedPoints} / {staffPoints.totalPoints} points
           </p>
         ) : null}
         {scored && !recheck ? (
@@ -397,7 +433,7 @@ export default function AssignmentChecklist({
             </h2>
             {scored && !recheck ? (
               <p className="mt-0 mb-3 font-sans text-sm text-neutral-700">
-                {formatPointsPercent(groupPoints.earnedPoints, groupPoints.totalPoints)}
+                {pointsLabel(groupPoints.earnedPoints, groupPoints.totalPoints)}
               </p>
             ) : null}
             {group.intro ? <p className="mt-0 text-neutral-800">{group.intro}</p> : null}

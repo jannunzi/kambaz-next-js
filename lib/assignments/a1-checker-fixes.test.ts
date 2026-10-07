@@ -21,7 +21,6 @@ import { A1_CHECKER_RULES_VERSION, checkerVersionLabel } from "./checker-version
 import { latestResultByCriterion, runA1Checks } from "./checks";
 import {
   buildSubmissionExportRow,
-  CONFIDENT_DEDUCTION_FLOOR,
   csvCell,
   missedItemSummary,
   missedItemSummaryCsv,
@@ -29,7 +28,16 @@ import {
   type SubmissionExportRow,
 } from "./export";
 import { proposedGradeFromResults } from "./grade";
-import { gradeRowsFromResults, rowPresentation, sanitizeCheckResults } from "./grade-rows";
+import {
+  gradeRowsFromResults,
+  gradeViewFromStaffGrade,
+  rowPresentation,
+  sanitizeCheckResults,
+  staffGradeRecordFromRows,
+  type CriterionGradeRow,
+} from "./grade-rows";
+import { finalGrade, finalGradeForStaffRow, gradingInProgressText } from "./final-grade";
+import { criterionCoverage } from "./checkers";
 import { elementsWithId, renderedMarkup, stripWdIds } from "./html";
 import { resolveNameQuery } from "./names";
 import { rerunCheckBatch } from "./rerun";
@@ -413,30 +421,80 @@ function exportRow(results: AssignmentCheckResult[], extra: Partial<StaffStudent
   return buildSubmissionExportRow({ assignmentId: "a1", rubric: A1_RUBRIC, row: staffRow(results, extra) });
 }
 
+const MANUAL_MAX = TOTAL - AUTO_MAX;
+const MANUAL_IDS = listRubricCriteria(A1_RUBRIC)
+  .filter((criterion) => criterionCoverage("a1", criterion.id) === "manual")
+  .map((criterion) => criterion.id);
+
+/** A staff Save: every row from the check, manual rows graded as given. */
+function staffSave(
+  results: AssignmentCheckResult[],
+  options: { manual?: "full" | "none" | number; edit?: (rows: CriterionGradeRow[]) => CriterionGradeRow[] } = {},
+) {
+  const criteria = listRubricCriteria(A1_RUBRIC).map((c) => ({ id: c.id, points: c.points }));
+  let rows = gradeRowsFromResults(criteria, results);
+  const manual = options.manual ?? "full";
+  let manualLeft = typeof manual === "number" ? manual : 0;
+  rows = rows.map((row) => {
+    if (!MANUAL_IDS.includes(row.criterionId)) return row;
+    const points =
+      manual === "full" ? row.maxPoints : manual === "none" ? 0 : Math.min(row.maxPoints, manualLeft);
+    manualLeft -= points;
+    return { ...row, overridePassed: points > 0, points };
+  });
+  if (options.edit) rows = options.edit(rows);
+  return staffGradeRecordFromRows({
+    rows,
+    checkResults: results,
+    gradedByEmail: "ta@northeastern.edu",
+    gradedAt: new Date("2026-10-08T15:00:00.000Z"),
+  });
+}
+
 describe("staff export for Canvas loading", () => {
-  it("full marks: 125 / 125 with no feedback", async () => {
+  it("auto checks alone never credit the 12 manual points and are not ready for Canvas", async () => {
     const { results } = await check(passingDeployPages());
     const row = exportRow(results);
-    assert.equal(row.points, TOTAL);
     assert.equal(row.autoPoints, AUTO_MAX);
-    assert.equal(row.manualPointsCredited, TOTAL - AUTO_MAX);
-    assert.equal(row.score, "125 / 125 (100.0%)");
-    assert.equal(row.confidence, "full_marks");
+    assert.equal(row.points, AUTO_MAX);
+    assert.equal(row.manualPoints, null);
+    assert.equal(row.manualMax, MANUAL_MAX);
+    assert.equal(row.readyForCanvas, false);
+    assert.match(row.readyReason, /manual item\(s\) not graded by staff/);
+    assert.equal(row.canvasPercent, null);
+    assert.equal(row.score, `${AUTO_MAX} / ${TOTAL} (grading in progress)`);
+    assert.doesNotMatch(row.score, /%/);
+    assert.equal(row.confidence, "needs_review");
+    assert.equal(row.scoreSource, "auto");
     assert.equal(row.feedback, "");
     assert.equal(row.submittedUrl, FIXTURE_ORIGIN);
     assert.equal(row.checkerVersion, "a1-rules-v2+abc1234");
   });
 
-  it("confident deduction: one lost item gets one feedback line with the book section", async () => {
+  it("full marks: staff graded the manual items, nothing flagged, 125 / 125 ready right away", async () => {
+    const { results } = await check(passingDeployPages());
+    const row = exportRow(results, { staffGrade: staffSave(results) });
+    assert.equal(row.points, TOTAL);
+    assert.equal(row.manualPoints, MANUAL_MAX);
+    assert.equal(row.readyForCanvas, true);
+    assert.equal(row.readyReason, "fully graded");
+    assert.equal(row.canvasPercent, 100);
+    assert.equal(row.score, "125 / 125 (100.0%)");
+    assert.equal(row.confidence, "full_marks");
+    assert.equal(row.scoreSource, "staff");
+  });
+
+  it("confident deduction: one lost item, staff graded the manual items; one feedback line", async () => {
     const s6 = passingDeployPages();
     s6["/courses/1234/assignments"] = s6["/courses/1234/assignments"].replace(
       ASSIGNMENTS_CONTENT,
       '<div id="wd-assignments"><ul id="wd-assignment-list"></ul></div>',
     );
     const { results } = await check(s6);
-    const row = exportRow(results);
+    assert.equal(exportRow(results).confidence, "needs_review");
+    const row = exportRow(results, { staffGrade: staffSave(results) });
     assert.equal(row.points, 120);
-    assert.equal(row.percent, 96);
+    assert.equal(row.canvasPercent, 96);
     assert.equal(row.confidence, "confident_deduction");
     assert.deepEqual(row.lostItems, ["a1-kambaz-assignments"]);
     const lines = row.feedback.split("\n");
@@ -445,49 +503,156 @@ describe("staff export for Canvas loading", () => {
     assert.match(lines[0], /Fix: https:\/\/kambaz\.dev\/book\/ch1#sec-1-4/);
   });
 
-  it("needs review: a TA-review item, a duplicate, an unmatched submission, or a low total", async () => {
-    const stripped = await check(passingDeployPages(), { transform: stripWdIds });
-    const review = exportRow(stripped.results);
-    assert.equal(review.points, TOTAL);
-    assert.equal(review.confidence, "needs_review");
-    assert.match(review.reviewReasons.join(";"), /need TA review/);
-
-    const full = await check(passingDeployPages());
-    const duplicate = exportRow(full.results, {
-      priorSubmissions: [{ url: "https://old.vercel.app", at: "2026-09-10T00:00:00.000Z" }],
+  it("a staff grade overrides the auto score, and staff-entered manual points are used", async () => {
+    const { results } = await check(passingDeployPages());
+    // TA takes 10 off an auto item the checker passed.
+    const lower = staffSave(results, {
+      edit: (rows) => rows.map((row) => (row.criterionId === "a1-kambaz-editor" ? { ...row, points: 0 } : row)),
     });
-    assert.equal(duplicate.confidence, "needs_review");
-    assert.match(duplicate.reviewReasons.join(";"), /duplicate submission/);
-    assert.equal(exportRow(full.results, { unmatched: true }).confidence, "needs_review");
-
-    const pages = passingDeployPages();
-    pages["/labs/lab1"] = pages["/labs/lab1"].replace(LAB1_CONTENT, "<h2>Lab 1</h2>");
-    const low = exportRow((await check(pages)).results);
-    assert.ok((low.points ?? 0) < CONFIDENT_DEDUCTION_FLOOR);
-    assert.equal(low.confidence, "needs_review");
-    assert.match(low.reviewReasons.join(";"), /below 113/);
+    const row = exportRow(results, { staffGrade: lower });
+    assert.equal(row.autoPoints, AUTO_MAX);
+    assert.equal(row.points, TOTAL - 5);
+    assert.equal(row.canvasPercent, 96);
+    assert.equal(row.staffPoints, TOTAL - 5);
+    // Partial manual credit: 6 of 12.
+    const partial = exportRow(results, { staffGrade: staffSave(results, { manual: 6 }) });
+    assert.equal(partial.manualPoints, 6);
+    assert.equal(partial.points, AUTO_MAX + 6);
+    assert.equal(partial.readyForCanvas, true);
+    assert.equal(partial.confidence, "confident_deduction");
   });
 
-  it("not checked yet is needs review with no score", () => {
+  it("an older override-only save that never graded the manual items is not ready", async () => {
+    const { results } = await check(passingDeployPages());
+    const row = exportRow(results, {
+      staffGrade: {
+        earnedPoints: AUTO_MAX,
+        totalPoints: TOTAL,
+        percent: 90.4,
+        acceptedProposed: false,
+        criterionOverrides: { "a1-kambaz-editor": true },
+        gradedAt: "2026-10-08T15:00:00.000Z",
+      },
+    });
+    assert.equal(row.readyForCanvas, false);
+    assert.equal(row.canvasPercent, null);
+    assert.match(row.readyReason, /manual item\(s\) not graded/);
+  });
+
+  it("not ready: open TA-review items, a duplicate, an unmatched submission, or a re-check", async () => {
+    const stripped = await check(passingDeployPages(), { transform: stripWdIds });
+    const review = exportRow(stripped.results);
+    assert.equal(review.confidence, "needs_review");
+    assert.match(review.reviewReasons.join(";"), /need TA review/);
+    // A staff Save decides every row, review items included.
+    const decided = exportRow(stripped.results, { staffGrade: staffSave(stripped.results) });
+    assert.equal(decided.readyForCanvas, true, decided.readyReason);
+
+    const full = await check(passingDeployPages());
+    const graded = staffSave(full.results);
+    const duplicate = exportRow(full.results, {
+      staffGrade: graded,
+      priorSubmissions: [{ url: "https://old.vercel.app", at: "2026-09-10T00:00:00.000Z" }],
+    });
+    assert.equal(duplicate.readyForCanvas, false);
+    assert.equal(duplicate.canvasPercent, null);
+    assert.equal(duplicate.confidence, "needs_review");
+    assert.match(duplicate.readyReason, /duplicate submission/);
+    const unmatched = exportRow(full.results, { staffGrade: graded, unmatched: true });
+    assert.equal(unmatched.readyForCanvas, false);
+    assert.match(unmatched.readyReason, /does not match a roster student/);
+
+    const flaky = await checkWith(
+      failingProbes(passingDeployPages(), /^\/courses\/1234\/modules$/, OPEN_FAILURES["503"]),
+    );
+    const recheck = exportRow(flaky.results, {
+      staffGrade: staffSave(flaky.results, {
+        edit: (rows) => rows.filter((row) => row.criterionId !== "a1-kambaz-modules"),
+      }),
+    });
+    assert.equal(recheck.readyForCanvas, false);
+    assert.match(recheck.readyReason, /1 item\(s\) need TA review/);
+  });
+
+  it("not checked yet is not ready, with no score", () => {
     const row = exportRow([]);
     assert.equal(row.checkStatus, "not_checked");
     assert.equal(row.points, null);
+    assert.equal(row.readyForCanvas, false);
     assert.equal(row.confidence, "needs_review");
   });
 
-  it("writes the CSV with URL, checker version, points and percent, and per-item outcomes", async () => {
+  it("writes ready_for_canvas, ready_reason and canvas_percent (blank until ready)", async () => {
     const { results } = await check(passingDeployPages());
-    const csv = submissionExportCsv(A1_RUBRIC, [exportRow(results)]);
-    const [header, line] = csv.trim().split("\r\n");
+    const csv = submissionExportCsv(A1_RUBRIC, [
+      exportRow(results, { staffGrade: staffSave(results) }),
+      exportRow(results),
+    ]);
+    const [header, ready, pending] = csv.trim().split("\r\n");
     const columns = header.split(",");
-    for (const column of ["submitted_url", "checker_version", "points", "percent", "score", "confidence", "feedback", "item:a1-kambaz-assignments"]) {
+    for (const column of ["submitted_url", "checker_version", "points", "manual_points", "score", "ready_for_canvas", "ready_reason", "canvas_percent", "confidence", "feedback", "item:a1-kambaz-assignments"]) {
       assert.ok(columns.includes(column), column);
     }
-    assert.ok(line.includes(FIXTURE_ORIGIN));
-    assert.ok(line.includes("a1-rules-v2+abc1234"));
-    assert.ok(line.includes("100.0"));
+    for (const gone of ["percent", "staff_percent", "manual_points_credited"]) {
+      assert.ok(!columns.includes(gone), gone);
+    }
+    const cells = (line: string): string[] =>
+      [...line.matchAll(/("(?:[^"]|"")*"|[^,]*)(,|$)/g)]
+        .slice(0, columns.length)
+        .map((m) => m[1].replace(/^"|"$/g, "").replace(/""/g, '"'));
+    const cell = (line: string, column: string) => cells(line)[columns.indexOf(column)];
+    assert.equal(cell(ready, "ready_for_canvas"), "yes");
+    assert.equal(cell(ready, "canvas_percent"), "100.0");
+    assert.equal(cell(pending, "ready_for_canvas"), "no");
+    assert.equal(cell(pending, "canvas_percent"), "");
+    assert.equal(cell(pending, "manual_points"), "");
+    assert.ok(ready.includes(FIXTURE_ORIGIN));
+    assert.ok(ready.includes("a1-rules-v2+abc1234"));
     assert.equal(csvCell('a "b", c'), '"a ""b"", c"');
     assert.equal(csvCell("one\ntwo"), '"one\ntwo"');
+  });
+
+  it("the student page, staff view and export get the same percentage from finalGrade", async () => {
+    const s6 = passingDeployPages();
+    s6["/courses/1234/assignments"] = s6["/courses/1234/assignments"].replace(
+      ASSIGNMENTS_CONTENT,
+      '<div id="wd-assignments"><ul id="wd-assignment-list"></ul></div>',
+    );
+    const { results } = await check(s6);
+    const saved = staffSave(results);
+    const row = staffRow(results, { staffGrade: saved });
+    const exported = buildSubmissionExportRow({ assignmentId: "a1", rubric: A1_RUBRIC, row });
+    // What the page builds from the saved grade (AssignmentChecklist input).
+    const view = gradeViewFromStaffGrade({
+      studentClerkUserId: "user_1",
+      assignmentId: "a1",
+      githubUrl: "",
+      vercelUrl: FIXTURE_ORIGIN,
+      criteria: listRubricCriteria(A1_RUBRIC).map((c) => ({ id: c.id, points: c.points })),
+      staffGrade: saved,
+      checkResults: results,
+    });
+    assert.ok(view);
+    const page = finalGrade({
+      assignmentId: "a1",
+      rubric: A1_RUBRIC,
+      results,
+      staff: { earnedPoints: view.earnedPoints, rows: view.rows },
+    });
+    const nav = finalGradeForStaffRow("a1", A1_RUBRIC, row);
+    assert.equal(page.canvasPercent, 96);
+    assert.equal(page.canvasPercent, exported.canvasPercent);
+    assert.equal(nav.canvasScore, exported.score);
+    assert.equal(page.canvasScore, exported.score);
+
+    // Before staff grade: the page shows auto points and "grading in progress", no %.
+    const before = finalGrade({ assignmentId: "a1", rubric: A1_RUBRIC, results, staff: null });
+    assert.equal(before.ready, false);
+    assert.equal(before.canvasPercent, null);
+    assert.equal(before.canvasScore, "");
+    const text = gradingInProgressText(before);
+    assert.match(text, /108 \/ 113 points · grading in progress/);
+    assert.doesNotMatch(text, /%/);
   });
 
   it("summarizes which items students miss most", async () => {

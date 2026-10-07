@@ -241,6 +241,14 @@ function A1WorkSession({
               }
             : null
         }
+        roster={
+          staffMode && selectedStudent
+            ? {
+                unmatched: selectedStudent.unmatched,
+                duplicates: selectedStudent.priorSubmissions?.length ?? 0,
+              }
+            : undefined
+        }
         vercelUrl={deployUrl}
         onOverride={staffMode ? onOverride : undefined}
         onPoints={staffMode ? onPoints : undefined}
