@@ -5,6 +5,8 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import LinksNavigation from "./ch3/embeds/_styled/Navigation";
 import AsDashboardPath from "../slides/_components/embeds/AsDashboardPath";
+import AssignmentsScreen from "../slides/_components/embeds/ch3/AssignmentsScreen";
+import PeopleTableScreen from "../slides/_components/embeds/ch3/PeopleTableScreen";
 
 function read(path: string): string {
   return readFileSync(new URL(`../../${path}`, import.meta.url), "utf8");
@@ -391,6 +393,88 @@ describe("Kambaz book demos match the code block they show", () => {
     );
   });
 
+  it("mounts chapter 3 slide embeds on sync ch3 screens", () => {
+    const styling = read("app/slides/_components/embeds/KambazStylingEmbeds.tsx");
+    const book = "app/book/ch3/sections/KambazData.tsx";
+    assert.equal(
+      exportLine(styling, "KambazCh3AssignmentsEmbed"),
+      "export function KambazCh3AssignmentsEmbed",
+    );
+    assert.equal(
+      exportLine(styling, "KambazCh3PeopleEmbed"),
+      "export function KambazCh3PeopleEmbed",
+    );
+    assert.equal(
+      exportLine(styling, "KambazCh3ModulesEmbed"),
+      "export function KambazCh3ModulesEmbed",
+    );
+    assert.equal(
+      exportLine(styling, "KambazCh3DashboardEmbed"),
+      "export function KambazCh3DashboardEmbed",
+    );
+    // Async §3.9.8 / §3.9.9 pages stay the book listings. Slides mount sync twins.
+    assert.deepEqual(mountedImports(styling, "KambazCh3DashboardEmbed"), [
+      "@/app/book/ch3/embeds/_styled/dashboard/Dashboard",
+    ]);
+    assert.deepEqual(mountedImports(styling, "KambazCh3ModulesEmbed"), [
+      "@/app/book/ch3/embeds/_styled/courses/cid/modules/page",
+    ]);
+    assert.deepEqual(mountedImports(styling, "KambazCh3AssignmentsEmbed"), [
+      "./ch3/AssignmentsScreen",
+    ]);
+    assert.deepEqual(mountedImports(styling, "KambazCh3PeopleEmbed"), [
+      "./ch3/PeopleTableScreen",
+    ]);
+    assert.doesNotMatch(fnBody(styling, "KambazCh3AssignmentsEmbed"), /params=/);
+    assert.doesNotMatch(fnBody(styling, "KambazCh3PeopleEmbed"), /params=/);
+    assert.doesNotMatch(
+      styling,
+      /embeds\/_styled\/courses\/cid\/assignments\/page|embeds\/_styled\/courses\/cid\/people\/table\/page/,
+    );
+
+    const assignmentsPage = "app/book/ch3/embeds/_styled/courses/cid/assignments/page.tsx";
+    const peoplePage = "app/book/ch3/embeds/_styled/courses/cid/people/table/page.tsx";
+    const assignmentsTwin = "app/slides/_components/embeds/ch3/AssignmentsScreen.tsx";
+    const peopleTwin = "app/slides/_components/embeds/ch3/PeopleTableScreen.tsx";
+    assert.match(read(assignmentsPage), /export default async function Assignments/);
+    assert.match(read(peoplePage), /export default async function PeopleTable/);
+    assert.match(codeBlock(book, "Assignments"), /await params/);
+    assert.match(codeBlock(book, "PeopleTable"), /await params/);
+    assert.equal(read(assignmentsPage).trim(), codeBlock(book, "Assignments").trim());
+    assert.equal(read(peoplePage).trim(), codeBlock(book, "PeopleTable").trim());
+    assert.equal(jsxReturn(read(assignmentsTwin)), jsxReturn(read(assignmentsPage)));
+    assert.equal(jsxReturn(read(peopleTwin)), jsxReturn(read(peoplePage)));
+    assert.equal(
+      sliceBetween(read(assignmentsTwin), "const assignments", "return ("),
+      sliceBetween(read(assignmentsPage), "const assignments", "return ("),
+    );
+    assert.equal(
+      sliceBetween(read(peopleTwin), "const { users, enrollments }", "return ("),
+      sliceBetween(read(peoplePage), "const { users, enrollments }", "return ("),
+    );
+    assert.match(read(assignmentsTwin), /export default function AssignmentsScreen/);
+    assert.match(read(peopleTwin), /export default function PeopleTableScreen/);
+    assert.doesNotMatch(read(assignmentsTwin), /export default async function/);
+    assert.doesNotMatch(read(peopleTwin), /export default async function/);
+
+    const assignmentsResult = AssignmentsScreen({ cid: "RS101" });
+    const peopleResult = PeopleTableScreen({ cid: "RS101" });
+    assert.equal("then" in Object(assignmentsResult), false);
+    assert.equal("then" in Object(peopleResult), false);
+    const assignmentsHtml = renderToStaticMarkup(assignmentsResult);
+    const peopleHtml = renderToStaticMarkup(peopleResult);
+    assert.match(assignmentsHtml, /\/courses\/RS101\/assignments\/A101/);
+    assert.match(assignmentsHtml, /\/courses\/RS101\/assignments\/A102/);
+    assert.match(assignmentsHtml, /\/courses\/RS101\/assignments\/A103/);
+    assert.match(assignmentsHtml, /Not available until 2024-05-06/);
+    assert.doesNotMatch(assignmentsHtml, /A201|ENV \+ HTML|CS1234/);
+    assert.match(peopleHtml, /wd-first-name[^<]*>Tony</);
+    assert.match(peopleHtml, /Thor/);
+    assert.match(peopleHtml, /FACULTY/);
+    assert.doesNotMatch(peopleHtml, /Pepper/);
+    assert.equal((peopleHtml.match(/odd:bg-neutral-50/g) ?? []).length, 6);
+  });
+
   it("keeps the chapter 3 navigation listing identical to the app", () => {
     assert.equal(
       codeBlock("app/book/ch3/sections/KambazData.tsx", "KambazNavigation").trim(),
@@ -446,6 +530,37 @@ function walk(rel: string): string[] {
     else if (/\.(tsx|ts|css|js|jsx|json)$/.test(name)) out.push(child);
   }
   return out;
+}
+
+function exportLine(src: string, name: string): string {
+  const match = src.match(new RegExp(`export (?:async )?function ${name}\\b`));
+  assert.ok(match, name);
+  return match[0];
+}
+
+/** Import paths of screen components rendered inside one embed function. */
+function mountedImports(src: string, fnName: string): string[] {
+  const body = fnBody(src, fnName);
+  const names: string[] = [];
+  for (const match of body.matchAll(/<([A-Z][A-Za-z0-9]*)\b/g)) {
+    const name = match[1];
+    if (name === "LectureDemoFrame" || name === "AsCourseParams") continue;
+    if (!names.includes(name)) names.push(name);
+  }
+  assert.ok(names.length > 0, `${fnName} mounts a screen`);
+  return names.map((name) => {
+    const imported = src.match(new RegExp(`import ${name} from "([^"]+)"`));
+    assert.ok(imported, `${fnName} mounts ${name} without an import`);
+    return imported[1];
+  });
+}
+
+function sliceBetween(source: string, start: string, end: string): string {
+  const at = source.indexOf(start);
+  assert.ok(at >= 0, start);
+  const stop = source.indexOf(end, at);
+  assert.ok(stop > at, end);
+  return source.slice(at, stop);
 }
 
 function fnBody(src: string, name: string): string {
