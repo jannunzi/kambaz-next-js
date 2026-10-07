@@ -28,6 +28,7 @@ export const PATH_PARAMS_AND_TODOS_SLIDES: LectureSlide[] = [
     bullets: [
       "`\"use client\"` because `usePathname` reads the address bar",
       "Each `Link` uses `key={link.id}` and a `match` predicate",
+      "After the map, the list also links Lab Steps and each Book chapter",
       "Visit `/labs/lab3` and confirm Lab 3 picks up the blue pill",
     ],
     code: `"use client";
@@ -62,6 +63,36 @@ export default function TOC() {
           </Link>
         </li>
       ))}
+      <li>
+        <Link href="/labs/lab1/intermediates" id="wd-lab1-intermediates-link">
+          Lab 1 Steps
+        </Link>
+      </li>
+      <li>
+        <Link href="/book/ch1" id="wd-book-ch1-link">
+          Book Ch1
+        </Link>
+      </li>
+      <li>
+        <Link href="/labs/lab2/intermediates" id="wd-lab2-intermediates-link">
+          Lab 2 Steps
+        </Link>
+      </li>
+      <li>
+        <Link href="/book/ch2" id="wd-book-ch2-link">
+          Book Ch2
+        </Link>
+      </li>
+      <li>
+        <Link href="/labs/lab3/intermediates" id="wd-lab3-intermediates-link">
+          Lab 3 Steps
+        </Link>
+      </li>
+      <li>
+        <Link href="/book/ch3" id="wd-book-ch3-link">
+          Book Ch3
+        </Link>
+      </li>
     </ul>
   );
 }`,

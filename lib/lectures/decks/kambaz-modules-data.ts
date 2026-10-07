@@ -41,6 +41,33 @@ export default function Modules() {
   const modules = db.modules.filter((module) => module.course === cid);
   return (
     <div>
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
+        >
+          Collapse All
+        </button>
+        <button
+          type="button"
+          className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
+        >
+          View Progress
+        </button>
+        <select
+          defaultValue="publish-all"
+          className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
+        >
+          <option value="publish-all">Publish All</option>
+          <option value="unpublish-all">Unpublish All</option>
+        </select>
+        <button
+          type="button"
+          className="rounded border border-red-600 bg-red-600 px-3 py-1.5 text-sm font-medium text-white"
+        >
+          + Module
+        </button>
+      </div>
       <ul id="wd-modules" className="m-0 list-none p-0">
         {modules.map((module) => (
           <Module key={module._id} title={module.name}>
@@ -55,7 +82,7 @@ export default function Modules() {
 }`,
     codeLanguage: "tsx",
     codeFile: "app/(kambaz)/courses/[cid]/modules/page.tsx",
-    codeHighlightLines: [9, 10, [14, 18]],
+    codeHighlightLines: [9, 10, [41, 45]],
     embed: "kambaz-styled-modules",
   },
   {
