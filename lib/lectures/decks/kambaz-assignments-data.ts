@@ -114,7 +114,7 @@ export default async function Assignments({
       "Cancel and Save are `Link`s back to that course’s list",
     ],
     code: `import Link from "next/link";
-import * as db from "../../../database";
+import * as db from "../../../../database";
 
 export default async function AssignmentEditor({
   params,
