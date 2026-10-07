@@ -18,16 +18,18 @@ export const CLIENT_AND_SERVER_SLIDES: LectureSlide[] = [
       "Next.js components are **Server Components** unless you say otherwise",
       "They render on the server, send HTML, and can read disk and env",
       "They cannot use hooks, clicks, or `usePathname`",
-      "Add `\"use client\"` as the **first** statement to run in the browser",
+      "Add `\"use client\"` as the **first** statement to make a **Client Component**",
+      "A Client Component still renders once on the server for the first HTML, then **hydrates** — React attaches to that HTML and keeps it running in the browser",
     ],
   },
   {
     id: "client",
-    title: "usePathname needs the browser",
+    title: "usePathname needs a Client Component",
     kind: "demo",
     bullets: [
-      "`usePathname` reads the address bar — a client-only hook",
-      "Remove the directive and the build (or runtime) fails",
+      "`usePathname` reads the address bar — hooks only work in Client Components",
+      "Remove the directive and `next dev` or `next build` stops: the hook needs `\"use client\"`",
+      "View Source on `/labs/lab3` still shows the pathname text — rendered on the server first",
       "Embedded here the path is the slides route; Lab 3 shows `/labs/lab3`",
     ],
     code: `"use client";
@@ -56,6 +58,7 @@ export default function ClientComponentDemo() {
       "`process.platform` and `fs.readdirSync` exist only on Node",
       "Adding `\"use client\"` here would fail — the browser has no `fs`",
       "`try` / `catch` leaves `files` empty if the folder is missing",
+      "On Vercel, Lab 3 is prerendered at build time: the time and file list don’t change on refresh. `npm run dev` re-renders every request",
     ],
     code: `import fs from "node:fs";
 import path from "node:path";
@@ -106,7 +109,7 @@ export default function ServerComponentDemo() {
     title: "Client and server recap",
     kind: "content",
     bullets: [
-      "Default = server. `\"use client\"` = browser, first line of the file",
+      "Default = server. `\"use client\"` = Client Component, first line of the file",
       "`usePathname` / `useParams` / `onClick` need a client component",
       "`fs`, `process`, and secrets stay on the server",
     ],

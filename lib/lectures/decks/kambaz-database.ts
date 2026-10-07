@@ -7,7 +7,7 @@ export const KAMBAZ_DATABASE_SLIDES: LectureSlide[] = [
     kind: "title",
     bullets: [
       "Chapter 3 · Kambaz Database",
-      "§3.9–3.9.2 · redirect, map the sidebar, collect JSON",
+      "§3.9–3.9.2 · redirect, map the sidebar, download JSON",
     ],
   },
   {
@@ -18,6 +18,7 @@ export const KAMBAZ_DATABASE_SLIDES: LectureSlide[] = [
       "Chapters 1–2 built screens whose markup never changed",
       "Lab 3 drills were throwaway. Wire Kambaz so the UI follows JSON",
       "Different courses on the dashboard; modules and people once the URL has a course id",
+      "Keep your Chapter 2 styling and `wd-*` ids. Change only lines that read `params`, `usePathname`, or `db`",
       "A coverage checklist is in §3.9.10 — after you walk the screens",
     ],
   },
@@ -57,6 +58,7 @@ export default function Kambaz() {
       "Replace handwritten links with `LINKS` — label, path, icon",
       "Account stays a special case (red text on white when active)",
       "Courses points at `/dashboard` — you reach a course from a card",
+      "One item lit at a time: Dashboard on `/dashboard`, Courses inside `/courses/…`",
     ],
     code: `"use client";
 
@@ -117,8 +119,8 @@ export default function KambazNavigation() {
       </Link>
       {LINKS.map((link) => {
         const active =
-          link.label === "Dashboard" || link.label === "Courses"
-            ? pathname.includes("/dashboard") || pathname.includes("/courses")
+          link.label === "Courses"
+            ? pathname.includes("/courses")
             : pathname.includes(link.path);
         const Icon = link.icon;
         return (
@@ -145,23 +147,32 @@ export default function KambazNavigation() {
     embed: "kambaz-links-nav",
   },
   {
-    id: "database",
-    title: "Collect JSON under database/",
+    id: "download-courses",
+    title: "Download courses.json first",
     kind: "content",
     bullets: [
-      "`app/(kambaz)/database` — courses, modules, assignments, users, enrollments",
+      "Kambaz keeps its data in **JSON** files under `app/(kambaz)/database/`",
+      "Download [courses.json](https://kambaz.dev/downloads/kambaz-database/courses.json) into that folder — three courses: RS101, RS102, RS103",
+      "Or open the link, copy the JSON, and paste it into a new `courses.json`",
+      "Or download it from a terminal in your project folder (macOS, Linux, or Git Bash):",
+    ],
+    code: `curl -o "app/(kambaz)/database/courses.json" https://kambaz.dev/downloads/kambaz-database/courses.json`,
+    codeLanguage: "shell",
+  },
+  {
+    id: "database",
+    title: "index.ts re-exports the JSON",
+    kind: "content",
+    bullets: [
       "Re-export from `index.ts` so screens write `import * as db from \"../database\"`",
-      "Keep at least three courses so the dashboard is obviously data-driven",
+      "For now it imports only `courses.json` — the one file in the folder",
+      "Don’t import a file before it is in the folder: `next build` fails with `Module not found`",
     ],
     code: `import courses from "./courses.json";
-import modules from "./modules.json";
-import assignments from "./assignments.json";
-import users from "./users.json";
-import enrollments from "./enrollments.json";
-export { courses, modules, assignments, users, enrollments };`,
+export { courses };`,
     codeLanguage: "ts",
     codeFile: "app/(kambaz)/database/index.ts",
-    codeHighlightLines: [[1, 6]],
+    codeHighlightLines: [[1, 2]],
   },
   {
     id: "ids",
@@ -169,8 +180,9 @@ export { courses, modules, assignments, users, enrollments };`,
     kind: "content",
     bullets: [
       "Each course object has `_id`, `name`, `description`, and `image`",
-      "You will encode `_id` as `/courses/RS101/home`",
-      "Add the other JSON files as later screens need them",
+      "You will encode `_id` as `/courses/RS101/home` — no spaces or slashes",
+      "Keep at least three courses so the screens visibly change per course",
+      "Each later screen downloads the one file it needs and adds one import",
     ],
   },
   {
@@ -179,7 +191,7 @@ export { courses, modules, assignments, users, enrollments };`,
     kind: "content",
     bullets: [
       "Kambaz nav: `LINKS.map` + `usePathname` + a `key`",
-      "`database/index.ts` re-exports JSON. Screens import `* as db`",
+      "Download a JSON file, then import it in `database/index.ts`. Screens import `* as db`",
       "Next: map `db.courses` onto dashboard cards",
     ],
   },

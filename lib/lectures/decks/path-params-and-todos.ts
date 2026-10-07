@@ -26,10 +26,11 @@ export const PATH_PARAMS_AND_TODOS_SLIDES: LectureSlide[] = [
     title: "TOC maps links and highlights",
     kind: "content",
     bullets: [
-      "`\"use client\"` because `usePathname` reads the address bar",
-      "Each `Link` uses `key={link.id}` and a `match` predicate",
-      "After the map, the list also links Lab Steps and each Book chapter",
-      "Visit `/labs/lab3` and confirm Lab 3 picks up the blue pill",
+      "Your Chapter 1 TOC has no `\"use client\"`, no `LINKS`, no `match` — **replace the whole file**",
+      "`\"use client\"` because `usePathname` reads the address bar. Each `li` uses `key={link.id}`",
+      "The active link gets an inline style object (§3.5.2) — Labs pages don’t load Tailwind",
+      "`aria-current=\"page\"` tells screen readers which link is the current page",
+      "Visit `/labs/lab3`: only Lab 3 is a blue pill with white text",
     ],
     code: `"use client";
 
@@ -44,61 +45,39 @@ const LINKS = [
   { href: "/", id: "wd-kambaz-link", label: "Kambaz", match: () => false },
 ] as const;
 
+const activeStyle = {
+  backgroundColor: "#2563eb",
+  color: "white",
+  borderRadius: "4px",
+  padding: "2px 8px",
+  textDecoration: "none",
+};
+
 export default function TOC() {
   const pathname = usePathname() ?? "";
   return (
     <ul>
-      {LINKS.map((link) => (
-        <li key={link.id}>
-          <Link
-            href={link.href}
-            id={link.id}
-            className={
-              link.match(pathname)
-                ? "rounded bg-blue-600 px-2 py-0.5 text-white no-underline"
-                : undefined
-            }
-          >
-            {link.label}
-          </Link>
-        </li>
-      ))}
-      <li>
-        <Link href="/labs/lab1/intermediates" id="wd-lab1-intermediates-link">
-          Lab 1 Steps
-        </Link>
-      </li>
-      <li>
-        <Link href="/book/ch1" id="wd-book-ch1-link">
-          Book Ch1
-        </Link>
-      </li>
-      <li>
-        <Link href="/labs/lab2/intermediates" id="wd-lab2-intermediates-link">
-          Lab 2 Steps
-        </Link>
-      </li>
-      <li>
-        <Link href="/book/ch2" id="wd-book-ch2-link">
-          Book Ch2
-        </Link>
-      </li>
-      <li>
-        <Link href="/labs/lab3/intermediates" id="wd-lab3-intermediates-link">
-          Lab 3 Steps
-        </Link>
-      </li>
-      <li>
-        <Link href="/book/ch3" id="wd-book-ch3-link">
-          Book Ch3
-        </Link>
-      </li>
+      {LINKS.map((link) => {
+        const active = link.match(pathname);
+        return (
+          <li key={link.id}>
+            <Link
+              href={link.href}
+              id={link.id}
+              style={active ? activeStyle : undefined}
+              aria-current={active ? "page" : undefined}
+            >
+              {link.label}
+            </Link>
+          </li>
+        );
+      })}
     </ul>
   );
 }`,
     codeLanguage: "tsx",
     codeFile: "app/labs/TOC.tsx",
-    codeHighlightLines: [[6, 11], [18, 27]],
+    codeHighlightLines: [[6, 12], [14, 20], 27, [33, 34]],
   },
   {
     id: "path-page",

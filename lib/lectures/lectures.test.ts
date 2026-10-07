@@ -1256,11 +1256,11 @@ describe("lecture decks", () => {
     assert.equal(counts["client-and-server"], 7);
     assert.equal(counts["parameterizing-components"], 7);
     assert.equal(counts["path-params-and-todos"], 10);
-    assert.equal(counts["kambaz-database"], 9);
+    assert.equal(counts["kambaz-database"], 10);
     assert.equal(counts["kambaz-dashboard-data"], 6);
     assert.equal(counts["kambaz-courses-data"], 7);
-    assert.equal(counts["kambaz-modules-data"], 6);
-    assert.equal(counts["kambaz-assignments-data"], 7);
+    assert.equal(counts["kambaz-modules-data"], 7);
+    assert.equal(counts["kambaz-assignments-data"], 9);
     assert.equal(counts["click-events"], 7);
     assert.equal(counts["passing-data-and-functions"], 8);
     assert.equal(counts["usestate-counter"], 7);
@@ -2585,6 +2585,7 @@ describe("lecture decks", () => {
       ["kambaz-database", "nav", "app/book/ch3/sections/KambazData.tsx", "KambazNavigation"],
       ["kambaz-courses-data", "layout", "app/book/ch3/sections/KambazData.tsx", "CoursesLayout"],
       ["kambaz-courses-data", "course-nav", "app/book/ch3/sections/KambazData.tsx", "CourseNavigation"],
+      ["kambaz-courses-data", "breadcrumb", "app/book/ch3/sections/KambazData.tsx", "Breadcrumb"],
       ["kambaz-modules-data", "page", "app/book/ch3/sections/KambazData.tsx", "Modules"],
       ["kambaz-assignments-data", "list", "app/book/ch3/sections/KambazData.tsx", "Assignments"],
       ["kambaz-assignments-data", "editor", "app/book/ch3/sections/KambazData.tsx", "AssignmentEditor"],
@@ -2593,6 +2594,7 @@ describe("lecture decks", () => {
       ["path-params-and-todos", "todos-json", "app/book/ch3/sections/StylingAndComponents.tsx", "todos"],
       ["spread-and-destructuring", "imports", "app/book/ch3/sections/DataStructures.tsx", "Math"],
       ["spread-and-destructuring", "destructing-imports", "app/book/ch3/sections/DataStructures.tsx", "DestructingImports"],
+      ["optional-chaining", "sample", "app/book/ch3/sections/DataStructures.tsx", "OptionalChaining"],
     ] as const;
 
     for (const [slug, id, file, name] of pairs) {
@@ -2623,6 +2625,42 @@ describe("lecture decks", () => {
     const dbIds = getLectureDeck("kambaz-database")!.slides.map((slide) => slide.id);
     assert.ok(dbIds.indexOf("redirect") < dbIds.indexOf("nav"));
     assert.ok(dbIds.indexOf("client") < dbIds.indexOf("nav"));
+    assert.ok(dbIds.indexOf("download-courses") < dbIds.indexOf("database"));
+
+    // database/index.ts grows one import per section, like the book.
+    const kambazData = readFileSync(
+      join(process.cwd(), "app/book/ch3/sections/KambazData.tsx"),
+      "utf8",
+    );
+    const indexSteps = [
+      findSlide("kambaz-database", "database").code,
+      findSlide("kambaz-modules-data", "modules-json").codeBlocks?.[1]?.code,
+      findSlide("kambaz-assignments-data", "assignments-json").codeBlocks?.[1]?.code,
+      findSlide("kambaz-assignments-data", "people-json").codeBlocks?.[1]?.code,
+    ];
+    assert.deepEqual(
+      indexSteps.map((code) => code?.split("\n").length),
+      [2, 3, 4, 6],
+    );
+    assert.equal(indexSteps[3], bookCodeBlock("app/book/ch3/sections/KambazData.tsx", "database"));
+    for (const code of indexSteps) {
+      assert.ok(kambazData.includes(`>{\`${code}\`}</CodeBlock>`), `book has index.ts step:\n${code}`);
+    }
+    for (const [slug, id, file] of [
+      ["kambaz-database", "download-courses", "courses"],
+      ["kambaz-modules-data", "modules-json", "modules"],
+      ["kambaz-assignments-data", "assignments-json", "assignments"],
+      ["kambaz-assignments-data", "people-json", "enrollments"],
+    ] as const) {
+      const slide = findSlide(slug, id);
+      const curl = slide.code ?? slide.codeBlocks?.[0]?.code ?? "";
+      assert.ok(kambazData.includes(curl), `${slug}#${id} curl matches book`);
+      assert.match(curl, new RegExp(`https://kambaz\\.dev/downloads/kambaz-database/${file}\\.json`));
+      assert.match(
+        (slide.bullets ?? []).join("\n"),
+        /\]\(https:\/\/kambaz\.dev\/downloads\/kambaz-database\//,
+      );
+    }
   });
 
   it("teaches Chapter 4 events, stores, and Kambaz state", () => {

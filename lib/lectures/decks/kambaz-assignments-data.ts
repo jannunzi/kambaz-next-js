@@ -18,7 +18,32 @@ export const KAMBAZ_ASSIGNMENTS_DATA_SLIDES: LectureSlide[] = [
       "Assignments: `db.assignments.filter` where `assignment.course === cid`",
       "The editor `find`s by `aid` and fills fields with `assignment?.title ?? \"\"`",
       "People: `users` plus `enrollments` — `some` ties a user to this course",
-      "Course Navigation, Assignments, and the editor stay On your own",
+      "Course Navigation, Assignments, and the editor are On your own: try first, then compare",
+    ],
+  },
+  {
+    id: "assignments-json",
+    title: "Download assignments.json, then import",
+    kind: "content",
+    bullets: [
+      "Download [assignments.json](https://kambaz.dev/downloads/kambaz-database/assignments.json) into `app/(kambaz)/database/` — three per course, A101–A303",
+      "Or download it from a terminal in your project folder",
+      "Add its import to `index.ts` so `db.assignments` exists",
+    ],
+    codeBlocks: [
+      {
+        code: `curl -o "app/(kambaz)/database/assignments.json" https://kambaz.dev/downloads/kambaz-database/assignments.json`,
+        language: "shell",
+      },
+      {
+        code: `import courses from "./courses.json";
+import modules from "./modules.json";
+import assignments from "./assignments.json";
+export { courses, modules, assignments };`,
+        language: "ts",
+        file: "app/(kambaz)/database/index.ts",
+        addedLines: [3, 4],
+      },
     ],
   },
   {
@@ -27,7 +52,7 @@ export const KAMBAZ_ASSIGNMENTS_DATA_SLIDES: LectureSlide[] = [
     kind: "demo",
     bullets: [
       "`await params` instead of `useParams` — no `\"use client\"`",
-      "Search, Group, and + Assignment stay static — only the list is data-driven",
+      "Keep your Chapter 2 toolbar and classes — only the list changes",
       "Map each row to `AssignmentItem` with `key={assignment._id}`",
       "Encode both ids: `/courses/${cid}/assignments/${aid}`",
     ],
@@ -110,11 +135,13 @@ export default async function Assignments({
     bullets: [
       "Await `cid` and `aid`, then `db.assignments.find((a) => a._id === aid)`",
       "`assignment?.title ?? \"\"` — the same `?.` / `??` as §3.4.17",
-      "Points, due, and available from use that same `assignment?.` read",
+      "Points, due, and available use that same `assignment?.` read",
+      "The page is four folders below `app/(kambaz)` (`courses/[cid]/assignments/[aid]`), so the import climbs four levels: `../../../../database`",
+      "Keep your Chapter 2 fields and classes; fill only the ones with data",
       "Cancel and Save are `Link`s back to that course’s list",
     ],
     code: `import Link from "next/link";
-import * as db from "../../../database";
+import * as db from "../../../../database";
 
 export default async function AssignmentEditor({
   params,
@@ -184,7 +211,35 @@ export default async function AssignmentEditor({
 }`,
     codeLanguage: "tsx",
     codeFile: "app/(kambaz)/courses/[cid]/assignments/[aid]/page.tsx",
-    codeHighlightLines: [9, 10, 14],
+    codeHighlightLines: [2, 9, 10, 14],
+  },
+  {
+    id: "people-json",
+    title: "Download users and enrollments",
+    kind: "content",
+    bullets: [
+      "Download the last two files, [users.json](https://kambaz.dev/downloads/kambaz-database/users.json) and [enrollments.json](https://kambaz.dev/downloads/kambaz-database/enrollments.json), into `app/(kambaz)/database/`",
+      "Or download both from a terminal in your project folder",
+      "`index.ts` now re-exports all five files",
+    ],
+    codeBlocks: [
+      {
+        code: `curl -o "app/(kambaz)/database/users.json" https://kambaz.dev/downloads/kambaz-database/users.json
+curl -o "app/(kambaz)/database/enrollments.json" https://kambaz.dev/downloads/kambaz-database/enrollments.json`,
+        language: "shell",
+      },
+      {
+        code: `import courses from "./courses.json";
+import modules from "./modules.json";
+import assignments from "./assignments.json";
+import users from "./users.json";
+import enrollments from "./enrollments.json";
+export { courses, modules, assignments, users, enrollments };`,
+        language: "ts",
+        file: "app/(kambaz)/database/index.ts",
+        addedLines: [[4, 6]],
+      },
+    ],
   },
   {
     id: "people",

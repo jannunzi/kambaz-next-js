@@ -28,10 +28,18 @@ export const OPTIONAL_CHAINING_SLIDES: LectureSlide[] = [
     bullets: [
       "`house.address?.city` is `Roma`",
       "`missing?.prop` is `undefined`, so `?? \"n/a\"` prints the fallback",
-      "The assignment editor uses `assignment?.title ?? \"\"`",
+      "The `House` **type** names the object’s shape. `?` marks `address`, `zip`, and `garage` optional",
+      "TypeScript only lets you read properties the type declares, even through `?.`",
+      "Without the type, `house.garage?.cars` works in `npm run dev` but fails `next build`",
     ],
-    code: `export default function OptionalChaining() {
-  const house = {
+    code: `type House = {
+  bedrooms: number;
+  address?: { street: string; city: string; zip?: string };
+  garage?: { cars: number };
+};
+
+export default function OptionalChaining() {
+  const house: House = {
     bedrooms: 4,
     address: {
       street: "Via Roma",
@@ -51,7 +59,7 @@ export const OPTIONAL_CHAINING_SLIDES: LectureSlide[] = [
 }`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab3/OptionalChaining.tsx",
-    codeHighlightLines: [13, 15],
+    codeHighlightLines: [[1, 5], 8, 19, 21],
     embed: "js-optional-chaining",
   },
   {

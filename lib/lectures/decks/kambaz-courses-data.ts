@@ -136,6 +136,7 @@ export default function CourseNavigation({ cid }: { cid: string }) {
       "Client Component so it can call `usePathname`",
       "Course name from the object the layout found; section from the URL",
       "`course?.name` guards a missing `find` — the same `?.` as §3.4.17",
+      "On Home it reads `Rocket Propulsion > Home`; the part after `>` follows the URL",
     ],
     code: `"use client";
 
@@ -151,7 +152,7 @@ export default function Breadcrumb({
   const label = section.charAt(0).toUpperCase() + section.slice(1);
   return (
     <span>
-      Course {course?.name} &gt; {label}
+      {course?.name} &gt; {label}
     </span>
   );
 }`,

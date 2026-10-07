@@ -21,13 +21,38 @@ export const KAMBAZ_MODULES_DATA_SLIDES: LectureSlide[] = [
     ],
   },
   {
+    id: "modules-json",
+    title: "Download modules.json, then import it",
+    kind: "content",
+    bullets: [
+      "Download [modules.json](https://kambaz.dev/downloads/kambaz-database/modules.json) into `app/(kambaz)/database/` — nine modules, three per course, each with lessons",
+      "Or download it from a terminal in your project folder",
+      "Then add one import line to `index.ts` so `db.modules` exists",
+    ],
+    codeBlocks: [
+      {
+        code: `curl -o "app/(kambaz)/database/modules.json" https://kambaz.dev/downloads/kambaz-database/modules.json`,
+        language: "shell",
+      },
+      {
+        code: `import courses from "./courses.json";
+import modules from "./modules.json";
+export { courses, modules };`,
+        language: "ts",
+        file: "app/(kambaz)/database/index.ts",
+        addedLines: [2, 3],
+      },
+    ],
+  },
+  {
     id: "page",
     title: "filter, then map, then lessons?.map",
     kind: "demo",
     bullets: [
       "Client Component because it uses `useParams`",
       "`lessons?.map` so a module without lessons does not throw",
-      "The toolbar stays static — only the list is data-driven",
+      "Keep the toolbar and classes from your Chapter 2 Modules screen",
+      "Only the hardcoded `Module` and `Lesson` elements become a `map`",
     ],
     code: `"use client";
 
