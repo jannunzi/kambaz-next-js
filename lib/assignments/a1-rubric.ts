@@ -13,6 +13,7 @@ import {
   a1LabManualIds,
 } from "./a1-lab-exercises";
 import type { A1RubricAutoSpec } from "./a1-rubric-types";
+import { ASSIGNMENTS_MISS_MESSAGE } from "./a1-structure";
 import {
   htmlClassTokens,
   htmlHasAllIds,
@@ -100,13 +101,13 @@ const A1_KAMBAZ_AUTO_SPECS: A1RubricAutoSpec[] = [
     kind: "ids",
     requireAnyIds: ["wd-assignments", "wd-assignment-list"],
     // An empty list is not an Assignments screen: it needs at least one link.
+    // One assignment passes; the book recommends three (A1, A2, A3).
     requireDescendantTagInAnyId: {
       ids: ["wd-assignments", "wd-assignment-list"],
       tag: "a",
     },
     passMessage: "Found the Assignments list with assignment links.",
-    failMessage:
-      "The Assignments screen needs a list of at least three assignments that each link to /courses/:cid/assignments/:aid.",
+    failMessage: ASSIGNMENTS_MISS_MESSAGE,
   },
   {
     criterionId: "a1-kambaz-editor",

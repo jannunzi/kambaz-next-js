@@ -9,8 +9,10 @@ import { A1_RUBRIC } from "./a1";
 import { A1_CHECKER } from "./a1-checker";
 import {
   A1_STRUCTURE_FALLBACKS,
+  ASSIGNMENTS_MISS_MESSAGE,
   MIN_ASSIGNMENT_LINKS,
   a1IdHasContent,
+  assignmentLinkCount,
   a1PersonalLinksFound,
   isBoilerplateUrl,
   realImageCount,
@@ -1193,20 +1195,59 @@ describe("B2: one page at a time, no boilerplate, real content", () => {
   });
 });
 
-describe("Assignments list: at least three assignment links (book §1.4.7)", () => {
-  const twoLinks = '<div id="wd-assignments"><ul id="wd-assignment-list"><li><a href="/courses/1234/assignments/123">A1</a></li><li><a href="/courses/1234/assignments/124">A2</a></li></ul></div>';
-  it("two links fail, with or without ids; three pass", async () => {
+describe("Assignments list: one assignment passes, three recommended (book §1.4.7)", () => {
+  const list = (items: string) =>
+    `<div id="wd-assignments"><ul id="wd-assignment-list">${items}</ul></div>`;
+  const item = (aid: string, title: string) =>
+    `<li class="wd-assignment-list-item"><a class="wd-assignment-link" href="/courses/1234/assignments/${aid}">${title}</a> Due May 13 | 100 pts</li>`;
+  const pagesWith = (content: string) => {
     const pages = passingDeployPages();
-    pages["/courses/1234/assignments"] = pages["/courses/1234/assignments"].replace(ASSIGNMENTS_CONTENT, twoLinks);
-    for (const transform of [undefined, stripWdIds]) {
-      const graded = await check(pages, { transform });
-      const row = graded.byCriterion.get("a1-kambaz-assignments");
-      assert.equal(row?.passed, false);
-      assert.match(row?.message ?? "", /at least three assignments/);
-    }
-    assert.equal(MIN_ASSIGNMENT_LINKS, 3);
-    const full = await check(passingDeployPages(), { transform: stripWdIds });
-    assert.equal(full.byCriterion.get("a1-kambaz-assignments")?.passed, true);
+    pages["/courses/1234/assignments"] = pages["/courses/1234/assignments"].replace(ASSIGNMENTS_CONTENT, content);
+    return pages;
+  };
+  const cases = [
+    { name: "one assignment", content: list(item("123", "A1 - ENV + HTML")), passed: true },
+    { name: "zero assignments", content: list(""), passed: false },
+    {
+      name: "three assignments",
+      content: list(item("123", "A1") + item("124", "A2") + item("125", "A3")),
+      passed: true,
+    },
+  ];
+
+  for (const { name, content, passed } of cases) {
+    it(`${name}: ${passed ? "5/5" : "0/5"}, with or without ids`, async () => {
+      const full = await check(passingDeployPages());
+      for (const transform of [undefined, stripWdIds]) {
+        const graded = await check(pagesWith(content), { transform });
+        const row = graded.byCriterion.get("a1-kambaz-assignments");
+        assert.equal(row?.passed, passed);
+        assert.equal(row?.needsReview, undefined);
+        assert.equal(graded.points, passed ? full.points : full.points - 5);
+        if (!passed) {
+          assert.equal(row?.message, ASSIGNMENTS_MISS_MESSAGE);
+          assert.doesNotMatch(row?.message ?? "", /wd-/);
+        }
+      }
+    });
+  }
+
+  it("an assignment link with no text is not an assignment entry", async () => {
+    const empty = '<li><a href="/courses/1234/assignments/123"></a></li>';
+    const graded = await check(pagesWith(list(empty)), { transform: stripWdIds });
+    assert.equal(graded.byCriterion.get("a1-kambaz-assignments")?.passed, false);
+    assert.equal(assignmentLinkCount(empty), 0);
+    assert.equal(assignmentLinkCount(item("123", "A1")), 1);
+  });
+
+  it("the miss message asks for one, recommends three, and names no id", () => {
+    assert.equal(MIN_ASSIGNMENT_LINKS, 1);
+    assert.match(ASSIGNMENTS_MISS_MESSAGE, /at least one assignment/);
+    assert.match(ASSIGNMENTS_MISS_MESSAGE, /three, like A1, A2, A3, are recommended/);
+    assert.doesNotMatch(ASSIGNMENTS_MISS_MESSAGE, /wd-/);
+    const item1 = A1_RUBRIC.groups.flatMap((g) => g.criteria).find((c) => c.id === "a1-kambaz-assignments");
+    assert.match(item1?.description ?? "", /at least one assignment/);
+    assert.match(item1?.description ?? "", /Three are recommended, like A1, A2, A3/);
   });
 });
 
@@ -1262,7 +1303,7 @@ describe("B3: feedback says what was missing, never an id", () => {
       '<div id="wd-assignments"><ul id="wd-assignment-list"></ul></div>',
     );
     const { byCriterion } = await check(s6);
-    assert.match(byCriterion.get("a1-kambaz-assignments")?.message ?? "", /assignments that each link/);
+    assert.match(byCriterion.get("a1-kambaz-assignments")?.message ?? "", /doesn.t list any assignments yet/);
   });
 
   it("every A1 fail message and structure miss message is id-free", () => {
