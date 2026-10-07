@@ -54,6 +54,7 @@ import {
   lectureSlideCodeBlocks,
   lectureThumbPath,
 } from "./types";
+import { expandLineMarks } from "../code-block/lines";
 import { slidePaneOverflows, slidePaneScrollStep } from "./slide-pane";
 import {
   LECTURE_PRESENT_STATE,
@@ -98,6 +99,18 @@ function findSlide(deckSlug: string, id: string) {
   const slide = deck.slides.find((row) => row.id === id);
   assert.ok(slide, `${deckSlug} missing slide ${id}`);
   return slide;
+}
+
+/** Body of a named book `<CodeBlock>`, character-for-character. */
+function bookCodeBlock(relativeFile: string, name: string): string {
+  const src = readFileSync(join(process.cwd(), relativeFile), "utf8");
+  const at = src.indexOf(`name="${name}"`);
+  assert.ok(at >= 0, `${name} in ${relativeFile}`);
+  const start = src.indexOf(">{`", at);
+  const end = src.indexOf("`}</CodeBlock>", start);
+  assert.ok(start >= 0 && end > start, `${name} template`);
+  const raw = src.slice(start + 3, end);
+  return Function(`"use strict"; return \`${raw}\`;`)() as string;
 }
 
 describe("lecture catalog", () => {
@@ -1237,13 +1250,13 @@ describe("lecture decks", () => {
     assert.equal(counts["array-search"], 8);
     assert.equal(counts["reduce-and-json"], 6);
     assert.equal(counts["javascript-objects"], 6);
-    assert.equal(counts["spread-and-destructuring"], 8);
+    assert.equal(counts["spread-and-destructuring"], 9);
     assert.equal(counts["optional-chaining"], 5);
     assert.equal(counts["dynamic-styling"], 7);
     assert.equal(counts["client-and-server"], 7);
     assert.equal(counts["parameterizing-components"], 7);
-    assert.equal(counts["path-params-and-todos"], 9);
-    assert.equal(counts["kambaz-database"], 8);
+    assert.equal(counts["path-params-and-todos"], 10);
+    assert.equal(counts["kambaz-database"], 9);
     assert.equal(counts["kambaz-dashboard-data"], 6);
     assert.equal(counts["kambaz-courses-data"], 7);
     assert.equal(counts["kambaz-modules-data"], 6);
@@ -1738,7 +1751,7 @@ describe("lecture decks", () => {
         spread: "js-spreader",
         destruct: "js-destructing",
         "fn-destruct": "js-function-destructing",
-        imports: "js-destructing-imports",
+        "destructing-imports": "js-destructing-imports",
       },
       "optional-chaining": { sample: "js-optional-chaining" },
       "dynamic-styling": {
@@ -2574,6 +2587,52 @@ describe("lecture decks", () => {
     assert.match(people, /assignment.course === cid/);
     assert.match(people, /assignment\?\.title \?\? ""/);
     assert.match(people, /enrollments.some/);
+  });
+
+  it("copies Chapter 3 book listings onto the matching slides", () => {
+    const pairs = [
+      ["kambaz-database", "redirect", "app/book/ch3/sections/KambazData.tsx", "Kambaz"],
+      ["kambaz-database", "nav", "app/book/ch3/sections/KambazData.tsx", "KambazNavigation"],
+      ["kambaz-courses-data", "layout", "app/book/ch3/sections/KambazData.tsx", "CoursesLayout"],
+      ["kambaz-courses-data", "course-nav", "app/book/ch3/sections/KambazData.tsx", "CourseNavigation"],
+      ["kambaz-modules-data", "page", "app/book/ch3/sections/KambazData.tsx", "Modules"],
+      ["kambaz-assignments-data", "list", "app/book/ch3/sections/KambazData.tsx", "Assignments"],
+      ["kambaz-assignments-data", "editor", "app/book/ch3/sections/KambazData.tsx", "AssignmentEditor"],
+      ["kambaz-assignments-data", "people", "app/book/ch3/sections/KambazData.tsx", "PeopleTable"],
+      ["path-params-and-todos", "toc", "app/book/ch3/sections/StylingAndComponents.tsx", "TOC"],
+      ["path-params-and-todos", "todos-json", "app/book/ch3/sections/StylingAndComponents.tsx", "todos"],
+      ["spread-and-destructuring", "imports", "app/book/ch3/sections/DataStructures.tsx", "Math"],
+      ["spread-and-destructuring", "destructing-imports", "app/book/ch3/sections/DataStructures.tsx", "DestructingImports"],
+    ] as const;
+
+    for (const [slug, id, file, name] of pairs) {
+      const slide = findSlide(slug, id);
+      const book = bookCodeBlock(file, name);
+      assert.equal(slide.code, book, `${slug}#${id} must match book ${name}`);
+      const lineCount = book.split("\n").length;
+      for (const line of expandLineMarks(slide.codeHighlightLines)) {
+        assert.ok(
+          line <= lineCount,
+          `${slug}#${id} highlight line ${line} past ${lineCount}`,
+        );
+      }
+    }
+
+    const spreadIds = getLectureDeck("spread-and-destructuring")!.slides.map((slide) => slide.id);
+    assert.ok(spreadIds.indexOf("imports") < spreadIds.indexOf("destructing-imports"));
+    assert.equal(findSlide("spread-and-destructuring", "imports").embed, undefined);
+    assert.equal(
+      findSlide("spread-and-destructuring", "destructing-imports").embed,
+      "js-destructing-imports",
+    );
+
+    const pathIds = getLectureDeck("path-params-and-todos")!.slides.map((slide) => slide.id);
+    assert.ok(pathIds.indexOf("todo-item") < pathIds.indexOf("todos-json"));
+    assert.ok(pathIds.indexOf("todos-json") < pathIds.indexOf("todo-list"));
+
+    const dbIds = getLectureDeck("kambaz-database")!.slides.map((slide) => slide.id);
+    assert.ok(dbIds.indexOf("redirect") < dbIds.indexOf("nav"));
+    assert.ok(dbIds.indexOf("client") < dbIds.indexOf("nav"));
   });
 
   it("teaches Chapter 4 events, stores, and Kambaz state", () => {

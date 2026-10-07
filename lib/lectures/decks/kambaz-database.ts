@@ -7,7 +7,7 @@ export const KAMBAZ_DATABASE_SLIDES: LectureSlide[] = [
     kind: "title",
     bullets: [
       "Chapter 3 · Kambaz Database",
-      "§3.9.1–3.9.2 · map the sidebar, then collect JSON",
+      "§3.9–3.9.2 · redirect, map the sidebar, collect JSON",
     ],
   },
   {
@@ -19,6 +19,34 @@ export const KAMBAZ_DATABASE_SLIDES: LectureSlide[] = [
       "Lab 3 drills were throwaway. Wire Kambaz so the UI follows JSON",
       "Different courses on the dashboard; modules and people once the URL has a course id",
       "A coverage checklist is in §3.9.10 — after you walk the screens",
+    ],
+  },
+  {
+    id: "redirect",
+    title: "Landing still redirects to Sign in",
+    kind: "content",
+    bullets: [
+      "`redirect` from `next/navigation` sends the browser to another route when the page renders",
+      "Kambaz `/` still opens Sign in at `/account/signin`",
+      "Confirm `/` opens Sign in before you change the sidebar",
+    ],
+    code: `import { redirect } from "next/navigation";
+
+export default function Kambaz() {
+  redirect("/account/signin");
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/(kambaz)/page.tsx",
+    codeHighlightLines: [4],
+  },
+  {
+    id: "client",
+    title: "Navigation is a Client Component",
+    kind: "content",
+    bullets: [
+      "`usePathname` highlights the active route — needs `\"use client\"`",
+      "Each mapped `Link` needs `key={link.label}`",
+      "Same pattern as the Labs TOC in §3.7.2",
     ],
   },
   {
@@ -115,16 +143,6 @@ export default function KambazNavigation() {
     codeFile: "app/(kambaz)/Navigation.tsx",
     codeHighlightLines: [[10, 16], [58, 78]],
     embed: "kambaz-links-nav",
-  },
-  {
-    id: "client",
-    title: "Navigation is a Client Component",
-    kind: "content",
-    bullets: [
-      "`usePathname` highlights the active route — needs `\"use client\"`",
-      "Each mapped `Link` needs `key={link.label}`",
-      "Same pattern as the Labs TOC in §3.7.2",
-    ],
   },
   {
     id: "database",

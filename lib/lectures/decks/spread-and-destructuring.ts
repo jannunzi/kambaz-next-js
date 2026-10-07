@@ -141,12 +141,12 @@ export const SPREAD_AND_DESTRUCTURING_SLIDES: LectureSlide[] = [
   },
   {
     id: "imports",
-    title: "Three ways to import Math",
-    kind: "demo",
+    title: "Named exports and one default",
+    kind: "content",
     bullets: [
-      "Named: `export function add`. Default: `export default Math`",
-      "`import Math from \"./Math\"` — then `Math.add(2, 3)`",
-      "`import * as Matematica` gathers every export. `{ add }` unpacks one",
+      "A **named** export is `export function add` — one file can export many names",
+      "`const Math` groups those functions. `export default Math` is the one **default**",
+      "A file has at most one default export",
     ],
     code: `export function add(a: number, b: number): number {
   return a + b;
@@ -170,6 +170,61 @@ export default Math;`,
     codeLanguage: "ts",
     codeFile: "app/labs/lab3/Math.ts",
     codeHighlightLines: [1, 19],
+  },
+  {
+    id: "destructing-imports",
+    title: "Import Math three different ways",
+    kind: "demo",
+    bullets: [
+      "Default: `import Math from \"./Math\"`, then `Math.add(2, 3)`",
+      "`import * as Matematica` gathers every export under one local name",
+      "`{ add, subtract, multiply, divide }` unpacks the named exports",
+    ],
+    code: `import Math, { add, subtract, multiply, divide } from "./Math";
+import * as Matematica from "./Math";
+
+export default function DestructingImports() {
+  return (
+    <div id="wd-destructuring-imports">
+      <h2>Destructing Imports</h2>
+      <table className="w-full border-collapse text-sm">
+        <thead>
+          <tr>
+            <th>Math</th>
+            <th>Matematica</th>
+            <th>Functions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Math.add(2, 3) = {Math.add(2, 3)}</td>
+            <td>Matematica.add(2, 3) = {Matematica.add(2, 3)}</td>
+            <td>add(2, 3) = {add(2, 3)}</td>
+          </tr>
+          <tr>
+            <td>Math.subtract(5, 1) = {Math.subtract(5, 1)}</td>
+            <td>Matematica.subtract(5, 1) = {Matematica.subtract(5, 1)}</td>
+            <td>subtract(5, 1) = {subtract(5, 1)}</td>
+          </tr>
+          <tr>
+            <td>Math.multiply(3, 4) = {Math.multiply(3, 4)}</td>
+            <td>Matematica.multiply(3, 4) = {Matematica.multiply(3, 4)}</td>
+            <td>multiply(3, 4) = {multiply(3, 4)}</td>
+          </tr>
+          <tr>
+            <td>Math.divide(8, 2) = {Math.divide(8, 2)}</td>
+            <td>Matematica.divide(8, 2) = {Matematica.divide(8, 2)}</td>
+            <td>divide(8, 2) = {divide(8, 2)}</td>
+          </tr>
+        </tbody>
+      </table>
+      <hr />
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab3/DestructingImports.tsx",
+    codeHighlightLines: [1, 2],
     embed: "js-destructing-imports",
   },
   {

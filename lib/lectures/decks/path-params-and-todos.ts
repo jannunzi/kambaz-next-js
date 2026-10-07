@@ -186,6 +186,24 @@ export default TodoItem;`,
     codeHighlightLines: [[7, 11], 14],
   },
   {
+    id: "todos-json",
+    title: "The list lives in todos.json",
+    kind: "content",
+    bullets: [
+      "A `.json` file is data. Next.js can `import` it as a JavaScript value",
+      "Each todo has a `title`, a `status`, and `done`",
+      "`done: true` starts the checkbox checked",
+    ],
+    code: `[
+  { "title": "Buy milk", "status": "CANCELED", "done": true },
+  { "title": "Pickup the kids", "status": "IN PROGRESS", "done": false },
+  { "title": "Walk the dog", "status": "DEFERRED", "done": false }
+]`,
+    codeLanguage: "json",
+    codeFile: "app/labs/lab3/todos/todos.json",
+    codeHighlightLines: [[2, 4]],
+  },
+  {
     id: "todo-list",
     title: "TodoList maps JSON onto rows",
     kind: "demo",
