@@ -22,8 +22,8 @@ export const GITHUB_RECHECK_MESSAGE =
 
 export function needsReviewMessage(looksFor?: string): string {
   return looksFor
-    ? `Needs TA review: no wd- id and no clear match for ${looksFor}. Not marked wrong; no points taken off.`
-    : "Needs TA review: no wd- id and no reliable way to confirm this automatically. Not marked wrong; no points taken off.";
+    ? `Needs TA review: we couldn't confirm ${looksFor} automatically, so a TA will look. Not marked wrong; no points taken off.`
+    : "Needs TA review: this can't be confirmed automatically, so a TA will look. Not marked wrong; no points taken off.";
 }
 
 export function checkRunStatus(

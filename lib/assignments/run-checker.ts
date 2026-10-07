@@ -1,6 +1,12 @@
 import { evaluateRubricSpec, specUsesIds } from "./a1-rubric";
 import type { A1RubricAutoSpec } from "./a1-rubric-types";
-import type { StructureContext } from "./a1-structure";
+import {
+  runFallback,
+  targetPages,
+  type StructureContext,
+  type StructureTarget,
+  type TargetPages,
+} from "./a1-structure";
 import type { AssignmentChecker } from "./checker-types";
 import type {
   AssignmentCheckProbes,
@@ -11,7 +17,14 @@ import {
   classifyDeployFetch,
   deployOpenFailureMessage,
 } from "./fetch-classify";
-import { htmlHasAllIds, htmlHasAnchorPath, htmlHasAnyId, htmlHasId } from "./html";
+import {
+  elementsWithId,
+  htmlHasAllIds,
+  htmlHasAnchorPath,
+  htmlHasAnyId,
+  htmlHasId,
+  isLabsPath,
+} from "./html";
 import { hasUsableNameQuery, htmlHasStudentName, type NameQuery } from "./names";
 import {
   GITHUB_RECHECK_MESSAGE,
@@ -41,9 +54,14 @@ function labsNavPassed(
   html: string,
   rule: AssignmentChecker["delivery"]["labsNav"],
   siteHost?: string,
+  hasId: (html: string, id: string) => boolean = htmlHasId,
 ): boolean {
-  const allOk = !rule.allIds?.length || htmlHasAllIds(html, rule.allIds).ok;
-  const anyOk = !rule.anyIds?.length || htmlHasAnyId(html, rule.anyIds);
+  const allOk =
+    !rule.allIds?.length ||
+    (hasId === htmlHasId ? htmlHasAllIds(html, rule.allIds).ok : rule.allIds.every((id) => hasId(html, id)));
+  const anyOk =
+    !rule.anyIds?.length ||
+    (hasId === htmlHasId ? htmlHasAnyId(html, rule.anyIds) : rule.anyIds.some((id) => hasId(html, id)));
   const hrefsOk =
     !rule.allHrefs?.length ||
     rule.allHrefs.every((path) => htmlHasAnchorPath(html, path, siteHost));
@@ -110,50 +128,145 @@ function pushNeedsRecheckRows(
   }
 }
 
+/** Legacy rule (A2 and any checker without idsOptional): ids as written. */
+function judgeLegacySpec(
+  spec: A1RubricAutoSpec,
+  html: string,
+  siteHost: string,
+): AssignmentCheckResult {
+  const extra = { criterionId: spec.criterionId, groupId: spec.groupId };
+  const primary = evaluateRubricSpec(spec, html, { siteHost });
+  return check(spec.criterionId, spec.label, primary.passed, primary.message, extra);
+}
+
+type Verdict =
+  | { kind: "pass"; message: string }
+  | { kind: "fail"; message: string }
+  /** No reliable signal: TA review if its gate allows, else a fail. */
+  | { kind: "review"; message: string; missMessage: string }
+  /** The page could not be fetched (timeout, network, 5xx, login wall). */
+  | { kind: "unreachable"; message: string };
+
+const DEFAULT_LAB_TARGET: StructureTarget = { kind: "labs" };
+const SITE_TARGET: StructureTarget = { kind: "site" };
+
+function capitalize(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+function missingPageMessage(target: TargetPages): string {
+  const status = target.status ? `returned HTTP ${target.status}` : "was not found";
+  return `${capitalize(target.name)} wasn't found on your deploy (${target.example} ${status}), so this item couldn't pass.`;
+}
+
+function unreachablePageMessage(target: TargetPages): string {
+  return `Needs re-check: ${target.name} (${target.example}) couldn't be opened (timeout, server error, or login), so this wasn't checked. Not marked wrong; no points taken off.`;
+}
+
 /**
- * Primary rule first (ids and other requirements). When ids are optional and
- * the primary rule misses, fall back to page structure. A miss with no
- * reliable structure is "Needs TA review": not a fail, no points taken off.
+ * Ids are optional: an id counts only when its element has real content;
+ * otherwise the check reads the structure on the page that should hold it.
+ * A page that returned 404 fails; a page that couldn't be fetched is a
+ * re-check with points kept. A miss with no reliable structure is a TA
+ * review candidate, resolved later against `reviewGates`.
  */
 function judgeSpec(
   config: AssignmentChecker,
   spec: A1RubricAutoSpec,
-  html: string,
   ctx: StructureContext,
-): AssignmentCheckResult {
-  const extra = { criterionId: spec.criterionId, groupId: spec.groupId };
-  const primary = evaluateRubricSpec(spec, html, { siteHost: ctx.siteHost });
-  if (primary.passed || !config.idsOptional) {
-    return check(spec.criterionId, spec.label, primary.passed, primary.message, extra);
-  }
+): Verdict {
   const fallback = config.structureFallbacks?.[spec.criterionId];
+  const targetSpec: StructureTarget =
+    fallback?.target ??
+    (spec.pagePath
+      ? { kind: "path", path: spec.pagePath, name: spec.pagePath }
+      : spec.groupId === "lab"
+        ? DEFAULT_LAB_TARGET
+        : SITE_TARGET);
+  const target = targetPages(ctx, targetSpec);
+  if (target.state === "missing") return { kind: "fail", message: missingPageMessage(target) };
+  if (target.state === "unreachable") {
+    return { kind: "unreachable", message: unreachablePageMessage(target) };
+  }
+  const html =
+    targetSpec.kind === "site" ? ctx.allHtml : target.pages.map((page) => page.html).join("\n");
+  const primary = evaluateRubricSpec(spec, html, {
+    siteHost: ctx.siteHost,
+    idPresent: (source, id) => idPresent(config, source, id),
+  });
+  if (primary.passed) return { kind: "pass", message: primary.message };
+
   if (!fallback) {
     if (specUsesIds(spec)) {
-      return check(spec.criterionId, spec.label, true, needsReviewMessage(), {
-        ...extra,
-        needsReview: true,
-      });
+      return { kind: "review", message: needsReviewMessage(), missMessage: spec.failMessage };
     }
-    return check(spec.criterionId, spec.label, false, primary.message, extra);
+    return { kind: "fail", message: primary.message };
   }
-  const verdict = fallback.test(ctx);
-  if (verdict === true) {
-    return check(
-      spec.criterionId,
-      spec.label,
-      true,
-      `Found ${fallback.looksFor} on the page.`,
-      extra,
-    );
+  const { verdict } = runFallback(fallback, ctx);
+  if (verdict === true) return { kind: "pass", message: `Found ${fallback.looksFor}.` };
+  if (verdict === "unreachable") return { kind: "unreachable", message: unreachablePageMessage(target) };
+  if (verdict === false && fallback.onMiss === "review") {
+    return {
+      kind: "review",
+      message: needsReviewMessage(fallback.looksFor),
+      missMessage: fallback.missMessage,
+    };
   }
-  if (verdict === "review" || fallback.onMiss === "review") {
-    return check(spec.criterionId, spec.label, true, needsReviewMessage(fallback.looksFor), {
-      ...extra,
-      needsReview: true,
-    });
+  return { kind: "fail", message: fallback.missMessage };
+}
+
+/** An id counts only when its element has the content the book asks for. */
+function idPresent(config: AssignmentChecker, html: string, id: string): boolean {
+  if (!config.idHasContent) return htmlHasId(html, id);
+  const contentOk = config.idHasContent;
+  return elementsWithId(html, id).some((element) => contentOk(id, element));
+}
+
+/**
+ * Turn verdicts into rows. A review candidate keeps its points only when
+ * its gate passes (an On your own / With AI item needs its core item; a
+ * core item needs most of the other reliable checks in its group), so an
+ * empty or template site cannot collect review points.
+ */
+function resolveVerdicts(
+  config: AssignmentChecker,
+  verdicts: { spec: A1RubricAutoSpec; verdict: Verdict }[],
+  earlier: readonly AssignmentCheckResult[],
+): AssignmentCheckResult[] {
+  const passed = new Map<string, boolean>();
+  for (const row of earlier) {
+    if (row.criterionId && !row.skipped) {
+      passed.set(row.criterionId, (passed.get(row.criterionId) ?? true) && row.passed);
+    }
   }
-  // A real structural miss. Keep the book's instruction (which names the id).
-  return check(spec.criterionId, spec.label, false, spec.failMessage, extra);
+  for (const { spec, verdict } of verdicts) {
+    passed.set(spec.criterionId, verdict.kind === "pass" || verdict.kind === "unreachable");
+  }
+  return verdicts.map(({ spec, verdict }) => {
+    const extra = { criterionId: spec.criterionId, groupId: spec.groupId };
+    switch (verdict.kind) {
+      case "pass":
+        return check(spec.criterionId, spec.label, true, verdict.message, extra);
+      case "fail":
+        return check(spec.criterionId, spec.label, false, verdict.message, extra);
+      case "unreachable":
+        return check(spec.criterionId, spec.label, true, verdict.message, {
+          ...extra,
+          needsReview: true,
+        });
+      case "review": {
+        const gate = config.reviewGates?.[spec.criterionId];
+        const count = gate ? gate.requires.filter((id) => passed.get(id) === true).length : 0;
+        if (!gate || count >= gate.minPassed) {
+          return check(spec.criterionId, spec.label, true, verdict.message, {
+            ...extra,
+            needsReview: true,
+          });
+        }
+        return check(spec.criterionId, spec.label, false, verdict.missMessage, extra);
+      }
+    }
+  });
 }
 
 export async function runChecker(
@@ -341,9 +454,17 @@ export async function runChecker(
     return results;
   }
 
+  // Ids-optional checkers read Lab pages only (never the home page) and
+  // count an id only when its element has content (a real link).
+  const labsOnlyHtml = crawled.pages
+    .filter((page) => page.result.ok && isLabsPath(page.path))
+    .map((page) => (page.result.ok ? page.result.html : ""))
+    .join("\n");
+  const deliveryHtml = config.idsOptional ? labsOnlyHtml : crawled.labsHtml;
+  const hasId = (html: string, id: string) => idPresent(config, html, id);
   const labsNav =
-    labsNavPassed(crawled.labsHtml, delivery.labsNav, siteHost) ||
-    Boolean(delivery.labsNav.structurePassed?.(crawled.labsHtml, siteHost));
+    labsNavPassed(deliveryHtml, delivery.labsNav, siteHost, config.idHasContent ? hasId : htmlHasId) ||
+    Boolean(delivery.labsNav.structurePassed?.(deliveryHtml, siteHost));
   results.push(
     check(
       delivery.labsNav.criterionId,
@@ -357,9 +478,9 @@ export async function runChecker(
     ),
   );
 
-  const githubById = htmlHasId(crawled.labsHtml, "wd-github");
+  const githubById = hasId(deliveryHtml, "wd-github");
   const githubHook =
-    githubById || Boolean(delivery.github.linkStructurePassed?.(crawled.labsHtml));
+    githubById || Boolean(delivery.github.linkStructurePassed?.(deliveryHtml));
   results.push(
     check(
       `${delivery.github.criterionId}-link`,
@@ -409,39 +530,52 @@ export async function runChecker(
     }
   }
 
-  const structure: StructureContext = {
-    labsHtml: crawled.labsHtml,
-    allHtml: crawled.allHtml,
-    pages: crawled.pages.flatMap((page) =>
-      page.result.ok ? [{ path: page.path, html: page.result.html }] : [],
-    ),
-    siteHost,
-  };
-
-  for (const spec of config.autoSpecs) {
-    let html: string;
-    if (spec.pagePath) {
-      const page = crawled.pages.find((entry) => entry.path === spec.pagePath);
-      if (!page?.result.ok) {
-        const status = page && !page.result.ok ? page.result.status : undefined;
-        const message =
-          status === 404
-            ? `${spec.failMessage} ${spec.pagePath} returned HTTP 404.`
-            : `${spec.failMessage} Could not open ${spec.pagePath}.`;
-        results.push(
-          check(spec.criterionId, spec.label, false, message, {
-            criterionId: spec.criterionId,
-            groupId: spec.groupId,
-          }),
-        );
-        continue;
+  if (!config.idsOptional) {
+    for (const spec of config.autoSpecs) {
+      let html: string;
+      if (spec.pagePath) {
+        const page = crawled.pages.find((entry) => entry.path === spec.pagePath);
+        if (!page?.result.ok) {
+          const status = page && !page.result.ok ? page.result.status : undefined;
+          const message =
+            status === 404
+              ? `${spec.failMessage} ${spec.pagePath} returned HTTP 404.`
+              : `${spec.failMessage} Could not open ${spec.pagePath}.`;
+          results.push(
+            check(spec.criterionId, spec.label, false, message, {
+              criterionId: spec.criterionId,
+              groupId: spec.groupId,
+            }),
+          );
+          continue;
+        }
+        html = page.result.html;
+      } else {
+        const scope = spec.htmlScope ?? (spec.groupId === "lab" ? "labs" : "all");
+        html = scope === "labs" ? crawled.labsHtml || crawled.allHtml : crawled.allHtml;
       }
-      html = page.result.html;
-    } else {
-      const scope = spec.htmlScope ?? (spec.groupId === "lab" ? "labs" : "all");
-      html = scope === "labs" ? crawled.labsHtml || crawled.allHtml : crawled.allHtml;
+      results.push(judgeLegacySpec(spec, html, siteHost));
     }
-    results.push(judgeSpec(config, spec, html, structure));
+  } else {
+    const structure: StructureContext = {
+      labsHtml: labsOnlyHtml,
+      allHtml: crawled.allHtml,
+      pages: crawled.pages.flatMap((page) =>
+        page.result.ok ? [{ path: page.path, html: page.result.html }] : [],
+      ),
+      attempted: crawled.pages.map((page) => ({
+        path: page.path,
+        ok: page.result.ok,
+        status: page.result.status,
+        code: page.result.ok ? undefined : page.result.code,
+      })),
+      siteHost,
+    };
+    const verdicts = config.autoSpecs.map((spec) => ({
+      spec,
+      verdict: judgeSpec(config, spec, structure),
+    }));
+    results.push(...resolveVerdicts(config, verdicts, results));
   }
 
   for (const row of config.manualRows) {

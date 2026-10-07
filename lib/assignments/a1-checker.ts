@@ -1,4 +1,5 @@
 import {
+  A1_LAB_EXERCISE_SECTIONS,
   A1_LAB_EXERCISES,
   A1_LAB_SPECIAL_AUTO_IDS,
   a1LabVerifyPaths,
@@ -10,6 +11,7 @@ import {
 import {
   A1_STRUCTURE_FALLBACKS,
   a1GithubLinkStructurePassed,
+  a1IdHasContent,
   a1LabsNavStructurePassed,
 } from "./a1-structure";
 import type { AssignmentChecker } from "./checker-types";
@@ -64,6 +66,49 @@ export const A1_VERIFY_PATHS: Record<string, string> = {
 
 const manualIds = new Set<string>(A1_MANUAL_CRITERION_IDS);
 
+/**
+ * When a "Needs TA review" item may keep its points:
+ *   - On your own / With AI: only when the section's core item passed.
+ *   - A core item with no reliable structure (highlighted components,
+ *     Modules, course Home): only when most of the reliable checks in its
+ *     group passed, so the page is clearly the student's real work.
+ * Otherwise the item fails, so an empty or template site gets no review points.
+ */
+function a1ReviewGates(): Record<string, { requires: string[]; minPassed: number }> {
+  const gates: Record<string, { requires: string[]; minPassed: number }> = {};
+  for (const section of A1_LAB_EXERCISE_SECTIONS) {
+    const core = section.tasks.find((task) => task.kind === "core");
+    if (!core) continue;
+    for (const task of section.tasks) {
+      if (task.kind !== "core") gates[task.id] = { requires: [core.id], minPassed: 1 };
+    }
+  }
+  const coreIds = new Set(
+    A1_LAB_EXERCISES.filter((exercise) => exercise.kind === "core").map((exercise) => exercise.id),
+  );
+  const reliable = (group: string) =>
+    A1_RUBRIC_AUTO_SPECS.filter(
+      (spec) =>
+        spec.groupId === group &&
+        (group !== "lab" || coreIds.has(spec.criterionId)) &&
+        A1_STRUCTURE_FALLBACKS[spec.criterionId]?.onMiss === "fail",
+    ).map((spec) => spec.criterionId);
+  const groups: Record<string, string[]> = {
+    lab: [...reliable("lab"), "a1-delivery-labs-nav"],
+    kambaz: reliable("kambaz"),
+  };
+  for (const spec of A1_RUBRIC_AUTO_SPECS) {
+    const fallback = A1_STRUCTURE_FALLBACKS[spec.criterionId];
+    const isCore = spec.groupId === "kambaz" || coreIds.has(spec.criterionId);
+    if (!isCore || fallback?.onMiss !== "review") continue;
+    const requires = (groups[spec.groupId] ?? []).filter((id) => id !== spec.criterionId);
+    gates[spec.criterionId] = { requires, minPassed: Math.ceil(requires.length / 2) };
+  }
+  return gates;
+}
+
+export const A1_REVIEW_GATES = a1ReviewGates();
+
 const autoIds = new Set<string>([
   "a1-delivery-vercel",
   "a1-delivery-name-section",
@@ -78,6 +123,8 @@ export const A1_CHECKER: AssignmentChecker = {
   rulesVersion: A1_CHECKER_RULES_VERSION,
   idsOptional: true,
   structureFallbacks: A1_STRUCTURE_FALLBACKS,
+  idHasContent: a1IdHasContent,
+  reviewGates: A1_REVIEW_GATES,
   seedPaths: A1_SEED_PATHS,
   followupCap: A1_CHECKER_FOLLOWUP_CAP,
   verifyPaths: A1_VERIFY_PATHS,
@@ -109,8 +156,9 @@ export const A1_CHECKER: AssignmentChecker = {
       criterionId: "a1-delivery-github",
       groupId: "delivery",
       linkLabel: "GitHub link on Labs",
-      linkPassMessage: "Found a wd-github link on Labs.",
-      linkFailMessage: "Add a public repo link with id wd-github on Labs.",
+      linkPassMessage: "Found a link to your GitHub repository on Labs.",
+      linkFailMessage:
+        "We couldn't find a link to your GitHub repository on the Labs pages. Add one to the Labs table of contents.",
       linkStructurePassed: a1GithubLinkStructurePassed,
     },
     name: {

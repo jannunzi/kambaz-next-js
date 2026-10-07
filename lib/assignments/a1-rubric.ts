@@ -36,7 +36,7 @@ const A1_KAMBAZ_AUTO_SPECS: A1RubricAutoSpec[] = [
     requireAnyIds: ["wd-signup-screen", "wd-profile-screen", "wd-account-navigation"],
     passMessage: "Found Kambaz sign-in and another account screen id.",
     failMessage:
-      "Open /account/signin and add Sign up / Profile / Account Navigation ids from Chapter 1.",
+      "The Account screens need a Sign in form with a password field, plus a Sign up or Profile screen.",
   },
   {
     criterionId: "a1-kambaz-dashboard",
@@ -45,7 +45,8 @@ const A1_KAMBAZ_AUTO_SPECS: A1RubricAutoSpec[] = [
     kind: "ids",
     requireAllIds: ["wd-dashboard"],
     passMessage: "Found wd-dashboard.",
-    failMessage: "Dashboard should use id wd-dashboard.",
+    failMessage:
+      "The Dashboard doesn't link to any courses (/courses/…/home).",
   },
   {
     criterionId: "a1-kambaz-nav",
@@ -54,7 +55,8 @@ const A1_KAMBAZ_AUTO_SPECS: A1RubricAutoSpec[] = [
     kind: "ids",
     requireAnyIds: ["wd-kambaz-navigation", "wd-kambaz", "wd-account-link"],
     passMessage: "Found Kambaz navigation ids.",
-    failMessage: "Kambaz layout should include wd-kambaz-navigation (or wd-kambaz).",
+    failMessage:
+      "We couldn't find the Kambaz navigation (links to /dashboard and /account).",
   },
   {
     criterionId: "a1-kambaz-course-nav",
@@ -69,7 +71,7 @@ const A1_KAMBAZ_AUTO_SPECS: A1RubricAutoSpec[] = [
     ],
     passMessage: "Found course navigation ids.",
     failMessage:
-      "Course pages should include wd-courses-navigation or the course nav link ids.",
+      "We couldn't find the course navigation (links to the course Home and Modules screens).",
   },
   {
     criterionId: "a1-kambaz-modules",
@@ -78,7 +80,8 @@ const A1_KAMBAZ_AUTO_SPECS: A1RubricAutoSpec[] = [
     kind: "ids",
     requireAnyIds: ["wd-modules", "wd-modules-controls"],
     passMessage: "Found Modules ids.",
-    failMessage: "Modules should use id wd-modules.",
+    failMessage:
+      "The Modules screen doesn't show a list of modules.",
   },
   {
     criterionId: "a1-kambaz-home",
@@ -87,7 +90,8 @@ const A1_KAMBAZ_AUTO_SPECS: A1RubricAutoSpec[] = [
     kind: "ids",
     requireAnyIds: ["wd-home", "wd-course-status"],
     passMessage: "Found Course Home ids.",
-    failMessage: "Course Home should include wd-home or wd-course-status.",
+    failMessage:
+      "The course Home screen doesn't show the modules or the course status buttons.",
   },
   {
     criterionId: "a1-kambaz-assignments",
@@ -102,7 +106,7 @@ const A1_KAMBAZ_AUTO_SPECS: A1RubricAutoSpec[] = [
     },
     passMessage: "Found the Assignments list with assignment links.",
     failMessage:
-      "Assignments should use id wd-assignments and list assignments that link to /courses/:cid/assignments/:aid.",
+      "The Assignments screen needs a list of at least three assignments that each link to /courses/:cid/assignments/:aid.",
   },
   {
     criterionId: "a1-kambaz-editor",
@@ -111,7 +115,8 @@ const A1_KAMBAZ_AUTO_SPECS: A1RubricAutoSpec[] = [
     kind: "ids",
     requireAnyIds: ["wd-assignments-editor", "wd-name"],
     passMessage: "Found Assignment Editor ids.",
-    failMessage: "Assignment Editor should include wd-assignments-editor or wd-name.",
+    failMessage:
+      "The Assignment Editor needs its form fields (a name field plus a description or dropdowns).",
   },
 ];
 
@@ -125,18 +130,31 @@ export const A1_RUBRIC_AUTO_SPECS: A1RubricAutoSpec[] = [
 export function evaluateRubricSpec(
   spec: A1RubricAutoSpec,
   html: string,
-  options?: { siteHost?: string },
+  options?: {
+    siteHost?: string;
+    /**
+     * How an id counts. Default: the id attribute is present. Ids-optional
+     * checkers pass a rule that also needs the element's content.
+     */
+    idPresent?: (html: string, id: string) => boolean;
+  },
 ): { passed: boolean; message: string } {
   if (spec.kind === "manual") {
     return { passed: false, message: spec.failMessage };
   }
 
+  const idPresent = options?.idPresent;
   const missing: string[] = [];
   if (spec.requireAllIds?.length) {
-    const all = htmlHasAllIds(html, spec.requireAllIds);
-    missing.push(...all.missing);
+    if (idPresent) missing.push(...spec.requireAllIds.filter((id) => !idPresent(html, id)));
+    else missing.push(...htmlHasAllIds(html, spec.requireAllIds).missing);
   }
-  if (spec.requireAnyIds?.length && !htmlHasAnyId(html, spec.requireAnyIds)) {
+  if (
+    spec.requireAnyIds?.length &&
+    !(idPresent
+      ? spec.requireAnyIds.some((id) => idPresent(html, id))
+      : htmlHasAnyId(html, spec.requireAnyIds))
+  ) {
     missing.push(`one of ${spec.requireAnyIds.join(", ")}`);
   }
   if (spec.headingLevels?.length) {

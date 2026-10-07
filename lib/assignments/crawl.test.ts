@@ -52,11 +52,11 @@ function htmlForBusyDeploy(url: string): string {
   if (path === "/account/signup") return '<div id="wd-signup-screen"></div>';
   if (path === "/account/profile") return '<div id="wd-profile-screen"></div>';
   if (path === "/courses/1234/home") {
-    return '<div id="wd-home"></div><div id="wd-courses-navigation"></div>';
+    return '<div id="wd-home"><button>Publish</button></div><div id="wd-courses-navigation"><a href="/courses/1234/home">Home</a><a href="/courses/1234/modules">Modules</a></div>';
   }
-  if (path === "/courses/1234/modules") return '<ul id="wd-modules"></ul>';
+  if (path === "/courses/1234/modules") return '<ul id="wd-modules"><li>Week 1</li></ul>';
   if (path === "/courses/1234/assignments") {
-    return '<div id="wd-assignments"><ul id="wd-assignment-list"><li><a href="/courses/1234/assignments/123">A1</a></li></ul></div>';
+    return '<div id="wd-assignments"><ul id="wd-assignment-list"><li><a href="/courses/1234/assignments/123">A1</a></li><li><a href="/courses/1234/assignments/124">A2</a></li><li><a href="/courses/1234/assignments/125">A3</a></li></ul></div>';
   }
   if (path === "/courses/1234/assignments/123") {
     return '<div id="wd-assignments-editor"><input id="wd-name" /></div>';

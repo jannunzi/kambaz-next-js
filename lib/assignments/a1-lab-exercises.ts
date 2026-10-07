@@ -83,7 +83,7 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
           headingLevels: [1, 2, 3, 4, 5, 6],
           passMessage: "Found wd-h-tag and practice headings h1–h6.",
           failMessage:
-            "Lab 1 should include wd-h-tag and the h1–h6 headings you add as practice.",
+            "Lab 1 doesn't show the h1–h6 headings you add as practice (on top of the Heading Tags sample) yet.",
         },
       },
       {
@@ -97,7 +97,7 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
           requireAllIds: ["wd-your-heading", "wd-your-span"],
           passMessage: "Found wd-your-heading and wd-your-span.",
           failMessage:
-            "Add a personal heading with ids wd-your-heading and wd-your-span.",
+            "We couldn't find your personal heading with a span inside it on Lab 1.",
         },
       },
       {
@@ -110,7 +110,8 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
           kind: "ids",
           requireAllIds: ["wd-ai-headings"],
           passMessage: "Found wd-ai-headings.",
-          failMessage: "Add the With AI sample outline with id wd-ai-headings.",
+          failMessage:
+            "We couldn't find the With AI sample outline (h4 Lab notes, h5 What I built, h6 Next step) on Lab 1.",
         },
       },
     ],
@@ -131,7 +132,8 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
           requireAllIds: ["wd-p-tag"],
           requireAnyIds: ["wd-p-1", "wd-p-2"],
           passMessage: "Found paragraph sample ids on Lab 1.",
-          failMessage: "Lab 1 should include wd-p-tag and sample paragraph ids.",
+          failMessage:
+            "Lab 1 doesn't have the Paragraph Tag sample paragraphs yet.",
         },
       },
       {
@@ -143,7 +145,8 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
           kind: "ids",
           requireAllIds: ["wd-p-your-1", "wd-p-your-2"],
           passMessage: "Found wd-p-your-1 and wd-p-your-2.",
-          failMessage: "Add personal paragraphs with ids wd-p-your-1 and wd-p-your-2.",
+          failMessage:
+            "We couldn't find your two personal paragraphs on Lab 1.",
         },
       },
       {
@@ -156,7 +159,8 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
           kind: "ids",
           requireAllIds: ["wd-ai-p"],
           passMessage: "Found wd-ai-p.",
-          failMessage: "Add the With AI sample paragraph with id wd-ai-p.",
+          failMessage:
+            "We couldn't find the With AI paragraph that explains why p creates vertical spacing on Lab 1.",
         },
       },
     ],
@@ -176,7 +180,8 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
           kind: "ids",
           requireAllIds: ["wd-lists", "wd-pancakes"],
           passMessage: "Found wd-lists and the pancake sample list.",
-          failMessage: "Lab 1 should include wd-lists and wd-pancakes.",
+          failMessage:
+            "Lab 1 doesn't have the List Tags samples (the pancake ordered list and the unordered list) yet.",
         },
       },
       {
@@ -190,7 +195,7 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
           requireAllIds: ["wd-your-favorite-recipe", "wd-your-books"],
           passMessage: "Found wd-your-favorite-recipe and wd-your-books.",
           failMessage:
-            "Add personal lists with ids wd-your-favorite-recipe and wd-your-books.",
+            "We couldn't find your favorite-recipe ordered list and favorites unordered list on Lab 1.",
         },
       },
       {
@@ -203,7 +208,8 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
           kind: "ids",
           requireAllIds: ["wd-ai-html-tags"],
           passMessage: "Found wd-ai-html-tags.",
-          failMessage: "Add the With AI HTML-tags list with id wd-ai-html-tags.",
+          failMessage:
+            "We couldn't find the With AI list of HTML tags on Lab 1.",
         },
       },
     ],
@@ -223,7 +229,8 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
           kind: "ids",
           requireAllIds: ["wd-tables"],
           passMessage: "Found wd-tables.",
-          failMessage: "Lab 1 should include a table with id wd-tables.",
+          failMessage:
+            "Lab 1 doesn't have the quiz grades table yet.",
         },
       },
       {
@@ -235,7 +242,8 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
           kind: "ids",
           requireAllIds: ["wd-your-table"],
           passMessage: "Found wd-your-table.",
-          failMessage: "Add a personal table with id wd-your-table.",
+          failMessage:
+            "We couldn't find your own table on Lab 1.",
         },
       },
       {
@@ -271,7 +279,8 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
           requireAllIds: ["wd-images"],
           requireAnyIds: ["wd-starship", "wd-teslabot"],
           passMessage: "Found wd-images and a sample image id.",
-          failMessage: "Lab 1 should include wd-images plus wd-starship or wd-teslabot.",
+          failMessage:
+            "Lab 1 doesn't show the sample images (Starship and teslabot) yet.",
         },
       },
       {
@@ -283,7 +292,8 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
           kind: "ids",
           requireAllIds: ["wd-your-image"],
           passMessage: "Found wd-your-image.",
-          failMessage: "Add a personal image with id wd-your-image.",
+          failMessage:
+            "We couldn't find your own image on Lab 1.",
         },
       },
       {
@@ -295,7 +305,8 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
           kind: "ids",
           requireAllIds: ["wd-ai-image"],
           passMessage: "Found wd-ai-image.",
-          failMessage: "Add the With AI sample image with id wd-ai-image.",
+          failMessage:
+            "We couldn't find the With AI sample image on Lab 1.",
         },
       },
     ],
@@ -322,7 +333,7 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
           ],
           passMessage: "Found wd-forms and sample form field ids.",
           failMessage:
-            "Lab 1 should include wd-forms and the sample text, textarea, radio, or select ids.",
+            "Lab 1 doesn't have the sample form controls (text field, textarea, radio buttons, dropdown) yet.",
         },
       },
       {
@@ -335,7 +346,8 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
           kind: "ids",
           requireAllIds: ["wd-your-form"],
           passMessage: "Found wd-your-form.",
-          failMessage: "Add a Student Profile form with id wd-your-form.",
+          failMessage:
+            "We couldn't find your Student Profile form on Lab 1.",
         },
       },
       {
@@ -363,7 +375,8 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
           kind: "ids",
           requireAllIds: ["wd-highlighted-paragraph"],
           passMessage: "Found wd-highlighted-paragraph.",
-          failMessage: "Lab 1 should include wd-highlighted-paragraph.",
+          failMessage:
+            "We couldn't find a HighlightedParagraph (a paragraph with a color or background style) on Lab 1.",
         },
       },
       {
@@ -398,7 +411,8 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
           kind: "ids",
           requireAllIds: ["wd-highlighted-box"],
           passMessage: "Found wd-highlighted-box.",
-          failMessage: "Lab 1 should include wd-highlighted-box.",
+          failMessage:
+            "We couldn't find a HighlightedBox (a styled box that wraps other elements) on Lab 1.",
         },
       },
       {
@@ -433,7 +447,8 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
           kind: "ids",
           requireAnyIds: ["wd-lipsum", "wd-github"],
           passMessage: "Found Lab 1 anchor ids (wd-lipsum or wd-github).",
-          failMessage: "Lab 1 should include wd-lipsum and/or wd-github anchors.",
+          failMessage:
+            "Lab 1 doesn't have the AnchorTag sample links yet.",
         },
         verifyHash: "wd-lipsum",
       },
@@ -446,7 +461,8 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
           kind: "ids",
           requireAllIds: ["wd-your-link", "wd-your-github"],
           passMessage: "Found wd-your-link and wd-your-github.",
-          failMessage: "Add personal anchors wd-your-link and wd-your-github.",
+          failMessage:
+            "We couldn't find a personal link (your GitHub profile, LinkedIn, or portfolio) on Lab 1.",
         },
       },
       {
@@ -458,7 +474,8 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
           kind: "ids",
           requireAllIds: ["wd-ai-link"],
           passMessage: "Found wd-ai-link.",
-          failMessage: "Add the With AI sample docs link with id wd-ai-link.",
+          failMessage:
+            "We couldn't find the With AI documentation link (for example MDN) on Lab 1.",
         },
       },
     ],
@@ -489,7 +506,8 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
           // in a1-structure.ts).
           requireAnyIds: ["wd-lab4-link"],
           passMessage: "Found a Lab 4 link (wd-lab4-link).",
-          failMessage: "Link Lab 4 from Labs (id wd-lab4-link).",
+          failMessage:
+            "The Labs index doesn't link to Lab 4 (/labs/lab4).",
         },
         verifyHash: "wd-lab4-link",
       },
@@ -503,7 +521,8 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
           kind: "ids",
           requireAnchorPaths: ["/labs/lab5"],
           passMessage: "Found a Lab 5 index link.",
-          failMessage: "Add a Lab 5 placeholder and link it from the Labs index.",
+          failMessage:
+            "Add a Lab 5 placeholder and link it from the Labs index.",
         },
         verifyHash: "wd-labs",
       },
@@ -528,7 +547,7 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
           requireAnyIds: ["wd-home-link", "wd-lab1-link", "wd-lab2-link"],
           passMessage: "Found the Labs TOC on the Lab 1 page.",
           failMessage:
-            "Labs TOC should include wd-home-link or wd-lab1-link, and app/labs/layout.tsx should show it on every lab page (Lab 1 has no TOC links).",
+            "The Lab 1 page doesn't show the Labs table of contents (links to the other labs). Put the TOC in app/labs/layout.tsx so it wraps every lab page.",
         },
         verifyHash: "wd-home-link",
       },
@@ -549,7 +568,8 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
           kind: "ids",
           requireAllIds: ["wd-toc-book-link"],
           passMessage: "Found wd-toc-book-link.",
-          failMessage: "Add a Chapter 1 link in the labs TOC with id wd-toc-book-link.",
+          failMessage:
+            "The Labs table of contents doesn't link to Chapter 1 of the book (https://kambaz.dev/book/ch1).",
         },
       },
     ],

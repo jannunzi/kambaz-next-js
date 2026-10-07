@@ -37,6 +37,20 @@ export function mongoSubmissionStore(
         { upsert: true },
       );
     },
+    async setCheckRun(clerkUserId, assignmentId, fields) {
+      // Only the check fields: a concurrent staff Save keeps its grade.
+      const result = await collection.updateOne(
+        { clerkUserId, assignmentId },
+        {
+          $set: {
+            checkResults: fields.checkResults,
+            lastCheckedAt: fields.lastCheckedAt,
+            checkerVersion: fields.checkerVersion,
+          },
+        },
+      );
+      return result.matchedCount > 0;
+    },
     async listByAssignment(assignmentId) {
       return collection.find({ assignmentId }).toArray();
     },

@@ -81,9 +81,9 @@ export const ASSIGNMENT_STUDENT_COPY = {
     "Your Vercel URL returned HTTP 404 (this page cannot be loaded). Open it in a private window and submit the production https://….vercel.app URL that actually opens — not a deleted preview or a path that 404s.",
   vercelHttpError:
     "Your Vercel URL did not load. Open that same URL in a private/incognito window. If the browser cannot load the page, Run checks cannot either.",
-  labsOk: "Found Labs navigation or wd- hooks used in A1.",
+  labsOk: "Found the Labs navigation (links to your lab pages).",
   labsMissing:
-    "The page opened, but Labs navigation / wd- ids were not found. Open /labs on your deploy and follow Chapter 1.",
+    "The page opened, but we couldn't find links to your lab pages (Lab 1, Lab 2, Lab 3) on /labs. Open /labs on your deploy and follow Chapter 1.",
   labsUnread: "Could not read the page to check Labs markers.",
   nameOk: "Found your full Canvas name on Labs.",
   nameCheckNeedsRoster:

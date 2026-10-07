@@ -6,7 +6,15 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { A1_RUBRIC } from "./a1";
-import { a1PersonalLinksFound } from "./a1-structure";
+import { A1_CHECKER } from "./a1-checker";
+import {
+  A1_STRUCTURE_FALLBACKS,
+  MIN_ASSIGNMENT_LINKS,
+  a1IdHasContent,
+  a1PersonalLinksFound,
+  isBoilerplateUrl,
+  realImageCount,
+} from "./a1-structure";
 import { checkRunStatus, needsRecheckReason, needsReviewCriterionIds } from "./check-status";
 import type { AssignmentCheckResult, HtmlFetchResult } from "./check-types";
 import { A1_CHECKER_RULES_VERSION, checkerVersionLabel } from "./checker-version";
@@ -22,7 +30,7 @@ import {
 } from "./export";
 import { proposedGradeFromResults } from "./grade";
 import { gradeRowsFromResults, rowPresentation, sanitizeCheckResults } from "./grade-rows";
-import { renderedMarkup, stripWdIds } from "./html";
+import { elementsWithId, renderedMarkup, stripWdIds } from "./html";
 import { resolveNameQuery } from "./names";
 import { rerunCheckBatch } from "./rerun";
 import type { StaffStudentRow } from "./staff";
@@ -34,6 +42,10 @@ import {
 import { listRubricCriteria } from "./catalog";
 import {
   ASSIGNMENTS_CONTENT,
+  CREATE_NEXT_APP_HTML,
+  IDS_ONLY_HTML,
+  bareCreateNextAppPages,
+  catchAllProbes,
   FIXTURE_ORIGIN,
   FIXTURE_TOC,
   LAB1_CONTENT,
@@ -96,12 +108,13 @@ describe("fix 1: Lab 4 / Lab 5 links by href", () => {
     assert.equal(byCriterion.get("a1-lab-labs-nav-oyo")?.passed, true);
   });
 
-  it("fails when there is no Lab 4 link, and keeps the book's id instruction", async () => {
+  it("fails when there is no Lab 4 link, and says what is missing (not an id)", async () => {
     const pages = edit("/labs", '<li><a id="wd-lab4-link" href="/labs/lab4">Lab 4</a></li>', "");
     const { byCriterion } = await check(pages);
     const row = byCriterion.get("a1-lab-labs-nav-oyo");
     assert.equal(row?.passed, false);
-    assert.match(row?.message ?? "", /wd-lab4-link/);
+    assert.match(row?.message ?? "", /\/labs\/lab4/);
+    assert.doesNotMatch(row?.message ?? "", /wd-/);
   });
 
   it("Lab 5 needs a real anchor: the path in a script payload does not count", async () => {
@@ -622,3 +635,345 @@ describe("structure helpers ignore script payloads", () => {
     assert.equal(renderedMarkup(html), "<p>a</p>");
   });
 });
+
+/* ------------------------------------------------------------------ */
+/* PR #209 QA blockers: empty sites, boilerplate, 404 pages, feedback  */
+/* ------------------------------------------------------------------ */
+
+async function checkWith(probes: ReturnType<typeof fixtureProbes>) {
+  const results = await runA1Checks({
+    githubUrl: "https://github.com/jane-doe/webdev-client",
+    vercelUrl: FIXTURE_ORIGIN,
+    nameQuery: resolveNameQuery({ rosterName: "Doe, Jane" }),
+    probes,
+  });
+  return {
+    results,
+    byCriterion: latestResultByCriterion(results),
+    points: proposedGradeFromResults(A1_RUBRIC, results).earnedPoints,
+  };
+}
+
+/** main's results on Quentin's guard sites (Oct 7 audit). */
+const MAIN_BARE = 3;
+const MAIN_CATCH_ALL = 3;
+const KAMBAZ_SCREENS = [
+  "a1-kambaz-account",
+  "a1-kambaz-dashboard",
+  "a1-kambaz-modules",
+  "a1-kambaz-home",
+  "a1-kambaz-assignments",
+  "a1-kambaz-editor",
+];
+
+function failedMessages(results: AssignmentCheckResult[]): string[] {
+  return results.filter((row) => !row.passed && !row.skipped).map((row) => row.message);
+}
+
+describe("B1: a fetched 404 fails; review is not a pass for empty sites", () => {
+  it("a bare create-next-app scores like main (about 3 / 113), with nothing in TA review", async () => {
+    const { results, points } = await check(bareCreateNextAppPages());
+    assert.ok(points <= MAIN_BARE + 3, `bare create-next-app scored ${points}`);
+    assert.deepEqual(needsReviewCriterionIds(results), []);
+    const row = exportRow(results);
+    assert.equal(row.confidence, "needs_review");
+    assert.ok((row.points ?? 0) <= MAIN_BARE + 3 + (TOTAL - AUTO_MAX));
+  });
+
+  it("every Kambaz screen that returns 404 fails, and says the page wasn't found", async () => {
+    const pages = passingDeployPages();
+    for (const path of Object.keys(pages)) {
+      if (!path.startsWith("/labs") && path !== "/") delete pages[path];
+    }
+    const { byCriterion } = await check(pages);
+    for (const id of KAMBAZ_SCREENS) {
+      const row = byCriterion.get(id);
+      assert.equal(row?.passed, false, `${id}: ${row?.message}`);
+      assert.equal(row?.needsReview, undefined, id);
+      assert.match(row?.message ?? "", /HTTP 404/, id);
+    }
+  });
+
+  it("a Lab 1 page that returns 404 fails its lab items (no TA review)", async () => {
+    const pages = passingDeployPages();
+    delete pages["/labs/lab1"];
+    pages["/labs"] = pages["/labs"].replace(LABS_INDEX_CONTENT, "<h1>Labs</h1>");
+    const { byCriterion } = await check(pages, { transform: stripWdIds });
+    for (const id of ["a1-lab-tables", "a1-lab-paragraph-oyo", "a1-lab-highlighted-box", "a1-lab-images-ai", "a1-lab-toc"]) {
+      assert.equal(byCriterion.get(id)?.passed, false, id);
+      assert.equal(byCriterion.get(id)?.needsReview, undefined, id);
+    }
+  });
+
+  it("a page that couldn't be fetched (5xx or timeout) keeps its points and is flagged, not failed", async () => {
+    const pages = passingDeployPages();
+    const probes = fixtureProbes(pages);
+    const flaky: typeof probes = {
+      ...probes,
+      async getHtml(url) {
+        if (/\/modules$/i.test(new URL(url).pathname)) {
+          return { ok: false, status: 503, code: "http_error", message: "HTTP 503" };
+        }
+        return probes.getHtml(url);
+      },
+    };
+    const { byCriterion, points } = await checkWith(flaky);
+    const row = byCriterion.get("a1-kambaz-modules");
+    assert.equal(row?.passed, true);
+    assert.equal(row?.needsReview, true);
+    assert.match(row?.message ?? "", /Needs re-check/);
+    assert.equal(points, AUTO_MAX);
+  });
+
+  it("On your own / With AI go to TA review only when the core item passed", async () => {
+    // Core paragraph present (no ids): its On your own / With AI rows are review.
+    const ok = await check(passingDeployPages(), { transform: stripWdIds });
+    assert.equal(ok.byCriterion.get("a1-lab-paragraph-oyo")?.needsReview, true);
+    // No paragraphs at all: the core fails, so On your own and With AI fail too.
+    const pages = passingDeployPages();
+    pages["/labs/lab1"] = pages["/labs/lab1"].replace(/<p\b[\s\S]*?<\/p>/g, "");
+    const graded = await check(pages, { transform: stripWdIds });
+    assert.equal(graded.byCriterion.get("a1-lab-paragraph")?.passed, false);
+    for (const id of ["a1-lab-paragraph-oyo", "a1-lab-paragraph-ai"]) {
+      assert.equal(graded.byCriterion.get(id)?.passed, false, id);
+      assert.equal(graded.byCriterion.get(id)?.needsReview, undefined, id);
+    }
+  });
+
+  it("a core item with no reliable structure is review only on a real lab page", async () => {
+    // Highlighted box missing on an otherwise complete Lab 1: TA review, points kept.
+    const pages = passingDeployPages();
+    pages["/labs/lab1"] = pages["/labs/lab1"].replace(
+      '<div id="wd-highlighted-box" style="background-color:lightblue;padding:10px"><h4>Box</h4><p>Nested</p></div>',
+      "",
+    );
+    const graded = await check(pages, { transform: stripWdIds });
+    assert.equal(graded.byCriterion.get("a1-lab-highlighted-box")?.needsReview, true);
+    // On the template page it fails.
+    const bare = await checkWith(catchAllProbes(CREATE_NEXT_APP_HTML));
+    assert.equal(bare.byCriterion.get("a1-lab-highlighted-box")?.passed, false);
+    assert.equal(bare.byCriterion.get("a1-kambaz-modules")?.passed, false);
+  });
+});
+
+describe("B2: one page at a time, no boilerplate, real content", () => {
+  it("a catch-all site (the starter page on every route) scores like main", async () => {
+    const { results, points, byCriterion } = await checkWith(catchAllProbes(CREATE_NEXT_APP_HTML));
+    assert.ok(points <= MAIN_CATCH_ALL + 3, `catch-all scored ${points}`);
+    assert.deepEqual(needsReviewCriterionIds(results), []);
+    // The template's logos and its vercel.com / nextjs.org links are not lab work.
+    for (const id of [
+      "a1-lab-images",
+      "a1-lab-images-oyo",
+      "a1-lab-images-ai",
+      "a1-lab-anchor",
+      "a1-lab-anchor-ai",
+      "a1-lab-paragraph",
+    ]) {
+      assert.equal(byCriterion.get(id)?.passed, false, id);
+    }
+  });
+
+  it("lab items never read the home page", async () => {
+    const pages = bareCreateNextAppPages();
+    pages["/"] = page200(LAB1_CONTENT);
+    const { byCriterion } = await check(pages, { transform: stripWdIds });
+    for (const id of ["a1-lab-tables", "a1-lab-images", "a1-lab-forms", "a1-lab-anchor"]) {
+      assert.equal(byCriterion.get(id)?.passed, false, id);
+    }
+  });
+
+  it("counts do not add up across pages", async () => {
+    const pages = passingDeployPages();
+    for (const path of Object.keys(pages)) {
+      if (path.startsWith("/labs")) pages[path] = pages[path].replace(/<p\b[\s\S]*?<\/p>/g, "");
+    }
+    pages["/labs/lab1"] = pages["/labs/lab1"].replace("<h2>Lab 1</h2>", "<h2>Lab 1</h2><p>Only one paragraph here.</p>");
+    pages["/labs/lab2"] = pages["/labs/lab2"].replace("<h2>Lab 2</h2>", "<h2>Lab 2</h2><p>And one here.</p>");
+    const joined = await check(pages, { transform: stripWdIds });
+    assert.equal(joined.byCriterion.get("a1-lab-paragraph")?.passed, false);
+    // Two on the same page pass.
+    pages["/labs/lab1"] = pages["/labs/lab1"].replace("<p>Only one paragraph here.</p>", "<p>One.</p><p>Two.</p>");
+    const { byCriterion } = await check(pages, { transform: stripWdIds });
+    assert.equal(byCriterion.get("a1-lab-paragraph")?.passed, true);
+  });
+
+  it("ids on empty divs do not pass (structure and content, not ids)", async () => {
+    const { byCriterion, points } = await checkWith(catchAllProbes(IDS_ONLY_HTML));
+    for (const id of [
+      "a1-delivery-labs-nav",
+      "a1-lab-heading-tags",
+      "a1-lab-paragraph",
+      "a1-lab-lists",
+      "a1-lab-tables",
+      "a1-lab-images",
+      "a1-lab-forms",
+      "a1-lab-anchor",
+      "a1-lab-highlighted-paragraph",
+      "a1-lab-highlighted-box",
+      "a1-lab-labs-nav-oyo",
+      "a1-lab-toc",
+      "a1-lab-toc-ai",
+      ...KAMBAZ_SCREENS,
+      "a1-kambaz-nav",
+      "a1-kambaz-course-nav",
+    ]) {
+      assert.equal(byCriterion.get(id)?.passed, false, id);
+    }
+    assert.ok(points <= 10, `ids-only scored ${points}`);
+  });
+
+  it("an id counts only when its element has the content", () => {
+    const el = (html: string, id: string) => elementsWithId(html, id)[0];
+    assert.equal(a1IdHasContent("wd-tables", el('<div id="wd-tables"></div>', "wd-tables")), false);
+    assert.equal(
+      a1IdHasContent("wd-tables", el('<div id="wd-tables"><table><tr><th>Q</th></tr><tr><td>Q1</td></tr></table></div>', "wd-tables")),
+      true,
+    );
+    assert.equal(a1IdHasContent("wd-pancakes", el('<ol id="wd-pancakes"></ol>', "wd-pancakes")), false);
+    assert.equal(a1IdHasContent("wd-pancakes", el('<ol id="wd-pancakes"><li>Mix</li></ol>', "wd-pancakes")), true);
+    assert.equal(a1IdHasContent("wd-your-form", el('<form id="wd-your-form"></form>', "wd-your-form")), false);
+    assert.equal(a1IdHasContent("wd-your-form", el('<form id="wd-your-form"><input /></form>', "wd-your-form")), true);
+    assert.equal(a1IdHasContent("wd-lab4-link", el('<div id="wd-lab4-link"></div>', "wd-lab4-link")), false);
+    assert.equal(a1IdHasContent("wd-lab4-link", el('<li id="wd-lab4-link"><a href="/labs/lab4">Lab 4</a></li>', "wd-lab4-link")), true);
+    assert.equal(a1IdHasContent("wd-your-image", el('<img id="wd-your-image" src="/me.jpg" alt="me" />', "wd-your-image")), true);
+    assert.equal(a1IdHasContent("wd-your-image", el('<img id="wd-your-image" />', "wd-your-image")), false);
+    assert.equal(a1IdHasContent("wd-p-your-1", el('<p id="wd-p-your-1"></p>', "wd-p-your-1")), false);
+  });
+
+  it("template images and links are ignored, a student's own image is not", () => {
+    assert.equal(realImageCount(CREATE_NEXT_APP_HTML), 0);
+    assert.equal(realImageCount('<img src="/next.svg" alt="my image" />'), 1);
+    assert.equal(isBoilerplateUrl(new URL("https://nextjs.org/docs")), true);
+    assert.equal(isBoilerplateUrl(new URL("https://vercel.com/new")), true);
+    assert.equal(isBoilerplateUrl(new URL("https://nextjs.org/docs/app/api-reference/components/link")), false);
+    assert.equal(isBoilerplateUrl(new URL("https://developer.mozilla.org/en-US/docs/Web/HTML")), false);
+  });
+});
+
+describe("Assignments list: at least three assignment links (book §1.4.7)", () => {
+  const twoLinks = '<div id="wd-assignments"><ul id="wd-assignment-list"><li><a href="/courses/1234/assignments/123">A1</a></li><li><a href="/courses/1234/assignments/124">A2</a></li></ul></div>';
+  it("two links fail, with or without ids; three pass", async () => {
+    const pages = passingDeployPages();
+    pages["/courses/1234/assignments"] = pages["/courses/1234/assignments"].replace(ASSIGNMENTS_CONTENT, twoLinks);
+    for (const transform of [undefined, stripWdIds]) {
+      const graded = await check(pages, { transform });
+      const row = graded.byCriterion.get("a1-kambaz-assignments");
+      assert.equal(row?.passed, false);
+      assert.match(row?.message ?? "", /at least three assignments/);
+    }
+    assert.equal(MIN_ASSIGNMENT_LINKS, 3);
+    const full = await check(passingDeployPages(), { transform: stripWdIds });
+    assert.equal(full.byCriterion.get("a1-kambaz-assignments")?.passed, true);
+  });
+});
+
+describe("B3: feedback says what was missing, never an id", () => {
+  async function failingCases() {
+    const kambaz404 = passingDeployPages();
+    for (const path of Object.keys(kambaz404)) {
+      if (!path.startsWith("/labs") && path !== "/") delete kambaz404[path];
+    }
+    const s6 = passingDeployPages();
+    s6["/courses/1234/assignments"] = s6["/courses/1234/assignments"].replace(
+      ASSIGNMENTS_CONTENT,
+      '<div id="wd-assignments"><ul id="wd-assignment-list"></ul></div>',
+    );
+    const x2 = passingDeployPages();
+    x2["/labs/lab1"] = x2["/labs/lab1"].replace(FIXTURE_TOC, "");
+    return [
+      await check(bareCreateNextAppPages()),
+      await checkWith(catchAllProbes(CREATE_NEXT_APP_HTML)),
+      await checkWith(catchAllProbes(IDS_ONLY_HTML)),
+      await check(kambaz404),
+      await check(s6),
+      await check(s6, { transform: stripWdIds }),
+      await check(x2),
+      await check(x2, { transform: stripWdIds }),
+    ];
+  }
+
+  it("no fail message, review message, or export feedback line names a wd- id", async () => {
+    const cases = await failingCases();
+    let lines = 0;
+    for (const { results } of cases) {
+      for (const message of failedMessages(results)) {
+        lines += 1;
+        assert.doesNotMatch(message, /wd-/, message);
+      }
+      for (const row of results.filter((entry) => entry.needsReview)) {
+        assert.doesNotMatch(row.message, /wd-/, row.message);
+      }
+      const feedback = exportRow(results).feedback;
+      for (const line of feedback.split("\n").filter(Boolean)) {
+        assert.doesNotMatch(line, /wd-/, line);
+        assert.match(line, /Fix: https:\/\/kambaz\.dev\/book\//, line);
+      }
+    }
+    assert.ok(lines > 50, `expected many failing rows, saw ${lines}`);
+  });
+
+  it("S6: the empty Assignments list says there are no assignment links", async () => {
+    const s6 = passingDeployPages();
+    s6["/courses/1234/assignments"] = s6["/courses/1234/assignments"].replace(
+      ASSIGNMENTS_CONTENT,
+      '<div id="wd-assignments"><ul id="wd-assignment-list"></ul></div>',
+    );
+    const { byCriterion } = await check(s6);
+    assert.match(byCriterion.get("a1-kambaz-assignments")?.message ?? "", /assignments that each link/);
+  });
+
+  it("every A1 fail message and structure miss message is id-free", () => {
+    for (const spec of A1_CHECKER.autoSpecs) {
+      assert.doesNotMatch(spec.failMessage, /wd-/, spec.criterionId);
+    }
+    for (const [id, fallback] of Object.entries(A1_STRUCTURE_FALLBACKS)) {
+      assert.doesNotMatch(fallback.missMessage, /wd-/, id);
+    }
+    assert.doesNotMatch(A1_CHECKER.delivery.labsNav.failMessage, /wd-/);
+    assert.doesNotMatch(A1_CHECKER.delivery.github.linkFailMessage, /wd-/);
+  });
+});
+
+describe("re-run writes only the check fields", () => {
+  it("a staff grade saved while the batch runs is not overwritten", async () => {
+    const store = memoryStore([submission("u1")]);
+    let upserts = 0;
+    const tracked: SubmissionStore = {
+      ...store,
+      async upsert(doc) {
+        upserts += 1;
+        await store.upsert(doc);
+      },
+      async setCheckRun(clerkUserId, assignmentId, fields) {
+        const doc = store.docs.find((row) => row.clerkUserId === clerkUserId && row.assignmentId === assignmentId);
+        if (!doc) return false;
+        Object.assign(doc, fields);
+        return true;
+      },
+    };
+    await rerunCheckBatch({
+      store: tracked,
+      docs: store.docs,
+      offset: 0,
+      limit: 5,
+      checkerVersion: "a1-rules-v2+abc1234",
+      runChecks: async (doc) => {
+        // Staff press Save while the check is running.
+        const live = store.docs.find((row) => row.clerkUserId === doc.clerkUserId)!;
+        live.staffGrade = { ...live.staffGrade!, earnedPoints: 120, comments: { x: "nice" } };
+        return [{ id: "a1-lab-tables", label: "t", passed: true, message: "ok", criterionId: "a1-lab-tables" }];
+      },
+    });
+    assert.equal(upserts, 0);
+    assert.equal(store.docs[0].staffGrade?.earnedPoints, 120);
+    assert.equal(store.docs[0].staffGrade?.comments?.x, "nice");
+    assert.equal(store.docs[0].checkResults?.[0].id, "a1-lab-tables");
+    assert.equal(store.docs[0].checkerVersion, "a1-rules-v2+abc1234");
+    assert.equal(store.docs[0].updatedAt.toISOString(), "2026-09-20T10:00:00.000Z");
+  });
+});
+
+function page200(body: string): string {
+  return `<!DOCTYPE html><html><body>${body}</body></html>`;
+}

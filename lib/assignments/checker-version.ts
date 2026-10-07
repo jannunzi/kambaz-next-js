@@ -7,7 +7,12 @@
  *   v1: rules through Oct 7, 2026 (stored results did not record a version).
  *   v2: wd-* ids are optional (structure fallbacks, "Needs TA review"),
  *       Lab 4/5 links by href, TOC read on /labs/lab1, Assignments list must
- *       contain links, unreachable deploys are "Needs re-check".
+ *       contain links, unreachable deploys are "Needs re-check". Before
+ *       merge (PR #209 QA): an id counts only with real content, structure
+ *       is read on one page (never summed, never the home page), template
+ *       boilerplate is ignored, a 404 page fails its items, TA review keeps
+ *       points only behind its core item, and the Assignments list needs
+ *       at least three assignment links.
  */
 export const A1_CHECKER_RULES_VERSION = "a1-rules-v2";
 export const A2_CHECKER_RULES_VERSION = "a2-rules-v1";

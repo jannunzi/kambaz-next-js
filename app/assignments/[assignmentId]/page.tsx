@@ -67,6 +67,12 @@ import AssignmentChecklist from "../components/AssignmentChecklist";
 import AssignmentHubNav from "../components/AssignmentHubNav";
 
 export const dynamic = "force-dynamic";
+/**
+ * Server actions posted from this page (staff "Re-run all and save" runs
+ * one batch of up to 10 submissions per call, with GitHub retries) get the
+ * full Vercel Fluid budget instead of the default.
+ */
+export const maxDuration = 300;
 
 /** Signed-out save gate. Sign-in wins over roster/config misses. */
 function loggedOutSubmitVisibility(assignmentId: string, configured: boolean) {

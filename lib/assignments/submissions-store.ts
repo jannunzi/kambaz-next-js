@@ -60,6 +60,17 @@ export type SubmissionStore = {
     assignmentId: AssignmentId,
   ): Promise<AssignmentSubmissionDoc | null>;
   upsert(doc: AssignmentSubmissionDoc): Promise<void>;
+  /**
+   * Write only the check-run fields of an existing submission ($set on
+   * checkResults, lastCheckedAt, checkerVersion). Never touches the staff
+   * grade, comments, URLs, or submission time, so a staff Save landing at
+   * the same moment is not overwritten. Returns false when no doc matched.
+   */
+  setCheckRun?(
+    clerkUserId: string,
+    assignmentId: AssignmentId,
+    fields: Pick<AssignmentSubmissionDoc, "checkResults" | "lastCheckedAt" | "checkerVersion">,
+  ): Promise<boolean>;
   listByAssignment?(
     assignmentId: AssignmentId,
   ): Promise<AssignmentSubmissionDoc[]>;
@@ -165,7 +176,9 @@ export async function upsertAssignmentSubmission(
 
 /**
  * Store a fresh check run on an existing submission without touching the
- * submitted URLs, the submission time, or any staff grade.
+ * submitted URLs, the submission time, or any staff grade. Stores that
+ * support it write only the check fields ($set), so a staff Save in flight
+ * cannot be overwritten by the re-run.
  */
 export async function recordAssignmentCheckRun(
   store: SubmissionStore,
@@ -177,6 +190,14 @@ export async function recordAssignmentCheckRun(
   },
   now: Date = new Date(),
 ): Promise<AssignmentSubmissionDoc | null> {
+  if (store.setCheckRun) {
+    const matched = await store.setCheckRun(input.clerkUserId, input.assignmentId, {
+      checkResults: input.checkResults,
+      lastCheckedAt: now,
+      checkerVersion: input.checkerVersion,
+    });
+    return matched ? store.find(input.clerkUserId, input.assignmentId) : null;
+  }
   const existing = await store.find(input.clerkUserId, input.assignmentId);
   if (!existing) return null;
   return upsertAssignmentSubmission(

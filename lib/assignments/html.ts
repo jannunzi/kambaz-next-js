@@ -388,3 +388,63 @@ export function stripWdIds(html: string): string {
     .replace(/\s+id\s*=\s*wd-[^\s/>]+/gi, "")
     .replace(/\\?"id\\?"\s*:\s*\\?"wd-[^"\\]*\\?"/g, '"id":""');
 }
+
+const VOID_TAGS = new Set([
+  "img", "input", "br", "hr", "source", "meta", "link", "area", "base", "col", "embed", "track", "wbr",
+]);
+
+export type IdElement = {
+  /** Lower-case tag name. */
+  tag: string;
+  /** The start tag itself, attributes included. */
+  open: string;
+  /** Inner HTML ("" for void or self-closing elements). */
+  inner: string;
+};
+
+/**
+ * Every rendered element carrying this id (script payloads ignored), with
+ * its tag, start tag, and inner HTML. Nesting-aware.
+ */
+export function elementsWithId(html: string, id: string): IdElement[] {
+  const source = renderedMarkup(html);
+  const safe = escapeRegExp(id);
+  const openRe = new RegExp(
+    `<([a-zA-Z][\\w:-]*)\\b[^>]*?\\bid\\s*=\\s*(?:["']${safe}["']|${safe}(?=[\\s/>]))[^>]*>`,
+    "gi",
+  );
+  const found: IdElement[] = [];
+  let match: RegExpExecArray | null;
+  while ((match = openRe.exec(source))) {
+    const tag = match[1].toLowerCase();
+    const open = match[0];
+    if (VOID_TAGS.has(tag) || /\/\s*>$/.test(open)) {
+      found.push({ tag, open, inner: "" });
+      continue;
+    }
+    const start = match.index + open.length;
+    const tagRe = new RegExp(`<(/?)${escapeRegExp(match[1])}\\b[^>]*>`, "gi");
+    tagRe.lastIndex = start;
+    let depth = 1;
+    let closer: RegExpExecArray | null;
+    let end = source.length;
+    while ((closer = tagRe.exec(source))) {
+      if (!closer[1] && /\/\s*>$/.test(closer[0])) continue;
+      depth += closer[1] ? -1 : 1;
+      if (depth === 0) {
+        end = closer.index;
+        break;
+      }
+    }
+    found.push({ tag, open, inner: source.slice(start, end) });
+  }
+  return found;
+}
+
+/** Value of one attribute in a start tag, or null. */
+export function startTagAttr(open: string, name: string): string | null {
+  const re = new RegExp(`\\s${escapeRegExp(name)}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, "i");
+  const match = re.exec(open);
+  if (!match) return null;
+  return match[1] ?? match[2] ?? match[3] ?? "";
+}

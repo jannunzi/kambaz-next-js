@@ -1,5 +1,6 @@
 import type { A1RubricAutoSpec } from "./a1-rubric-types";
 import type { StructureFallback } from "./a1-structure";
+import type { IdElement } from "./html";
 import type { AssignmentId, RubricGroupId } from "./types";
 
 export type CheckerManualRow = {
@@ -36,11 +37,23 @@ export type AssignmentChecker = {
   rulesVersion: string;
   /**
    * When true, a missing wd-* id never fails a row by itself: the row falls
-   * back to `structureFallbacks`, and a row with no fallback becomes
-   * "Needs TA review" (not a fail, no points taken off).
+   * back to `structureFallbacks` on the page that should hold it, and a row
+   * with no fallback becomes "Needs TA review" (points kept) when its
+   * `reviewGates` entry allows it.
    */
   idsOptional?: boolean;
   structureFallbacks?: Readonly<Record<string, StructureFallback>>;
+  /**
+   * Ids-optional checkers: an element found by its wd-* id counts only when
+   * this returns true (it holds real content, not an empty div).
+   */
+  idHasContent?: (id: string, element: IdElement) => boolean;
+  /**
+   * A "Needs TA review" candidate keeps its points only when at least
+   * `minPassed` of `requires` (criterion ids) passed; otherwise it fails.
+   * Missing entry: review is always allowed.
+   */
+  reviewGates?: Readonly<Record<string, { requires: readonly string[]; minPassed: number }>>;
   seedPaths: readonly string[];
   followupCap: number;
   /**
