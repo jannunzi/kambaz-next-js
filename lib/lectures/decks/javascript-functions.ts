@@ -54,6 +54,43 @@ export default function LegacyFunctions() {
     embed: "js-legacy-functions",
   },
   {
+    id: "lab3-page-3-3",
+    title: "Add LegacyFunctions to Lab 3",
+    kind: "content",
+    bullets: [
+      "Import `LegacyFunctions` into `app/labs/lab3/page.tsx` and render it after `NullUndefined`",
+    ],
+    code: `import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab3/page.tsx",
+    codeAddedLines: [9, 23],
+  },
+  {
     id: "arrow",
     title: "ES6 arrows drop the function keyword",
     kind: "demo",
@@ -85,6 +122,45 @@ export default function ArrowFunctions() {
     embed: "js-arrow-functions",
   },
   {
+    id: "lab3-page-3-3-1",
+    title: "Add ArrowFunctions to Lab 3",
+    kind: "content",
+    bullets: [
+      "Import `ArrowFunctions` into `app/labs/lab3/page.tsx` and render it last",
+    ],
+    code: `import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab3/page.tsx",
+    codeAddedLines: [10, 25],
+  },
+  {
     id: "implied",
     title: "Implied return drops the braces",
     kind: "demo",
@@ -111,6 +187,47 @@ export default function ArrowFunctions() {
     codeFile: "app/labs/lab3/ImpliedReturn.tsx",
     codeHighlightLines: [2],
     embed: "js-implied-return",
+  },
+  {
+    id: "lab3-page-3-3-2",
+    title: "Add ImpliedReturn to Lab 3",
+    kind: "content",
+    bullets: [
+      "Import `ImpliedReturn` into `app/labs/lab3/page.tsx` and render it last",
+    ],
+    code: `import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab3/page.tsx",
+    codeAddedLines: [11, 27],
   },
   {
     id: "templates",
@@ -147,6 +264,49 @@ export default function ArrowFunctions() {
     codeFile: "app/labs/lab3/TemplateLiterals.tsx",
     codeHighlightLines: [4, 6, 8],
     embed: "js-template-literals",
+  },
+  {
+    id: "lab3-page-3-3-3",
+    title: "Add TemplateLiterals to Lab 3",
+    kind: "content",
+    bullets: [
+      "Import `TemplateLiterals` into `app/labs/lab3/page.tsx` and render it last",
+    ],
+    code: `import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab3/page.tsx",
+    codeAddedLines: [12, 29],
   },
   {
     id: "recap",

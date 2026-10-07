@@ -51,6 +51,90 @@ export default function ClientComponentDemo() {
     embed: "js-client-component",
   },
   {
+    id: "lab3-page-3-6-1",
+    title: "Add ClientComponentDemo to Lab 3",
+    kind: "content",
+    bullets: [
+      "Import `ClientComponentDemo` and render it last. The Lab 3 page stays a Server Component — no `\"use client\"` there — and can still render a Client Component",
+    ],
+    code: `import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+import ReduceFunction from "./ReduceFunction";
+import JsonStringify from "./JsonStringify";
+import House from "./House";
+import Spreader from "./Spreader";
+import Destructing from "./Destructing";
+import FunctionDestructing from "./FunctionDestructing";
+import DestructingImports from "./DestructingImports";
+import OptionalChaining from "./OptionalChaining";
+import Classes from "./Classes";
+import Styles from "./Styles";
+import ClientComponentDemo from "./ClientComponentDemo";
+
+export default function Lab3() {
+  console.log("Hello World!");
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+      <ReduceFunction />
+      <JsonStringify />
+      <House />
+      <Spreader />
+      <Destructing />
+      <FunctionDestructing />
+      <DestructingImports />
+      <OptionalChaining />
+      <Classes />
+      <Styles />
+      <ClientComponentDemo />
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab3/page.tsx",
+    codeAddedLines: [32, 70],
+  },
+  {
     id: "server",
     title: "The server can read the disk",
     kind: "demo",
@@ -93,6 +177,92 @@ export default function ServerComponentDemo() {
     codeFile: "app/labs/lab3/ServerComponentDemo.tsx",
     codeHighlightLines: [[5, 14], 26],
     embed: "js-server-component",
+  },
+  {
+    id: "lab3-page-3-6-2",
+    title: "Add ServerComponentDemo to Lab 3",
+    kind: "content",
+    bullets: [
+      "Import `ServerComponentDemo` after `ClientComponentDemo`, so both demos are on the page",
+    ],
+    code: `import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+import ReduceFunction from "./ReduceFunction";
+import JsonStringify from "./JsonStringify";
+import House from "./House";
+import Spreader from "./Spreader";
+import Destructing from "./Destructing";
+import FunctionDestructing from "./FunctionDestructing";
+import DestructingImports from "./DestructingImports";
+import OptionalChaining from "./OptionalChaining";
+import Classes from "./Classes";
+import Styles from "./Styles";
+import ClientComponentDemo from "./ClientComponentDemo";
+import ServerComponentDemo from "./ServerComponentDemo";
+
+export default function Lab3() {
+  console.log("Hello World!");
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+      <ReduceFunction />
+      <JsonStringify />
+      <House />
+      <Spreader />
+      <Destructing />
+      <FunctionDestructing />
+      <DestructingImports />
+      <OptionalChaining />
+      <Classes />
+      <Styles />
+      <ClientComponentDemo />
+      <ServerComponentDemo />
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab3/page.tsx",
+    codeAddedLines: [33, 72],
   },
   {
     id: "split",

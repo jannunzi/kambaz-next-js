@@ -95,6 +95,86 @@ export default function Classes() {
     embed: "js-classes",
   },
   {
+    id: "lab3-page-3-5-1",
+    title: "Add Classes to Lab 3",
+    kind: "content",
+    bullets: [
+      "Import `Classes` and render it after `OptionalChaining`. The page does not import `Classes.css`; `Classes.tsx` does",
+    ],
+    code: `import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+import ReduceFunction from "./ReduceFunction";
+import JsonStringify from "./JsonStringify";
+import House from "./House";
+import Spreader from "./Spreader";
+import Destructing from "./Destructing";
+import FunctionDestructing from "./FunctionDestructing";
+import DestructingImports from "./DestructingImports";
+import OptionalChaining from "./OptionalChaining";
+import Classes from "./Classes";
+
+export default function Lab3() {
+  console.log("Hello World!");
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+      <ReduceFunction />
+      <JsonStringify />
+      <House />
+      <Spreader />
+      <Destructing />
+      <FunctionDestructing />
+      <DestructingImports />
+      <OptionalChaining />
+      <Classes />
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab3/page.tsx",
+    codeAddedLines: [30, 66],
+  },
+  {
     id: "styles",
     title: "style takes a camelCase object",
     kind: "demo",
@@ -137,6 +217,88 @@ export default function Classes() {
     codeFile: "app/labs/lab3/Styles.tsx",
     codeHighlightLines: [[4, 13], [17, 22], 26],
     embed: "js-styles",
+  },
+  {
+    id: "lab3-page-3-5-2",
+    title: "Add Styles to Lab 3",
+    kind: "content",
+    bullets: [
+      "Import `Styles` into `app/labs/lab3/page.tsx` and render it last",
+    ],
+    code: `import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+import ReduceFunction from "./ReduceFunction";
+import JsonStringify from "./JsonStringify";
+import House from "./House";
+import Spreader from "./Spreader";
+import Destructing from "./Destructing";
+import FunctionDestructing from "./FunctionDestructing";
+import DestructingImports from "./DestructingImports";
+import OptionalChaining from "./OptionalChaining";
+import Classes from "./Classes";
+import Styles from "./Styles";
+
+export default function Lab3() {
+  console.log("Hello World!");
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+      <ReduceFunction />
+      <JsonStringify />
+      <House />
+      <Spreader />
+      <Destructing />
+      <FunctionDestructing />
+      <DestructingImports />
+      <OptionalChaining />
+      <Classes />
+      <Styles />
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab3/page.tsx",
+    codeAddedLines: [31, 68],
   },
   {
     id: "recap",

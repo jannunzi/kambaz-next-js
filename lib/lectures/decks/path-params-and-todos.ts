@@ -132,6 +132,104 @@ export default function PathParameters() {
     embed: "js-path-parameters",
   },
   {
+    id: "lab3-page-3-7-3",
+    title: "Add PathParameters to Lab 3",
+    kind: "content",
+    bullets: [
+      "Import `PathParameters` and render it after the `Highlight`. The `add/[a]/[b]/page.tsx` route is a page of its own, so Lab 3 does not import it",
+    ],
+    code: `import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+import ReduceFunction from "./ReduceFunction";
+import JsonStringify from "./JsonStringify";
+import House from "./House";
+import Spreader from "./Spreader";
+import Destructing from "./Destructing";
+import FunctionDestructing from "./FunctionDestructing";
+import DestructingImports from "./DestructingImports";
+import OptionalChaining from "./OptionalChaining";
+import Classes from "./Classes";
+import Styles from "./Styles";
+import ClientComponentDemo from "./ClientComponentDemo";
+import ServerComponentDemo from "./ServerComponentDemo";
+import Add from "./Add";
+import Square from "./Square";
+import Highlight from "./Highlight";
+import PathParameters from "./PathParameters";
+
+export default function Lab3() {
+  console.log("Hello World!");
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+      <ReduceFunction />
+      <JsonStringify />
+      <House />
+      <Spreader />
+      <Destructing />
+      <FunctionDestructing />
+      <DestructingImports />
+      <OptionalChaining />
+      <Classes />
+      <Styles />
+      <ClientComponentDemo />
+      <ServerComponentDemo />
+      <Add a={3} b={4} />
+      <h4>Square of 4</h4>
+      <Square>4</Square>
+      <hr />
+      <Highlight>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </Highlight>
+      <PathParameters />
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab3/page.tsx",
+    codeAddedLines: [37, 84],
+  },
+  {
     id: "todo-item",
     title: "TodoItem takes one object",
     kind: "content",
@@ -217,8 +315,9 @@ export default function TodoList() {
     title: "Complete Lab 3 page",
     kind: "content",
     bullets: [
-      "§3.7.5 · replace the whole `app/labs/lab3/page.tsx` with this listing",
-      "It imports and renders every Lab 3 component in book order, each under its own heading",
+      "Import `TodoList` from its subfolder, `./todos/TodoList`, and render it last",
+      "`TodoItem` is rendered inside `TodoList`, so the page does not import it",
+      "This is the finished Lab 3 page: every component in book order, each under its own heading",
       "Your On your own and With AI additions live inside those components; extra `Add`, `Square`, and `Highlight` go right after them",
     ],
     code: `import VariablesAndConstants from "./VariablesAndConstants";
@@ -312,6 +411,7 @@ export default function Lab3() {
 }`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab3/page.tsx",
+    codeAddedLines: [38, 86],
   },
   {
     id: "recap",
