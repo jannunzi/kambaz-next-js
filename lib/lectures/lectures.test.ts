@@ -1255,7 +1255,7 @@ describe("lecture decks", () => {
     assert.equal(counts["dynamic-styling"], 7);
     assert.equal(counts["client-and-server"], 7);
     assert.equal(counts["parameterizing-components"], 7);
-    assert.equal(counts["path-params-and-todos"], 10);
+    assert.equal(counts["path-params-and-todos"], 11);
     assert.equal(counts["kambaz-database"], 10);
     assert.equal(counts["kambaz-dashboard-data"], 6);
     assert.equal(counts["kambaz-courses-data"], 7);
@@ -2592,6 +2592,7 @@ describe("lecture decks", () => {
       ["kambaz-assignments-data", "people", "app/book/ch3/sections/KambazData.tsx", "PeopleTable"],
       ["path-params-and-todos", "toc", "app/book/ch3/sections/StylingAndComponents.tsx", "TOC"],
       ["path-params-and-todos", "todos-json", "app/book/ch3/sections/StylingAndComponents.tsx", "todos"],
+      ["path-params-and-todos", "lab3-complete", "app/book/ch3/sections/StylingAndComponents.tsx", "Lab3 (complete)"],
       ["spread-and-destructuring", "imports", "app/book/ch3/sections/DataStructures.tsx", "Math"],
       ["spread-and-destructuring", "destructing-imports", "app/book/ch3/sections/DataStructures.tsx", "DestructingImports"],
       ["optional-chaining", "sample", "app/book/ch3/sections/DataStructures.tsx", "OptionalChaining"],
@@ -2621,6 +2622,9 @@ describe("lecture decks", () => {
     const pathIds = getLectureDeck("path-params-and-todos")!.slides.map((slide) => slide.id);
     assert.ok(pathIds.indexOf("todo-item") < pathIds.indexOf("todos-json"));
     assert.ok(pathIds.indexOf("todos-json") < pathIds.indexOf("todo-list"));
+    assert.ok(pathIds.indexOf("todo-list") < pathIds.indexOf("lab3-complete"));
+    assert.ok(pathIds.indexOf("lab3-complete") < pathIds.indexOf("recap"));
+    assert.equal(findSlide("path-params-and-todos", "lab3-complete").codeFile, "app/labs/lab3/page.tsx");
 
     const dbIds = getLectureDeck("kambaz-database")!.slides.map((slide) => slide.id);
     assert.ok(dbIds.indexOf("redirect") < dbIds.indexOf("nav"));
