@@ -756,6 +756,136 @@ describe("B1: a fetched 404 fails; review is not a pass for empty sites", () => 
   });
 });
 
+/* ------------------------------------------------------------------ */
+/* B4: a Lab page that couldn't be opened never costs points           */
+/* ------------------------------------------------------------------ */
+
+const OPEN_FAILURES: Record<string, HtmlFetchResult> = {
+  "503": { ok: false, status: 503, code: "http_error", message: "HTTP 503" },
+  timeout: { ok: false, code: "network", message: "The request timed out." },
+  "401 login wall": { ok: false, status: 401, code: "http_error", message: "HTTP 401" },
+};
+
+/** Fixture probes where every path matching `failing` returns `failure`. */
+function failingProbes(
+  pages: Record<string, string>,
+  failing: RegExp,
+  failure: HtmlFetchResult,
+  transform?: (html: string) => string,
+) {
+  const probes = fixtureProbes(pages, transform);
+  return {
+    ...probes,
+    async getHtml(url: string): Promise<HtmlFetchResult> {
+      if (failing.test(new URL(url).pathname)) return failure;
+      return probes.getHtml(url);
+    },
+  };
+}
+
+const LAB_ROW_IDS = A1_RUBRIC.groups
+  .flatMap((group) => group.criteria)
+  .filter((criterion) => criterion.id.startsWith("a1-lab-"))
+  .map((criterion) => criterion.id);
+
+describe("B4: a Lab page that couldn't be opened keeps the points", () => {
+  for (const [label, failure] of Object.entries(OPEN_FAILURES)) {
+    for (const strip of [false, true]) {
+      it(`/labs/lab1 ${label}${strip ? " (no ids)" : ""}: a full site stays at 113 with re-check flags`, async () => {
+        const probes = failingProbes(
+          passingDeployPages(),
+          /^\/labs\/lab1\/?$/,
+          failure,
+          strip ? stripWdIds : undefined,
+        );
+        const { results, byCriterion, points } = await checkWith(probes);
+        assert.equal(points, AUTO_MAX, failedMessages(results).join("\n"));
+        assert.deepEqual(failedMessages(results), []);
+        // Lab 1 items are never graded against /labs: the ones that would
+        // need Lab 1 are re-checks naming /labs/lab1.
+        const recheck = results.filter((row) => row.needsReview && /Needs re-check/.test(row.message));
+        assert.ok(recheck.length >= 10, `only ${recheck.length} re-check rows`);
+        for (const row of recheck) assert.match(row.message, /\/labs\/lab1/, row.criterionId);
+        for (const row of results) assert.doesNotMatch(row.message, /Lab 1 doesn't show/, row.criterionId);
+        for (const id of ["a1-lab-tables", "a1-lab-images", "a1-lab-forms-text"].filter((id) => byCriterion.has(id))) {
+          assert.equal(byCriterion.get(id)?.needsReview, true, id);
+        }
+        assert.equal(exportRow(results).confidence, "needs_review");
+      });
+    }
+  }
+
+  for (const [label, failure] of Object.entries(OPEN_FAILURES)) {
+    it(`every /labs page ${label}: 113, and the Labs nav, GitHub link and name are re-checks`, async () => {
+      const probes = failingProbes(passingDeployPages(), /^\/labs(\/|$)/, failure);
+      const { results, byCriterion, points } = await checkWith(probes);
+      assert.equal(points, AUTO_MAX, failedMessages(results).join("\n"));
+      assert.deepEqual(failedMessages(results), []);
+      for (const id of ["a1-delivery-labs-nav", "a1-delivery-github", "a1-delivery-name-section"]) {
+        const rows = results.filter((row) => row.criterionId === id && row.needsReview);
+        assert.ok(rows.length > 0, `${id} should be flagged`);
+        for (const row of rows) assert.match(row.message, /Needs re-check: \/labs/, id);
+      }
+      for (const row of results) assert.doesNotMatch(row.message, /The page opened/, row.criterionId);
+      for (const id of LAB_ROW_IDS) {
+        const row = byCriterion.get(id);
+        if (row && !row.skipped) assert.equal(row.passed, true, id);
+      }
+      assert.equal(exportRow(results).confidence, "needs_review");
+    });
+  }
+
+  it("/labs/lab1 that returns 404 still fails its items, and says so", async () => {
+    const pages = passingDeployPages();
+    delete pages["/labs/lab1"];
+    const { results, byCriterion, points } = await check(pages, { transform: stripWdIds });
+    assert.ok(points < AUTO_MAX - 20, `scored ${points}`);
+    const tables = byCriterion.get("a1-lab-tables");
+    assert.equal(tables?.passed, false);
+    assert.equal(tables?.needsReview, undefined);
+    assert.match(tables?.message ?? "", /\/labs\/lab1, returned HTTP 404/);
+    assert.equal(results.some((row) => /Needs re-check/.test(row.message)), false);
+  });
+
+  it("every /labs page returning 404 fails the Labs delivery checks without saying the page opened", async () => {
+    const pages = passingDeployPages();
+    for (const path of Object.keys(pages)) if (path.startsWith("/labs")) delete pages[path];
+    const { results, byCriterion } = await check(pages);
+    const nav = byCriterion.get("a1-delivery-labs-nav");
+    assert.equal(nav?.passed, false);
+    assert.equal(nav?.needsReview, undefined);
+    assert.match(nav?.message ?? "", /HTTP 404/);
+    assert.doesNotMatch(nav?.message ?? "", /The page opened/);
+    const link = results.find((row) => row.id === "a1-delivery-github-link");
+    assert.equal(link?.passed, false);
+    assert.match(link?.message ?? "", /HTTP 404/);
+  });
+
+  it("the GitHub link check reads only the Lab pages, never the home page", async () => {
+    const link = '<li><a id="wd-github" href="https://github.com/jane-doe/webdev-client">My GitHub</a></li>';
+    const pages = passingDeployPages();
+    for (const path of Object.keys(pages)) {
+      pages[path] = pages[path].replace(/<a\b[^>]*github\.com[^>]*>[\s\S]*?<\/a>/gi, "");
+    }
+    pages["/"] = pages["/"].replace("</div>", `</div><ul>${link}</ul>`);
+    const { results } = await check(pages);
+    const row = results.find((entry) => entry.id === "a1-delivery-github-link");
+    assert.equal(row?.passed, false, row?.message);
+    assert.equal(row?.needsReview, undefined);
+  });
+
+  it("a 404 on /labs/lab1 and a 503 on /labs is a re-check naming /labs, not a fail", async () => {
+    const pages = passingDeployPages();
+    delete pages["/labs/lab1"];
+    const probes = failingProbes(pages, /^\/labs\/?$/, OPEN_FAILURES["503"]);
+    const { byCriterion } = await checkWith(probes);
+    const tables = byCriterion.get("a1-lab-tables");
+    assert.equal(tables?.passed, true);
+    assert.equal(tables?.needsReview, true);
+    assert.match(tables?.message ?? "", /Needs re-check: \/labs on your deploy/);
+  });
+});
+
 describe("B2: one page at a time, no boilerplate, real content", () => {
   it("a catch-all site (the starter page on every route) scores like main", async () => {
     const { results, points, byCriterion } = await checkWith(catchAllProbes(CREATE_NEXT_APP_HTML));

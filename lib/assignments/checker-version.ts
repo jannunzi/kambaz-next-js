@@ -12,7 +12,9 @@
  *       is read on one page (never summed, never the home page), template
  *       boilerplate is ignored, a 404 page fails its items, TA review keeps
  *       points only behind its core item, and the Assignments list needs
- *       at least three assignment links.
+ *       at least three assignment links. A miss on a page that couldn't
+ *       be opened (timeout, 5xx, login wall), including any Lab page, is a
+ *       re-check with points kept; it is never graded against other pages.
  */
 export const A1_CHECKER_RULES_VERSION = "a1-rules-v2";
 export const A2_CHECKER_RULES_VERSION = "a2-rules-v1";

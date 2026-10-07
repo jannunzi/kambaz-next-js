@@ -97,7 +97,20 @@ export type TargetPages = {
   example: string;
   /** HTTP status of a definite not-found, when there was one. */
   status?: number;
+  /**
+   * Pages in this target that the crawl tried but couldn't open (timeout,
+   * network, 5xx, login wall). A miss with any of these is a re-check, never
+   * a fail: the item may be on the page we couldn't read.
+   */
+  unreachable: AttemptedPage[];
+  /** For the Lab 1 target: /labs/lab1 itself returned a definite not-found. */
+  lab1NotFound?: number;
 };
+
+/** A tried page that couldn't be opened (not a definite not-found). */
+export function isUnreachable(page: AttemptedPage): boolean {
+  return !page.ok && !isDefiniteNotFound(page);
+}
 
 /** A fetched page that definitely does not exist (404, 410, other 4xx). */
 export function isDefiniteNotFound(page: AttemptedPage): boolean {
@@ -120,7 +133,13 @@ function stateOf(
 export function targetPages(ctx: StructureContext, target: StructureTarget): TargetPages {
   const attempted = ctx.attempted ?? [];
   if (target.kind === "site") {
-    return { state: "ok", pages: [...ctx.pages], name: "your deploy", example: "/" };
+    return {
+      state: "ok",
+      pages: [...ctx.pages],
+      name: "your deploy",
+      example: "/",
+      unreachable: attempted.filter(isUnreachable),
+    };
   }
   if (target.kind === "labPage" || target.kind === "labs") {
     const pages = ctx.pages.filter((page) => isLabsPath(page.path));
@@ -131,16 +150,37 @@ export function targetPages(ctx: StructureContext, target: StructureTarget): Tar
       target.kind === "labPage"
         ? { name: "the Lab 1 page", example: "/labs/lab1" }
         : { name: "the Labs pages", example: "/labs" };
-    return { ...stateOf(pages, tried), pages, ...named };
+    const lab1 = tried.find((page) => page.path === "/labs/lab1");
+    return {
+      ...stateOf(pages, tried),
+      pages,
+      ...named,
+      unreachable: tried.filter(isUnreachable),
+      ...(target.kind === "labPage" && lab1 && isDefiniteNotFound(lab1)
+        ? { lab1NotFound: lab1.status }
+        : {}),
+    };
   }
   if (target.kind === "path") {
     const pages = ctx.pages.filter((page) => page.path === target.path);
     const tried = attempted.filter((page) => page.path === target.path);
-    return { ...stateOf(pages, tried), pages, name: target.name, example: target.path };
+    return {
+      ...stateOf(pages, tried),
+      pages,
+      name: target.name,
+      example: target.path,
+      unreachable: tried.filter(isUnreachable),
+    };
   }
   const pages = ctx.pages.filter((page) => target.pattern.test(page.path));
   const tried = attempted.filter((page) => target.pattern.test(page.path));
-  return { ...stateOf(pages, tried), pages, name: target.name, example: target.example };
+  return {
+    ...stateOf(pages, tried),
+    pages,
+    name: target.name,
+    example: target.example,
+    unreachable: tried.filter(isUnreachable),
+  };
 }
 
 /** Runs a fallback on its target. "missing"/"unreachable" when no page to read. */

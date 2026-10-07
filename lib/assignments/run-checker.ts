@@ -5,6 +5,7 @@ import {
   targetPages,
   type StructureContext,
   type StructureTarget,
+  type AttemptedPage,
   type TargetPages,
 } from "./a1-structure";
 import type { AssignmentChecker } from "./checker-types";
@@ -160,7 +161,39 @@ function missingPageMessage(target: TargetPages): string {
 }
 
 function unreachablePageMessage(target: TargetPages): string {
-  return `Needs re-check: ${target.name} (${target.example}) couldn't be opened (timeout, server error, or login), so this wasn't checked. Not marked wrong; no points taken off.`;
+  const where = target.unreachable.length > 0 ? pathList(target.unreachable) : target.example;
+  return `Needs re-check: ${where} on your deploy couldn't be opened (timeout, server error, or login), so this wasn't checked. Not marked wrong; no points taken off.`;
+}
+
+/** Paths for messages, e.g. "/labs/lab1" or "/labs/lab1 and /labs/lab2". */
+function pathList(pages: readonly { path: string }[]): string {
+  const paths = [...new Set(pages.map((page) => page.path))];
+  if (paths.length <= 2) return paths.join(" and ");
+  return `${paths.slice(0, 2).join(", ")} and ${paths.length - 2} more`;
+}
+
+/** Some pages opened, but the one that may hold this item didn't. */
+function partlyUnreachableMessage(pages: readonly { path: string }[]): string {
+  const list = pathList(pages);
+  return `Needs re-check: ${list} on your deploy couldn't be opened (timeout, server error, or login), so this item couldn't be fully checked. Not marked wrong; no points taken off.`;
+}
+
+/**
+ * A miss is a re-check (points kept) when any page the item may live on
+ * couldn't be opened; it is never failed against the pages that did open.
+ */
+function missVerdict(target: TargetPages, miss: Verdict): Verdict {
+  if (miss.kind !== "fail" && miss.kind !== "review") return miss;
+  if (target.unreachable.length > 0) {
+    return { kind: "unreachable", message: partlyUnreachableMessage(target.unreachable) };
+  }
+  if (target.lab1NotFound && miss.kind === "fail") {
+    return {
+      kind: "fail",
+      message: `${miss.message} (The Lab 1 page, /labs/lab1, returned HTTP ${target.lab1NotFound}.)`,
+    };
+  }
+  return miss;
 }
 
 /**
@@ -198,21 +231,25 @@ function judgeSpec(
 
   if (!fallback) {
     if (specUsesIds(spec)) {
-      return { kind: "review", message: needsReviewMessage(), missMessage: spec.failMessage };
+      return missVerdict(target, {
+        kind: "review",
+        message: needsReviewMessage(),
+        missMessage: spec.failMessage,
+      });
     }
-    return { kind: "fail", message: primary.message };
+    return missVerdict(target, { kind: "fail", message: primary.message });
   }
   const { verdict } = runFallback(fallback, ctx);
   if (verdict === true) return { kind: "pass", message: `Found ${fallback.looksFor}.` };
   if (verdict === "unreachable") return { kind: "unreachable", message: unreachablePageMessage(target) };
   if (verdict === false && fallback.onMiss === "review") {
-    return {
+    return missVerdict(target, {
       kind: "review",
       message: needsReviewMessage(fallback.looksFor),
       missMessage: fallback.missMessage,
-    };
+    });
   }
-  return { kind: "fail", message: fallback.missMessage };
+  return missVerdict(target, { kind: "fail", message: fallback.missMessage });
 }
 
 /** An id counts only when its element has the content the book asks for. */
@@ -462,41 +499,67 @@ export async function runChecker(
     .join("\n");
   const deliveryHtml = config.idsOptional ? labsOnlyHtml : crawled.labsHtml;
   const hasId = (html: string, id: string) => idPresent(config, html, id);
+  const attempted: AttemptedPage[] = crawled.pages.map((page) => ({
+    path: page.path,
+    ok: page.result.ok,
+    status: page.result.status,
+    code: page.result.ok ? undefined : page.result.code,
+  }));
+  // Ids-optional delivery checks read only the Lab pages: a miss there is a
+  // re-check when a Lab page couldn't be opened, and says the pages weren't
+  // found when none of them exist.
+  const labsTarget = targetPages(
+    { labsHtml: labsOnlyHtml, allHtml: crawled.allHtml, pages: [], attempted },
+    { kind: "labs" },
+  );
+  const labPagesOk = crawled.pages.some((page) => page.result.ok && isLabsPath(page.path));
+  const deliveryMiss = (
+    id: string,
+    label: string,
+    message: string,
+    extra: { criterionId: string; groupId: AssignmentCheckResult["groupId"] },
+  ): AssignmentCheckResult => {
+    if (config.idsOptional && labsTarget.unreachable.length > 0) {
+      return check(id, label, true, partlyUnreachableMessage(labsTarget.unreachable), {
+        ...extra,
+        needsReview: true,
+      });
+    }
+    if (config.idsOptional && !labPagesOk) {
+      return check(id, label, false, missingPageMessage(labsTarget), extra);
+    }
+    return check(id, label, false, message, extra);
+  };
   const labsNav =
     labsNavPassed(deliveryHtml, delivery.labsNav, siteHost, config.idHasContent ? hasId : htmlHasId) ||
     Boolean(delivery.labsNav.structurePassed?.(deliveryHtml, siteHost));
-  results.push(
-    check(
-      delivery.labsNav.criterionId,
-      delivery.labsNav.label,
-      labsNav,
-      labsNav ? delivery.labsNav.passMessage : delivery.labsNav.failMessage,
-      {
-        criterionId: delivery.labsNav.criterionId,
-        groupId: delivery.labsNav.groupId,
-      },
-    ),
-  );
+  {
+    const extra = { criterionId: delivery.labsNav.criterionId, groupId: delivery.labsNav.groupId };
+    results.push(
+      labsNav
+        ? check(delivery.labsNav.criterionId, delivery.labsNav.label, true, delivery.labsNav.passMessage, extra)
+        : deliveryMiss(delivery.labsNav.criterionId, delivery.labsNav.label, delivery.labsNav.failMessage, extra),
+    );
+  }
 
   const githubById = hasId(deliveryHtml, "wd-github");
   const githubHook =
     githubById || Boolean(delivery.github.linkStructurePassed?.(deliveryHtml));
-  results.push(
-    check(
-      `${delivery.github.criterionId}-link`,
-      delivery.github.linkLabel,
-      githubHook,
+  {
+    const extra = { criterionId: delivery.github.criterionId, groupId: delivery.github.groupId };
+    const id = `${delivery.github.criterionId}-link`;
+    results.push(
       githubHook
-        ? githubById
-          ? delivery.github.linkPassMessage
-          : "Found a GitHub link on Labs."
-        : delivery.github.linkFailMessage,
-      {
-        criterionId: delivery.github.criterionId,
-        groupId: delivery.github.groupId,
-      },
-    ),
-  );
+        ? check(
+            id,
+            delivery.github.linkLabel,
+            true,
+            githubById ? delivery.github.linkPassMessage : "Found a GitHub link on Labs.",
+            extra,
+          )
+        : deliveryMiss(id, delivery.github.linkLabel, delivery.github.linkFailMessage, extra),
+    );
+  }
 
   if (delivery.name) {
     const canCheckName = Boolean(
@@ -504,14 +567,16 @@ export async function runChecker(
     );
     if (canCheckName && input.nameQuery) {
       const named = htmlHasStudentName(crawled.labsHtml, input.nameQuery);
+      const extra = { criterionId: delivery.name.criterionId, groupId: delivery.name.groupId };
       results.push(
-        check(
-          delivery.name.criterionId,
-          delivery.name.label,
-          named,
-          named ? ASSIGNMENT_STUDENT_COPY.nameOk : ASSIGNMENT_STUDENT_COPY.nameMissing,
-          { criterionId: delivery.name.criterionId, groupId: delivery.name.groupId },
-        ),
+        named
+          ? check(delivery.name.criterionId, delivery.name.label, true, ASSIGNMENT_STUDENT_COPY.nameOk, extra)
+          : deliveryMiss(
+              delivery.name.criterionId,
+              delivery.name.label,
+              ASSIGNMENT_STUDENT_COPY.nameMissing,
+              extra,
+            ),
       );
     } else {
       results.push(
@@ -563,12 +628,7 @@ export async function runChecker(
       pages: crawled.pages.flatMap((page) =>
         page.result.ok ? [{ path: page.path, html: page.result.html }] : [],
       ),
-      attempted: crawled.pages.map((page) => ({
-        path: page.path,
-        ok: page.result.ok,
-        status: page.result.status,
-        code: page.result.ok ? undefined : page.result.code,
-      })),
+      attempted,
       siteHost,
     };
     const verdicts = config.autoSpecs.map((spec) => ({
