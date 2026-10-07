@@ -57,29 +57,56 @@ export default function User() {
     kind: "demo",
     bullets: [
       "Creating a React application requires **Node.js**",
-      "Run it at the command line, from your course folder",
+      "Run it at the command line, from your course folder. It names the project **webdev-client**",
+      "Pin **@16.3**, not `@latest`. Next.js 16.4 turns on **Cache Components** (a setting that prerenders and caches parts of each page), and Kambaz then fails `npm run build`",
     ],
     code: "npx create-next-app@16.3 webdev-client",
     codeLanguage: "bash",
   },
   {
-    id: "defaults",
-    title: "Name the project webdev-client",
+    id: "defaults-explained",
+    title: "What the Defaults Set Up",
     kind: "content",
     bullets: [
-      "The command names the project **webdev-client**",
-      "At **Ok to proceed? (y)**, press Enter",
-      "Pick **Yes, use recommended defaults**: TypeScript, ESLint (a code checker), Tailwind CSS, App Router, no `src/` folder",
-      "The defaults also skip the React Compiler (an optional optimizer) and add `AGENTS.md` (notes for AI coding assistants)",
-      "Pin **@16.3**, not `@latest`: Next.js 16.4 turns on Cache Components and Kambaz fails `npm run build`",
+      "**TypeScript**: a superset of JavaScript that adds static typing",
+      "**ESLint**: a code checker. **React Compiler**: an optional optimizer, left off",
+      "**Tailwind CSS**: a utility-first framework. You style with small classes such as `p-4` (padding)",
+      "**App Router**: Next.js’s current routing model. Folders under `app/` become URLs",
+      "No `src/` folder. **AGENTS.md**: Next.js notes for AI coding assistants",
     ],
-    code: `? Would you like to use the recommended Next.js defaults?
-❯ Yes, use recommended defaults
-  TypeScript, ESLint, No React Compiler, Tailwind CSS, No src/ directory, App Router, AGENTS.md
-  No, customize settings`,
+  },
+  {
+    id: "defaults",
+    title: "Accept the Recommended Defaults",
+    kind: "content",
+    bullets: [
+      "At **Ok to proceed? (y)**, press Enter",
+      "Keep **Yes, use recommended defaults** and press **Enter**",
+      "Ran it before? Skip the middle choice, **No, reuse previous settings**",
+    ],
+    code: `? Would you like to use the recommended Next.js defaults? › - Use arrow-keys. Return to submit.
+❯   Yes, use recommended defaults
+    TypeScript, ESLint, No React Compiler, Tailwind CSS, No src/ directory, App Router, AGENTS.md
+    No, customize settings`,
     codeLanguage: "text",
-    interactiveHint:
-      "If a prompt offers Pages Router, say no. This course is App Router only.",
+  },
+  {
+    id: "customize-settings",
+    title: "Or Customize: Give These Answers",
+    kind: "content",
+    bullets: [
+      "**No, customize settings** asks each question. Pressing **Enter** on every one keeps the defaults’ answers",
+    ],
+    code: `✔ Would you like to use the recommended Next.js defaults? › No, customize settings
+✔ Would you like to use TypeScript? … Yes
+✔ Which linter would you like to use? › ESLint
+✔ Would you like to use React Compiler? … No
+✔ Would you like to use Tailwind CSS? … Yes
+✔ Would you like your code inside a \`src/\` directory? … No
+✔ Would you like to use App Router? (recommended) … Yes
+✔ Would you like to customize the import alias (\`@/*\` by default)? … No
+✔ Would you like to include AGENTS.md to guide coding agents to write up-to-date Next.js code? … Yes`,
+    codeLanguage: "text",
   },
   {
     id: "npm-run-dev",

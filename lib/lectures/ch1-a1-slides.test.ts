@@ -266,6 +266,13 @@ describe("Chapter 1 slides from the A1 slides-only walkthrough", () => {
       ["use client", /use client/, /needs `"use client"`/],
       ["fragment", /fragment|<>/i, /\*\*fragment\*\*/],
       ["void element", /void element/i, /\*\*void elements\*\*/],
+      ["TypeScript", /TypeScript/, /\*\*TypeScript\*\*:? (is )?a superset of JavaScript/],
+      ["Tailwind CSS", /Tailwind/, /\*\*Tailwind CSS\*\*: a utility-first framework/],
+      ["Cache Components", /Cache Components/, /\*\*Cache Components\*\* \(a setting that/],
+      ["App Router", /App Router/, /\*\*App Router\*\*: Next\.js’s current routing model/],
+      ["ESLint", /ESLint/, /\*\*ESLint\*\*: a code checker/],
+      ["React Compiler", /React Compiler/, /\*\*React Compiler\*\*: an optional optimizer/],
+      ["event handler", /event handler/i, /An \*\*event handler\*\* is a function that runs when/],
     ];
     const rows = a1Slides();
     for (const [term, use, def] of terms) {
@@ -276,6 +283,61 @@ describe("Chapter 1 slides from the A1 slides-only walkthrough", () => {
     for (const row of rows) {
       assert.doesNotMatch(row.text, /Vite SPA/, `${row.slug} ${row.slide.id}`);
     }
+  });
+
+  it("shows the book's create-next-app@16.3 prompts word for word, split across slides", () => {
+    // Text of #222's IntroAndSetup.tsx prompt blocks. Once #222 is merged the
+    // book listings below are compared directly as well.
+    const defaultsPrompt = `? Would you like to use the recommended Next.js defaults? › - Use arrow-keys. Return to submit.
+❯   Yes, use recommended defaults
+    TypeScript, ESLint, No React Compiler, Tailwind CSS, No src/ directory, App Router, AGENTS.md
+    No, customize settings`;
+    const customizeAnswers = [
+      "✔ Would you like to use the recommended Next.js defaults? › No, customize settings",
+      "✔ Would you like to use TypeScript? … Yes",
+      "✔ Which linter would you like to use? › ESLint",
+      "✔ Would you like to use React Compiler? … No",
+      "✔ Would you like to use Tailwind CSS? … Yes",
+      "✔ Would you like your code inside a `src/` directory? … No",
+      "✔ Would you like to use App Router? (recommended) … Yes",
+      "✔ Would you like to customize the import alias (`@/*` by default)? … No",
+      "✔ Would you like to include AGENTS.md to guide coding agents to write up-to-date Next.js code? … Yes",
+    ].join("\n");
+    const deck = "creating-a-nextjs-react-application";
+    assert.equal(code(deck, "defaults"), defaultsPrompt);
+    assert.equal(code(deck, "customize-settings"), customizeAnswers);
+    const book = bookBlocks(INTRO).map((block) => block.body.trim());
+    const bookCustomize = book.find((body) => body.startsWith("✔ Would you like to use the recommended"));
+    if (bookCustomize) {
+      assert.equal(code(deck, "customize-settings"), bookCustomize);
+      assert.ok(book.includes(defaultsPrompt), "book defaults prompt differs from the slide");
+    }
+    const ids = getLectureDeck(deck)!.slides.map((row) => row.id);
+    assert.deepEqual(
+      ids.slice(ids.indexOf("create-next-app"), ids.indexOf("npm-run-dev") + 1),
+      ["create-next-app", "defaults-explained", "defaults", "customize-settings", "npm-run-dev"],
+    );
+    const defaults = slide(deck, "defaults");
+    assert.ok((defaults.bullets ?? []).length <= 3, "defaults slide must fit at 1280x800");
+    assert.match((defaults.bullets ?? []).join("\n"), /No, reuse previous settings/);
+    assert.equal(defaults.interactiveHint, undefined, "no stale Pages Router hint");
+    for (const row of a1Slides()) {
+      assert.doesNotMatch(row.text, /Pages Router, say no/, `${row.slug} ${row.slide.id}`);
+    }
+  });
+
+  it("fixes the anchors and h1–h6 practice wording", () => {
+    const anchors = (slide("anchors", "section").bullets ?? []).join("\n");
+    assert.match(anchors, /relative paths/);
+    assert.doesNotMatch(anchors, /relative files/);
+    const practice = (slide("headings-and-paragraphs", "heading-practice").bullets ?? []).join("\n");
+    assert.doesNotMatch(practice, /paragraph/);
+    assert.match(practice, /after\*\* the sample text, just before `<\/div>`/);
+  });
+
+  it("runs in CI through the npm test script", () => {
+    const pkg = JSON.parse(read("package.json")) as { scripts: Record<string, string> };
+    assert.match(pkg.scripts.test, /lib\/lectures\/ch1-a1-slides\.test\.ts/);
   });
 
   it("keeps the assignments search and title placeholders on the last A1 listing", () => {

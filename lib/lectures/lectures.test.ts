@@ -1189,7 +1189,7 @@ describe("lecture decks", () => {
     );
     assert.equal(counts["intro-to-web-development"], 16);
     assert.ok((counts["installing-nodejs"] ?? 0) >= 16);
-    assert.equal(counts["creating-a-nextjs-react-application"], 17);
+    assert.equal(counts["creating-a-nextjs-react-application"], 19);
     assert.equal(counts["commit-to-github"], 7);
     assert.equal(counts["deploying-to-vercel"], 13);
     assert.equal(counts["html-and-dom"], 16);

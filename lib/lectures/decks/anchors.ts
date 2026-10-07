@@ -17,7 +17,7 @@ export const ANCHORS_SLIDES: LectureSlide[] = [
     bullets: [
       "Use anchors to **link** to other documents, email, or phones",
       "`href` (hypertext reference) is the destination",
-      "Same tag, different schemes: `https:`, relative files, `mailto:`, `tel:`, `#hash`",
+      "Same tag, different schemes: `https:`, relative paths, `mailto:`, `tel:`, `#hash`",
     ],
     code: `<a href="https://www.wikipedia.org">Wikipedia</a>
 <a href="https://github.com/jannunzi">GitHub</a>

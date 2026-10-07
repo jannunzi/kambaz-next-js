@@ -82,8 +82,8 @@ export const HEADINGS_AND_PARAGRAPHS_SLIDES: LectureSlide[] = [
     title: "Practice h1 through h6",
     kind: "content",
     bullets: [
-      "In the same `wd-h-tag` div, add `h1`–`h6` **after** the sample paragraph",
-      "Keep the sample `h4` and its paragraph in place",
+      "In the same `wd-h-tag` div, add `h1`–`h6` **after** the sample text, just before `</div>`",
+      "Keep the sample `h4` and its text in place",
     ],
     code: `<h1>h1</h1>
 <h2>h2</h2>

@@ -294,7 +294,7 @@ app.listen(4000);`,
         id: "next-up-bullets",
         items: [
           "**Node.js** is installed. You ran `hello.js` outside the browser",
-          "Next deck: `npx create-next-app@16.3` and the **App Router**",
+          "Next deck: create the app with `npx create-next-app@16.3`",
         ],
       }),
     ],

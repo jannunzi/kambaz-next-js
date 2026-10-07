@@ -571,7 +571,8 @@ Lorem ipsum dolor sit amet...
     title: "The Completed Forms.tsx",
     kind: "content",
     bullets: [
-      "`onSubmit` + `event.preventDefault()` keeps Save from reloading the page",
+      "An **event handler** is a function that runs when something happens, such as a click or a form submit",
+      "`onSubmit` runs one when Save submits the form. `event.preventDefault()` keeps the page from reloading",
       "An event handler needs `\"use client\"` as the first line of the file",
       "Without it the file is a **Server Component**, which cannot pass event handlers",
     ],
