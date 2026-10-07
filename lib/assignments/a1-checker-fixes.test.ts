@@ -31,17 +31,27 @@ import { proposedGradeFromResults } from "./grade";
 import {
   gradeRowsFromResults,
   gradeViewFromStaffGrade,
+  normalizeGradeRows,
+  rowIsStaffDecided,
   rowPresentation,
   sanitizeCheckResults,
   staffGradeRecordFromRows,
+  withCustomPoints,
+  withOverrideChecked,
   type CriterionGradeRow,
 } from "./grade-rows";
-import { finalGrade, finalGradeForStaffRow, gradingInProgressText } from "./final-grade";
+import {
+  finalGrade,
+  finalGradeForStaffRow,
+  finalGradeLine,
+  gradingInProgressText,
+  rowsNeedingStaffDecision,
+} from "./final-grade";
 import { criterionCoverage } from "./checkers";
 import { elementsWithId, renderedMarkup, stripWdIds } from "./html";
 import { resolveNameQuery } from "./names";
 import { rerunCheckBatch } from "./rerun";
-import type { StaffStudentRow } from "./staff";
+import { buildStaffStudentQueue, rosterFlagsForSubmission, type StaffStudentRow } from "./staff";
 import {
   upsertAssignmentSubmission,
   type AssignmentSubmissionDoc,
@@ -426,25 +436,45 @@ const MANUAL_IDS = listRubricCriteria(A1_RUBRIC)
   .filter((criterion) => criterionCoverage("a1", criterion.id) === "manual")
   .map((criterion) => criterion.id);
 
-/** A staff Save: every row from the check, manual rows graded as given. */
+const CRITERIA = listRubricCriteria(A1_RUBRIC).map((c) => ({ id: c.id, points: c.points }));
+
+/** Auto rows that need an explicit staff decision (TA review, re-check, not checked). */
+function openAutoIds(results: AssignmentCheckResult[]): string[] {
+  return [...rowsNeedingStaffDecision("a1", A1_RUBRIC, results)].filter((id) => !MANUAL_IDS.includes(id));
+}
+
+/**
+ * A staff Save the way the grader makes one: the draft starts from the check
+ * (A1WorkArea -> gradeRowsFromResults: every row unset, manual rows at 0),
+ * staff act on some rows (Override / Points / Full credit / No credit), and
+ * the server normalizes what was sent (saveAssignmentGrade). By default
+ * staff touch nothing.
+ */
 function staffSave(
   results: AssignmentCheckResult[],
-  options: { manual?: "full" | "none" | number; edit?: (rows: CriterionGradeRow[]) => CriterionGradeRow[] } = {},
+  options: {
+    manual?: "untouched" | "full" | "none" | number;
+    /** "keep": staff look at each TA-review / re-check row and keep its points. */
+    open?: "untouched" | "keep";
+    edit?: (rows: CriterionGradeRow[]) => CriterionGradeRow[];
+  } = {},
 ) {
-  const criteria = listRubricCriteria(A1_RUBRIC).map((c) => ({ id: c.id, points: c.points }));
-  let rows = gradeRowsFromResults(criteria, results);
-  const manual = options.manual ?? "full";
+  let rows = gradeRowsFromResults(CRITERIA, results);
+  const manual = options.manual ?? "untouched";
   let manualLeft = typeof manual === "number" ? manual : 0;
+  const open = new Set(options.open === "keep" ? openAutoIds(results) : []);
   rows = rows.map((row) => {
-    if (!MANUAL_IDS.includes(row.criterionId)) return row;
-    const points =
-      manual === "full" ? row.maxPoints : manual === "none" ? 0 : Math.min(row.maxPoints, manualLeft);
+    if (open.has(row.criterionId)) return withCustomPoints(row, row.points);
+    if (!MANUAL_IDS.includes(row.criterionId) || manual === "untouched") return row;
+    if (manual === "full") return withOverrideChecked(row, true);
+    if (manual === "none") return withCustomPoints(row, 0);
+    const points = Math.min(row.maxPoints, manualLeft);
     manualLeft -= points;
-    return { ...row, overridePassed: points > 0, points };
+    return withCustomPoints(withOverrideChecked(row, points > 0), points);
   });
   if (options.edit) rows = options.edit(rows);
   return staffGradeRecordFromRows({
-    rows,
+    rows: normalizeGradeRows(CRITERIA, rows),
     checkResults: results,
     gradedByEmail: "ta@northeastern.edu",
     gradedAt: new Date("2026-10-08T15:00:00.000Z"),
@@ -473,7 +503,7 @@ describe("staff export for Canvas loading", () => {
 
   it("full marks: staff graded the manual items, nothing flagged, 125 / 125 ready right away", async () => {
     const { results } = await check(passingDeployPages());
-    const row = exportRow(results, { staffGrade: staffSave(results) });
+    const row = exportRow(results, { staffGrade: staffSave(results, { manual: "full" }) });
     assert.equal(row.points, TOTAL);
     assert.equal(row.manualPoints, MANUAL_MAX);
     assert.equal(row.readyForCanvas, true);
@@ -492,7 +522,7 @@ describe("staff export for Canvas loading", () => {
     );
     const { results } = await check(s6);
     assert.equal(exportRow(results).confidence, "needs_review");
-    const row = exportRow(results, { staffGrade: staffSave(results) });
+    const row = exportRow(results, { staffGrade: staffSave(results, { manual: "full" }) });
     assert.equal(row.points, 120);
     assert.equal(row.canvasPercent, 96);
     assert.equal(row.confidence, "confident_deduction");
@@ -507,7 +537,8 @@ describe("staff export for Canvas loading", () => {
     const { results } = await check(passingDeployPages());
     // TA takes 10 off an auto item the checker passed.
     const lower = staffSave(results, {
-      edit: (rows) => rows.map((row) => (row.criterionId === "a1-kambaz-editor" ? { ...row, points: 0 } : row)),
+      manual: "full",
+      edit: (rows) => rows.map((row) => (row.criterionId === "a1-kambaz-editor" ? withCustomPoints(row, 0) : row)),
     });
     const row = exportRow(results, { staffGrade: lower });
     assert.equal(row.autoPoints, AUTO_MAX);
@@ -544,12 +575,17 @@ describe("staff export for Canvas loading", () => {
     const review = exportRow(stripped.results);
     assert.equal(review.confidence, "needs_review");
     assert.match(review.reviewReasons.join(";"), /need TA review/);
-    // A staff Save decides every row, review items included.
-    const decided = exportRow(stripped.results, { staffGrade: staffSave(stripped.results) });
+    // A Save decides only the rows staff set: untouched review items stay open.
+    const untouched = exportRow(stripped.results, { staffGrade: staffSave(stripped.results, { manual: "full" }) });
+    assert.equal(untouched.readyForCanvas, false);
+    assert.match(untouched.readyReason, /item\(s\) need TA review/);
+    const decided = exportRow(stripped.results, {
+      staffGrade: staffSave(stripped.results, { manual: "full", open: "keep" }),
+    });
     assert.equal(decided.readyForCanvas, true, decided.readyReason);
 
     const full = await check(passingDeployPages());
-    const graded = staffSave(full.results);
+    const graded = staffSave(full.results, { manual: "full" });
     const duplicate = exportRow(full.results, {
       staffGrade: graded,
       priorSubmissions: [{ url: "https://old.vercel.app", at: "2026-09-10T00:00:00.000Z" }],
@@ -567,6 +603,7 @@ describe("staff export for Canvas loading", () => {
     );
     const recheck = exportRow(flaky.results, {
       staffGrade: staffSave(flaky.results, {
+        manual: "full",
         edit: (rows) => rows.filter((row) => row.criterionId !== "a1-kambaz-modules"),
       }),
     });
@@ -585,7 +622,7 @@ describe("staff export for Canvas loading", () => {
   it("writes ready_for_canvas, ready_reason and canvas_percent (blank until ready)", async () => {
     const { results } = await check(passingDeployPages());
     const csv = submissionExportCsv(A1_RUBRIC, [
-      exportRow(results, { staffGrade: staffSave(results) }),
+      exportRow(results, { staffGrade: staffSave(results, { manual: "full" }) }),
       exportRow(results),
     ]);
     const [header, ready, pending] = csv.trim().split("\r\n");
@@ -619,7 +656,7 @@ describe("staff export for Canvas loading", () => {
       '<div id="wd-assignments"><ul id="wd-assignment-list"></ul></div>',
     );
     const { results } = await check(s6);
-    const saved = staffSave(results);
+    const saved = staffSave(results, { manual: "full" });
     const row = staffRow(results, { staffGrade: saved });
     const exported = buildSubmissionExportRow({ assignmentId: "a1", rubric: A1_RUBRIC, row });
     // What the page builds from the saved grade (AssignmentChecklist input).
@@ -637,7 +674,8 @@ describe("staff export for Canvas loading", () => {
       assignmentId: "a1",
       rubric: A1_RUBRIC,
       results,
-      staff: { earnedPoints: view.earnedPoints, rows: view.rows },
+      staff: { rows: view.rows, checkResults: view.checkResults },
+      roster: { unmatched: false, duplicates: 0 },
     });
     const nav = finalGradeForStaffRow("a1", A1_RUBRIC, row);
     assert.equal(page.canvasPercent, 96);
@@ -1008,8 +1046,17 @@ describe("B4: a Lab page that couldn't be opened keeps the points", () => {
     const tables = byCriterion.get("a1-lab-tables");
     assert.equal(tables?.passed, false);
     assert.equal(tables?.needsReview, undefined);
-    assert.match(tables?.message ?? "", /\/labs\/lab1, returned HTTP 404/);
+    assert.match(tables?.message ?? "", /^The Lab 1 page \(\/labs\/lab1\) returned HTTP 404\./);
     assert.equal(results.some((row) => /Needs re-check/.test(row.message)), false);
+    // Every Lab item that lost points names the 404, and the export keeps it.
+    const lost = results.filter((row) => row.groupId === "lab" && !row.passed && !row.skipped);
+    assert.ok(lost.length >= 10, `${lost.length} lost lab items`);
+    for (const row of lost) assert.match(row.message, /\/labs\/lab1\)? returned HTTP 404/, row.criterionId);
+    const exported = exportRow(results);
+    for (const line of exported.feedback.split("\n").filter((l) => /Lab 1|§1\.[23]/.test(l))) {
+      assert.match(line, /returned HTTP 404/, line);
+    }
+    for (const row of lost) assert.doesNotMatch(row.message, /wd-/, row.criterionId);
   });
 
   it("every /labs page returning 404 fails the Labs delivery checks without saying the page opened", async () => {
@@ -1272,3 +1319,289 @@ describe("re-run writes only the check fields", () => {
 function page200(body: string): string {
   return `<!DOCTYPE html><html><body>${body}</body></html>`;
 }
+
+/** A row as saved before the `decided` flag existed. */
+function withoutDecidedFlag(row: CriterionGradeRow): CriterionGradeRow {
+  const copy = { ...row };
+  delete copy.decided;
+  return copy;
+}
+
+/** What the student page shows (A1WorkArea -> finalGrade from stored data). */
+function pageGrade(
+  docResults: AssignmentCheckResult[],
+  staffGrade: Parameters<typeof gradeViewFromStaffGrade>[0]["staffGrade"] | undefined,
+  roster: { unmatched?: boolean; duplicates?: number },
+) {
+  const view = staffGrade
+    ? gradeViewFromStaffGrade({
+        studentClerkUserId: "user_1",
+        assignmentId: "a1",
+        githubUrl: "",
+        vercelUrl: FIXTURE_ORIGIN,
+        criteria: CRITERIA,
+        staffGrade,
+        checkResults: docResults,
+      })
+    : null;
+  const final = finalGrade({
+    assignmentId: "a1",
+    rubric: A1_RUBRIC,
+    results: docResults,
+    staff: view ? { rows: view.rows, checkResults: view.checkResults } : null,
+    roster,
+  });
+  const header = final.ready ? `Grade ${final.canvasScore}` : gradingInProgressText(final);
+  return { final, header, banner: finalGradeLine(final, Boolean(view)) };
+}
+
+/** Quentin's grade-sim cases, rebuilt on the fixtures. */
+async function simCases() {
+  const full = (await check(passingDeployPages())).results;
+  const review = (await check(passingDeployPages(), { transform: stripWdIds })).results;
+  const recheck = await unreachable(async () => wall(200, "https://vercel.com/sso-api?url=x"));
+  const bare = (await check(bareCreateNextAppPages())).results;
+  return { full, review, recheck, bare };
+}
+
+describe("B5: an untouched staff Save never makes a grade final", () => {
+  it("the draft starts with every row unset; only rows staff set count", async () => {
+    const { full } = await simCases();
+    const draft = gradeRowsFromResults(CRITERIA, full);
+    assert.ok(draft.every((row) => row.decided === false && !rowIsStaffDecided(row)));
+    const manual = draft.find((row) => row.criterionId === MANUAL_IDS[0])!;
+    assert.equal(manual.points, 0);
+    assert.equal(rowIsStaffDecided(withOverrideChecked(manual, true)), true);
+    assert.equal(rowIsStaffDecided(withCustomPoints(manual, 0)), true);
+    // The server keeps the flag as sent; a missing row is unset.
+    const saved = normalizeGradeRows(CRITERIA, [withCustomPoints(manual, 1)]);
+    assert.equal(saved.find((row) => row.criterionId === MANUAL_IDS[0])?.decided, true);
+    assert.equal(saved.find((row) => row.criterionId === MANUAL_IDS[1])?.decided, false);
+    // Rows saved before the flag existed count only when staff visibly changed them.
+    const legacy = normalizeGradeRows(CRITERIA, [
+      { criterionId: MANUAL_IDS[0], autoPassed: false, overridePassed: true, points: 2 },
+      { criterionId: MANUAL_IDS[1], autoPassed: false, overridePassed: false, points: 0 },
+    ]);
+    assert.equal(legacy.find((row) => row.criterionId === MANUAL_IDS[0])?.decided, true);
+    assert.equal(legacy.find((row) => row.criterionId === MANUAL_IDS[1])?.decided, false);
+  });
+
+  const SIM: [string, keyof Awaited<ReturnType<typeof simCases>>][] = [
+    ["113 auto", "full"],
+    ["TA-review items", "review"],
+    ["Needs re-check (Vercel login wall)", "recheck"],
+    ["bare create-next-app", "bare"],
+  ];
+  for (const [label, key] of SIM) {
+    it(`${label} + Save untouched: not ready anywhere, no %`, async () => {
+      const results = (await simCases())[key];
+      const saved = staffSave(results);
+      const row = staffRow(results, { staffGrade: saved });
+      const exported = buildSubmissionExportRow({ assignmentId: "a1", rubric: A1_RUBRIC, row });
+      const nav = finalGradeForStaffRow("a1", A1_RUBRIC, row);
+      const page = pageGrade(results, saved, { unmatched: false, duplicates: 0 });
+      for (const grade of [nav, page.final]) {
+        assert.equal(grade.ready, false, label);
+        assert.equal(grade.canvasPercent, null, label);
+        assert.equal(grade.manualPoints, null, label);
+        assert.deepEqual(grade.ungradedManual, MANUAL_IDS, label);
+      }
+      assert.equal(exported.readyForCanvas, false);
+      assert.equal(exported.canvasPercent, null);
+      assert.equal(exported.manualPoints, null);
+      assert.match(exported.readyReason, /6 manual item\(s\) not graded by staff yet/);
+      assert.notEqual(exported.confidence, "full_marks");
+      assert.doesNotMatch(exported.score, /%/);
+      assert.doesNotMatch(page.header, /%/);
+      assert.equal(page.banner, "Grading in progress");
+      // Untouched TA-review / re-check rows are not cleared by the Save.
+      const open = openAutoIds(results);
+      assert.deepEqual(nav.openItems, open, label);
+      if (key === "review") {
+        assert.ok(open.length >= 3, `${open.length} review items`);
+        assert.match(exported.readyReason, /item\(s\) need TA review/);
+      }
+      if (key === "recheck") assert.match(exported.readyReason, /needs re-check/);
+      // Setting the manual items alone still leaves review / re-check rows open.
+      if (open.length > 0) {
+        const manualOnly = finalGradeForStaffRow("a1", A1_RUBRIC, staffRow(results, {
+          staffGrade: staffSave(results, { manual: "full" }),
+        }));
+        assert.equal(manualOnly.ready, false, label);
+        assert.equal(manualOnly.ungradedManual.length, 0);
+      }
+    });
+  }
+
+  it("saving partial progress keeps what was set but is never final", async () => {
+    const { full } = await simCases();
+    const partial = staffSave(full, {
+      edit: (rows) => rows.map((row) => (row.criterionId === MANUAL_IDS[0] ? withOverrideChecked(row, true) : row)),
+    });
+    const kept = normalizeGradeRows(CRITERIA, partial.rows);
+    assert.equal(kept.find((row) => row.criterionId === MANUAL_IDS[0])?.points, 2);
+    const grade = finalGradeForStaffRow("a1", A1_RUBRIC, staffRow(full, { staffGrade: partial }));
+    assert.equal(grade.ready, false);
+    assert.equal(grade.ungradedManual.length, 5);
+    assert.equal(grade.points, AUTO_MAX + 2);
+    assert.equal(gradingInProgressText(grade), `${AUTO_MAX + 2} / ${TOTAL} points so far · grading in progress`);
+  });
+
+  it("fully set (manual items + every review row decided): ready, correct % everywhere", async () => {
+    const { full, review } = await simCases();
+    for (const [results, manual, points] of [
+      [full, "full", 125],
+      [review, "full", 125],
+      [full, "none", 113],
+      [full, 7, 120],
+    ] as const) {
+      const saved = staffSave(results, { manual, open: "keep" });
+      const row = staffRow(results, { staffGrade: saved });
+      const exported = buildSubmissionExportRow({ assignmentId: "a1", rubric: A1_RUBRIC, row });
+      const nav = finalGradeForStaffRow("a1", A1_RUBRIC, row);
+      const page = pageGrade(results, saved, { unmatched: false, duplicates: 0 });
+      const percent = Math.floor((points / TOTAL) * 1000) / 10;
+      assert.equal(exported.readyForCanvas, true, exported.readyReason);
+      assert.equal(exported.points, points);
+      assert.equal(exported.canvasPercent, percent);
+      assert.equal(nav.canvasPercent, percent);
+      assert.equal(page.final.canvasPercent, percent);
+      assert.equal(page.header, `Grade ${exported.score}`);
+      assert.equal(page.banner, `Graded: ${exported.score}`);
+    }
+  });
+
+  it("the staff row shows which rows are still unset", async () => {
+    const { review } = await simCases();
+    const draft = gradeRowsFromResults(CRITERIA, review);
+    const reviewId = openAutoIds(review)[0];
+    const manualRow = rowPresentation({
+      row: draft.find((row) => row.criterionId === MANUAL_IDS[0])!,
+      scored: true,
+      changed: false,
+      audience: "staff",
+      manual: true,
+      unset: true,
+    });
+    assert.equal(manualRow.label, "Not graded yet");
+    assert.equal(manualRow.fill, "review");
+    const reviewRow = rowPresentation({
+      row: draft.find((row) => row.criterionId === reviewId)!,
+      scored: true,
+      changed: false,
+      audience: "staff",
+      manual: false,
+      needsReview: true,
+      unset: true,
+    });
+    assert.equal(reviewRow.label, "Needs TA review · not decided yet");
+    // Students never see the staff-only state.
+    const student = rowPresentation({
+      row: draft.find((row) => row.criterionId === MANUAL_IDS[0])!,
+      scored: true,
+      changed: false,
+      audience: "student",
+      manual: true,
+      unset: true,
+    });
+    assert.notEqual(student.label, "Not graded yet");
+  });
+});
+
+describe("B6: student page, staff view and export always agree", () => {
+  it("same ready / points / % for every case, including roster flags and older saves", async () => {
+    const { full, review, recheck, bare } = await simCases();
+    const legacyRows = staffSave(full, { manual: "full" });
+    const cases: [string, AssignmentCheckResult[], StaffStudentRow["staffGrade"] | undefined, { unmatched?: boolean; duplicates?: number }][] = [
+      ["no staff grade", full, undefined, {}],
+      ["untouched save", full, staffSave(full), {}],
+      ["untouched save, review", review, staffSave(review), {}],
+      ["untouched save, re-check", recheck, staffSave(recheck), {}],
+      ["untouched save, bare", bare, staffSave(bare), {}],
+      ["fully graded", full, staffSave(full, { manual: "full" }), {}],
+      ["fully graded, review kept", review, staffSave(review, { manual: "full", open: "keep" }), {}],
+      ["duplicate, fully graded", full, staffSave(full, { manual: "full" }), { duplicates: 1 }],
+      ["unmatched, fully graded", full, staffSave(full, { manual: "full" }), { unmatched: true }],
+      [
+        "older save: overrides only, no rows",
+        full,
+        { earnedPoints: 125, totalPoints: 125, percent: 100, acceptedProposed: true, criterionOverrides: {}, gradedAt: "2026-10-01T00:00:00Z" },
+        {},
+      ],
+      [
+        "older save: rows with no decided flag, manual items overridden",
+        full,
+        { ...legacyRows, rows: legacyRows.rows.map(withoutDecidedFlag) },
+        {},
+      ],
+      [
+        "older save: rows with no decided flag, manual items untouched",
+        full,
+        { ...staffSave(full), rows: staffSave(full).rows.map(withoutDecidedFlag) },
+        {},
+      ],
+    ];
+    for (const [label, results, staffGrade, roster] of cases) {
+      const row = staffRow(results, {
+        staffGrade,
+        unmatched: roster.unmatched,
+        priorSubmissions: roster.duplicates
+          ? [{ url: "https://old.vercel.app", at: "2026-09-10T00:00:00.000Z" }]
+          : undefined,
+      });
+      const exported = buildSubmissionExportRow({ assignmentId: "a1", rubric: A1_RUBRIC, row });
+      const nav = finalGradeForStaffRow("a1", A1_RUBRIC, row);
+      const page = pageGrade(results, staffGrade, roster);
+      assert.equal(page.final.ready, exported.readyForCanvas, label);
+      assert.equal(nav.ready, exported.readyForCanvas, label);
+      assert.equal(page.final.canvasPercent, exported.canvasPercent, label);
+      assert.equal(nav.canvasPercent, exported.canvasPercent, label);
+      assert.equal(page.final.points, exported.points, label);
+      assert.equal(nav.points, exported.points, label);
+      if (!exported.readyForCanvas) {
+        assert.doesNotMatch(page.header, /%/, label);
+        assert.doesNotMatch(page.banner, /%/, label);
+      }
+    }
+    // The older override-only save is one number everywhere, and not ready.
+    const legacy = cases.find(([label]) => label.startsWith("older save: overrides only"))!;
+    const legacyGrade = finalGradeForStaffRow("a1", A1_RUBRIC, staffRow(full, { staffGrade: legacy[2] }));
+    assert.equal(legacyGrade.ready, false);
+    assert.equal(legacyGrade.points, AUTO_MAX);
+    assert.equal(buildSubmissionExportRow({ assignmentId: "a1", rubric: A1_RUBRIC, row: staffRow(full, { staffGrade: legacy[2] }) }).staffPoints, AUTO_MAX);
+    // An older rows save where staff did set every manual item is honored.
+    const overridden = cases.find(([label]) => label.endsWith("manual items overridden"))!;
+    assert.equal(finalGradeForStaffRow("a1", A1_RUBRIC, staffRow(full, { staffGrade: overridden[2] })).ready, true);
+  });
+
+  it("a later re-run doesn't change a saved grade's readiness on any screen", async () => {
+    const { full, review } = await simCases();
+    const saved = staffSave(full, { manual: "full" });
+    // The doc's checkResults are replaced by a re-run that now flags review items.
+    const row = staffRow(review, { staffGrade: saved });
+    const exported = buildSubmissionExportRow({ assignmentId: "a1", rubric: A1_RUBRIC, row });
+    const page = pageGrade(review, saved, {});
+    assert.equal(exported.readyForCanvas, true, exported.readyReason);
+    assert.equal(page.final.ready, true);
+    assert.equal(page.final.canvasPercent, exported.canvasPercent);
+  });
+
+  it("the student's roster flags come from the same queue as the export", () => {
+    const roster = [{ email: "jane@northeastern.edu", name: "Doe, Jane", section: "CS5610 02" }];
+    const older = { ...submission("user_old"), email: "jane@northeastern.edu", updatedAt: new Date("2026-09-10T00:00:00Z") };
+    const newer = { ...submission("user_new"), email: "jane@northeastern.edu", updatedAt: new Date("2026-09-20T00:00:00Z") };
+    const stranger = { ...submission("user_x"), email: "someone@northeastern.edu" };
+    const docs = [older, newer, stranger];
+    const queue = buildStaffStudentQueue(roster, docs);
+    const janeRow = queue.find((row) => row.clerkUserId === "user_new")!;
+    assert.deepEqual(rosterFlagsForSubmission(roster, docs, "user_new"), {
+      unmatched: janeRow.unmatched,
+      duplicates: janeRow.priorSubmissions?.length ?? 0,
+    });
+    assert.equal(rosterFlagsForSubmission(roster, docs, "user_new").duplicates, 1);
+    assert.equal(rosterFlagsForSubmission(roster, docs, "user_x").unmatched, true);
+    // Not anyone's current submission: never ready.
+    assert.equal(rosterFlagsForSubmission(roster, docs, "user_old").unmatched, true);
+    assert.equal(rosterFlagsForSubmission(roster, [newer], "user_new").duplicates, 0);
+  });
+});

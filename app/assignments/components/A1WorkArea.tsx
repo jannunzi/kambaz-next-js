@@ -3,12 +3,15 @@
 import { useState, useTransition } from "react";
 import type { AssignmentCheckResult } from "@/lib/assignments/checks";
 import { listRubricCriteria } from "@/lib/assignments/catalog";
+import { criterionCoverage } from "@/lib/assignments/checkers";
 import {
   gradeRowsFromResults,
+  rowIsStaffDecided,
   withCustomPoints,
   withOverrideChecked,
   type CriterionGradeRow,
 } from "@/lib/assignments/grade-rows";
+import { finalGrade, finalGradeLine, type FinalGrade } from "@/lib/assignments/final-grade";
 import type { AssignmentGradeView } from "@/lib/assignments/grade-rows";
 import { ASSIGNMENT_STUDENT_COPY } from "@/lib/assignments/student-copy";
 import { type StaffStudentRow } from "@/lib/assignments/staff";
@@ -20,6 +23,8 @@ import AssignmentChecklist from "./AssignmentChecklist";
 import { AssignmentViewer } from "./AssignmentViewer";
 import StaffGraderNav from "./StaffGraderNav";
 import StaffBatchTools from "./StaffBatchTools";
+
+type RosterFlags = { unmatched?: boolean; duplicates?: number };
 
 export default function A1WorkArea({
   serverUserId,
@@ -39,6 +44,8 @@ export default function A1WorkArea({
   selectedStudent?: StaffStudentRow | null;
   selectedSection?: string;
   selectedFilter?: string;
+  /** The signed-in student's roster flags, computed the same way as the export. */
+  studentRoster?: RosterFlags | null;
 }) {
   return (
     <AssignmentViewer serverUserId={serverUserId} authEnabled={authEnabled}>
@@ -50,6 +57,7 @@ export default function A1WorkArea({
             viewerUserId === serverUserId ? props.initialSubmission : null
           }
           initialGrade={viewerUserId === serverUserId ? props.initialGrade : null}
+          studentRoster={viewerUserId === serverUserId ? props.studentRoster : null}
         />
       )}
     </AssignmentViewer>
@@ -68,6 +76,7 @@ function A1WorkSession({
   selectedStudent,
   selectedSection,
   selectedFilter,
+  studentRoster,
 }: {
   assignment: AssignmentHubItem;
   initialSubmission: AssignmentSubmissionView | null;
@@ -80,6 +89,7 @@ function A1WorkSession({
   selectedStudent?: StaffStudentRow | null;
   selectedSection?: string;
   selectedFilter?: string;
+  studentRoster?: RosterFlags | null;
 }) {
   const staffMode = Boolean(selectedStudent);
   const criteriaForInit = assignment.rubric ? listRubricCriteria(assignment.rubric) : [];
@@ -109,9 +119,58 @@ function A1WorkSession({
   const scored = displayRows.length > 0;
   const results = liveResults ?? (live ? [] : savedGrade?.checkResults ?? []);
 
+  // Roster flags: the staff queue row, or the student's own (computed on the
+  // server exactly as the export does). Unknown flags never count as ready.
+  const roster: RosterFlags =
+    staffMode && selectedStudent
+      ? {
+          unmatched: selectedStudent.unmatched,
+          duplicates: selectedStudent.priorSubmissions?.length ?? 0,
+        }
+      : (studentRoster ?? { unmatched: true });
+  // The saved grade, from stored data only (never a live run), so the page
+  // shows the same grade and percentage as the staff view and export.
+  const savedFinal: FinalGrade | null = assignment.rubric
+    ? finalGrade({
+        assignmentId: assignment.id,
+        rubric: assignment.rubric,
+        results: submission?.checkResults ?? [],
+        staff: savedGrade
+          ? { rows: savedGrade.rows, checkResults: savedGrade.checkResults }
+          : null,
+        roster,
+      })
+    : null;
+  // What a Save would record right now (staff only).
+  const draftFinal: FinalGrade | null =
+    staffMode && draft && assignment.rubric
+      ? finalGrade({
+          assignmentId: assignment.id,
+          rubric: assignment.rubric,
+          results,
+          staff: { rows: draft, checkResults: results },
+          roster,
+        })
+      : null;
+
   function onResults(next: AssignmentCheckResult[]) {
     setLiveResults(next);
-    setDraft(gradeRowsFromResults(criteria, next));
+    // A new run resets the auto rows; manual items staff already set keep
+    // their decision (the checker never grades them).
+    setDraft((current) => {
+      const kept = new Map(
+        (current ?? savedGrade?.rows ?? [])
+          .filter(
+            (row) =>
+              criterionCoverage(assignment.id, row.criterionId) === "manual" &&
+              rowIsStaffDecided(row),
+          )
+          .map((row) => [row.criterionId, row]),
+      );
+      return gradeRowsFromResults(criteria, next).map(
+        (row) => kept.get(row.criterionId) ?? row,
+      );
+    });
     setLive(true);
     setGradeNote(null);
     setGradeError(null);
@@ -165,7 +224,20 @@ function A1WorkSession({
       setDraft(null);
       setLive(false);
       setLiveResults(null);
-      setGradeNote("Saved the grade. Run again does not change it.");
+      const saved = assignment.rubric
+        ? finalGrade({
+            assignmentId: assignment.id,
+            rubric: assignment.rubric,
+            results: result.grade.checkResults,
+            staff: { rows: result.grade.rows, checkResults: result.grade.checkResults },
+            roster,
+          })
+        : null;
+      setGradeNote(
+        saved && !saved.ready
+          ? `Saved your progress. Not ready for Canvas yet: ${saved.reasons.join("; ")}. Run again does not change it.`
+          : "Saved the grade. Run again does not change it.",
+      );
     });
   }
 
@@ -213,6 +285,7 @@ function A1WorkSession({
           onResults={onResults}
           onSubmission={setSubmission}
           onDeployUrlChange={setDeployUrl}
+          gradeLine={finalGradeLine(savedFinal, Boolean(savedGrade))}
         />
       )}
 
@@ -241,14 +314,8 @@ function A1WorkSession({
               }
             : null
         }
-        roster={
-          staffMode && selectedStudent
-            ? {
-                unmatched: selectedStudent.unmatched,
-                duplicates: selectedStudent.priorSubmissions?.length ?? 0,
-              }
-            : undefined
-        }
+        final={savedFinal}
+        draftFinal={draftFinal}
         vercelUrl={deployUrl}
         onOverride={staffMode ? onOverride : undefined}
         onPoints={staffMode ? onPoints : undefined}

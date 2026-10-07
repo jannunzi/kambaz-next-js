@@ -457,6 +457,25 @@ export function filterStaffQueueBySection(
   });
 }
 
+/**
+ * Roster flags for one submission (the doc a student sees), computed exactly
+ * as the staff queue and the Canvas export compute them. A submission that
+ * isn't a current queue row (not on file as anyone's newest submission)
+ * never counts as ready.
+ */
+export function rosterFlagsForSubmission(
+  roster: readonly CanvasRosterEntry[],
+  submissions: readonly AssignmentSubmissionDoc[],
+  clerkUserId: string,
+  options?: StaffQueueOptions,
+): { unmatched?: boolean; duplicates?: number } {
+  const row = buildStaffStudentQueue(roster, submissions, options).find(
+    (entry) => entry.hasSubmission && entry.clerkUserId === clerkUserId,
+  );
+  if (!row) return { unmatched: true };
+  return { unmatched: row.unmatched, duplicates: row.priorSubmissions?.length ?? 0 };
+}
+
 export function staffQueueForSection(
   queue: readonly StaffStudentRow[],
   section: string | undefined | null,

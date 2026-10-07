@@ -1,5 +1,5 @@
 import { supportsUrlSubmission } from "./access";
-import { formatPointsPercent, pointsPercent } from "./grade";
+import { formatPointsPercent } from "./grade";
 
 /**
  * Student-facing submission status. Staff grades live on
@@ -193,37 +193,6 @@ export function formatGradedConfirmation(input: {
   percent?: number;
 }): string {
   return `Graded: ${formatPointsPercent(input.earnedPoints, input.totalPoints)}`;
-}
-
-function numericStaffGrade(
-  staffGrade: StaffGradeSnapshot,
-): { earnedPoints: number; totalPoints: number; percent: number } | null {
-  let earned = staffGrade.earnedPoints;
-  let total = staffGrade.totalPoints;
-  if (
-    (typeof earned !== "number" || typeof total !== "number") &&
-    staffGrade.rows &&
-    staffGrade.rows.length > 0
-  ) {
-    earned = staffGrade.rows.reduce((sum, row) => sum + row.points, 0);
-    total = staffGrade.rows.reduce((sum, row) => sum + row.maxPoints, 0);
-  }
-  if (typeof earned !== "number" || typeof total !== "number") return null;
-  return {
-    earnedPoints: earned,
-    totalPoints: total,
-    percent: pointsPercent(earned, total),
-  };
-}
-
-/** "Graded: 95 / 100 (95.0%)", or "Not graded yet" when staff have not saved a grade. */
-export function submissionGradeLine(
-  staffGrade: StaffGradeSnapshot | null | undefined,
-): string {
-  if (!hasSavedStaffGrade(staffGrade) || !staffGrade) return NOT_GRADED_YET;
-  const summary = numericStaffGrade(staffGrade);
-  if (!summary) return "Graded";
-  return formatGradedConfirmation(summary);
 }
 
 export function notSubmittedMessage(detail?: string): string {

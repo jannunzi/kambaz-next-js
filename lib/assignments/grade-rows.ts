@@ -7,6 +7,11 @@ import type { AssignmentId } from "./types";
  * One graded criterion. Auto is the autograder result. Override starts equal
  * to Auto. Points default to full credit when Override is checked and 0 when
  * it is not. Staff may set any point value from 0 through maxPoints.
+ *
+ * `decided` is true only after staff explicitly set the row (Override,
+ * Points, or Confirm). A draft starts with every row undecided, so a Save
+ * that never touched the manual items (or a TA-review / re-check item)
+ * leaves them ungraded: they never count toward a Canvas-ready grade.
  */
 export type CriterionGradeRow = {
   criterionId: string;
@@ -14,6 +19,7 @@ export type CriterionGradeRow = {
   autoPassed: boolean;
   overridePassed: boolean;
   points: number;
+  decided?: boolean;
 };
 
 export type GradeAudience = "staff" | "student";
@@ -57,6 +63,10 @@ export const GRADE_ROW_COPY = {
   auto: "Auto",
   needsReview: "Needs TA review",
   needsReviewLegend: "Needs TA review (not marked wrong, no points taken off)",
+  notGradedYet: "Not graded yet",
+  notDecided: "not decided yet",
+  needsRecheck: "Needs a re-check",
+  unsetLegend: "Not set by staff yet (doesn't count until you set it)",
 } as const;
 
 export function defaultPointsFor(overridePassed: boolean, maxPoints: number): number {
@@ -87,6 +97,7 @@ export function withOverrideChecked(
     ...row,
     overridePassed,
     points: defaultPointsFor(overridePassed, row.maxPoints),
+    decided: true,
   };
 }
 
@@ -97,7 +108,42 @@ export function withCustomPoints(
   return {
     ...row,
     points: clampPoints(points, row.maxPoints),
+    decided: true,
   };
+}
+
+/** Staff accept the row as it stands (e.g. a TA-review item, or a manual item at 0). */
+export function withDecided(row: CriterionGradeRow): CriterionGradeRow {
+  return { ...row, decided: true };
+}
+
+/**
+ * Whether staff explicitly set this row. Rows saved before the `decided`
+ * flag existed count only when staff visibly changed them (an override or
+ * custom points); an untouched older row is not a staff decision.
+ */
+export function rowIsStaffDecided(row: {
+  decided?: boolean;
+  autoPassed?: boolean;
+  overridePassed?: boolean;
+  points: number;
+  maxPoints?: number;
+}): boolean {
+  if (typeof row.decided === "boolean") return row.decided;
+  if (
+    typeof row.autoPassed !== "boolean" ||
+    typeof row.overridePassed !== "boolean" ||
+    typeof row.maxPoints !== "number"
+  ) {
+    return false;
+  }
+  return isOverridden({
+    criterionId: "",
+    maxPoints: row.maxPoints,
+    autoPassed: row.autoPassed,
+    overridePassed: row.overridePassed,
+    points: row.points,
+  });
 }
 
 export function gradePoints(rows: readonly CriterionGradeRow[]): {
@@ -174,6 +220,7 @@ export function gradeRowsFromResults(
       autoPassed,
       overridePassed: autoPassed,
       points: defaultPointsFor(autoPassed, criterion.points),
+      decided: false,
     };
   });
 }
@@ -193,8 +240,10 @@ export type LegacyStaffGrade = {
     autoPassed: boolean;
     overridePassed: boolean;
     points: number;
-  }[];
-  checkResults?: AssignmentCheckResult[];
+    maxPoints?: number;
+    decided?: boolean;
+  }[] | null;
+  checkResults?: readonly AssignmentCheckResult[] | null;
 };
 
 /**
@@ -219,6 +268,8 @@ export function rowsFromStaffGrade(
       ...row,
       overridePassed: override,
       points: defaultPointsFor(override, row.maxPoints),
+      // An explicit pass/fail flip is a staff decision; nothing else is.
+      decided: true,
     };
   });
 }
@@ -319,6 +370,7 @@ export function normalizeGradeRows(
     autoPassed: boolean;
     overridePassed: boolean;
     points: number;
+    decided?: boolean;
   }[],
 ): CriterionGradeRow[] {
   const byId = new Map(submitted.map((row) => [row.criterionId, row]));
@@ -328,7 +380,7 @@ export function normalizeGradeRows(
     const overridePassed = incoming
       ? Boolean(incoming.overridePassed)
       : autoPassed;
-    return {
+    const row: CriterionGradeRow = {
       criterionId: criterion.id,
       maxPoints: criterion.points,
       autoPassed,
@@ -337,6 +389,13 @@ export function normalizeGradeRows(
         incoming?.points ?? defaultPointsFor(overridePassed, criterion.points),
         criterion.points,
       ),
+    };
+    // A row staff never sent, or never set, stays undecided.
+    return {
+      ...row,
+      decided: incoming
+        ? rowIsStaffDecided({ ...row, decided: incoming.decided })
+        : false,
     };
   });
 }
@@ -351,7 +410,8 @@ export function rowDiffersFromSaved(
   return (
     current.autoPassed !== saved.autoPassed ||
     current.overridePassed !== saved.overridePassed ||
-    current.points !== saved.points
+    current.points !== saved.points ||
+    Boolean(current.decided) !== Boolean(saved.decided)
   );
 }
 
@@ -406,6 +466,11 @@ export function rowPresentation(input: {
   skipped?: boolean;
   /** Auto could not confirm the row; it keeps its points until staff look. */
   needsReview?: boolean;
+  /**
+   * Staff view: the row needs an explicit staff decision (manual item,
+   * TA review, re-check) and staff haven't set it yet.
+   */
+  unset?: boolean;
 }): RowPresentation {
   const changed = input.scored && input.changed;
   if (!input.scored || (input.audience === "student" && input.manual)) {
@@ -418,6 +483,18 @@ export function rowPresentation(input: {
           : "",
       mark: "",
       className: className("neutral", changed),
+    };
+  }
+
+  if (input.audience === "staff" && input.unset) {
+    return {
+      fill: "review",
+      changed,
+      label: input.manual
+        ? GRADE_ROW_COPY.notGradedYet
+        : `${input.needsReview && !input.skipped ? GRADE_ROW_COPY.needsReview : GRADE_ROW_COPY.needsRecheck} · ${GRADE_ROW_COPY.notDecided}`,
+      mark: "",
+      className: className("review", changed),
     };
   }
 

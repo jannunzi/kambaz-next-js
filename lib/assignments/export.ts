@@ -174,7 +174,7 @@ export function buildSubmissionExportRow(input: {
     needsReviewItems: needsReviewCriterionIds(results),
     lostItems: lost.map(({ criterion }) => criterion.id),
     feedback: scored ? lost.map(({ criterion, result }) => feedbackLine(criterion, result)).join("\n") : "",
-    staffPoints: grade ? grade.earnedPoints : null,
+    staffPoints: final.source === "staff" ? final.points : null,
     staffGradedBy: grade?.gradedByEmail ?? "",
     staffGradedAt: grade ? isoOrEmpty(grade.gradedAt) : "",
     items,

@@ -16,7 +16,7 @@ import {
   type CriterionGradeRow,
   type GradeAudience,
 } from "@/lib/assignments/grade-rows";
-import { finalGrade, gradingInProgressText } from "@/lib/assignments/final-grade";
+import { gradingInProgressText, type FinalGrade } from "@/lib/assignments/final-grade";
 import {
   checkRunStatus,
   needsRecheckReason,
@@ -59,10 +59,12 @@ function Legend({
   audience,
   showChanged,
   showReview,
+  showUnset,
 }: {
   audience: GradeAudience;
   showChanged: boolean;
   showReview: boolean;
+  showUnset: boolean;
 }) {
   return (
     <ul className="mb-0 mt-3 flex list-none flex-wrap gap-x-4 gap-y-2 p-0 font-sans text-sm text-neutral-900">
@@ -86,6 +88,12 @@ function Legend({
           <span>{GRADE_ROW_COPY.override}</span>
         </li>
       ) : null}
+      {showUnset ? (
+        <li className="inline-flex items-center gap-2">
+          <span className="inline-block size-3 border border-dashed border-amber-600 bg-amber-50" aria-hidden />
+          <span>{GRADE_ROW_COPY.unsetLegend}</span>
+        </li>
+      ) : null}
       {showChanged ? (
         <li className="inline-flex items-center gap-2">
           <span
@@ -106,6 +114,7 @@ function CriterionRow({
   scored,
   changed,
   manual,
+  unset,
   result,
   vercelUrl,
   onOverride,
@@ -117,6 +126,8 @@ function CriterionRow({
   scored: boolean;
   changed: boolean;
   manual: boolean;
+  /** Staff view: needs an explicit staff decision that hasn't been made. */
+  unset: boolean;
   result?: AssignmentCheckResult;
   vercelUrl?: string;
   onOverride?: (criterionId: string, checked: boolean) => void;
@@ -130,6 +141,7 @@ function CriterionRow({
     manual,
     skipped: Boolean(result?.skipped),
     needsReview: Boolean(result?.needsReview),
+    unset: audience === "staff" && unset,
   });
   const checkMessage = visibleCheckMessage({
     message: result?.message,
@@ -142,12 +154,15 @@ function CriterionRow({
   const verifyHref = criterionVerifyUrl(vercelUrl, criterion.id);
   const staff = audience === "staff";
   const showAuto = scored && (staff || !manual) && !result?.needsRecheck;
+  const staffUnset = staff && unset;
   const scoreLabel =
-    !scored || (audience === "student" && manual) || result?.needsRecheck
-      ? `${criterion.points} pts`
-      : staff
-        ? pointsLabel(row.points, row.maxPoints)
-        : pointsLabel(row.autoPassed ? row.maxPoints : 0, row.maxPoints);
+    staffUnset && manual
+      ? `${criterion.points} pts · not graded yet`
+      : !scored || (audience === "student" && manual) || result?.needsRecheck
+        ? `${criterion.points} pts`
+        : staff
+          ? pointsLabel(row.points, row.maxPoints)
+          : pointsLabel(row.autoPassed ? row.maxPoints : 0, row.maxPoints);
   return (
     <div
       className={`rounded-md border px-3 py-3 ${presentation.className}`}
@@ -192,7 +207,8 @@ function CriterionRow({
               step={1}
               inputMode="numeric"
               className="w-16 rounded border border-neutral-500 bg-white px-2 py-1 text-neutral-950"
-              value={row.points}
+              value={staffUnset && manual ? "" : row.points}
+              placeholder={staffUnset ? "–" : undefined}
               onChange={(event) => {
                 const next = event.target.value === "" ? 0 : Number(event.target.value);
                 onPoints?.(criterion.id, next);
@@ -200,6 +216,24 @@ function CriterionRow({
             />
             <span>/ {row.maxPoints}</span>
           </label>
+        ) : null}
+        {staffUnset && scored && onPoints ? (
+          <span className="inline-flex items-center gap-2 font-sans text-sm">
+            <button
+              type="button"
+              className="rounded border border-emerald-700 bg-white px-2 py-0.5 font-semibold text-emerald-900"
+              onClick={() => onPoints(criterion.id, row.maxPoints)}
+            >
+              {GRADE_ROW_COPY.fullCredit} ({row.maxPoints})
+            </button>
+            <button
+              type="button"
+              className="rounded border border-red-700 bg-white px-2 py-0.5 font-semibold text-red-900"
+              onClick={() => onPoints(criterion.id, 0)}
+            >
+              {GRADE_ROW_COPY.noCredit} (0)
+            </button>
+          </span>
         ) : null}
         {presentation.label ? (
           <span className="font-sans text-sm font-semibold">
@@ -263,7 +297,8 @@ export default function AssignmentChecklist({
   results = [],
   audience,
   savedPoints = null,
-  roster,
+  final = null,
+  draftFinal = null,
   vercelUrl,
   onOverride,
   onPoints,
@@ -276,8 +311,13 @@ export default function AssignmentChecklist({
   results?: AssignmentCheckResult[];
   audience: GradeAudience;
   savedPoints?: { earnedPoints: number; totalPoints: number; savedAt?: string; gradedByEmail?: string } | null;
-  /** Roster flags for the Canvas readiness line (staff screens). */
-  roster?: { unmatched?: boolean; duplicates?: number };
+  /**
+   * The saved grade from finalGrade (stored data + roster flags), computed
+   * once in A1WorkArea; the only percentage on this page.
+   */
+  final?: FinalGrade | null;
+  /** Staff: what a Save of the current draft would record. */
+  draftFinal?: FinalGrade | null;
   vercelUrl?: string;
   onOverride?: (criterionId: string, checked: boolean) => void;
   onPoints?: (criterionId: string, points: number) => void;
@@ -315,16 +355,15 @@ export default function AssignmentChecklist({
     .filter((criterion) => reviewIds.includes(criterion.id))
     .reduce((sum, criterion) => sum + criterion.points, 0);
 
-  // The one grade every screen shows (and the export sends to Canvas).
-  const final = rubric
-    ? finalGrade({
-        assignmentId: assignment.id,
-        rubric,
-        results,
-        staff: savedPoints ? { earnedPoints: savedPoints.earnedPoints, rows: savedRows } : null,
-        roster,
-      })
-    : null;
+  // Staff: rows that still need an explicit decision in what's on screen
+  // (the draft when there is one, else the saved grade).
+  const shownFinal = audience === "staff" ? (draftFinal ?? (savedPoints ? final : null)) : null;
+  const unsetIds = new Set(
+    shownFinal ? [...shownFinal.ungradedManual, ...shownFinal.openItems] : [],
+  );
+  const unsetLabels = criteria
+    .filter((criterion) => unsetIds.has(criterion.id))
+    .map((criterion) => criterion.label);
 
   if (!rubric) return null;
 
@@ -356,9 +395,9 @@ export default function AssignmentChecklist({
               ? `This grade: ${headerPoints.earnedPoints} / ${headerPoints.totalPoints} points`
               : final?.ready
                 ? `Grade ${final.canvasScore}`
-                : final
-                  ? gradingInProgressText(final)
-                  : `Auto checks ${headerPoints.earnedPoints} / ${headerPoints.totalPoints} points · grading in progress`
+                : live || !final
+                  ? `Auto checks ${headerPoints.earnedPoints} / ${headerPoints.totalPoints} points · grading in progress`
+                  : gradingInProgressText(final)
             : supportsUrlSubmission(assignment.id)
               ? "No checks yet. Run to score this page. Checkmarks stay on this page only."
               : "Checked by staff at grading. This page does not save checkmarks or award points."}
@@ -385,6 +424,21 @@ export default function AssignmentChecklist({
               : `Canvas: not ready (${final.reasons.join("; ") || "not checked yet"})`}
           </p>
         ) : null}
+        {draftFinal && audience === "staff" && !recheck ? (
+          <p className="mb-0 mt-1 text-sm" data-draft-ready={draftFinal.ready ? "yes" : "no"}>
+            {draftFinal.ready
+              ? `If you save now: ready for Canvas · ${draftFinal.canvasScore}`
+              : `If you save now: not ready for Canvas (${draftFinal.reasons.join("; ")}). Saving keeps what you set.`}
+          </p>
+        ) : null}
+        {audience === "staff" && unsetLabels.length > 0 ? (
+          <p
+            className="mb-0 mt-1 rounded border border-dashed border-amber-600 bg-amber-50 px-2 py-1 text-sm text-amber-950"
+            data-unset-count={unsetLabels.length}
+          >
+            Still to set ({unsetLabels.length}): {unsetLabels.join(", ")}. Use Full credit, No credit, Override or Points on each.
+          </p>
+        ) : null}
         {final && audience === "student" && scored && !recheck && !final.ready ? (
           <p className="mb-0 mt-1 text-sm">{ASSIGNMENT_STUDENT_COPY.gradingInProgress}</p>
         ) : null}
@@ -408,6 +462,7 @@ export default function AssignmentChecklist({
             audience={audience}
             showChanged={Boolean(savedPoints)}
             showReview={reviewIds.length > 0}
+            showUnset={unsetIds.size > 0}
           />
         ) : null}
         <p className="mb-0 mt-2 text-sm text-neutral-800">
@@ -443,6 +498,7 @@ export default function AssignmentChecklist({
               scored={scored}
               changed={changed}
               manualIds={manualIds}
+              unsetIds={unsetIds}
               autoByCriterion={autoByCriterion}
               vercelUrl={vercelUrl}
               rowFor={rowFor}
@@ -462,6 +518,7 @@ function GroupList({
   scored,
   changed,
   manualIds,
+  unsetIds,
   autoByCriterion,
   vercelUrl,
   rowFor,
@@ -473,6 +530,7 @@ function GroupList({
   scored: boolean;
   changed: Set<string>;
   manualIds: Set<string>;
+  unsetIds: Set<string>;
   autoByCriterion: Map<string, AssignmentCheckResult>;
   vercelUrl?: string;
   rowFor: (criterion: RubricCriterion) => CriterionGradeRow;
@@ -491,6 +549,7 @@ function GroupList({
         scored={scored}
         changed={changed.has(criterion.id)}
         manual={manualIds.has(criterion.id)}
+        unset={unsetIds.has(criterion.id)}
         result={autoByCriterion.get(criterion.id)}
         vercelUrl={vercelUrl}
         onOverride={onOverride}

@@ -1,6 +1,7 @@
 import { evaluateRubricSpec, specUsesIds } from "./a1-rubric";
 import type { A1RubricAutoSpec } from "./a1-rubric-types";
 import {
+  isDefiniteNotFound,
   runFallback,
   targetPages,
   type StructureContext,
@@ -187,13 +188,26 @@ function missVerdict(target: TargetPages, miss: Verdict): Verdict {
   if (target.unreachable.length > 0) {
     return { kind: "unreachable", message: partlyUnreachableMessage(target.unreachable) };
   }
-  if (target.lab1NotFound && miss.kind === "fail") {
-    return {
-      kind: "fail",
-      message: `${miss.message} (The Lab 1 page, /labs/lab1, returned HTTP ${target.lab1NotFound}.)`,
-    };
-  }
+  // A Lab 1 404 is named on every lost Lab item by withLab1NotFoundNote.
   return miss;
+}
+
+/**
+ * When /labs/lab1 itself returned a definite not-found, every Lab item that
+ * lost points says so up front (so the export's shortened feedback keeps it).
+ */
+function withLab1NotFoundNote(
+  results: AssignmentCheckResult[],
+  attempted: readonly AttemptedPage[],
+): AssignmentCheckResult[] {
+  const lab1 = attempted.find((page) => page.path.replace(/\/+$/, "") === "/labs/lab1");
+  if (!lab1 || !isDefiniteNotFound(lab1)) return results;
+  const note = `The Lab 1 page (/labs/lab1) returned HTTP ${lab1.status ?? 404}.`;
+  return results.map((row) => {
+    if (row.groupId !== "lab" || row.passed || row.skipped) return row;
+    if (/\/labs\/lab1\)? returned HTTP/.test(row.message)) return row;
+    return { ...row, message: `${note} ${row.message}` };
+  });
 }
 
 /**
@@ -635,7 +649,7 @@ export async function runChecker(
       spec,
       verdict: judgeSpec(config, spec, structure),
     }));
-    results.push(...resolveVerdicts(config, verdicts, results));
+    results.push(...withLab1NotFoundNote(resolveVerdicts(config, verdicts, results), attempted));
   }
 
   for (const row of config.manualRows) {

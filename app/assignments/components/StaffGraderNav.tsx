@@ -26,10 +26,17 @@ import {
 const staffSelectClass =
   "mt-1 box-border block h-10 w-full truncate rounded border border-neutral-400 bg-white px-3 font-normal";
 
-function studentStatus(row: StaffStudentRow): string {
+function studentStatus(assignmentId: string, row: StaffStudentRow): string {
   if (row.unmatched) return "unmatched";
   if (!row.hasSubmission) return "not submitted";
-  if (hasStaffGradeSave(row.staffGrade)) return "graded";
+  if (hasStaffGradeSave(row.staffGrade)) {
+    // A saved grade is "graded" only once it is final (same rule as the export).
+    const rubric = getAssignment(assignmentId)?.rubric;
+    if (rubric && !finalGradeForStaffRow(assignmentId, rubric, row).ready) {
+      return "grading in progress";
+    }
+    return "graded";
+  }
   return "ungraded";
 }
 
@@ -40,8 +47,8 @@ function checkNote(row: StaffStudentRow): string {
   return review ? ` · ${review} to review` : "";
 }
 
-function studentOptionLabel(row: StaffStudentRow): string {
-  return `${row.name} · ${studentStatus(row)}${checkNote(row)}`;
+function studentOptionLabel(assignmentId: string, row: StaffStudentRow): string {
+  return `${row.name} · ${studentStatus(assignmentId, row)}${checkNote(row)}`;
 }
 
 /** Same grade and percentage as the export (finalGrade); a % only when ready for Canvas. */
@@ -181,7 +188,7 @@ export default function StaffGraderNav({
             <option value="">Your own checklist</option>
             {visible.map((row) => (
               <option key={row.key} value={row.key}>
-                {studentOptionLabel(row)}
+                {studentOptionLabel(assignmentId, row)}
               </option>
             ))}
           </select>

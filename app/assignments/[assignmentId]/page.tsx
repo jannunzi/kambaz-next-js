@@ -32,6 +32,7 @@ import {
 import {
   buildStaffStudentQueue,
   resolveStaffGraderView,
+  rosterFlagsForSubmission,
   studentVisibleSubmission,
   type StaffGradeFilter,
   type StaffStudentRow,
@@ -136,6 +137,7 @@ export default async function AssignmentDetailPage({
   let selectedFilter: StaffGradeFilter = "all";
   let showStaffGrader = false;
   let staffDiagnostics: A1GateDiagnostics | null = null;
+  let studentRoster: { unmatched?: boolean; duplicates?: number } | null = null;
 
   if (isClerkConfigured()) {
     const { userId, sessionClaims } = await auth();
@@ -251,15 +253,26 @@ export default async function AssignmentDetailPage({
           !impersonating &&
           supportsUrlSubmission(assignment.id)
         ) {
+          const submissions = await listSubmissionsForAssignment(assignment.id);
           const doc =
             roster.status === "matched"
               ? studentVisibleSubmission({
                   clerkUserId: userId,
                   rosterEntry: roster.entry,
-                  submissions: await listSubmissionsForAssignment(assignment.id),
+                  submissions,
                 })
               : await readAssignmentSubmission(userId, assignment.id);
           initialSubmission = doc ? toSubmissionView(doc) : null;
+          if (doc) {
+            // Same roster flags as the staff queue and the Canvas export, so
+            // the student never sees a % the export wouldn't send.
+            const rosterList = await listCanvasRoster();
+            studentRoster = rosterFlagsForSubmission(
+              rosterList.status === "ok" ? rosterList.entries : [],
+              submissions,
+              doc.clerkUserId,
+            );
+          }
         }
       } catch (error) {
         console.error("assignment submission load failed", error);
@@ -398,6 +411,7 @@ export default async function AssignmentDetailPage({
           impersonating={impersonating}
           gateReason={canSubmit ? null : gateReason}
           staffQueue={staffQueue}
+          studentRoster={studentRoster}
           selectedStudent={selectedStudent}
           selectedSection={selectedSection}
           selectedFilter={selectedFilter}

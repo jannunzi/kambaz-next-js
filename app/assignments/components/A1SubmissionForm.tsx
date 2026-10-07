@@ -54,6 +54,7 @@ export default function A1SubmissionForm({
   onResults,
   onSubmission,
   onDeployUrlChange,
+  gradeLine,
 }: {
   assignmentId: string;
   initialSubmission: AssignmentSubmissionView | null;
@@ -71,6 +72,8 @@ export default function A1SubmissionForm({
   onResults?: (results: AssignmentCheckResult[]) => void;
   onSubmission?: (submission: AssignmentSubmissionView) => void;
   onDeployUrlChange?: (url: string) => void;
+  /** Banner grade line from finalGrade (a % only when ready for Canvas). */
+  gradeLine?: string;
 }) {
   const [githubUrl, setGithubUrl] = useState(initialSubmission?.githubUrl ?? "");
   const [vercelUrl, setVercelUrl] = useState(initialSubmission?.vercelUrl ?? "");
@@ -223,7 +226,7 @@ export default function A1SubmissionForm({
         </div>
       ) : null}
       {!staffReview && showSubmitted && submission ? (
-        <SubmittedConfirmation submission={submission} />
+        <SubmittedConfirmation submission={submission} gradeLine={gradeLine} />
       ) : null}
       {savedToAccount && checkRunStatus(submission?.checkResults) === "needs_recheck" ? (
         <div
