@@ -141,6 +141,21 @@ export default function Intro() {
           <code>webdev-client</code>{" "}project. Under <code>app/labs</code>,
           create <code>lab3</code>{" "}and add <code>page.tsx</code>:
         </p>
+        <p>
+          Run <code>npm run build</code>{" "}now and then as you go, not only{" "}
+          <code>npm run dev</code>: Vercel runs the build, and some mistakes
+          only show up there. If the build fails with an error about
+          uncached data, <code>&lt;Suspense&gt;</code>, or prerendering
+          (for example on <code>new Date()</code>,{" "}
+          <code>usePathname</code>, or <code>await params</code>), your
+          project was created with Next.js 16.4. Apply the{" "}
+          <Link href="/book/ch1#next-16-4-cache-components-fix">
+            Next.js 16.4 fix in Chapter 1
+          </Link>{" "}
+          (remove <code>cacheComponents</code>{" "}and{" "}
+          <code>partialPrefetching</code>{" "}from{" "}
+          <code>next.config.ts</code>) and build again.
+        </p>
         <CodeBlock language="shell">{`mkdir app/labs/lab3`}</CodeBlock>
         <p>
           Start <code>app/labs/lab3/page.tsx</code>{" "}as a single top-level
