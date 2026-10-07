@@ -159,6 +159,21 @@ const SNAPSHOTS: Array<{ book: string; name: string; file: string }> = [
     name: "CourseCard",
     file: "app/book/ch3/embeds/_styled/dashboard/CourseCard.tsx",
   },
+  {
+    book: "app/book/ch3/sections/KambazData.tsx",
+    name: "Modules",
+    file: "app/book/ch3/embeds/_styled/courses/cid/modules/page.tsx",
+  },
+  {
+    book: "app/book/ch3/sections/KambazData.tsx",
+    name: "Assignments",
+    file: "app/book/ch3/embeds/_styled/courses/cid/assignments/page.tsx",
+  },
+  {
+    book: "app/book/ch3/sections/KambazData.tsx",
+    name: "PeopleTable",
+    file: "app/book/ch3/embeds/_styled/courses/cid/people/table/page.tsx",
+  },
 ];
 
 describe("Kambaz book demos match the code block they show", () => {

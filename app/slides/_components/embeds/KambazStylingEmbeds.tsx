@@ -4,6 +4,10 @@ import LinksNavigation from "@/app/book/ch3/embeds/_styled/Navigation";
 import CourseNavigation from "@/app/book/ch2/embeds/_styled/courses/cid/Navigation";
 import FullCourseNavigation from "@/app/book/ch3/embeds/_styled/courses/cid/Navigation";
 import Dashboard from "@/app/book/ch2/embeds/_styled/dashboard/Dashboard";
+import Ch3Dashboard from "@/app/book/ch3/embeds/_styled/dashboard/Dashboard";
+import Ch3Modules from "@/app/book/ch3/embeds/_styled/courses/cid/modules/page";
+import Ch3Assignments from "@/app/book/ch3/embeds/_styled/courses/cid/assignments/page";
+import Ch3PeopleTable from "@/app/book/ch3/embeds/_styled/courses/cid/people/table/page";
 import Modules from "@/app/book/ch2/embeds/_styled/courses/cid/modules/page";
 import Home from "@/app/book/ch2/embeds/_styled/courses/cid/home/page";
 import PeopleTable from "@/app/book/ch2/embeds/_styled/courses/cid/people/PeopleTable";
@@ -11,6 +15,7 @@ import AssignmentItem from "@/app/book/ch2/embeds/_styled/courses/cid/assignment
 import Link from "next/link";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import AsDashboardPath from "./AsDashboardPath";
+import AsCourseParams from "./AsCourseParams";
 import LectureDemoFrame from "./LectureDemoFrame";
 
 export function KambazStyledNavEmbed() {
@@ -203,6 +208,64 @@ export function KambazStyledSigninEmbed() {
         <Link id="wd-signup-link" href="/account/signup">
           Sign up
         </Link>
+      </div>
+    </LectureDemoFrame>
+  );
+}
+
+/** Chapter 3 data-driven Dashboard snapshot (JSON courses). Keeps ch2 embed on hardcoded cards. */
+export function KambazCh3DashboardEmbed() {
+  return (
+    <LectureDemoFrame label="dashboard/page.tsx" url="/dashboard">
+      <div className="font-sans">
+        <Ch3Dashboard />
+      </div>
+    </LectureDemoFrame>
+  );
+}
+
+/** Chapter 3 data-driven Modules snapshot (filter modules.json by cid). */
+export function KambazCh3ModulesEmbed() {
+  const cid = "RS101";
+  return (
+    <LectureDemoFrame
+      label="modules/page.tsx"
+      url={`/courses/${cid}/modules`}
+    >
+      <div className="font-sans">
+        <AsCourseParams cid={cid}>
+          <Ch3Modules />
+        </AsCourseParams>
+      </div>
+    </LectureDemoFrame>
+  );
+}
+
+/** Chapter 3 data-driven Assignments snapshot (filter assignments.json by cid). */
+export async function KambazCh3AssignmentsEmbed() {
+  const cid = "RS101";
+  return (
+    <LectureDemoFrame
+      label="assignments/page.tsx"
+      url={`/courses/${cid}/assignments`}
+    >
+      <div className="font-sans">
+        <Ch3Assignments params={Promise.resolve({ cid })} />
+      </div>
+    </LectureDemoFrame>
+  );
+}
+
+/** Chapter 3 data-driven PeopleTable snapshot (users ⋈ enrollments by cid). */
+export async function KambazCh3PeopleEmbed() {
+  const cid = "RS101";
+  return (
+    <LectureDemoFrame
+      label="people/table/page.tsx"
+      url={`/courses/${cid}/people/table`}
+    >
+      <div className="font-sans">
+        <Ch3PeopleTable params={Promise.resolve({ cid })} />
       </div>
     </LectureDemoFrame>
   );
