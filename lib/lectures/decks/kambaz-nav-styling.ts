@@ -73,7 +73,7 @@ export default function KambazNavigation() {
     kind: "content",
     bullets: [
       "`fixed` leaves the flow — content no longer knows to leave 120px",
-      "Add `.wd-main-content-offset` inside a `768px` media query",
+      "Append `.wd-main-content-offset` to `kambaz.css`, inside a `768px` media query",
       "The offset only applies when `md:block` shows the sidebar",
     ],
     code: `@media (min-width: 768px) {

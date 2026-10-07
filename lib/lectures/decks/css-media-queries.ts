@@ -19,7 +19,6 @@ export const CSS_MEDIA_QUERIES_SLIDES: LectureSlide[] = [
       "Most common condition: a viewport **width** range — the foundation of responsive design",
       "A **breakpoint** is a viewport width at which styles change, for example through a media query.",
       "Lab 2’s demo uses its own width breakpoints: 750px, 1000px, and 1250px",
-      "`md:` applies from 768px up and `lg:` from 1024px up",
     ],
   },
   {
@@ -172,12 +171,11 @@ export default function MediaQueriesDemo() {
   },
   {
     id: "later",
-    title: "Utilities come after the CSS",
+    title: "Breakpoints are plain CSS",
     kind: "content",
     bullets: [
       "You now know why a layout can change at a breakpoint",
-      "`sm:` applies from 640px up. Chapter 2 later uses Tailwind `sm:` / `md:` / `lg:` for the same job",
-      "Those prefixes compile down to `@media` — they are not a different language",
+      "A breakpoint is just a `min-width` or `max-width` condition inside `@media`",
     ],
   },
   {

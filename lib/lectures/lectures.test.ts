@@ -100,6 +100,19 @@ function findSlide(deckSlug: string, id: string) {
   return slide;
 }
 
+/** Body of a book `<CodeBlock name=… file=…>` listing, unescaped. */
+function bookCodeBlock(bookFile: string, name: string, file: string): string {
+  const source = readFileSync(join(process.cwd(), bookFile), "utf8");
+  const escape = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = source.match(
+    new RegExp(
+      `name="${escape(name)}"\\s+file="${escape(file)}"\\s*>\\{\`([\\s\\S]*?)\`\\}</CodeBlock>`,
+    ),
+  );
+  assert.ok(match, `${bookFile} missing CodeBlock ${name} (${file})`);
+  return match[1].replace(/\\([`$\\])/g, "$1");
+}
+
 describe("lecture catalog", () => {
   it("lists slugs in book-spine order (Ch1–Ch6, then Project decks)", () => {
     assert.deepEqual(listLectureSlugs(), [
@@ -1213,7 +1226,7 @@ describe("lecture decks", () => {
     assert.equal(counts["css-float"], 9);
     assert.equal(counts["css-flex"], 12);
     assert.equal(counts["css-rotation"], 6);
-    assert.equal(counts["react-icons"], 9);
+    assert.equal(counts["react-icons"], 10);
     assert.equal(counts["tailwind-intro"], 9);
     assert.equal(counts["tailwind-spacing"], 8);
     assert.equal(counts["tailwind-typography"], 7);
@@ -1223,7 +1236,7 @@ describe("lecture decks", () => {
     assert.equal(counts["kambaz-styling"], 8);
     assert.equal(counts["kambaz-nav-styling"], 7);
     assert.equal(counts["kambaz-dashboard-styling"], 7);
-    assert.equal(counts["kambaz-courses-styling"], 14);
+    assert.equal(counts["kambaz-courses-styling"], 16);
     assert.equal(counts["kambaz-assignments-styling"], 9);
     assert.equal(counts["kambaz-account-styling"], 8);
     assert.equal(counts["intro-to-javascript"], 8);
@@ -2261,6 +2274,8 @@ describe("lecture decks", () => {
     assert.match(mq, /MediaQueriesDemo\.tsx/);
     assert.match(mq, /MediaQueriesDemo\.css/);
     assert.doesNotMatch(mq, /@screen-sm-min/);
+    // Tailwind breakpoint prefixes are defined in tailwind-responsive, not Lecture 4.
+    assert.doesNotMatch(mq, /`(?:sm|md|lg|xl|2xl):/);
     assert.doesNotMatch(mq, /min-width: 576px/);
 
     const float = slideText("css-float");
@@ -2297,6 +2312,23 @@ describe("lecture decks", () => {
     assert.match(icons, /react-icons\/fa/);
     assert.match(icons, /text-3xl/);
     assert.doesNotMatch(icons, /kit\.fontawesome/);
+    // The sampler imports utilities.css, so a slide must create it first (book §2.2).
+    const iconIds = getLectureDeck("react-icons")!.slides.map((slide) => slide.id);
+    assert.ok(iconIds.indexOf("utilities-css") > iconIds.indexOf("install"));
+    assert.ok(iconIds.indexOf("utilities-css") < iconIds.indexOf("sampler"));
+    const utilitiesCss = findSlide("react-icons", "utilities-css");
+    assert.equal(utilitiesCss.codeFile, "app/labs/lab2/tailwind/utilities.css");
+    assert.equal(
+      utilitiesCss.code,
+      bookCodeBlock(
+        "app/book/ch2/sections/IconsAndTailwind.tsx",
+        "Tailwind utilities",
+        "app/labs/lab2/tailwind/utilities.css",
+      ),
+    );
+    assert.match(findSlide("react-icons", "sampler").code ?? "", /^import "@\/app\/labs\/lab2\/tailwind\/utilities\.css";/);
+    assert.match(utilitiesCss.bullets?.join("\n") ?? "", /\*\*Preflight\*\*/);
+    assert.match(utilitiesCss.bullets?.join("\n") ?? "", /\*\*utilities\*\*/);
 
     const intro = slideText("tailwind-intro");
     assert.match(intro, /@import "tailwindcss"/);
@@ -2411,6 +2443,8 @@ describe("lecture decks", () => {
     assert.match(shell, /wd-main-content-offset/);
     assert.match(shell, /font-sans/);
     assert.doesNotMatch(shell, /labs\/lab2\/tailwind\/utilities\.css/);
+    // Step 2 adds to Step 1's file; replacing it would drop the Tailwind imports.
+    assert.match(findSlide("kambaz-styling", "kambaz-css").bullets?.[0] ?? "", /\*\*Append\*\*/);
 
     const nav = slideText("kambaz-nav-styling");
     assert.match(nav, /wd-kambaz-navigation/);
@@ -2436,6 +2470,35 @@ describe("lecture decks", () => {
     assert.match(courses, /wd-course-status/);
     assert.doesNotMatch(courses, /react-bootstrap/i);
     assert.doesNotMatch(courses, /\bd-flex\b/);
+    // §2.4.5's full Modules page listing, split at the toolbar, carries the list styles.
+    const modulesParts = ["modules-page", "modules-list"].map((id) => {
+      const slide = findSlide("kambaz-courses-styling", id);
+      assert.equal(slide.codeFile, "app/(kambaz)/courses/[cid]/modules/page.tsx");
+      return slide.code ?? "";
+    });
+    assert.equal(
+      modulesParts.join("\n"),
+      bookCodeBlock(
+        "app/book/ch2/sections/KambazStyling.tsx",
+        "Modules page",
+        "app/(kambaz)/courses/[cid]/modules/page.tsx",
+      ),
+    );
+    assert.match(modulesParts[1], /^ {6}<ul id="wd-modules" className="m-0 list-none p-0">/);
+    assert.deepEqual(findSlide("kambaz-courses-styling", "modules-list").codeAddedLines, [1]);
+    assert.deepEqual(
+      findSlide("kambaz-courses-styling", "toolbar").codeHighlightLines,
+      [1, 4, 10, 16, 22],
+    );
+    assert.equal(findSlide("kambaz-courses-styling", "toolbar").codeAddedLines, undefined);
+    const coursesIds = getLectureDeck("kambaz-courses-styling")!.slides.map((slide) => slide.id);
+    const fullAt = coursesIds.indexOf("modules-page");
+    assert.deepEqual(coursesIds.slice(fullAt - 1, fullAt + 3), [
+      "flex-layouts",
+      "modules-page",
+      "modules-list",
+      "home-demo",
+    ]);
 
     const assignments = slideText("kambaz-assignments-styling");
     assert.match(assignments, /wd-people-table/);
