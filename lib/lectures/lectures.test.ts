@@ -1204,7 +1204,7 @@ describe("lecture decks", () => {
     assert.equal(counts["kambaz-navigation"], 8);
     assert.equal(counts["kambaz-courses"], 8);
     assert.equal(counts["kambaz-modules"], 12);
-    assert.equal(counts["kambaz-assignments"], 14);
+    assert.equal(counts["kambaz-assignments"], 16);
     assert.equal(counts["css-intro"], 22);
     assert.equal(counts["css-colors"], 10);
     assert.equal(counts["css-box-model"], 18);
@@ -1623,6 +1623,8 @@ describe("lecture decks", () => {
       "kambaz-assignments": {
         "list-screen-live": "kambaz-assignments",
         "editor-live": "kambaz-assignment-editor",
+        "await-params-live": "kambaz-assignments-step",
+        "labs-name-github-live": "labs-name-github",
       },
       "css-intro": {
         "style-attr": "css-style-attr",

@@ -8,6 +8,7 @@ import {
   LECTURE_1_SLUGS,
   LECTURE_2_SLUGS,
   LECTURE_3_SLUGS,
+  LECTURE_SLUGS,
   lectureSlideCodeBlocks,
   type LectureSlide,
 } from "./types";
@@ -126,7 +127,9 @@ const BOOK_COPIES: Array<
   ["web-forms", "forms-complete", HTML, "Forms", has("use client")],
   ["anchors", "href-documents", HTML, "AnchorTag"],
   ["single-page-navigation", "layout-children", HTML, "LabsLayout"],
+  ["kambaz-assignments", "assignment-item", KAMBAZ, "AssignmentItem"],
   ["kambaz-assignments", "await-params", KAMBAZ, "Assignments"],
+  ["kambaz-assignments", "labs-name-github", CLOSING, "LabsNameGithub"],
 ];
 
 /** Live demo slide that must directly follow each book-copy code slide. */
@@ -147,6 +150,8 @@ const LIVE_AFTER: Array<[string, string, string, string]> = [
   ["web-forms", "highlighted-paragraph-lab", "highlighted-paragraph-live", "highlighted-paragraph"],
   ["web-forms", "highlighted-box-lab", "highlighted-box-live", "highlighted-box"],
   ["anchors", "href-documents", "href-documents-live", "anchors"],
+  ["kambaz-assignments", "await-params", "await-params-live", "kambaz-assignments-step"],
+  ["kambaz-assignments", "labs-name-github", "labs-name-github-live", "labs-name-github"],
 ];
 
 const A1_SLUGS = [...LECTURE_1_SLUGS, ...LECTURE_2_SLUGS, ...LECTURE_3_SLUGS];
@@ -287,8 +292,7 @@ describe("Chapter 1 slides from the A1 slides-only walkthrough", () => {
   });
 
   it("shows the book's create-next-app@16.3 prompts word for word, split across slides", () => {
-    // Text of #222's IntroAndSetup.tsx prompt blocks. Once #222 is merged the
-    // book listings below are compared directly as well.
+    // Text of #222's IntroAndSetup.tsx prompt blocks, also compared with the book.
     const defaultsPrompt = `? Would you like to use the recommended Next.js defaults? › - Use arrow-keys. Return to submit.
 ❯   Yes, use recommended defaults
     TypeScript, ESLint, No React Compiler, Tailwind CSS, No src/ directory, App Router, AGENTS.md
@@ -309,10 +313,8 @@ describe("Chapter 1 slides from the A1 slides-only walkthrough", () => {
     assert.equal(code(deck, "customize-settings"), customizeAnswers);
     const book = bookBlocks(INTRO).map((block) => block.body.trim());
     const bookCustomize = book.find((body) => body.startsWith("✔ Would you like to use the recommended"));
-    if (bookCustomize) {
-      assert.equal(code(deck, "customize-settings"), bookCustomize);
-      assert.ok(book.includes(defaultsPrompt), "book defaults prompt differs from the slide");
-    }
+    assert.equal(code(deck, "customize-settings"), bookCustomize);
+    assert.ok(book.includes(defaultsPrompt), "book defaults prompt differs from the slide");
     const ids = getLectureDeck(deck)!.slides.map((row) => row.id);
     assert.deepEqual(
       ids.slice(ids.indexOf("create-next-app"), ids.indexOf("npm-run-dev") + 1),
@@ -346,16 +348,16 @@ describe("Chapter 1 slides from the A1 slides-only walkthrough", () => {
     assert.match(listing, /<Link href="\/" id="wd-kambaz-link">/);
     assert.match(listing, /\{\/\* your Lab 4 \/ Lab 5 links \*\/\}/);
     assert.doesNotMatch(listing, /\/labs\/lab[45]/, "Lab 4/5 links are On your own answers");
-    // Once #222 is merged, the slide must equal the book's LabsNameGithub listing.
-    const book = bookBlocks(CLOSING).filter((block) => block.name === "LabsNameGithub");
-    if (book.length) assert.equal(listing.trim(), book[0].body.trim());
+    assert.equal(listing.trim(), bookListing(CLOSING, "LabsNameGithub").trim());
     const push = code(deck, "labs-name-github-push");
     assert.equal(
       push,
       'git add .\ngit commit -m "Add name, section, and GitHub link to Labs"\ngit push',
     );
     const ids = getLectureDeck(deck)!.slides.map((row) => row.id);
-    assert.deepEqual(ids.slice(-2), ["labs-name-github", "labs-name-github-push"]);
+    assert.deepEqual(ids.slice(-3), ["labs-name-github", "labs-name-github-live", "labs-name-github-push"]);
+    // The live demo renders the same file the book's LiveDemo uses.
+    assert.equal(listing.trim(), read("app/labs/lab1/intermediates/1-5-LabsNameGithub.tsx").trim());
     assert.equal(A1_SLUGS[A1_SLUGS.length - 1], deck, "last A1 deck, after §1.4 like the book's §1.5");
   });
 
@@ -368,5 +370,39 @@ describe("Chapter 1 slides from the A1 slides-only walkthrough", () => {
     const listing = code("kambaz-assignments", "await-params");
     assert.match(listing, /\{\/\* search input, \+ Group, \+ Assignment \*\/\}/);
     assert.match(listing, /\{\/\* h3 wd-assignments-title \*\/\}/);
+    assert.equal(listing.match(/<AssignmentItem\b/g)?.length, 1, "one A1 row, like the book");
+    const comment =
+      "{/* Add more assignments here (three recommended, like A2, A3), each linking to its editor */}";
+    const lines = listing.split("\n").map((line) => line.trim());
+    assert.equal(lines[lines.indexOf("/>") + 1], comment, "book comment right after the A1 AssignmentItem");
+    assert.match((slide("kambaz-assignments", "await-params").bullets ?? []).join("\n"), /Aim for three/);
+    // Assignments are "aim for three" in #222's book; no slide may say "at least three" about them.
+    // (Courses stay "at least three": the book's Dashboard still asks for that.)
+    for (const slug of LECTURE_SLUGS) {
+      for (const row of getLectureDeck(slug)?.slides ?? []) {
+        const text = [row.title, ...authoredSlideTextParts(row)].join("\n");
+        assert.doesNotMatch(
+          text,
+          /at least three\W+(\*\*)?\s*(assignments?|rows|AssignmentItems)/i,
+          `${slug} ${row.id}`,
+        );
+        if (slug === "kambaz-assignments") {
+          assert.doesNotMatch(text, /at least three/i, `${slug} ${row.id}`);
+        }
+      }
+    }
+    assert.match(listing, /\{\/\* Add more assignments here \(three recommended, like A2, A3\), each linking to its editor \*\/\}/);
+    // The live demo after it renders #222's demo copy, which must equal both listings.
+    const dir = "app/book/ch1/embeds/assignments-step";
+    assert.equal(read(`${dir}/Assignments.tsx`).trim(), listing.trim());
+    assert.equal(read(`${dir}/AssignmentItem.tsx`).trim(), code("kambaz-assignments", "assignment-item").trim());
+    assert.match(
+      read("app/slides/_components/embeds/KambazAssignmentsStepEmbed.tsx"),
+      /from "@\/app\/book\/ch1\/embeds\/assignments-step\/Assignments"/,
+    );
+    assert.match(
+      read("app/slides/_components/embeds/LabsNameGithubEmbed.tsx"),
+      /from "@\/app\/labs\/lab1\/intermediates\/1-5-LabsNameGithub"/,
+    );
   });
 });

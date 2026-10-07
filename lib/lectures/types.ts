@@ -515,6 +515,8 @@ export const LECTURE_EMBED_IDS = [
   "kambaz-home",
   "kambaz-assignments",
   "kambaz-assignment-editor",
+  "kambaz-assignments-step",
+  "labs-name-github",
   "css-style-attr",
   "css-import",
   "css-id-selectors",

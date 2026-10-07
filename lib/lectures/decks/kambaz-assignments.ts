@@ -75,9 +75,9 @@ export const KAMBAZ_ASSIGNMENTS_SLIDES: LectureSlide[] = [
     title: "Extract AssignmentItem",
     kind: "content",
     bullets: [
-      "List id `wd-assignment-list` with **at least three** rows",
-      "A1 ENV + HTML, A2 CSS + TAILWIND, A3 JS + REACT",
-      "`Link` from `next/link` — not `<a>` — class `wd-assignment-link`",
+      "Same idea as `CourseCard`: one `AssignmentItem` per row, with props `cid`, `aid`, `title`, `details`",
+      "The title is a `Link` from `next/link`, not `<a>`, with class `wd-assignment-link`",
+      "It goes to `/courses/${cid}/assignments/${aid}`, and `details` sits underneath",
     ],
     code: `import Link from "next/link";
 
@@ -94,8 +94,13 @@ export default function AssignmentItem({
 }) {
   return (
     <li className="wd-assignment-list-item">
-      {/* Link the title to /courses/\${cid}/assignments/\${aid}
-          (className wd-assignment-link), then show details underneath */}
+      <Link
+        href={\`/courses/\${cid}/assignments/\${aid}\`}
+        className="wd-assignment-link"
+      >
+        {title}
+      </Link>
+      <div>{details}</div>
     </li>
   );
 }`,
@@ -108,8 +113,8 @@ export default function AssignmentItem({
     kind: "content",
     bullets: [
       "Same `async` / `await params` shape as the courses layout",
-      "Keep the search box, `+ Group`, `+ Assignment`, and the `wd-assignments-title` heading",
-      "Use `cid` so each `AssignmentItem` links to the right course",
+      "The page renders one assignment, A1, linked to its editor. Add the rest yourself. Aim for three (A2 and A3 after A1)",
+      "Also add the search box, `+ Group`, `+ Assignment`, and the `wd-assignments-title` heading",
     ],
     code: `import AssignmentItem from "./AssignmentItem";
 
@@ -124,13 +129,25 @@ export default async function Assignments({
       {/* search input, + Group, + Assignment */}
       {/* h3 wd-assignments-title */}
       <ul id="wd-assignment-list">
-        {/* at least three AssignmentItems using cid */}
+        <AssignmentItem
+          cid={cid}
+          aid="123"
+          title="A1 - ENV + HTML"
+          details="Multiple Modules | Due May 13 at 11:59pm | 100 pts"
+        />
+        {/* Add more assignments here (three recommended, like A2, A3), each linking to its editor */}
       </ul>
     </div>
   );
 }`,
     codeLanguage: "tsx",
     codeFile: "app/(kambaz)/courses/[cid]/assignments/page.tsx",
+  },
+  {
+    id: "await-params-live",
+    title: "Assignments starter: live demo",
+    kind: "demo",
+    embed: "kambaz-assignments-step",
   },
   {
     id: "target-editor",
@@ -259,6 +276,12 @@ export default function Labs() {
 }`,
     codeLanguage: "tsx",
     codeFile: "app/labs/page.tsx",
+  },
+  {
+    id: "labs-name-github-live",
+    title: "Labs name and GitHub: live demo",
+    kind: "demo",
+    embed: "labs-name-github",
   },
   {
     id: "labs-name-github-push",
