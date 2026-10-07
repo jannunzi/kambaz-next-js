@@ -353,6 +353,19 @@ describe("Tailwind lab page listing", () => {
 });
 
 describe("TailwindGrids", () => {
+  it("keeps every h3 smaller than the text-2xl h2 headings", () => {
+    const file = read("app/labs/lab2/tailwind/TailwindGrids.tsx");
+    const h3s = [...file.matchAll(/<h3 className="([^"]*)"/g)].map((m) => m[1]);
+    assert.ok(h3s.length >= 9);
+    for (const cls of h3s) {
+      assert.match(cls, /\btext-lg\b/);
+      assert.doesNotMatch(cls, /\btext-(?:xl|[2-9]xl)\b/);
+    }
+    for (const h2 of file.matchAll(/<h2 className="([^"]*)"/g)) {
+      assert.match(h2[1], /\btext-2xl\b/);
+    }
+  });
+
   it("paste steps add 4 columns, then 3 columns, then the grid system h2", () => {
     const file = read("app/labs/lab2/tailwind/TailwindGrids.tsx");
     const steps = bookSteps("app/book/ch2/sections/IconsAndTailwind.tsx").filter(
@@ -362,8 +375,8 @@ describe("TailwindGrids", () => {
     const pasted = incremental.map((step) => step.code).join("\n");
     assert.match(pasted, /<h2 className="text-2xl font-bold">Tailwind Grids<\/h2>/);
     assert.match(pasted, /export default function TailwindGrids/);
-    assert.match(pasted, /<h3 className="mt-6 text-3xl font-bold">4 Columns Grid<\/h3>/);
-    assert.match(pasted, /<h3 className="mt-6 text-3xl font-bold">3 Columns Grid<\/h3>/);
+    assert.match(pasted, /<h3 className="mt-6 text-lg font-bold">4 Columns Grid<\/h3>/);
+    assert.match(pasted, /<h3 className="mt-6 text-lg font-bold">3 Columns Grid<\/h3>/);
     assert.match(pasted, /<h2 className="text-2xl font-bold">Grid system<\/h2>/);
     assert.match(incremental[1]?.prose ?? "", /paste the tsx below after the 4 Columns Grid/i);
     assert.match(incremental[2]?.prose ?? "", /paste the tsx below after the 3 Columns Grid/i);
