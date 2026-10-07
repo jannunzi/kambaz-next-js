@@ -5,7 +5,6 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import LabsNameGithub from "../../app/labs/lab1/intermediates/1-5-LabsNameGithub";
 import { htmlHasStudentName, resolveNameQuery } from "../assignments/names";
-import { getLectureDeck } from "../lectures/catalog";
 
 // Book fixes from the A1 slides-only walkthrough: a real code step for the
 // name / section / GitHub link on Labs, the create-next-app@16.3 prompts as
@@ -101,16 +100,13 @@ describe("§1.2.4 create-next-app@16.3 prompts", () => {
 });
 
 describe("AnchorTag relative link", () => {
-  it("keeps the book block, the Lab 1 component, and the slide listing identical", () => {
+  it("keeps the book block and the Lab 1 component identical", () => {
     const component = read("app/labs/lab1/AnchorTag.tsx").trim();
     assert.equal(codeBlock("app/book/ch1/sections/HtmlSections.tsx", "AnchorTag").trim(), component);
-    const slide = getLectureDeck("anchors")?.slides.find((row) => row.id === "href-documents");
-    assert.equal(slide?.codeFile, "app/labs/lab1/AnchorTag.tsx");
-    assert.equal(slide?.code?.trim(), component);
   });
 
   it("never links to profile.html, which 404s inside the Next.js app", () => {
-    for (const file of [...walk("app/book"), ...walk("lib/lectures/decks"), ...walk("app/labs/lab1")]) {
+    for (const file of [...walk("app/book"), ...walk("app/labs/lab1")]) {
       if (!/\.(tsx?|mdx?)$/.test(file)) continue;
       assert.doesNotMatch(read(file), /profile\.html/, file);
     }

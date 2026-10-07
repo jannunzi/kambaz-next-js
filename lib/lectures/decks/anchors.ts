@@ -17,11 +17,11 @@ export const ANCHORS_SLIDES: LectureSlide[] = [
     bullets: [
       "Use anchors to **link** to other documents, email, or phones",
       "`href` (hypertext reference) is the destination",
-      "Same tag, different schemes: `https:`, relative paths, `mailto:`, `tel:`, `#hash`",
+      "Same tag, different schemes: `https:`, relative files, `mailto:`, `tel:`, `#hash`",
     ],
     code: `<a href="https://www.wikipedia.org">Wikipedia</a>
 <a href="https://github.com/jannunzi">GitHub</a>
-<a href="/labs">Back to Labs</a>
+<a href="profile.html">See my profile</a>
 <a href="mailto:jannunzi@gmail.com">Email</a>
 <a href="tel:+123456789">Call me</a>`,
     codeLanguage: "html",
@@ -32,25 +32,12 @@ export const ANCHORS_SLIDES: LectureSlide[] = [
     kind: "demo",
     bullets: [
       "**Absolute** — another site: `https://www.lipsum.com`",
-      "**Relative** — a route in this app: `/labs` or `/labs/lab1`",
+      "**Relative** — this origin: `profile.html` or `/labs/lab1`",
       "Lab 1 file: `AnchorTag.tsx` — sample ids `wd-lipsum` and `wd-github`",
     ],
-    code: `export default function AnchorTag() {
-  return (
-    <>
-      <h4>Anchor tag</h4>
-      Please{" "}
-      <a href="https://www.lipsum.com" id="wd-lipsum">
-        click here
-      </a>{" "}
-      to get dummy text
-      <br />
-      <a href="https://github.com/jannunzi" id="wd-github">
-        GitHub
-      </a>
-    </>
-  );
-}`,
+    code: `<a href="https://www.lipsum.com" id="wd-lipsum">click here</a>
+<a href="https://github.com/jannunzi" id="wd-github">GitHub</a>
+<a href="profile.html">See my profile</a>`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab1/AnchorTag.tsx",
     embed: "anchors",
