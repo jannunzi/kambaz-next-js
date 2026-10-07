@@ -904,13 +904,15 @@ export default function Square({ children }: { children: ReactNode }) {
 }`}</CodeBlock>
           <p>
             On the Lab 3 page, render{" "}
-            <code>{`<Square>4</Square>`}</code>{" "}under a heading. The child
-            text <code>4</code>{" "}becomes <code>16</code>:
+            <code>{`<Square>4</Square>`}</code>{" "}under an{" "}
+            <code>{`<h4>Square of 4</h4>`}</code>{" "}heading, with an{" "}
+            <code>{`<hr />`}</code>{" "}after it. The child text{" "}
+            <code>4</code>{" "}becomes <code>16</code>:
           </p>
           <LiveDemo name="Square" file="app/labs/lab3/Square.tsx">
-            <p>
-              Square of 4 = <Square>4</Square>
-            </p>
+            <h4>Square of 4</h4>
+            <Square>4</Square>
+            <hr />
           </LiveDemo>
           <p>
             <code>Highlight</code>{" "}wraps arbitrary children in a yellow
