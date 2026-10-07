@@ -17,7 +17,7 @@ export const A1_RUBRIC: AssignmentRubric = {
       id: "delivery",
       title: "Delivery",
       intro:
-        `Submit a Vercel URL that graders can open without signing in. A public GitHub repository is optional for auto-checks, but graders still look for the repo and a wd-github link on Labs. ${ASSIGNMENT_STUDENT_COPY.nameAndSectionDeliveryNote}`,
+        `Submit a Vercel URL that graders can open without signing in. A GitHub URL is optional for Run checks, but the GitHub repository row still needs your public repo and a link to it on Labs. Keep the wd-github id on that link; the ids help us test your work. ${ASSIGNMENT_STUDENT_COPY.nameAndSectionDeliveryNote}`,
       criteria: [
         {
           id: "a1-delivery-vercel",
@@ -40,7 +40,7 @@ export const A1_RUBRIC: AssignmentRubric = {
           id: "a1-delivery-github",
           label: "GitHub repository",
           description:
-            "Public webdev-client repo with the source that produced the deploy, plus a wd-github link on Labs.",
+            "Public webdev-client repo with the source that produced the deploy, plus a link to it on Labs (keep the id wd-github on that link).",
           points: 3,
           bookHref: "/book/ch1#sec-1-5",
           bookLabel: "§1.5",
@@ -118,7 +118,7 @@ export const A1_RUBRIC: AssignmentRubric = {
           id: "a1-kambaz-assignments",
           label: "Assignments screen",
           description:
-            "Assignments list matching the book demo and required ids (On your own).",
+            "Assignments list matching the book demo (On your own): at least three assignments, each title linking to /courses/[cid]/assignments/[aid]. Keep the book's ids.",
           points: 5,
           bookHref: "/book/ch1#sec-1-4-7",
           bookLabel: "§1.4.7",
@@ -128,7 +128,7 @@ export const A1_RUBRIC: AssignmentRubric = {
           id: "a1-kambaz-editor",
           label: "Assignment Editor",
           description:
-            "Assignment Editor matching the book demo and required ids (On your own).",
+            "Assignment Editor matching the book demo (On your own): the name, description, and points from the stub plus the controls listed in §1.4.8. Keep the book's ids.",
           points: 5,
           bookHref: "/book/ch1#sec-1-4-8",
           bookLabel: "§1.4.8",
