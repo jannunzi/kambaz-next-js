@@ -47,7 +47,9 @@ export default async function QuizzesIndexPage() {
           {" "}
           <span className="text-sm text-amber-800">Review draft</span>
           {" · "}
-          <Link href="/quizzes/take/q3">Student exam</Link>
+          <span>Taken on Canvas</span>
+          {" · "}
+          <Link href="/quizzes/take/q3">Student page</Link>
           {" · "}
           <Link href="/quizzes/staff/q3/attempts">Staff attempts</Link>
         </li>
@@ -56,7 +58,9 @@ export default async function QuizzesIndexPage() {
           {" "}
           <span className="text-sm text-amber-800">Review draft</span>
           {" · "}
-          <Link href="/quizzes/take/q4">Student exam</Link>
+          <span>Taken on Canvas</span>
+          {" · "}
+          <Link href="/quizzes/take/q4">Student page</Link>
           {" · "}
           <Link href="/quizzes/staff/q4/attempts">Staff attempts</Link>
         </li>
@@ -65,7 +69,9 @@ export default async function QuizzesIndexPage() {
           {" "}
           <span className="text-sm text-amber-800">Review draft</span>
           {" · "}
-          <Link href="/quizzes/take/q5">Student exam</Link>
+          <span>Taken on Canvas</span>
+          {" · "}
+          <Link href="/quizzes/take/q5">Student page</Link>
           {" · "}
           <Link href="/quizzes/staff/q5/attempts">Staff attempts</Link>
         </li>
@@ -74,7 +80,9 @@ export default async function QuizzesIndexPage() {
           {" "}
           <span className="text-sm text-amber-800">Review draft</span>
           {" · "}
-          <Link href="/quizzes/take/q6">Student exam</Link>
+          <span>Taken on Canvas</span>
+          {" · "}
+          <Link href="/quizzes/take/q6">Student page</Link>
           {" · "}
           <Link href="/quizzes/staff/q6/attempts">Staff attempts</Link>
         </li>

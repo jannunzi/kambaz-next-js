@@ -4,6 +4,10 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { isQuizTakingConfigured } from "@/lib/config";
 import { loadQuizAccessForRoster } from "@/lib/quiz-exam/access-overrides";
 import { findLatestQuizAttempt, insertQuizAttempt } from "@/lib/quiz-exam/attempts";
+import {
+  CANVAS_ONLY_QUIZ_SENTENCE,
+  canvasOnlySubmitBlocked,
+} from "@/lib/quiz-exam/schedule";
 import { STUDENT_COPY } from "@/lib/quiz-exam/student-copy";
 import { runExamSubmit } from "@/lib/quiz-exam/submit";
 import type { SubmitExamInput, SubmitExamResult } from "@/lib/quiz-exam/types";
@@ -59,6 +63,14 @@ export async function submitExamAttempt(
       actor: { clerkUserId: userId, email: emails[0], canvasUserId },
       roster,
     });
+  }
+
+  if (canvasOnlySubmitBlocked(input.quizId, impersonating)) {
+    return {
+      ok: false,
+      code: "take_closed",
+      message: `${CANVAS_ONLY_QUIZ_SENTENCE} New attempts are not accepted here.`,
+    };
   }
 
   if (!impersonating) {

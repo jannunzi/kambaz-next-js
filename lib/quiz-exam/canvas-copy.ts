@@ -4,17 +4,24 @@ import {
   formatEasternCivilTimestamp,
   formatEasternDateTime,
   getQuizSchedule,
+  isCanvasOnlyQuiz,
 } from "./schedule";
 
 /**
- * Canvas quiz / exam student copy for Fall 2026 fallback packages.
+ * Canvas quiz / exam student copy for Fall 2026 packages.
  *
- * Website take remains primary. Canvas Q1–Q6 and X1/X2 are a staff-gated
- * backup if the site is down — never the default path.
+ * Graded quizzes (Q1–Q6) are taken in Canvas (Jose, Oct 7 2026), so their
+ * Canvas description never links to a take page on this site. Exams
+ * (X1/X2) are still taken on the course website; their Canvas copy stays a
+ * staff-gated backup if the site is down.
  */
 
 export const CANVAS_FALLBACK_PERMISSION_BLURB =
   "If the website quiz is unavailable, ask your instructor or TA for permission to take this Canvas quiz instead.";
+
+/** Student-facing Canvas description line for Q1–Q6. */
+export const CANVAS_QUIZ_TAKEN_HERE_SENTENCE =
+  "This graded quiz is taken here in Canvas, not on the course website.";
 
 export type CanvasFallbackQuizId = GradedQuizId;
 
@@ -28,7 +35,11 @@ export type CanvasFallbackQuizMeta = {
   /** Civil America/New_York bounds of the single answer week. */
   answersOpenAt: string;
   answersCloseAt: string;
-  takePath: string;
+  /**
+   * Course-website take path for exams only (X1/X2). Quizzes are taken in
+   * Canvas, so this is null for Q1–Q6 and never appears in their copy.
+   */
+  takePath: string | null;
 };
 
 /** Stable QTI / IMSCC identifiers. Shakespeare can remap these to package -20 GUIDs. */
@@ -36,7 +47,13 @@ export function canvasFallbackIdent(quizId: CanvasFallbackQuizId): string {
   return `gwebdev_${quizId}_fallback`;
 }
 
-export function canvasQuizTakeUrl(quizId: CanvasFallbackQuizId): string {
+/**
+ * Course-website take URL for an exam (X1/X2). Returns null for Q1–Q6:
+ * graded quizzes are taken in Canvas, so no student copy may point at a
+ * website take page for them.
+ */
+export function canvasQuizTakeUrl(quizId: CanvasFallbackQuizId): string | null {
+  if (isCanvasOnlyQuiz(quizId)) return null;
   return `${COURSE_SITE_ORIGIN}/quizzes/take/${quizId}`;
 }
 
@@ -77,7 +94,7 @@ export const CANVAS_FALLBACK_QUIZZES: CanvasFallbackQuizMeta[] = GRADED_QUIZ_IDS
     quizId,
     canvasTitle: CANVAS_FALLBACK_TITLES[quizId],
     ...canvasWindow(quizId),
-    takePath: `/quizzes/take/${quizId}`,
+    takePath: isCanvasOnlyQuiz(quizId) ? null : `/quizzes/take/${quizId}`,
   }),
 );
 
@@ -88,24 +105,30 @@ export function getCanvasFallbackQuiz(
 }
 
 /**
- * Canvas quiz instructions / description. Keep the website URL first; Canvas
- * is only with staff permission.
+ * Canvas quiz instructions / description.
+ *
+ * Q1–Q6: taken in Canvas. No course-website take link, no website
+ * fallback blurb, no website answer-review week.
+ * X1/X2: keep the website URL first; Canvas is only with staff permission.
  */
 export function canvasQuizDescriptionHtml(quiz: CanvasFallbackQuizMeta): string {
-  const url = canvasQuizTakeUrl(quiz.quizId);
   const schedule = getQuizSchedule(quiz.quizId);
   if (!schedule) {
     throw new Error(`Missing quiz schedule for Canvas fallback ${quiz.quizId}`);
   }
   const answersOpen = formatEasternDateTime(schedule.answersOpenAt);
   const answersClose = formatEasternDateTime(schedule.answersCloseAt);
+  const answersLine = `<p>Correct answers are available for one week only, from ${answersOpen} until ${answersClose}.</p>`;
+  const url = canvasQuizTakeUrl(quiz.quizId);
+  if (!url) {
+    // Answer visibility for a Canvas-taken quiz is a Canvas quiz setting,
+    // so this copy does not promise the website's answer-review week.
+    return `<p>${quiz.canvasTitle}. ${CANVAS_QUIZ_TAKEN_HERE_SENTENCE}</p>`;
+  }
   return [
     `<p>Take ${quiz.canvasTitle} on the course site:</p>`,
     `<p><a href="${url}">${url}</a></p>`,
-    `<p>Correct answers are available for one week only, from ${answersOpen} until ${answersClose}.</p>`,
-    quiz.quizId.startsWith("q")
-      ? `<p>This Canvas copy is traditional questions only (multiple choice, true/false, fill in the blank). Short coding items are graded on the website and are not included here.</p>`
-      : "",
+    answersLine,
     `<p>${CANVAS_FALLBACK_PERMISSION_BLURB}</p>`,
   ].join("");
 }
@@ -113,7 +136,8 @@ export function canvasQuizDescriptionHtml(quiz: CanvasFallbackQuizMeta): string 
 export function listCanvasQuizFollowupCopy(): Array<{
   quizId: CanvasFallbackQuizId;
   canvasTitle: string;
-  publicUrl: string;
+  /** Course-website take URL (exams only); null for Canvas-taken quizzes. */
+  publicUrl: string | null;
   html: string;
   ident: string;
 }> {

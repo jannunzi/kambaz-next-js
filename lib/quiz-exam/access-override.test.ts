@@ -199,14 +199,23 @@ describe("per-section take overrides", () => {
   });
 
   it("uses section-closed copy instead of the date-window message", () => {
+    const x1 = getQuizSchedule("x1");
+    assert.ok(x1);
+    const copy = answerWindowCopy(x1, "take_closed", duringWindow, "closed");
+    assert.match(copy.title, /disabled for your section/i);
+    assert.match(copy.paragraphs.join(" "), /your section/);
+    assert.match(copy.paragraphs.join(" "), /October 26/);
+    assert.doesNotMatch(copy.paragraphs.join(" "), /end of lecture|Monday through Sunday/i);
+    assert.doesNotMatch(copy.paragraphs.join(" "), /taken (on|in) Canvas/);
+  });
+
+  it("tells a section-closed graded quiz it is taken in Canvas", () => {
     const q3 = getQuizSchedule("q3");
     assert.ok(q3);
     const copy = answerWindowCopy(q3, "take_closed", duringWindow, "closed");
-    assert.match(copy.title, /disabled for your section/i);
-    assert.match(copy.paragraphs.join(" "), /your section/);
-    assert.match(copy.paragraphs.join(" "), /week of Oct 26/);
-    assert.doesNotMatch(copy.paragraphs.join(" "), /end of lecture|Monday through Sunday|is due/i);
-    assert.doesNotMatch(copy.paragraphs.join(" "), /taken on Canvas/);
+    assert.equal(copy.title, "Taken on Canvas");
+    assert.match(copy.paragraphs.join(" "), /Graded quizzes are taken in Canvas/);
+    assert.doesNotMatch(copy.paragraphs.join(" "), /disabled for your section|still has to enable/i);
   });
 
   it("serializes override audit fields for the staff panel", () => {

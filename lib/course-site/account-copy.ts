@@ -17,11 +17,11 @@ export const COURSE_WEBSITE_ACCOUNT_COPY = {
   signUpThenSignIn:
     "Use Sign up to create your own account with the same Northeastern email you use on Canvas, then Sign in. That email lets us map site progress back to the Canvas roster.",
   quizRosterSeparate:
-    "Sign up with the same Northeastern email you use on Canvas so site progress can be mapped back to the roster. Taking a graded quiz still requires that Canvas email to be on the course roster. Creating a site account does not enroll you on the roster.",
+    "Graded quizzes are taken in Canvas, not on this site. Sign up here with the same Northeastern email you use on Canvas so site progress can be mapped back to the roster. Creating a site account does not enroll you on the roster.",
   signInPageHint:
     "This site is separate from Canvas and Northeastern SSO. Accounts are not created for you. If you don’t have an account yet, Sign up first with the same Northeastern email you use on Canvas, then Sign in. That email lets us map site progress back to the Canvas roster. “Couldn’t find your account” means you still need to Sign up — not that you need roster access.",
   signUpPageHint:
-    "This site is separate from Canvas and Northeastern SSO. Sign up with the same Northeastern email you use on Canvas — nothing is pre-provisioned. That email lets us map site progress back to the Canvas roster. After you register, Sign in. Taking a graded quiz still requires your Canvas roster email.",
+    "This site is separate from Canvas and Northeastern SSO. Sign up with the same Northeastern email you use on Canvas — nothing is pre-provisioned. That email lets us map site progress back to the Canvas roster. After you register, Sign in. Graded quizzes are taken in Canvas, not on this site.",
   assignmentAuthHint:
     "Need an account? Sign up first with the same Northeastern email you use on Canvas, then Sign in. This site is not Canvas, and accounts are not pre-provisioned. Using your Canvas email lets us map site progress back to the roster.",
   assignmentSignInHint:

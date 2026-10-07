@@ -1,6 +1,6 @@
 # Canvas QTI fallback (Fall 2026)
 
-Website quizzes at `/quizzes/take/q1` … `/quizzes/take/q6` stay primary. These files fill Canvas Q1–Q6 and X1/X2 with **real traditional questions** so staff can unlock a Classic Quiz if the site is down. Students take Canvas **only with instructor/TA permission**.
+**Graded quizzes Q1–Q6 are taken in Canvas** (Jose, Oct 7 2026). Students cannot start or submit them on the course website. These files fill Canvas Q1–Q6 with **real traditional questions**. Exams X1/X2 are still taken on the course website; their Canvas copies are a staff-gated backup if the site is down, taken **only with instructor/TA permission**.
 
 **Coding items are website-only.** Canvas cannot call the local / xAI coding grader, so this exporter never includes the Q1–Q6 form/FIB or implement coding pools. A Canvas fallback quiz is 10 traditional groups (MC / TF / FIB). The website quiz is 8 traditional + 2 coding.
 
@@ -37,7 +37,10 @@ Shared counts live in `lib/quiz-exam/draw-counts.ts` (`QUIZ_DRAW_COUNTS`, `QUIZ_
 
 Stems are the **standalone** wording (no Lab / Kambaz / `wd-*` / book-section framing).
 
-Instructions in `assessment_meta.xml` always include the website take URL **and**:
+Instructions in `assessment_meta.xml`:
+
+- **Q1–Q6:** "This graded quiz is taken here in Canvas, not on the course website." No course-website link.
+- **X1/X2:** the website take URL **and**
 
 > If the website quiz is unavailable, ask your instructor or TA for permission to take this Canvas quiz instead.
 

@@ -158,12 +158,18 @@ describe("Fall 2026 Canvas calendar", () => {
     assert.match(quiz.description, /end of lecture/i);
     assert.match(quiz.description, /open for the whole week/i);
     assert.match(quiz.description, /week after that chapter/i);
-    assert.match(quiz.description, /Quiz 1 and Quiz 2 are taken on Canvas/);
+    assert.match(quiz.description, /Quizzes are taken in Canvas/);
+    assert.doesNotMatch(quiz.description, /Quiz 1 and Quiz 2/);
     assert.doesNotMatch(quiz.description, /later quizzes are on/i);
     assert.doesNotMatch(quiz.description, /course website/i);
     assert.match(
       evaluationNotes.join(" "),
-      /Quiz 1 and Quiz 2 are taken on Canvas/,
+      /Graded quizzes are taken in Canvas/,
+    );
+    assert.doesNotMatch(evaluationNotes.join(" "), /Quiz 1 and Quiz 2/);
+    assert.doesNotMatch(
+      evaluationNotes.join(" "),
+      /quiz[^.]*(on this course website|on the course site|fallback)/i,
     );
     assert.doesNotMatch(
       evaluationNotes.join(" "),
