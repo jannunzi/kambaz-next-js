@@ -12,7 +12,8 @@
  *       is read on one page (never summed, never the home page), template
  *       boilerplate is ignored, a 404 page fails its items, TA review keeps
  *       points only behind its core item, and the Assignments list needs
- *       at least three assignment links. A miss on a page that couldn't
+ *       at least one assignment link with text (three recommended, never
+ *       required). A miss on a page that couldn't
  *       be opened (timeout, 5xx, login wall), including any Lab page, is a
  *       re-check with points kept; it is never graded against other pages.
  */
