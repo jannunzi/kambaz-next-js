@@ -75,6 +75,30 @@ export const VARIABLE_TYPES_SLIDES: LectureSlide[] = [
     ],
   },
   {
+    id: "lab3-page-3-2-2",
+    title: "Add VariableTypes to Lab 3",
+    kind: "content",
+    bullets: [
+      "Add the import under the first one in `app/labs/lab3/page.tsx`",
+      "Render `<VariableTypes />` at the bottom of the `wd-lab3` `div`",
+    ],
+    code: `import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab3/page.tsx",
+    codeAddedLines: [2, 9],
+  },
+  {
     id: "on-your-own",
     title: "Add a second string and number",
     kind: "content",

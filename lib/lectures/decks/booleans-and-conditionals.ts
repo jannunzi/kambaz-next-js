@@ -69,6 +69,32 @@ export const BOOLEANS_AND_CONDITIONALS_SLIDES: LectureSlide[] = [
     embed: "js-booleans",
   },
   {
+    id: "lab3-page-3-2-3",
+    title: "Add BooleanVariables to Lab 3",
+    kind: "content",
+    bullets: [
+      "Import it into `app/labs/lab3/page.tsx` the same way, after `VariableTypes`",
+      "Render `<BooleanVariables />` last inside the `wd-lab3` `div`",
+    ],
+    code: `import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab3/page.tsx",
+    codeAddedLines: [3, 11],
+  },
+  {
     id: "if-else",
     title: "Short-circuit a paragraph",
     kind: "demo",
@@ -95,6 +121,34 @@ export const BOOLEANS_AND_CONDITIONALS_SLIDES: LectureSlide[] = [
     embed: "js-if-else",
   },
   {
+    id: "lab3-page-3-2-4",
+    title: "Add IfElse to Lab 3",
+    kind: "content",
+    bullets: [
+      "Import `IfElse` into `app/labs/lab3/page.tsx`",
+      "Render `<IfElse />` last inside the `wd-lab3` `div`",
+    ],
+    code: `import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab3/page.tsx",
+    codeAddedLines: [4, 13],
+  },
+  {
     id: "ternary",
     title: "A ternary picks one of two trees",
     kind: "demo",
@@ -117,6 +171,36 @@ export const BOOLEANS_AND_CONDITIONALS_SLIDES: LectureSlide[] = [
     codeFile: "app/labs/lab3/TernaryOperator.tsx",
     codeHighlightLines: [6],
     embed: "js-ternary",
+  },
+  {
+    id: "lab3-page-3-2-5",
+    title: "Add TernaryOperator to Lab 3",
+    kind: "content",
+    bullets: [
+      "Import `TernaryOperator` into `app/labs/lab3/page.tsx`",
+      "Render `<TernaryOperator />` last inside the `wd-lab3` `div`",
+    ],
+    code: `import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab3/page.tsx",
+    codeAddedLines: [5, 15],
   },
   {
     id: "output-if-else",
@@ -166,6 +250,41 @@ export const BOOLEANS_AND_CONDITIONALS_SLIDES: LectureSlide[] = [
     codeFile: "app/labs/lab3/ConditionalOutputInline.tsx",
     codeAddedLines: [5, 6],
     embed: "js-conditional-inline",
+  },
+  {
+    id: "lab3-page-3-2-6",
+    title: "Add both conditional outputs to Lab 3",
+    kind: "content",
+    bullets: [
+      "Import both components into `app/labs/lab3/page.tsx`",
+      "Render `<ConditionalOutputIfElse />`, then `<ConditionalOutputInline />`",
+      "The if/else version returns early. The inline version always returns one wrapper",
+    ],
+    code: `import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab3/page.tsx",
+    codeAddedLines: [6, 7, 18, 19],
   },
   {
     id: "next-up",

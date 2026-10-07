@@ -1241,9 +1241,9 @@ describe("lecture decks", () => {
     assert.equal(counts["kambaz-account-styling"], 8);
     assert.equal(counts["intro-to-javascript"], 8);
     assert.equal(counts["variables-and-constants"], 7);
-    assert.equal(counts["variable-types"], 6);
-    assert.equal(counts["booleans-and-conditionals"], 8);
-    assert.equal(counts["null-and-undefined"], 6);
+    assert.equal(counts["variable-types"], 7);
+    assert.equal(counts["booleans-and-conditionals"], 12);
+    assert.equal(counts["null-and-undefined"], 7);
     assert.equal(counts["javascript-functions"], 8);
     assert.equal(counts["javascript-arrays"], 7);
     assert.equal(counts["array-iteration"], 7);
@@ -2581,6 +2581,13 @@ describe("lecture decks", () => {
 
   it("copies Chapter 3 book listings onto the matching slides", () => {
     const pairs = [
+      ["variables-and-constants", "import-it", "app/book/ch3/sections/JsBasics.tsx", "Lab3 (after 3.2.1)"],
+      ["variable-types", "lab3-page-3-2-2", "app/book/ch3/sections/JsBasics.tsx", "Lab3 (after 3.2.2)"],
+      ["booleans-and-conditionals", "lab3-page-3-2-3", "app/book/ch3/sections/JsBasics.tsx", "Lab3 (after 3.2.3)"],
+      ["booleans-and-conditionals", "lab3-page-3-2-4", "app/book/ch3/sections/JsBasics.tsx", "Lab3 (after 3.2.4)"],
+      ["booleans-and-conditionals", "lab3-page-3-2-5", "app/book/ch3/sections/JsBasics.tsx", "Lab3 (after 3.2.5)"],
+      ["booleans-and-conditionals", "lab3-page-3-2-6", "app/book/ch3/sections/JsBasics.tsx", "Lab3 (after 3.2.6)"],
+      ["null-and-undefined", "lab3-page-3-2-7", "app/book/ch3/sections/JsBasics.tsx", "Lab3 (after 3.2.7)"],
       ["kambaz-database", "redirect", "app/book/ch3/sections/KambazData.tsx", "Kambaz"],
       ["kambaz-database", "nav", "app/book/ch3/sections/KambazData.tsx", "KambazNavigation"],
       ["kambaz-courses-data", "layout", "app/book/ch3/sections/KambazData.tsx", "CoursesLayout"],
@@ -2625,6 +2632,21 @@ describe("lecture decks", () => {
     assert.ok(pathIds.indexOf("todo-list") < pathIds.indexOf("lab3-complete"));
     assert.ok(pathIds.indexOf("lab3-complete") < pathIds.indexOf("recap"));
     assert.equal(findSlide("path-params-and-todos", "lab3-complete").codeFile, "app/labs/lab3/page.tsx");
+
+    // Each 3.2 Lab 3 page step comes right after the demo it adds (book order).
+    for (const [slug, demo, page] of [
+      ["variables-and-constants", "sample", "import-it"],
+      ["variable-types", "boolean-coerce", "lab3-page-3-2-2"],
+      ["booleans-and-conditionals", "boolean-sample", "lab3-page-3-2-3"],
+      ["booleans-and-conditionals", "if-else", "lab3-page-3-2-4"],
+      ["booleans-and-conditionals", "ternary", "lab3-page-3-2-5"],
+      ["booleans-and-conditionals", "output-inline", "lab3-page-3-2-6"],
+      ["null-and-undefined", "when", "lab3-page-3-2-7"],
+    ] as const) {
+      const ids = getLectureDeck(slug)!.slides.map((slide) => slide.id);
+      assert.equal(ids.indexOf(page), ids.indexOf(demo) + 1, `${slug}#${page} follows ${demo}`);
+      assert.equal(findSlide(slug, page).codeFile, "app/labs/lab3/page.tsx");
+    }
 
     const dbIds = getLectureDeck("kambaz-database")!.slides.map((slide) => slide.id);
     assert.ok(dbIds.indexOf("redirect") < dbIds.indexOf("nav"));
