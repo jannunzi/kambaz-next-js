@@ -257,4 +257,32 @@ describe("Chapter 3 book fixes (A3 walkthrough)", () => {
     }
     assert.equal(steps[steps.length - 1].body, final, "the last step is the finished Lab 3 page");
   });
+it("shows the §3.7.1 Square and Highlight demos with the same markup as the Lab 3 page", () => {
+    const dedent = (text: string) => {
+      const rows = text.split("\n").filter((line) => line.trim() !== "");
+      const indent = Math.min(...rows.map((line) => line.match(/^ */)![0].length));
+      return rows.map((line) => line.slice(indent)).join("\n");
+    };
+    const page = read("app/labs/lab3/page.tsx");
+    const squareOnPage = page.match(/^ {6}<h4>Square of 4<\/h4>\n {6}<Square>4<\/Square>\n {6}<hr \/>$/m)?.[0];
+    const highlightOnPage = page.match(/^ {6}<Highlight>\n[\s\S]*?^ {6}<\/Highlight>$/m)?.[0];
+    assert.ok(squareOnPage, "page.tsx renders <h4>Square of 4</h4>, <Square>4</Square>, <hr />");
+    assert.ok(highlightOnPage, "page.tsx renders a Highlight");
+    const styling = read(STYLING);
+    const section = styling.slice(styling.indexOf('id="sec-3-7-1"'), styling.indexOf('id="sec-3-7-2"'));
+    const demo = (name: string) =>
+      section.match(new RegExp(`<LiveDemo name="${name}" file="app/labs/lab3/${name}\\.tsx">\\n([\\s\\S]*?)\\n *</LiveDemo>`))?.[1] ?? "";
+    assert.equal(dedent(demo("Square")), dedent(squareOnPage), "§3.7.1 Square demo");
+    assert.equal(dedent(demo("Highlight")), dedent(highlightOnPage), "§3.7.1 Highlight demo");
+    // The slide embeds show the same markup.
+    const embeds = read("app/slides/_components/embeds/Lab3Embeds.tsx");
+    const embed = (fn: string) =>
+      embeds.match(new RegExp(`export function ${fn}\\(\\) \\{\\n  return \\(\\n    <Lab3Demo label="[^"]+">\\n([\\s\\S]*?)\\n    </Lab3Demo>`))?.[1] ?? "";
+    assert.equal(dedent(embed("JsSquareEmbed")), dedent(squareOnPage), "js-square slide embed");
+    assert.equal(dedent(embed("JsHighlightEmbed")), dedent(highlightOnPage), "js-highlight slide embed");
+    for (const file of ["Functions", "DataStructures", "StylingAndComponents", "JsBasics"]) {
+      assert.doesNotMatch(read(`app/book/ch3/sections/${file}.tsx`), /Square of 4 =/, file);
+    }
+    assert.doesNotMatch(embeds, /Square of 4 =/);
+  });
 });
