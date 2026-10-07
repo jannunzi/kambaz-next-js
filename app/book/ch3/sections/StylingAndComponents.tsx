@@ -116,6 +116,84 @@ export default function Classes() {
           >
             <Classes />
           </LiveDemo>
+          <p>
+            Import <code>Classes</code>{" "}into <code>app/labs/lab3/page.tsx</code>{" "}and
+            render it after <code>OptionalChaining</code>. The page does not
+            import <code>Classes.css</code>; <code>Classes.tsx</code>{" "}does:
+          </p>
+          <CodeBlock
+            language="tsx"
+            name="Lab3 (after 3.5.1)"
+            file="app/labs/lab3/page.tsx"
+          >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+import ReduceFunction from "./ReduceFunction";
+import JsonStringify from "./JsonStringify";
+import House from "./House";
+import Spreader from "./Spreader";
+import Destructing from "./Destructing";
+import FunctionDestructing from "./FunctionDestructing";
+import DestructingImports from "./DestructingImports";
+import OptionalChaining from "./OptionalChaining";
+import Classes from "./Classes";
+
+export default function Lab3() {
+  console.log("Hello World!");
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+      <ReduceFunction />
+      <JsonStringify />
+      <House />
+      <Spreader />
+      <Destructing />
+      <FunctionDestructing />
+      <DestructingImports />
+      <OptionalChaining />
+      <Classes />
+    </div>
+  );
+}`}</CodeBlock>
           <OnYourOwn>
             Set <code>color</code>{" "}to{" "}
             <code>&quot;yellow&quot;</code>{" "}and <code>dangerous</code>{" "}to{" "}
@@ -198,6 +276,85 @@ export default function Classes() {
           <LiveDemo mode="styled" name="Styles" file="app/labs/lab3/Styles.tsx">
             <Styles />
           </LiveDemo>
+          <p>
+            Import <code>Styles</code>{" "}into <code>app/labs/lab3/page.tsx</code>{" "}and render
+            it last:
+          </p>
+          <CodeBlock
+            language="tsx"
+            name="Lab3 (after 3.5.2)"
+            file="app/labs/lab3/page.tsx"
+          >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+import ReduceFunction from "./ReduceFunction";
+import JsonStringify from "./JsonStringify";
+import House from "./House";
+import Spreader from "./Spreader";
+import Destructing from "./Destructing";
+import FunctionDestructing from "./FunctionDestructing";
+import DestructingImports from "./DestructingImports";
+import OptionalChaining from "./OptionalChaining";
+import Classes from "./Classes";
+import Styles from "./Styles";
+
+export default function Lab3() {
+  console.log("Hello World!");
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+      <ReduceFunction />
+      <JsonStringify />
+      <House />
+      <Spreader />
+      <Destructing />
+      <FunctionDestructing />
+      <DestructingImports />
+      <OptionalChaining />
+      <Classes />
+      <Styles />
+    </div>
+  );
+}`}</CodeBlock>
           <OnYourOwn>
             Declare a <code>bgGreen</code>{" "}object with{" "}
             <code>backgroundColor: &quot;lightgreen&quot;</code>{" "}that
@@ -289,6 +446,89 @@ export default function ClientComponentDemo() {
           >
             <ClientComponentDemo />
           </LiveDemo>
+          <p>
+            Import <code>ClientComponentDemo</code>{" "}into{" "}
+            <code>app/labs/lab3/page.tsx</code>{" "}and render it last. The Lab 3 page itself
+            stays a Server Component — no <code>&quot;use client&quot;</code>{" "}there —
+            and it can still render a Client Component:
+          </p>
+          <CodeBlock
+            language="tsx"
+            name="Lab3 (after 3.6.1)"
+            file="app/labs/lab3/page.tsx"
+          >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+import ReduceFunction from "./ReduceFunction";
+import JsonStringify from "./JsonStringify";
+import House from "./House";
+import Spreader from "./Spreader";
+import Destructing from "./Destructing";
+import FunctionDestructing from "./FunctionDestructing";
+import DestructingImports from "./DestructingImports";
+import OptionalChaining from "./OptionalChaining";
+import Classes from "./Classes";
+import Styles from "./Styles";
+import ClientComponentDemo from "./ClientComponentDemo";
+
+export default function Lab3() {
+  console.log("Hello World!");
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+      <ReduceFunction />
+      <JsonStringify />
+      <House />
+      <Spreader />
+      <Destructing />
+      <FunctionDestructing />
+      <DestructingImports />
+      <OptionalChaining />
+      <Classes />
+      <Styles />
+      <ClientComponentDemo />
+    </div>
+  );
+}`}</CodeBlock>
           <OnYourOwn>
             Temporarily remove <code>&quot;use client&quot;</code>{" "}and
             confirm the error, then put the directive back. Then add a
@@ -371,9 +611,93 @@ export default function ServerComponentDemo() {
             <ServerComponentDemo />
           </LiveDemo>
           <p>
-            Import both demos into Lab 3. A useful mental box: server
-            components fetch and format data; client components handle
-            hooks, clicks, and anything that reads the address bar.
+            Import <code>ServerComponentDemo</code>{" "}into{" "}
+            <code>app/labs/lab3/page.tsx</code>{" "}after <code>ClientComponentDemo</code>, so both
+            demos are on the page:
+          </p>
+          <CodeBlock
+            language="tsx"
+            name="Lab3 (after 3.6.2)"
+            file="app/labs/lab3/page.tsx"
+          >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+import ReduceFunction from "./ReduceFunction";
+import JsonStringify from "./JsonStringify";
+import House from "./House";
+import Spreader from "./Spreader";
+import Destructing from "./Destructing";
+import FunctionDestructing from "./FunctionDestructing";
+import DestructingImports from "./DestructingImports";
+import OptionalChaining from "./OptionalChaining";
+import Classes from "./Classes";
+import Styles from "./Styles";
+import ClientComponentDemo from "./ClientComponentDemo";
+import ServerComponentDemo from "./ServerComponentDemo";
+
+export default function Lab3() {
+  console.log("Hello World!");
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+      <ReduceFunction />
+      <JsonStringify />
+      <House />
+      <Spreader />
+      <Destructing />
+      <FunctionDestructing />
+      <DestructingImports />
+      <OptionalChaining />
+      <Classes />
+      <Styles />
+      <ClientComponentDemo />
+      <ServerComponentDemo />
+    </div>
+  );
+}`}</CodeBlock>
+          <p>
+            A useful mental box: server components fetch and format data;
+            client components handle hooks, clicks, and anything that reads
+            the address bar.
           </p>
           <p>
             On your Vercel deployment, Lab 3 is prerendered when the site
@@ -447,6 +771,91 @@ export default function ServerComponentDemo() {
         <LiveDemo name="Add" file="app/labs/lab3/Add.tsx">
           <Add a={3} b={4} />
         </LiveDemo>
+        <p>
+          Import <code>Add</code>{" "}into <code>app/labs/lab3/page.tsx</code>{" "}and render it
+          with its two props after <code>ServerComponentDemo</code>:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.7)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+import ReduceFunction from "./ReduceFunction";
+import JsonStringify from "./JsonStringify";
+import House from "./House";
+import Spreader from "./Spreader";
+import Destructing from "./Destructing";
+import FunctionDestructing from "./FunctionDestructing";
+import DestructingImports from "./DestructingImports";
+import OptionalChaining from "./OptionalChaining";
+import Classes from "./Classes";
+import Styles from "./Styles";
+import ClientComponentDemo from "./ClientComponentDemo";
+import ServerComponentDemo from "./ServerComponentDemo";
+import Add from "./Add";
+
+export default function Lab3() {
+  console.log("Hello World!");
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+      <ReduceFunction />
+      <JsonStringify />
+      <House />
+      <Spreader />
+      <Destructing />
+      <FunctionDestructing />
+      <DestructingImports />
+      <OptionalChaining />
+      <Classes />
+      <Styles />
+      <ClientComponentDemo />
+      <ServerComponentDemo />
+      <Add a={3} b={4} />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Render a second{" "}
           <code>{`<Add a={10} b={20} />`}</code>{" "}on the Lab 3 page and
@@ -528,6 +937,101 @@ export default function Highlight({ children }: { children: ReactNode }) {
               Lorem ipsum dolor sit amet, consectetur adipisicing elit.
             </Highlight>
           </LiveDemo>
+          <p>
+            Import both <code>Square</code>{" "}and <code>Highlight</code>{" "}into{" "}
+            <code>app/labs/lab3/page.tsx</code>. The square of 4 sits under its own{" "}
+            <code>&lt;h4&gt;</code>{" "}heading, followed by a rule and the
+            highlighted sentence:
+          </p>
+          <CodeBlock
+            language="tsx"
+            name="Lab3 (after 3.7.1)"
+            file="app/labs/lab3/page.tsx"
+          >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+import ReduceFunction from "./ReduceFunction";
+import JsonStringify from "./JsonStringify";
+import House from "./House";
+import Spreader from "./Spreader";
+import Destructing from "./Destructing";
+import FunctionDestructing from "./FunctionDestructing";
+import DestructingImports from "./DestructingImports";
+import OptionalChaining from "./OptionalChaining";
+import Classes from "./Classes";
+import Styles from "./Styles";
+import ClientComponentDemo from "./ClientComponentDemo";
+import ServerComponentDemo from "./ServerComponentDemo";
+import Add from "./Add";
+import Square from "./Square";
+import Highlight from "./Highlight";
+
+export default function Lab3() {
+  console.log("Hello World!");
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+      <ReduceFunction />
+      <JsonStringify />
+      <House />
+      <Spreader />
+      <Destructing />
+      <FunctionDestructing />
+      <DestructingImports />
+      <OptionalChaining />
+      <Classes />
+      <Styles />
+      <ClientComponentDemo />
+      <ServerComponentDemo />
+      <Add a={3} b={4} />
+      <h4>Square of 4</h4>
+      <Square>4</Square>
+      <hr />
+      <Highlight>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </Highlight>
+    </div>
+  );
+}`}</CodeBlock>
           <OnYourOwn>
             Wrap a sentence of your own in{" "}
             <code>Highlight</code>{" "}on the Lab 3 page, and render{" "}
@@ -698,6 +1202,103 @@ export default function PathParameters() {
             <PathParameters />
           </LiveDemo>
           <p>
+            Import <code>PathParameters</code>{" "}into <code>app/labs/lab3/page.tsx</code>{" "}and
+            render it after the <code>Highlight</code>. The{" "}
+            <code>add/[a]/[b]/page.tsx</code>{" "}route is a page of its own, so
+            Lab 3 does not import it:
+          </p>
+          <CodeBlock
+            language="tsx"
+            name="Lab3 (after 3.7.3)"
+            file="app/labs/lab3/page.tsx"
+          >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+import ReduceFunction from "./ReduceFunction";
+import JsonStringify from "./JsonStringify";
+import House from "./House";
+import Spreader from "./Spreader";
+import Destructing from "./Destructing";
+import FunctionDestructing from "./FunctionDestructing";
+import DestructingImports from "./DestructingImports";
+import OptionalChaining from "./OptionalChaining";
+import Classes from "./Classes";
+import Styles from "./Styles";
+import ClientComponentDemo from "./ClientComponentDemo";
+import ServerComponentDemo from "./ServerComponentDemo";
+import Add from "./Add";
+import Square from "./Square";
+import Highlight from "./Highlight";
+import PathParameters from "./PathParameters";
+
+export default function Lab3() {
+  console.log("Hello World!");
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+      <ReduceFunction />
+      <JsonStringify />
+      <House />
+      <Spreader />
+      <Destructing />
+      <FunctionDestructing />
+      <DestructingImports />
+      <OptionalChaining />
+      <Classes />
+      <Styles />
+      <ClientComponentDemo />
+      <ServerComponentDemo />
+      <Add a={3} b={4} />
+      <h4>Square of 4</h4>
+      <Square>4</Square>
+      <hr />
+      <Highlight>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </Highlight>
+      <PathParameters />
+    </div>
+  );
+}`}</CodeBlock>
+          <p>
             Click <Link href="/labs/lab3/add/1/2">1 + 2</Link>{" "}and confirm
             the URL is <code>/labs/lab3/add/1/2</code>{" "}and the page prints{" "}
             <code>1 + 2 = 3</code>. The second link should print{" "}
@@ -811,6 +1412,106 @@ export default function TodoList() {
           <LiveDemo name="TodoList" file="app/labs/lab3/todos/TodoList.tsx">
             <TodoList />
           </LiveDemo>
+          <p>
+            Import <code>TodoList</code>{" "}from its subfolder,{" "}
+            <code>./todos/TodoList</code>, and render it last. <code>TodoItem</code>{" "}is
+            rendered inside <code>TodoList</code>, so the page does not import it.
+            This is the finished Lab 3 page — the same file{" "}
+            <SectionLink to="3.7.5" />{" "}lists:
+          </p>
+          <CodeBlock
+            language="tsx"
+            name="Lab3 (after 3.7.4)"
+            file="app/labs/lab3/page.tsx"
+          >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+import ReduceFunction from "./ReduceFunction";
+import JsonStringify from "./JsonStringify";
+import House from "./House";
+import Spreader from "./Spreader";
+import Destructing from "./Destructing";
+import FunctionDestructing from "./FunctionDestructing";
+import DestructingImports from "./DestructingImports";
+import OptionalChaining from "./OptionalChaining";
+import Classes from "./Classes";
+import Styles from "./Styles";
+import ClientComponentDemo from "./ClientComponentDemo";
+import ServerComponentDemo from "./ServerComponentDemo";
+import Add from "./Add";
+import Square from "./Square";
+import Highlight from "./Highlight";
+import PathParameters from "./PathParameters";
+import TodoList from "./todos/TodoList";
+
+export default function Lab3() {
+  console.log("Hello World!");
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+      <ReduceFunction />
+      <JsonStringify />
+      <House />
+      <Spreader />
+      <Destructing />
+      <FunctionDestructing />
+      <DestructingImports />
+      <OptionalChaining />
+      <Classes />
+      <Styles />
+      <ClientComponentDemo />
+      <ServerComponentDemo />
+      <Add a={3} b={4} />
+      <h4>Square of 4</h4>
+      <Square>4</Square>
+      <hr />
+      <Highlight>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </Highlight>
+      <PathParameters />
+      <TodoList />
+    </div>
+  );
+}`}</CodeBlock>
           <OnYourOwn>
             Add a fourth object to <code>todos.json</code>{" "}with a unique
             title, a status, and <code>&quot;done&quot;: false</code>. The

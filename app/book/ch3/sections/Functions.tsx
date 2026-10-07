@@ -62,6 +62,41 @@ export default function LegacyFunctions() {
       >
         <LegacyFunctions />
       </LiveDemo>
+      <p>
+        Import <code>LegacyFunctions</code>{" "}into{" "}
+        <code>app/labs/lab3/page.tsx</code>{" "}and render it after{" "}
+        <code>NullUndefined</code>:
+      </p>
+      <CodeBlock
+        language="tsx"
+        name="Lab3 (after 3.3)"
+        file="app/labs/lab3/page.tsx"
+      >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+    </div>
+  );
+}`}</CodeBlock>
       <OnYourOwn>
         Add a <code>function subtract</code>{" "}
         in the same file, call it with two numbers, and interpolate the
@@ -126,6 +161,42 @@ export default function ArrowFunctions() {
         >
           <ArrowFunctions />
         </LiveDemo>
+        <p>
+          Import <code>ArrowFunctions</code>{" "}into{" "}
+          <code>app/labs/lab3/page.tsx</code>{" "}and render it last:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.3.1)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Declare an arrow{" "}
           <code>const add</code>{" "}in the same file and display{" "}
@@ -184,6 +255,44 @@ export default function ArrowFunctions() {
         >
           <ImpliedReturn />
         </LiveDemo>
+        <p>
+          Import <code>ImpliedReturn</code>{" "}into{" "}
+          <code>app/labs/lab3/page.tsx</code>{" "}and render it last:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.3.2)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Add an implied-return{" "}
           <code>const square = (n: number) =&gt; n * n</code>{" "}and display{" "}
@@ -257,6 +366,46 @@ export default function ArrowFunctions() {
         >
           <TemplateLiterals />
         </LiveDemo>
+        <p>
+          Import <code>TemplateLiterals</code>{" "}into{" "}
+          <code>app/labs/lab3/page.tsx</code>{" "}and render it last:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.3.3)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Add a template that embeds your
           name and a ternary (for example whether a course is published)

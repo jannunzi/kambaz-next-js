@@ -91,6 +91,49 @@ export default function DataStructures() {
       <LiveDemo name="SimpleArrays" file="app/labs/lab3/SimpleArrays.tsx">
         <SimpleArrays />
       </LiveDemo>
+      <p>
+        Import <code>SimpleArrays</code>{" "}into{" "}
+        <code>app/labs/lab3/page.tsx</code>{" "}and render it after{" "}
+        <code>TemplateLiterals</code>:
+      </p>
+      <CodeBlock
+        language="tsx"
+        name="Lab3 (after 3.4)"
+        file="app/labs/lab3/page.tsx"
+      >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+    </div>
+  );
+}`}</CodeBlock>
       <OnYourOwn>
         Push a third <code>li</code>{" "}onto{" "}
         <code>htmlArray1</code>{" "}with its own <code>key</code>{" "}and confirm
@@ -146,6 +189,50 @@ export default function DataStructures() {
         >
           <ArrayIndexAndLength />
         </LiveDemo>
+        <p>
+          Import <code>ArrayIndexAndLength</code>{" "}into{" "}
+          <code>app/labs/lab3/page.tsx</code>{" "}and render it last:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.4.1)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Display{" "}
           <code>numberArray1.indexOf(9)</code>{" "}and confirm it is{" "}
@@ -216,6 +303,52 @@ export default function DataStructures() {
         >
           <AddingAndRemovingToFromArrays />
         </LiveDemo>
+        <p>
+          Import <code>AddingAndRemovingToFromArrays</code>{" "}into{" "}
+          <code>app/labs/lab3/page.tsx</code>{" "}and render it last:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.4.2)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           <code>push</code>{" "}one more todo
           with a new key, then <code>splice</code>{" "}the first item, and
@@ -266,6 +399,54 @@ export default function DataStructures() {
         <LiveDemo name="ForLoops" file="app/labs/lab3/ForLoops.tsx">
           <ForLoops />
         </LiveDemo>
+        <p>
+          Import <code>ForLoops</code>{" "}into <code>app/labs/lab3/page.tsx</code>{" "}and
+          render it last:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.4.3)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Build a third array of lowercased
           copies in the same loop (or a second loop) and display it.
@@ -334,6 +515,56 @@ export default function DataStructures() {
         <LiveDemo name="MapFunction" file="app/labs/lab3/MapFunction.tsx">
           <MapFunction />
         </LiveDemo>
+        <p>
+          Import <code>MapFunction</code>{" "}into <code>app/labs/lab3/page.tsx</code>{" "}and
+          render it last:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.4.4)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Add a third string to{" "}
           <code>todos</code>{" "}and confirm the ordered list grows — the{" "}
@@ -384,6 +615,58 @@ export default function DataStructures() {
         <LiveDemo name="FindFunction" file="app/labs/lab3/FindFunction.tsx">
           <FindFunction />
         </LiveDemo>
+        <p>
+          Import <code>FindFunction</code>{" "}into <code>app/labs/lab3/page.tsx</code>{" "}and
+          render it last:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.4.5)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           <code>find</code>{" "}a value that is
           not in the array and display the result — it should be empty on
@@ -433,6 +716,60 @@ export default function DataStructures() {
         <LiveDemo name="FindIndex" file="app/labs/lab3/FindIndex.tsx">
           <FindIndex />
         </LiveDemo>
+        <p>
+          Import <code>FindIndex</code>{" "}into <code>app/labs/lab3/page.tsx</code>{" "}and
+          render it last:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.4.6)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Display{" "}
           <code>numberArray1.findIndex((a) =&gt; a === 3)</code>{" "}— there is
@@ -488,6 +825,62 @@ export default function DataStructures() {
         >
           <FilterFunction />
         </LiveDemo>
+        <p>
+          Import <code>FilterFunction</code>{" "}into <code>app/labs/lab3/page.tsx</code>{" "}and
+          render it last:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.4.7)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Filter numbers greater than or equal
           to <code>5</code>{" "}into a new constant and display it.
@@ -550,6 +943,64 @@ export default function DataStructures() {
         >
           <IncludesSomeEvery />
         </LiveDemo>
+        <p>
+          Import <code>IncludesSomeEvery</code>{" "}into{" "}
+          <code>app/labs/lab3/page.tsx</code>{" "}and render it last:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.4.8)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Display{" "}
           <code>numbers.every((n) =&gt; n &gt; 4)</code>{" "}— it should be
@@ -599,6 +1050,66 @@ export default function DataStructures() {
         >
           <ReduceFunction />
         </LiveDemo>
+        <p>
+          Import <code>ReduceFunction</code>{" "}into <code>app/labs/lab3/page.tsx</code>{" "}and
+          render it last:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.4.9)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+import ReduceFunction from "./ReduceFunction";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+      <ReduceFunction />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Reduce the same array to a product
           (start the accumulator at <code>1</code>) and display it.
@@ -645,6 +1156,68 @@ export default function DataStructures() {
         <LiveDemo name="JsonStringify" file="app/labs/lab3/JsonStringify.tsx">
           <JsonStringify />
         </LiveDemo>
+        <p>
+          Import <code>JsonStringify</code>{" "}into <code>app/labs/lab3/page.tsx</code>{" "}and
+          render it last:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.4.10)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+import ReduceFunction from "./ReduceFunction";
+import JsonStringify from "./JsonStringify";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+      <ReduceFunction />
+      <JsonStringify />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Stringify a small object (for
           example <code>{`{ course: "RS101", credits: 4 }`}</code>) and
@@ -728,6 +1301,70 @@ export default function DataStructures() {
         <LiveDemo name="House" file="app/labs/lab3/House.tsx">
           <House />
         </LiveDemo>
+        <p>
+          Import <code>House</code>{" "}into <code>app/labs/lab3/page.tsx</code>{" "}and render
+          it last:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.4.11)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+import ReduceFunction from "./ReduceFunction";
+import JsonStringify from "./JsonStringify";
+import House from "./House";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+      <ReduceFunction />
+      <JsonStringify />
+      <House />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Add a <code>yearBuilt</code>{" "}
           property and interpolate it under bathrooms.
@@ -763,15 +1400,68 @@ export default function DataStructures() {
         />
         <p>
           Add <code>console.log(&quot;Hello World!&quot;)</code>{" "}at the
-          top of the Lab 3 function, reload, and confirm the string
-          appears in the console:
+          top of the Lab 3 function, above the <code>return</code>, reload,
+          and confirm the string appears in the console. The rest of the
+          page stays the same:
         </p>
-        <CodeBlock language="tsx">{`export default function Lab3() {
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.4.12)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+import ReduceFunction from "./ReduceFunction";
+import JsonStringify from "./JsonStringify";
+import House from "./House";
+
+export default function Lab3() {
   console.log("Hello World!");
   return (
     <div id="wd-lab3">
       <h2>Lab 3</h2>
-      {/* ...lab components... */}
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+      <ReduceFunction />
+      <JsonStringify />
+      <House />
     </div>
   );
 }`}</CodeBlock>
@@ -872,6 +1562,75 @@ export default function DataStructures() {
         <LiveDemo name="Spreading" file="app/labs/lab3/Spreader.tsx">
           <Spreader />
         </LiveDemo>
+        <p>
+          Import it into <code>app/labs/lab3/page.tsx</code>{" "}as <code>Spreader</code>, after the
+          file name. A default import can take any local name, so it does
+          not have to match the <code>Spreading</code>{" "}function inside. Render it
+          last:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.4.13)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+import ReduceFunction from "./ReduceFunction";
+import JsonStringify from "./JsonStringify";
+import House from "./House";
+import Spreader from "./Spreader";
+
+export default function Lab3() {
+  console.log("Hello World!");
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+      <ReduceFunction />
+      <JsonStringify />
+      <House />
+      <Spreader />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Build <code>obj4</code>{" "}by spreading{" "}
           <code>obj2</code>{" "}and overriding <code>a</code>, then stringify
@@ -955,6 +1714,75 @@ export default function DataStructures() {
         <LiveDemo name="Destructing" file="app/labs/lab3/Destructing.tsx">
           <Destructing />
         </LiveDemo>
+        <p>
+          Import <code>Destructing</code>{" "}into <code>app/labs/lab3/page.tsx</code>{" "}and
+          render it last:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.4.14)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+import ReduceFunction from "./ReduceFunction";
+import JsonStringify from "./JsonStringify";
+import House from "./House";
+import Spreader from "./Spreader";
+import Destructing from "./Destructing";
+
+export default function Lab3() {
+  console.log("Hello World!");
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+      <ReduceFunction />
+      <JsonStringify />
+      <House />
+      <Spreader />
+      <Destructing />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Destructure a fourth array item
           (add <code>&quot;four&quot;</code>{" "}to the array first) or a
@@ -1041,6 +1869,77 @@ export default function DataStructures() {
         >
           <FunctionDestructing />
         </LiveDemo>
+        <p>
+          Import <code>FunctionDestructing</code>{" "}into{" "}
+          <code>app/labs/lab3/page.tsx</code>{" "}and render it last:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.4.15)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+import ReduceFunction from "./ReduceFunction";
+import JsonStringify from "./JsonStringify";
+import House from "./House";
+import Spreader from "./Spreader";
+import Destructing from "./Destructing";
+import FunctionDestructing from "./FunctionDestructing";
+
+export default function Lab3() {
+  console.log("Hello World!");
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+      <ReduceFunction />
+      <JsonStringify />
+      <House />
+      <Spreader />
+      <Destructing />
+      <FunctionDestructing />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Add a <code>multiply</code>{" "}arrow
           that destructures <code>{`{ a, b }`}</code>{" "}and display the
@@ -1177,6 +2076,80 @@ export default function DestructingImports() {
         >
           <DestructingImports />
         </LiveDemo>
+        <p>
+          Only <code>DestructingImports</code>{" "}goes on the page —{" "}
+          <code>Math.ts</code>{" "}is imported by that component, not by Lab 3.
+          Import it into <code>app/labs/lab3/page.tsx</code>{" "}and render it last:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.4.16)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+import ReduceFunction from "./ReduceFunction";
+import JsonStringify from "./JsonStringify";
+import House from "./House";
+import Spreader from "./Spreader";
+import Destructing from "./Destructing";
+import FunctionDestructing from "./FunctionDestructing";
+import DestructingImports from "./DestructingImports";
+
+export default function Lab3() {
+  console.log("Hello World!");
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+      <ReduceFunction />
+      <JsonStringify />
+      <House />
+      <Spreader />
+      <Destructing />
+      <FunctionDestructing />
+      <DestructingImports />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Add a fifth table row for <code>add(10, 20)</code>{" "}that uses all
           three import styles — <code>Math.add(10, 20)</code>,{" "}
@@ -1259,6 +2232,81 @@ export default function OptionalChaining() {
         >
           <OptionalChaining />
         </LiveDemo>
+        <p>
+          Import <code>OptionalChaining</code>{" "}into{" "}
+          <code>app/labs/lab3/page.tsx</code>{" "}and render it last:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.4.17)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+import ReduceFunction from "./ReduceFunction";
+import JsonStringify from "./JsonStringify";
+import House from "./House";
+import Spreader from "./Spreader";
+import Destructing from "./Destructing";
+import FunctionDestructing from "./FunctionDestructing";
+import DestructingImports from "./DestructingImports";
+import OptionalChaining from "./OptionalChaining";
+
+export default function Lab3() {
+  console.log("Hello World!");
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+      <ReduceFunction />
+      <JsonStringify />
+      <House />
+      <Spreader />
+      <Destructing />
+      <FunctionDestructing />
+      <DestructingImports />
+      <OptionalChaining />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Add a line under the others that displays{" "}
           <code>house.garage?.cars ?? 0</code>, labeled the same way as the

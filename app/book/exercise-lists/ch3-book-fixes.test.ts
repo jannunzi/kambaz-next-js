@@ -150,26 +150,111 @@ describe("Chapter 3 book fixes (A3 walkthrough)", () => {
     assert.ok(page);
     assert.equal(page.body.trim(), read("app/labs/lab3/page.tsx").trim());
   });
-  it("shows app/labs/lab3/page.tsx at every early Lab 3 step, growing in the same order as the finished file", () => {
-    const complete = blocks(STYLING).find((block) => block.name === "Lab3 (complete)");
-    assert.ok(complete);
-    const finalImports = complete.body.split("\n").filter((line) => line.startsWith("import "));
-    const steps = blocks("app/book/ch3/sections/JsBasics.tsx").filter((block) => block.file === "app/labs/lab3/page.tsx");
+  it("shows the whole app/labs/lab3/page.tsx after every Chapter 3 step that changes it, growing toward the finished file", () => {
+    const final = read("app/labs/lab3/page.tsx").trim();
+    const finalImports = final.split("\n").filter((line) => line.startsWith("import "));
+    const finalNames = finalImports.map((line) => line.match(/^import (\w+) from "\.\/([\w/]+)";$/)?.[1] ?? "");
+    const finalPaths = finalImports.map((line) => line.match(/from "\.\/([\w/]+)";$/)?.[1] ?? "");
+    // JSX children of the finished page, grouped by component. A heading
+    // right before a component (<h4>Square of 4</h4>) belongs to it, and
+    // anything after a component tag (<hr />, Highlight's text) stays with it.
+    const lines = final.split("\n");
+    const children = lines.slice(lines.indexOf("      <h2>Lab 3</h2>") + 1, lines.lastIndexOf("    </div>"));
+    const groups: Array<{ name: string; lines: string[] }> = [];
+    let headingOnly = false;
+    for (const line of children) {
+      const tag = line.match(/^ {6}<([A-Z]\w*)\b/)?.[1];
+      if (/^ {6}<h4>/.test(line)) {
+        groups.push({ name: "", lines: [line] });
+        headingOnly = true;
+      } else if (tag && headingOnly) {
+        groups[groups.length - 1].name = tag;
+        groups[groups.length - 1].lines.push(line);
+        headingOnly = false;
+      } else if (tag) {
+        groups.push({ name: tag, lines: [line] });
+      } else {
+        groups[groups.length - 1].lines.push(line);
+      }
+    }
+    assert.deepEqual(groups.map((group) => group.name), finalNames, "page.tsx renders its imports in import order");
+    const LOG = '  console.log("Hello World!");';
+    const expected = (count: number, log: boolean) =>
+      [
+        ...finalImports.slice(0, count),
+        "",
+        "export default function Lab3() {",
+        ...(log ? [LOG] : []),
+        "  return (",
+        '    <div id="wd-lab3">',
+        "      <h2>Lab 3</h2>",
+        ...groups.slice(0, count).flatMap((group) => group.lines),
+        "    </div>",
+        "  );",
+        "}",
+      ].join("\n");
+
+    // The four Lab 3 section files, in book order, as one source.
+    const files = ["JsBasics", "Functions", "DataStructures", "StylingAndComponents"].map(
+      (name) => `app/book/ch3/sections/${name}.tsx`,
+    );
+    const src = files.map(read).join("\n");
+    const all: Array<{ at: number; file: string; name: string; body: string }> = [];
+    const re = /<CodeBlock\b([^>]*)>\{`([\s\S]*?)`\}<\/CodeBlock>/g;
+    let match: RegExpExecArray | null;
+    while ((match = re.exec(src))) {
+      all.push({
+        at: match.index,
+        file: match[1].match(/file="([^"]+)"/)?.[1] ?? "",
+        name: match[1].match(/name="([^"]+)"/)?.[1] ?? "",
+        body: unescapeTemplate(match[2]),
+      });
+    }
+    const steps = all.filter((block) => block.file === "app/labs/lab3/page.tsx" && block.name !== "Lab3 (complete)");
     assert.deepEqual(
       steps.map((block) => block.name),
-      ["3.2.1", "3.2.2", "3.2.3", "3.2.4", "3.2.5", "3.2.6", "3.2.7"].map((section) => `Lab3 (after ${section})`),
+      [
+        "3.2.1", "3.2.2", "3.2.3", "3.2.4", "3.2.5", "3.2.6", "3.2.7",
+        "3.3", "3.3.1", "3.3.2", "3.3.3",
+        "3.4", "3.4.1", "3.4.2", "3.4.3", "3.4.4", "3.4.5", "3.4.6", "3.4.7", "3.4.8", "3.4.9",
+        "3.4.10", "3.4.11", "3.4.12", "3.4.13", "3.4.14", "3.4.15", "3.4.16", "3.4.17",
+        "3.5.1", "3.5.2", "3.6.1", "3.6.2", "3.7", "3.7.1", "3.7.3", "3.7.4",
+      ].map((section) => `Lab3 (after ${section})`),
     );
+    // No partial page.tsx snippets (e.g. "...lab components...") are left.
+    assert.ok(all.every((block) => !/export default function Lab3\(/.test(block.body) || block.file === "app/labs/lab3/page.tsx"));
+
     let previous = 0;
+    let logged = false;
     for (const step of steps) {
-      const imports = step.body.split("\n").filter((line) => line.startsWith("import "));
-      assert.ok(imports.length > previous, step.name);
-      previous = imports.length;
-      assert.deepEqual(imports, finalImports.slice(0, imports.length), step.name);
-      const names = imports.map((line) => line.match(/^import (\w+) from/)?.[1]);
-      const rendered = [...step.body.matchAll(/^ {6}<(\w+) \/>$/gm)].map((match) => match[1]);
-      assert.deepEqual(rendered, names, step.name);
-      assert.match(step.body, /export default function Lab3\(\) \{\n  return \(\n    <div id="wd-lab3">\n      <h2>Lab 3<\/h2>\n/, step.name);
-      for (const name of names) assert.ok(complete.body.includes(`      <${name} />\n`), name);
+      const section = step.name.match(/^Lab3 \(after ([\d.]+)\)$/)?.[1];
+      // The block sits in the section its label names.
+      const titles = [...src.slice(0, step.at).matchAll(/title="([\d.]+) /g)];
+      assert.equal(titles[titles.length - 1]?.[1], section, `${step.name} is not in §${section}`);
+      const count = step.body.split("\n").filter((line) => line.startsWith("import ")).length;
+      if (section === "3.4.12") {
+        // Writing to the Console adds console.log, not a component.
+        assert.equal(count, previous, step.name);
+        logged = true;
+      } else {
+        assert.ok(count > previous, `${step.name} adds no component`);
+      }
+      assert.equal(step.body, expected(count, logged), `${step.name} is not the cumulative page`);
+      // Every component listed between the previous step and this one is
+      // one this step adds (sub-files like Math.ts or TodoItem are not page imports).
+      const listedBetween = all
+        .filter((block) => block.at < step.at && block.at > (steps[steps.indexOf(step) - 1]?.at ?? -1))
+        .map((block) => block.file.match(/^app\/labs\/lab3\/([\w/]+)\.tsx$/)?.[1])
+        .filter((path): path is string => !!path && finalPaths.includes(path));
+      for (const path of listedBetween) {
+        const at = finalPaths.indexOf(path);
+        assert.ok(at >= previous && at < count, `${path} is listed in ${step.name}'s section but not added there`);
+      }
+      for (const path of finalPaths.slice(previous, count)) {
+        assert.ok(listedBetween.includes(path), `${step.name} adds ${path} without its listing`);
+      }
+      previous = count;
     }
+    assert.equal(steps[steps.length - 1].body, final, "the last step is the finished Lab 3 page");
   });
 });
