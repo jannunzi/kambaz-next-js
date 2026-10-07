@@ -638,7 +638,9 @@ export default function Lab3() {
           <code>app/labs/lab3/page.tsx</code>{" "}and render it last. Every
           later Lab 3 component follows the same two steps — one import at
           the top, one tag at the bottom of the <code>wd-lab3</code>{" "}
-          <code>div</code>{" "}— and <SectionLink to="3.7.5" />{" "}shows the
+          <code>div</code>{" "}— and every later section shows the whole{" "}
+          <code>page.tsx</code>{" "}again right after its demo, so you can
+          check yours line by line. <SectionLink to="3.7.5" />{" "}shows the
           finished file:
         </p>
         <CodeBlock
