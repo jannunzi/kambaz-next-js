@@ -99,7 +99,7 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
     <div>
       <h2 className="text-2xl font-bold">Tailwind Grids</h2>
       <div>
-        <h3 className="mt-6 text-3xl font-bold">4 Columns Grid</h3>
+        <h3 className="mt-6 text-lg font-bold">4 Columns Grid</h3>
         <div className="grid grid-cols-4 gap-4">
           {Array.from({ length: 9 }, (_, i) => (
             <div key={i} className="text-center bg-blue-300 p-3">
@@ -124,7 +124,7 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
       "`col-span-2` makes two of the cells twice as wide",
     ],
     code: `      <div>
-        <h3 className="mt-6 text-3xl font-bold">3 Columns Grid</h3>
+        <h3 className="mt-6 text-lg font-bold">3 Columns Grid</h3>
         <div className="grid grid-cols-3 gap-4">
           <div className="text-center bg-blue-300 p-3">01</div>
           <div className="text-center bg-blue-300 p-3">02</div>
@@ -194,7 +194,7 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
     <div>
       <h2 className="text-2xl font-bold">Tailwind Grids</h2>
       <div>
-        <h3 className="mt-6 text-3xl font-bold">4 Columns Grid</h3>
+        <h3 className="mt-6 text-lg font-bold">4 Columns Grid</h3>
         <div className="grid grid-cols-4 gap-4">
           {Array.from({ length: 9 }, (_, i) => (
             <div key={i} className="text-center bg-blue-300 p-3">
@@ -204,7 +204,7 @@ export const TAILWIND_FLEX_AND_GRID_SLIDES: LectureSlide[] = [
         </div>
       </div>
       <div>
-        <h3 className="mt-6 text-3xl font-bold">3 Columns Grid</h3>
+        <h3 className="mt-6 text-lg font-bold">3 Columns Grid</h3>
         <div className="grid grid-cols-3 gap-4">
           <div className="text-center bg-blue-300 p-3">01</div>
           <div className="text-center bg-blue-300 p-3">02</div>
