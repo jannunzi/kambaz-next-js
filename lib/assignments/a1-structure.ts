@@ -228,8 +228,16 @@ const COURSE_EDITOR = /^\/courses\/[^/]+\/assignments\/[^/]+$/i;
 const ACCOUNT = /^\/account(\/|$)/i;
 const DASHBOARD = /^\/dashboard$/i;
 
-/** The Assignments list needs at least this many assignment links. */
-export const MIN_ASSIGNMENT_LINKS = 3;
+/**
+ * The Assignments list needs at least this many assignment links. The book
+ * recommends three (A1, A2, A3), but one real assignment linking to its
+ * editor is the Assignments screen: unclear instructions never cost points.
+ */
+export const MIN_ASSIGNMENT_LINKS = 1;
+
+/** Feedback when the Assignments screen lists no assignment links. */
+export const ASSIGNMENTS_MISS_MESSAGE =
+  "The Assignments screen doesn't list any assignments yet. Add at least one assignment whose title links to its editor at /courses/:cid/assignments/:aid (three, like A1, A2, A3, are recommended).";
 
 /* ------------------------------------------------------------------ */
 /* create-next-app boilerplate                                         */
@@ -471,11 +479,23 @@ function formsWithControls(html: string, minControls: number): number {
   ).length;
 }
 
-/** Anchors whose href points at an assignment (/assignments/<something>). */
+/**
+ * Anchors whose href points at an assignment (/assignments/<something>) and
+ * that show something (text or an image), so an empty link is not an entry.
+ */
 export function assignmentLinkCount(html: string): number {
   // The course id in the href is not compared: a wrong id is a broken link
   // for a TA to note, not a missing Assignments list.
-  return anchorHrefs(html).filter((href) => /\/assignments\/[^/?#\s]+/i.test(href)).length;
+  const re = /<a\b([^>]*)>([\s\S]*?)<\/a\s*>/gi;
+  const source = renderedMarkup(html);
+  let count = 0;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(source))) {
+    const href = startTagAttr(`<a${match[1]}>`, "href") ?? "";
+    if (!/\/assignments\/[^/?#\s]+/i.test(href)) continue;
+    if (hasText(match[2]) || /<img\b/i.test(match[2])) count += 1;
+  }
+  return count;
 }
 
 /* ------------------------------------------------------------------ */
@@ -829,9 +849,8 @@ export const A1_STRUCTURE_FALLBACKS: Readonly<Record<string, StructureFallback>>
     onMiss: "review",
   },
   "a1-kambaz-assignments": {
-    looksFor: `at least ${MIN_ASSIGNMENT_LINKS} assignment links (/assignments/:aid) on the Assignments screen`,
-    missMessage:
-      "The Assignments screen needs a list of at least three assignments that each link to /courses/:cid/assignments/:aid.",
+    looksFor: "at least one assignment linking to its editor (/assignments/:aid) on the Assignments screen",
+    missMessage: ASSIGNMENTS_MISS_MESSAGE,
     target: {
       kind: "screen",
       pattern: COURSE_ASSIGNMENTS,
