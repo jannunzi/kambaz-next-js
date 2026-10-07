@@ -21,7 +21,7 @@ export const ANCHORS_SLIDES: LectureSlide[] = [
     ],
     code: `<a href="https://www.wikipedia.org">Wikipedia</a>
 <a href="https://github.com/jannunzi">GitHub</a>
-<a href="profile.html">See my profile</a>
+<a href="/labs">Labs</a>
 <a href="mailto:jannunzi@gmail.com">Email</a>
 <a href="tel:+123456789">Call me</a>`,
     codeLanguage: "html",

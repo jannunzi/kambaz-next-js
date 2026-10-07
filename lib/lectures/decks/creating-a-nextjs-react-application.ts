@@ -68,10 +68,16 @@ export default function User() {
     kind: "content",
     bullets: [
       "The command names the project **webdev-client**",
-      "Use the recommended Next.js defaults? › **Yes, use recommended defaults**",
-      "Defaults: **TypeScript** · **ESLint** · **Tailwind CSS** · **App Router** · no `src/` · `@/*` alias",
+      "At **Ok to proceed? (y)**, press Enter",
+      "Pick **Yes, use recommended defaults**: TypeScript, ESLint (a code checker), Tailwind CSS, App Router, no `src/` folder",
+      "The defaults also skip the React Compiler (an optional optimizer) and add `AGENTS.md` (notes for AI coding assistants)",
       "Pin **@16.3**, not `@latest`: Next.js 16.4 turns on Cache Components and Kambaz fails `npm run build`",
     ],
+    code: `? Would you like to use the recommended Next.js defaults?
+❯ Yes, use recommended defaults
+  TypeScript, ESLint, No React Compiler, Tailwind CSS, No src/ directory, App Router, AGENTS.md
+  No, customize settings`,
+    codeLanguage: "text",
     interactiveHint:
       "If a prompt offers Pages Router, say no. This course is App Router only.",
   },
