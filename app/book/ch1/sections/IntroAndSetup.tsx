@@ -633,13 +633,33 @@ Ok to proceed? (y)`}</CodeBlock>
         </p>
         <p id="next-16-4-cache-components-fix">
           <strong>Created your project on or after October 6, 2026?</strong>{" "}
-          Open <code>next.config.ts</code>. If it has the lines{" "}
-          <code>cacheComponents: true,</code>{" "}and{" "}
-          <code>partialPrefetching: true,</code>, delete both of them (Next.js
-          won&apos;t build with only the first one removed), leave everything
-          else in the file alone, and commit the change. After that,{" "}
-          <code>npm run build</code>{" "}and Vercel deploys of the book&apos;s
-          code work again.
+          Open <code>package.json</code>. If it says{" "}
+          <code>&quot;next&quot;: &quot;16.4.0&quot;</code>, your project is on
+          Next.js 16.4. (Projects created on October 6 before 2:35 PM ET got
+          16.3.8 and don&apos;t need this fix.) On 16.4,{" "}
+          <code>npm run dev</code>{" "}works, but <code>npm run build</code>{" "}and
+          Vercel deploys fail once you add the book&apos;s code. The first error
+          you see is usually{" "}
+          <em>
+            Next.js encountered URL data <code>usePathname()</code>{" "}in a
+            Client Component outside of <code>&lt;Suspense&gt;</code>
+          </em>
+          ; further down the log there is also{" "}
+          <em>Next.js encountered uncached or runtime data during prerendering</em>
+          .
+        </p>
+        <p>
+          To fix it, open <code>next.config.ts</code>{" "}and delete both the{" "}
+          <code>cacheComponents: true,</code>{" "}and the{" "}
+          <code>partialPrefetching: true,</code>{" "}lines. Delete both: removing
+          only the first one fails with{" "}
+          <em>
+            <code>partialPrefetching</code>{" "}requires{" "}
+            <code>cacheComponents</code>{" "}to be enabled
+          </em>
+          . Leave everything else in the file alone and commit the change. After
+          that, <code>npm run build</code>{" "}and Vercel deploys of the
+          book&apos;s code work again.
         </p>
         <CodeBlock language="ts" file="next.config.ts">{`const nextConfig: NextConfig = {
   /* config options here */
@@ -651,8 +671,14 @@ Ok to proceed? (y)`}</CodeBlock>
           Wait while dependencies install (<code>react</code>,{" "}
           <code>react-dom</code>, <code>next</code>, TypeScript types, Tailwind,
           ESLint, and related packages). When it finishes you should see a
-          success message and a new <code>webdev-client</code>{" "}directory. Change
-          into that directory and start the development server:
+          success message and a new <code>webdev-client</code>{" "}directory. If
+          it also says{" "}
+          <em>
+            A new version of <code>create-next-app</code>{" "}is available
+          </em>
+          , ignore it: updating <code>create-next-app</code>{" "}puts you back on
+          Next.js 16.4. Change into that directory and start the development
+          server:
         </p>
         <CodeBlock language="shell">{`cd webdev-client
 npm run dev`}</CodeBlock>

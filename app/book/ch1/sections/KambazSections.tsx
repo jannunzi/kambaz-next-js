@@ -857,12 +857,19 @@ export default async function CoursesLayout({
         <p>
           If <code>npm run dev</code>{" "}works but <code>npm run build</code>{" "}or
           your Vercel deploy fails with{" "}
+          <em>
+            Next.js encountered URL data <code>usePathname()</code>{" "}in a
+            Client Component outside of <code>&lt;Suspense&gt;</code>
+          </em>{" "}
+          or, further down the log,{" "}
           <em>Next.js encountered uncached or runtime data during prerendering</em>
-          , your project was created with Next.js 16.4. Delete the{" "}
+          , your project was created with Next.js 16.4 (<code>package.json</code>{" "}
+          says <code>&quot;next&quot;: &quot;16.4.0&quot;</code>). Delete both the{" "}
           <code>cacheComponents: true,</code>{" "}and{" "}
           <code>partialPrefetching: true,</code>{" "}lines from{" "}
           <code>next.config.ts</code>{" "}as described in{" "}
-          <SectionLink to="1.2.4" />, then build again.
+          <a href="#next-16-4-cache-components-fix">the Next.js 16.4 fix note</a>
+          , then build again.
         </p>
       </Section>
 

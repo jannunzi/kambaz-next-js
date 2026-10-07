@@ -43,4 +43,23 @@ describe("create-next-app version pin (Next.js 16.4 cacheComponents)", () => {
     assert.match(intro, /October 6, 2026/);
     assert.match(kambaz, /uncached or runtime data during prerendering/);
   });
+
+  it("names both build errors, the partialPrefetching error, and how to spot 16.4", () => {
+    for (const src of [intro, kambaz]) {
+      assert.match(src, /Next\.js encountered URL data <code>usePathname\(\)<\/code>/);
+      assert.match(src, /Client Component outside of <code>&lt;Suspense&gt;<\/code>/);
+      assert.match(src, /uncached or runtime data during prerendering/);
+      assert.match(src, /&quot;next&quot;: &quot;16\.4\.0&quot;/);
+    }
+    assert.match(intro, /<code>partialPrefetching<\/code>\{" "\}requires\{" "\}\s*<code>cacheComponents<\/code>\{" "\}to be enabled/);
+    assert.match(intro, /before 2:35 PM ET got\s+16\.3\.8/);
+    assert.match(intro, /A new version of <code>create-next-app<\/code>\{" "\}is available/);
+    assert.match(intro, /ignore it/);
+  });
+
+  it("links the [cid] build note straight to the 16.4 fix note", () => {
+    assert.match(kambaz, /<a href="#next-16-4-cache-components-fix">/);
+    const note = kambaz.slice(kambaz.indexOf("encountered URL data"));
+    assert.doesNotMatch(note.slice(0, 900), /<SectionLink to="1\.2\.4" \/>/);
+  });
 });
