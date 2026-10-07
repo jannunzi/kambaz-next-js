@@ -33,11 +33,12 @@ export const CREATING_A_NEXTJS_REACT_APPLICATION_SLIDES: LectureSlide[] = [
     title: "A User component",
     kind: "demo",
     bullets: [
+      "**JSX**: HTML-like markup written right inside a JavaScript function",
       "Same function, different data → different UI",
     ],
     code: `import user from "./user.json";
 
-function User() {
+export default function User() {
   return (
     <div>
       Username: {user.username}<br/>
@@ -47,7 +48,7 @@ function User() {
   );
 }`,
     codeLanguage: "tsx",
-    codeFile: "User.tsx",
+    codeFile: "app/components/User.tsx",
     embed: "user-card",
   },
   {
@@ -56,7 +57,7 @@ function User() {
     kind: "demo",
     bullets: [
       "Creating a React application requires **Node.js**",
-      "At the command line — **App Router**, not a Vite SPA",
+      "Run it at the command line, from your course folder",
     ],
     code: "npx create-next-app@16.3 webdev-client",
     codeLanguage: "bash",
@@ -120,7 +121,8 @@ npm run dev`,
     ],
     code: `import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-// import "./globals.css";`,
+// import "./globals.css";
+// ... leave the rest of this file alone`,
     codeLanguage: "tsx",
     codeFile: "app/layout.tsx",
     codeAddedLines: [3],
@@ -153,6 +155,7 @@ import { Geist, Geist_Mono } from "next/font/google";
     bullets: [
       "Create pages to practice Web skills",
       "File path **is** the URL: `app/labs/lab1/page.tsx` → `/labs/lab1`",
+      "`id=\"wd-lab1\"` is an **attribute**: a `name=\"value\"` pair on the opening tag",
     ],
     code: `export default function Lab1() {
   return (
@@ -203,16 +206,35 @@ export default function Home() {
     title: "Drop User onto a page",
     kind: "demo",
     bullets: [
-      "Create `app/components/User.tsx`. Import it — you did not register a route",
+      "Create `app/components/User.tsx` and its data, `app/components/user.json`",
+      "Import `User` into the page. You did not register a route",
     ],
-    code: `import User from "./components/User";
-
+    code: `import Link from "next/link";
+import User from "./components/User";
 export default function Home() {
-  return <User name="Ada" email="ada@example.com" />;
+  return (
+    <div>
+      <h1>Welcome to Web Dev</h1>
+      <Link href="./labs/lab1">
+            Lab 1 - HTML</Link>
+      <User />
+    </div>
+  );
 }`,
     codeLanguage: "tsx",
     codeFile: "app/page.tsx",
-    codeAddedLines: [1, 4],
+    codeAddedLines: [2, 9],
+    codeBlocks: [
+      {
+        file: "app/components/user.json",
+        language: "json",
+        code: `{
+  "username": "alice",
+  "first": "Alice",
+  "last": "Wonderland"
+}`,
+      },
+    ],
     embed: "user-card",
   },
   {

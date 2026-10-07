@@ -98,6 +98,7 @@ export const INTRO_TO_WEB_DEVELOPMENT_SLIDES: LectureSlide[] = [
       "Server **executes** HTML with embedded source code",
       "Sends a **finished page** to the client",
       "Classic PHP / JSP / Rails — and Next.js **Server Components**",
+      "**Server Components**: UI code that runs only on the server and sends finished HTML",
     ],
     diagram: "ssr",
   },
@@ -122,7 +123,8 @@ export const INTRO_TO_WEB_DEVELOPMENT_SLIDES: LectureSlide[] = [
     bullets: [
       "Server sends a shell; **JavaScript in the browser** builds the UI",
       "Clicks and fetches update the page without a full reload",
-      "**React** started here. **Next.js** can hydrate a server-rendered page, then behave like CSR",
+      "**React** started here. **Next.js** sends server HTML, then **hydrates** it",
+      "**Hydrate**: browser JavaScript takes over that HTML so clicks work",
     ],
     diagram: "csr",
   },

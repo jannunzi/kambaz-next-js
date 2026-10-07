@@ -1,14 +1,17 @@
 import type { LectureEmbedId } from "@/lib/lectures/types";
-import AlertButtonEmbed from "./AlertButtonEmbed";
 import AnchorsEmbed from "./AnchorsEmbed";
 import ButtonsEmbed from "./ButtonsEmbed";
 import CheckboxesEmbed from "./CheckboxesEmbed";
 import DropdownsEmbed from "./DropdownsEmbed";
-import FileFieldEmbed from "./FileFieldEmbed";
+import FormsEmbed from "./FormsEmbed";
 import HashTocEmbed from "./HashTocEmbed";
 import HeadingScaleEmbed from "./HeadingScaleEmbed";
+import HeadingPracticeEmbed from "./HeadingPracticeEmbed";
 import HeadingTagsEmbed from "./HeadingTagsEmbed";
+import HighlightedBoxEmbed from "./HighlightedBoxEmbed";
+import HighlightedParagraphEmbed from "./HighlightedParagraphEmbed";
 import HtmlSkeletonEmbed from "./HtmlSkeletonEmbed";
+import ImagesEmbed from "./ImagesEmbed";
 import Lab1StubEmbed from "./Lab1StubEmbed";
 import LabsIndexEmbed from "./LabsIndexEmbed";
 import {
@@ -194,12 +197,16 @@ export default function LectureEmbed({ id }: { id: LectureEmbedId }) {
       return <LinkNavEmbed />;
     case "heading-tags":
       return <HeadingTagsEmbed />;
+    case "heading-practice":
+      return <HeadingPracticeEmbed />;
     case "paragraph-tag":
       return <ParagraphTagEmbed />;
     case "list-tags":
       return <ListTagsEmbed />;
     case "tables":
       return <TablesEmbed />;
+    case "images":
+      return <ImagesEmbed />;
     case "text-fields":
       return <TextFieldsEmbed />;
     case "anchors":
@@ -212,8 +219,6 @@ export default function LectureEmbed({ id }: { id: LectureEmbedId }) {
       return <HeadingScaleEmbed />;
     case "radio-buttons":
       return <RadioButtonsEmbed />;
-    case "file-field":
-      return <FileFieldEmbed />;
     case "typed-fields":
       return <TypedFieldsEmbed />;
     case "mailto-tel":
@@ -226,10 +231,14 @@ export default function LectureEmbed({ id }: { id: LectureEmbedId }) {
       return <CheckboxesEmbed />;
     case "dropdowns":
       return <DropdownsEmbed />;
-    case "alert-button":
-      return <AlertButtonEmbed />;
     case "buttons":
       return <ButtonsEmbed />;
+    case "lab1-forms":
+      return <FormsEmbed />;
+    case "highlighted-paragraph":
+      return <HighlightedParagraphEmbed />;
+    case "highlighted-box":
+      return <HighlightedBoxEmbed />;
     case "labs-layout":
       return <LabsLayoutEmbed />;
     case "kambaz-landing":

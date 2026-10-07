@@ -7,7 +7,7 @@ export const KAMBAZ_DASHBOARD_SLIDES: LectureSlide[] = [
     kind: "title",
     bullets: [
       "KAMBAZ DASHBOARD",
-      "Course cards that open `/courses/[cid]/home`",
+      "Course cards that open each course’s Home screen",
     ],
   },
   {
@@ -81,6 +81,7 @@ export default function CourseCard({
       "Ids: `wd-dashboard`, `wd-dashboard-title`, `wd-dashboard-published`",
       "**Published Courses (3)** matches the three cards",
       "Home is `/courses/[cid]/home` — not `/courses/1234`",
+      "`[cid]` is a **dynamic segment**: Next.js fills `cid` from that part of the URL",
     ],
     code: `import CourseCard from "./CourseCard";
 

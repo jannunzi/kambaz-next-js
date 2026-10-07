@@ -103,6 +103,36 @@ export default function AssignmentItem({
     codeFile: "app/(kambaz)/courses/[cid]/assignments/AssignmentItem.tsx",
   },
   {
+    id: "await-params",
+    title: "Page awaits cid from params",
+    kind: "content",
+    bullets: [
+      "Same `async` / `await params` shape as the courses layout",
+      "Keep the search box, `+ Group`, `+ Assignment`, and the `wd-assignments-title` heading",
+      "Use `cid` so each `AssignmentItem` links to the right course",
+    ],
+    code: `import AssignmentItem from "./AssignmentItem";
+
+export default async function Assignments({
+  params,
+}: {
+  params: Promise<{ cid: string }>;
+}) {
+  const { cid } = await params;
+  return (
+    <div id="wd-assignments">
+      {/* search input, + Group, + Assignment */}
+      {/* h3 wd-assignments-title */}
+      <ul id="wd-assignment-list">
+        {/* at least three AssignmentItems using cid */}
+      </ul>
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/(kambaz)/courses/[cid]/assignments/page.tsx",
+  },
+  {
     id: "target-editor",
     title: "Canvas target: Assignment editor",
     kind: "content",
@@ -179,32 +209,5 @@ export default function AssignmentItem({
       "Clicking a label next to a text field **focuses** that field",
       "Clicking a label next to a checkbox **toggles** the checkbox",
     ],
-  },
-  {
-    id: "await-params",
-    title: "Page awaits cid from params",
-    kind: "content",
-    bullets: [
-      "Same `async` / `await params` shape as the courses layout",
-      "Use `cid` so each `AssignmentItem` links to the right course",
-    ],
-    code: `import AssignmentItem from "./AssignmentItem";
-
-export default async function Assignments({
-  params,
-}: {
-  params: Promise<{ cid: string }>;
-}) {
-  const { cid } = await params;
-  return (
-    <div id="wd-assignments">
-      <ul id="wd-assignment-list">
-        {/* at least three AssignmentItems using cid */}
-      </ul>
-    </div>
-  );
-}`,
-    codeLanguage: "tsx",
-    codeFile: "app/(kambaz)/courses/[cid]/assignments/page.tsx",
   },
 ];

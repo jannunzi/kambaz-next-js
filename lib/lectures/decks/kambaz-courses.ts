@@ -99,7 +99,8 @@ export default function CourseNavigation({ cid }: { cid: string }) {
     title: "Layout Navigation on Left",
     kind: "content",
     bullets: [
-      "`params` is a Promise — mark the layout `async` and `await params`",
+      "`params` holds the dynamic segment as a **Promise**: a value that arrives later",
+      "Mark the layout **`async`** so it can wait, then **`await params`** to read `cid`",
       "Wrapper `wd-courses`. Heading shows `Courses {cid}`",
       "Nav left, `{children}` right — same table chrome as Account",
     ],

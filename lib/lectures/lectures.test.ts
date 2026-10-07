@@ -1193,10 +1193,10 @@ describe("lecture decks", () => {
     assert.equal(counts["commit-to-github"], 7);
     assert.equal(counts["deploying-to-vercel"], 13);
     assert.equal(counts["html-and-dom"], 16);
-    assert.equal(counts["headings-and-paragraphs"], 9);
-    assert.equal(counts["lists-and-tables"], 13);
-    assert.equal(counts["web-forms"], 21);
-    assert.equal(counts["anchors"], 5);
+    assert.equal(counts["headings-and-paragraphs"], 15);
+    assert.equal(counts["lists-and-tables"], 17);
+    assert.equal(counts["web-forms"], 40);
+    assert.equal(counts["anchors"], 7);
     assert.equal(counts["single-page-navigation"], 14);
     assert.equal(counts["kambaz-overview"], 8);
     assert.equal(counts["kambaz-account"], 15);
@@ -1510,7 +1510,7 @@ describe("lecture decks", () => {
     const embed = findSlide("creating-a-nextjs-react-application", "welcome-page");
     const htmlText = findSlide("html-and-dom", "html-means");
     const htmlDiagram = findSlide("html-and-dom", "the-dom");
-    const htmlEmbed = findSlide("headings-and-paragraphs", "lab1-nest");
+    const htmlEmbed = findSlide("headings-and-paragraphs", "lab1-nest-live");
     assert.equal(lectureSlideDensity(textOnly), "spacious");
     assert.equal(lectureSlideDensity(diagram), "dense");
     assert.equal(lectureSlideDensity(embed), "dense");
@@ -1573,31 +1573,29 @@ describe("lecture decks", () => {
       "html-and-dom": { "hello-html": "html-skeleton", "jsx-lab1": "lab1-stub" },
       "headings-and-paragraphs": {
         "heading-scale": "heading-scale",
-        "lab1-nest": "heading-tags",
-        "wrap-p": "paragraph-tag",
+        "lab1-nest-live": "heading-tags",
+        "heading-practice-live": "heading-practice",
+        "wrap-p-live": "paragraph-tag",
       },
       "lists-and-tables": {
-        "pancakes-after": "list-tags",
-        "books-ul": "list-tags",
+        "list-tags-live": "list-tags",
         "quiz-table": "tables",
+        "images-live": "images",
       },
       "web-forms": {
-        "text-fields-demo": "text-fields",
-        textarea: "textarea",
-        buttons: "buttons",
-        "onclick-alert": "alert-button",
-        file: "file-field",
-        "radio-same-name": "radio-buttons",
-        "checkboxes-multi": "checkboxes",
-        "select-one": "dropdowns",
-        "select-many": "dropdowns",
-        number: "typed-fields",
-        range: "typed-fields",
-        email: "typed-fields",
-        date: "typed-fields",
+        "text-fields-live": "text-fields",
+        "textarea-live": "textarea",
+        "radio-groups-live": "radio-buttons",
+        "checkboxes-live": "checkboxes",
+        "select-many-live": "dropdowns",
+        "date-live": "typed-fields",
+        "buttons-live": "buttons",
+        "forms-complete-live": "lab1-forms",
+        "highlighted-paragraph-live": "highlighted-paragraph",
+        "highlighted-box-live": "highlighted-box",
       },
       anchors: {
-        "href-documents": "anchors",
+        "href-documents-live": "anchors",
         "mailto-tel": "mailto-tel",
         "hash-toc": "hash-toc",
       },
@@ -3234,7 +3232,7 @@ describe("lecture decks", () => {
     const express = findSlide("installing-nodejs", "express");
 
     assert.deepEqual(link.codeAddedLines, [1, [6, 7]]);
-    assert.deepEqual(pancakes.codeAddedLines, [[2, 11]]);
+    assert.deepEqual(pancakes.codeAddedLines, [[7, 16]]);
     assert.deepEqual(signup.codeAddedLines, [[21, 24]]);
     assert.deepEqual(cssImport.codeAddedLines, [1]);
     const twPage = findSlide("tailwind-intro", "page");
