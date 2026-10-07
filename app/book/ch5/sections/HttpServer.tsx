@@ -141,7 +141,7 @@ license: (ISC)`}</CodeBlock>
           second remote. It is still a{" "}
           <strong>separate project</strong>: own{" "}
           <code>package.json</code>, own{" "}
-          <code>.gitignore</code>, own README. For Canvas you{" "}
+          <code>.gitignore</code>, own README. For the A5 hand-in you{" "}
           <code>git init</code>{" "}that folder and push a{" "}
           <strong>second</strong>{" "}GitHub repository named{" "}
           <code>webdev-server</code>{" "}(

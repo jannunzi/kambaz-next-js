@@ -21,8 +21,20 @@ export function canvasAssignmentDescriptionHtml(
   return [
     `<p>Complete ${assignment.canvasId} — ${assignment.title} on the course site:</p>`,
     `<p><a href="${url}">${url}</a></p>`,
-    `<p>Sign up on the course site if you do not have an account yet with the same Northeastern email you use on Canvas, then Sign in to submit your GitHub and Vercel URLs. This site is not Canvas and accounts are not pre-provisioned. Using your Canvas email lets us map site progress back to the roster. Submit your GitHub repository and Vercel URL here in Canvas.</p>`,
+    `<p>${canvasHandInSentence(assignment)}</p>`,
+    `<p>Sign up on the course site if you do not have an account yet with the same Northeastern email you use on Canvas, then Sign in. This site is not Canvas and accounts are not pre-provisioned. Using your Canvas email lets us map site progress back to the roster.</p>`,
   ].join("");
+}
+
+/**
+ * Hand-in sentence for A1–A6 Canvas descriptions (Jose, Oct 7 2026:
+ * students hand in on kambaz.dev; Canvas only shows the grade). Plain text
+ * so staff can paste the same words into Canvas by hand.
+ */
+export function canvasHandInSentence(
+  assignment: Pick<AssignmentHubItem, "canvasId" | "publicUrl">,
+): string {
+  return `Hand in ${assignment.canvasId} on kambaz.dev, not in Canvas: sign in at ${assignment.publicUrl} and submit your GitHub repository and Vercel deployment URLs there. Do not submit anything in Canvas; your grade will be posted in Canvas.`;
 }
 
 export function listCanvasFollowupCopy(): Array<{

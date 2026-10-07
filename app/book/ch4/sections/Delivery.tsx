@@ -3,6 +3,7 @@ import SectionLink from "../../components/SectionLink";
 import ChapterLink from "../../components/ChapterLink";
 import CodeBlock from "../../components/CodeBlock";
 import Link from "next/link";
+import HandInLink from "../../components/HandInLink";
 
 export default function Delivery() {
   return (
@@ -78,9 +79,9 @@ git push -u origin a4`}</CodeBlock>
           new preview to finish building before you copy the URL.
         </li>
         <li>
-          In Canvas, submit both the GitHub repository URL (pointed at
-          the <code>a4</code>{" "}branch) and the Vercel deployment URL
-          for that branch. Disable Vercel&apos;s Deployment Protection
+          On <HandInLink id="a4" />{" "}(not in Canvas), submit both the
+          GitHub repository URL (pointed at the <code>a4</code>{" "}branch)
+          and the Vercel deployment URL for that branch. Disable Vercel&apos;s Deployment Protection
           on that deployment, as in <SectionLink to="1.6" />, so graders
           can open it without signing in. A protected preview that
           redirects to a Vercel login will not be graded as a working

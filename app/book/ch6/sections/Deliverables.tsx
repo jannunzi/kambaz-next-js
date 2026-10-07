@@ -4,6 +4,7 @@ import ChapterLink from "../../components/ChapterLink";
 import OfficialLink from "../../components/OfficialLink";
 import CodeBlock from "../../components/CodeBlock";
 import Link from "next/link";
+import HandInLink from "../../components/HandInLink";
 
 export default function Deliverables() {
   return (
@@ -35,9 +36,10 @@ export default function Deliverables() {
         cluster from <SectionLink to="6.3" />. All the exercises
         should work remotely just as well as locally. The Kambaz
         Dashboard should display the courses and modules from the
-        database. As a deliverable in Canvas, submit the URL to the{" "}
+        database. As the deliverable, submit the URL of the{" "}
         <code>a6</code>{" "}branch deployment of your React application
-        running on Vercel.
+        running on Vercel. Hand it in on <HandInLink id="a6" />{" "}(not
+        in Canvas).
       </p>
       <CodeBlock language="shell">{`# in webdev-client
 git checkout -b a6
@@ -117,8 +119,8 @@ git push -u origin a6`}</CodeBlock>
           and confirm the documents changed.
         </li>
         <li>
-          In Canvas, submit the Vercel URL for the{" "}
-          <code>a6</code>{" "}branch deployment.
+          On <HandInLink id="a6" />{" "}(not in Canvas), submit the Vercel URL
+          for the <code>a6</code>{" "}branch deployment.
         </li>
       </ol>
       <p>

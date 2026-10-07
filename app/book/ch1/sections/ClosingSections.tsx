@@ -1,6 +1,7 @@
 import Section from "../../components/Section";
 import CodeBlock from "../../components/CodeBlock";
 import Link from "next/link";
+import HandInLink from "../../components/HandInLink";
 
 export default function ClosingSections() {
   return (
@@ -60,8 +61,10 @@ git push -u origin main`}</CodeBlock>
           After the first deploy, open the project&apos;s settings and disable{" "}
           <strong>Deployment Protection</strong>{" "}(sometimes labeled as a Vercel
           Authentication / password gate on preview or production URLs). Graders
-          must open your site without logging into Vercel. Submit both the
-          GitHub repository URL and the Vercel deployment URL in Canvas.
+          must open your site without logging into Vercel. Hand in A1 on
+          kambaz.dev, not in Canvas: sign in at{" "}
+          <HandInLink id="a1" />{" "}and submit both the GitHub repository URL
+          and the Vercel deployment URL there. Your grade is posted in Canvas.
         </p>
       </Section>
 
@@ -76,7 +79,10 @@ git push -u origin main`}</CodeBlock>
             Ensured Labs lists your full name and a{" "}
             <code>wd-github</code>{" "}repository link.
           </li>
-          <li>Deployed to Vercel and submitted both URLs in Canvas.</li>
+          <li>
+            Deployed to Vercel and submitted both URLs on{" "}
+            <HandInLink id="a1" />.
+          </li>
         </ol>
         <p>
           Continue practicing in{" "}
