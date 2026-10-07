@@ -444,45 +444,19 @@ export default function ServerComponentDemo() {
         >
           <p>
             In the previous section we discussed passing data to a
-            component through attributes. Another way to pass data to a
-            component is in its body, that is, between the opening and
-            closing tag of the element. In HTML it is common to wrap
-            content with specific tags to add certain formatting. For
+            component through attributes. Another way is composition:
+            nest JSX in the body, between the opening and closing tags,
+            without naming that content as props. In HTML it is common to
+            wrap content with specific tags to add certain formatting. For
             instance the tags <code>h1</code>{" "}and <code>p</code>{" "}format
             the content in their bodies with specific font sizes and
             margins — they take the content in the body and return a
             transformed version. We can implement React components the
             same way. The content in the body of a React component is
             passed to the component function as a parameter called{" "}
-            <code>children</code>. For instance, the <code>Square</code>{" "}
-            component below takes a number in its body and returns the
-            square of the number. Import the new component, use it to
-            compute the square of 4, and confirm it renders the correct
-            result:
-          </p>
-          <CodeBlock
-            language="tsx"
-            name="Square"
-            file="app/labs/lab3/Square.tsx"
-          >{`import { ReactNode } from "react";
-
-export default function Square({ children }: { children: ReactNode }) {
-  const num = Number(children);
-  return <span id="wd-square">{num * num}</span>;
-}`}</CodeBlock>
-          <p>
-            On the Lab 3 page, render{" "}
-            <code>{`<Square>4</Square>`}</code>{" "}under a heading. The child
-            text <code>4</code>{" "}becomes <code>16</code>:
-          </p>
-          <LiveDemo name="Square" file="app/labs/lab3/Square.tsx">
-            <p>
-              Square of 4 = <Square>4</Square>
-            </p>
-          </LiveDemo>
-          <p>
-            <code>Highlight</code>{" "}wraps arbitrary children in a yellow
-            span with red text — formatting, not arithmetic:
+            <code>children</code>. <code>Highlight</code>{" "}is that wrap:
+            it wraps arbitrary children in a yellow span with red text —
+            formatting, not arithmetic:
           </p>
           <CodeBlock
             language="tsx"
@@ -505,6 +479,32 @@ export default function Highlight({ children }: { children: ReactNode }) {
               Lorem ipsum dolor sit amet, consectetur adipisicing elit.
             </Highlight>
           </LiveDemo>
+          <p>
+            <code>Square</code>{" "}is a toy that interprets that content
+            as a number and returns the square of the number. Import the
+            new component, use it to compute the square of 4, and confirm
+            it renders the correct result:
+          </p>
+          <CodeBlock
+            language="tsx"
+            name="Square"
+            file="app/labs/lab3/Square.tsx"
+          >{`import { ReactNode } from "react";
+
+export default function Square({ children }: { children: ReactNode }) {
+  const num = Number(children);
+  return <span id="wd-square">{num * num}</span>;
+}`}</CodeBlock>
+          <p>
+            On the Lab 3 page, render{" "}
+            <code>{`<Square>4</Square>`}</code>{" "}under a heading. The child
+            text <code>4</code>{" "}becomes <code>16</code>:
+          </p>
+          <LiveDemo name="Square" file="app/labs/lab3/Square.tsx">
+            <p>
+              Square of 4 = <Square>4</Square>
+            </p>
+          </LiveDemo>
           <OnYourOwn>
             Wrap a sentence of your own in{" "}
             <code>Highlight</code>{" "}on the Lab 3 page, and render{" "}
@@ -524,13 +524,14 @@ export default function Highlight({ children }: { children: ReactNode }) {
           title="3.7.2 Working with the Pathname"
         >
           <p>
-            <code>usePathname</code>{" "}returns the current URL path so
-            navigation can highlight the active screen. The Labs table of
-            contents is already a client component: it maps a{" "}
+            <code>usePathname</code>{" "}returns the current URL path from
+            the address bar so a Client Component can adapt to where the
+            user is — which screen, which lab, which section. One common
+            use is highlighting the active item in a nav; the Labs table
+            of contents already does that: it maps a{" "}
             <code>LINKS</code>{" "}array and applies Tailwind classes when a
             link&apos;s <code>match</code>{" "}function says the pathname
-            belongs to that lab. Read
-            the file you already maintain:
+            belongs to that lab. Read the file you already maintain:
           </p>
           <CodeBlock
             language="tsx"
