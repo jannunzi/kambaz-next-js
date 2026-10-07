@@ -69,10 +69,24 @@ export default function JsBasics() {
         </LiveDemo>
         <p>
           Import the new component at the top of{" "}
-          <code>page.tsx</code>{" "}and render it under the Lab 3 heading — the
-          same import-and-place pattern you will repeat for every exercise
-          in this chapter.
+          <code>app/labs/lab3/page.tsx</code>{" "}and render it under the Lab 3
+          heading — the same import-and-place pattern you will repeat for
+          every exercise in this chapter. The Lab 3 page now reads:
         </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.2.1)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Still in{" "}
           <code>VariablesAndConstants.tsx</code>, declare one more{" "}
@@ -145,6 +159,27 @@ export default function JsBasics() {
         <LiveDemo name="VariableTypes" file="app/labs/lab3/VariableTypes.tsx">
           <VariableTypes />
         </LiveDemo>
+        <p>
+          Add the import under the first one and render{" "}
+          <code>{"<VariableTypes />"}</code>{" "}at the bottom of the Lab 3{" "}
+          <code>div</code>:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.2.2)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Add a second string and a second
           number, plus <code>typeof</code>{" "}for each, and display them in
@@ -225,6 +260,28 @@ export default function JsBasics() {
         >
           <BooleanVariables />
         </LiveDemo>
+        <p>
+          Import it into <code>app/labs/lab3/page.tsx</code>{" "}the same way,
+          after <code>VariableTypes</code>:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.2.3)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Add one more comparison that uses{" "}
           <code>===</code>{" "}(for example a string compared to another
@@ -284,6 +341,30 @@ export default function JsBasics() {
         <LiveDemo name="IfElse" file="app/labs/lab3/IfElse.tsx">
           <IfElse />
         </LiveDemo>
+        <p>
+          Import <code>IfElse</code>{" "}into{" "}
+          <code>app/labs/lab3/page.tsx</code>{" "}and render it last:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.2.4)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Flip <code>true1</code>{" "}to <code>false</code>{" "}and confirm
           the first paragraph disappears, then restore it. Then add a third
@@ -342,6 +423,32 @@ export default function JsBasics() {
         >
           <TernaryOperator />
         </LiveDemo>
+        <p>
+          Import <code>TernaryOperator</code>{" "}into{" "}
+          <code>app/labs/lab3/page.tsx</code>{" "}and render it last:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.2.5)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Set <code>loggedIn</code>{" "}to <code>false</code>{" "}and confirm
           the greeting switches to &quot;Please login&quot;, then set it
@@ -429,8 +536,34 @@ export default function JsBasics() {
         <p>
           Import both components into Lab 3. The if/else version returns
           early; the inline version always returns one wrapper and includes
-          whichever heading the flags allow.
+          whichever heading the flags allow. Render them in this order:
         </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.2.6)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Swap the <code>loggedIn</code>{" "}constants in both files and
           confirm each heading pair flips, then restore the values shown
@@ -500,6 +633,42 @@ export default function JsBasics() {
         <LiveDemo name="NullUndefined" file="app/labs/lab3/NullUndefined.tsx">
           <NullUndefined />
         </LiveDemo>
+        <p>
+          Import <code>NullUndefined</code>{" "}into{" "}
+          <code>app/labs/lab3/page.tsx</code>{" "}and render it last. Every
+          later Lab 3 component follows the same two steps — one import at
+          the top, one tag at the bottom of the <code>wd-lab3</code>{" "}
+          <code>div</code>{" "}— and <SectionLink to="3.7.5" />{" "}shows the
+          finished file:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.2.7)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           In the browser console, compare{" "}
           <code>null == undefined</code>{" "}(true, because <code>==</code>{" "}
