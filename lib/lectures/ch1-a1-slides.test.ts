@@ -19,6 +19,7 @@ import {
 const HTML = "app/book/ch1/sections/HtmlSections.tsx";
 const KAMBAZ = "app/book/ch1/sections/KambazSections.tsx";
 const INTRO = "app/book/ch1/sections/IntroAndSetup.tsx";
+const CLOSING = "app/book/ch1/sections/ClosingSections.tsx";
 
 function read(path: string): string {
   return readFileSync(join(process.cwd(), path), "utf8");
@@ -333,6 +334,29 @@ describe("Chapter 1 slides from the A1 slides-only walkthrough", () => {
     const practice = (slide("headings-and-paragraphs", "heading-practice").bullets ?? []).join("\n");
     assert.doesNotMatch(practice, /paragraph/);
     assert.match(practice, /after\*\* the sample text, just before `<\/div>`/);
+  });
+
+  it("ends A1 with #222's Labs name/section/GitHub listing, Lab 4/5 left as a comment", () => {
+    const deck = "kambaz-assignments";
+    const labs = slide(deck, "labs-name-github");
+    assert.equal(labs.codeFile, "app/labs/page.tsx");
+    const listing = labs.code ?? "";
+    assert.match(listing, /<h2>Jose Annunziato<\/h2>\n      <p>CS4550 Section 01<\/p>/);
+    assert.match(listing, /id="wd-github"/);
+    assert.match(listing, /<Link href="\/" id="wd-kambaz-link">/);
+    assert.match(listing, /\{\/\* your Lab 4 \/ Lab 5 links \*\/\}/);
+    assert.doesNotMatch(listing, /\/labs\/lab[45]/, "Lab 4/5 links are On your own answers");
+    // Once #222 is merged, the slide must equal the book's LabsNameGithub listing.
+    const book = bookBlocks(CLOSING).filter((block) => block.name === "LabsNameGithub");
+    if (book.length) assert.equal(listing.trim(), book[0].body.trim());
+    const push = code(deck, "labs-name-github-push");
+    assert.equal(
+      push,
+      'git add .\ngit commit -m "Add name, section, and GitHub link to Labs"\ngit push',
+    );
+    const ids = getLectureDeck(deck)!.slides.map((row) => row.id);
+    assert.deepEqual(ids.slice(-2), ["labs-name-github", "labs-name-github-push"]);
+    assert.equal(A1_SLUGS[A1_SLUGS.length - 1], deck, "last A1 deck, after §1.4 like the book's §1.5");
   });
 
   it("runs in CI through the npm test script", () => {
