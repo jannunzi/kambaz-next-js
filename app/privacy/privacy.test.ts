@@ -66,6 +66,7 @@ describe("privacy policy page", () => {
     assert.match(html, /Vercel/);
     assert.match(html, /xAI/);
     assert.match(html, />Privacy<\/span>/);
+    assert.match(html, /href="\/terms"/);
     assert.doesNotMatch(html, /Google sign-in/i);
     assert.doesNotMatch(html, /analytics/i);
     assert.doesNotMatch(html, /late penalt/i);
