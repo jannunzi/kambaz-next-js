@@ -80,7 +80,7 @@ export const ASSIGNMENT_STUDENT_COPY = {
   vercelUnreachable:
     "Could not open your Vercel URL. Open that same URL in a private/incognito window. If the browser cannot load the page, Run checks cannot either — submit a public https://….vercel.app URL and turn off Deployment Protection.",
   vercelNotFound:
-    "Your Vercel URL returned HTTP 404 (this page cannot be loaded). Open it in a private window and submit the production https://….vercel.app URL that actually opens — not a deleted preview or a path that 404s.",
+    "Your Vercel URL returned HTTP 404 (this page cannot be loaded). Open it in a private window and submit a URL that actually opens: for A1 the production https://….vercel.app URL, and for A2 and later the Vercel preview URL of your assignment branch (a2, a3, …). Not a deleted deployment or a path that 404s.",
   vercelHttpError:
     "Your Vercel URL did not load. Open that same URL in a private/incognito window. If the browser cannot load the page, Run checks cannot either.",
   labsOk: "Found the Labs navigation (links to your lab pages).",

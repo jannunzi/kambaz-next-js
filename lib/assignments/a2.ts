@@ -36,7 +36,7 @@ export const A2_RUBRIC: AssignmentRubric = {
           id: "a2-delivery-name-github",
           label: "Name and GitHub link",
           description:
-            "Labs still shows your full name and a wd-github repository link.",
+            "Labs still shows your full name and a link to your GitHub repository.",
           points: 3,
           bookHref: "/book/ch2#sec-2-5",
           bookLabel: "§2.5",
@@ -45,7 +45,7 @@ export const A2_RUBRIC: AssignmentRubric = {
           id: "a2-delivery-labs-nav",
           label: "Labs still listed",
           description:
-            "app/labs/TOC.tsx and app/labs/page.tsx still link Lab 1 (/labs/lab1), Lab 2 (/labs/lab2), and Kambaz (wd-kambaz-link).",
+            "app/labs/TOC.tsx and app/labs/page.tsx still link Lab 1 (/labs/lab1), Lab 2 (/labs/lab2), and Kambaz.",
           points: 3,
           bookHref: "/book/ch2#sec-2-5",
           bookLabel: "§2.5",
@@ -56,13 +56,13 @@ export const A2_RUBRIC: AssignmentRubric = {
       id: "lab",
       title: "Lab — CSS, icons, and Tailwind",
       intro:
-        "Build Lab 2 in app/labs/lab2. CSS samples stay on the lab page; Tailwind samples live under app/labs/lab2/tailwind/.",
+        "Build Lab 2 in app/labs/lab2. CSS samples stay on the lab page; Tailwind samples live under app/labs/lab2/tailwind/. Keep the book's wd-* ids on your samples, but a missing id never costs points: Run checks looks at what your CSS does to the page, not at ids or text.",
       criteria: [
         {
           id: "a2-lab-page",
           label: "Lab 2 page and CSS file",
           description:
-            "Create app/labs/lab2/page.tsx (id wd-lab2) and index.css, and link Lab 2 from the Labs index and TOC (href /labs/lab2).",
+            "Create app/labs/lab2/page.tsx and index.css, import the CSS in the page, and link Lab 2 from the Labs index and TOC (href /labs/lab2).",
           points: 3,
           bookHref: "/book/ch2#sec-2-1",
           bookLabel: "§2.1",
@@ -71,7 +71,7 @@ export const A2_RUBRIC: AssignmentRubric = {
           id: "a2-lab-selectors",
           label: "Selectors",
           description:
-            "Practice the style attribute, then move rules into the CSS file with id, class, and document-structure selectors (wd-css-id-selectors, wd-css-class-selectors, wd-css-document-structure).",
+            "Practice the style attribute, then move rules into the CSS file with id, class, and document-structure selectors.",
           points: 5,
           bookHref: "/book/ch2#sec-2-1-1",
           bookLabel: "§2.1.1",
@@ -89,7 +89,7 @@ export const A2_RUBRIC: AssignmentRubric = {
           id: "a2-lab-layout",
           label: "Position, float, flex, and media queries",
           description:
-            "Create the position, z-index, float, grid, flex, and media-query samples (wd-css-positions through wd-css-flex, plus wd-media-queries-demo) and import them.",
+            "Create the position, z-index, float, grid, flex, and media-query samples and import them.",
           points: 5,
           bookHref: "/book/ch2#sec-2-1-13",
           bookLabel: "§2.1.13",
@@ -98,7 +98,7 @@ export const A2_RUBRIC: AssignmentRubric = {
           id: "a2-lab-icons",
           label: "React Icons",
           description:
-            "Create ReactIconsSampler.tsx (id wd-react-icons-sampler) with at least one icon and import it on Lab 2.",
+            "Create ReactIconsSampler.tsx with at least one icon and import it on Lab 2.",
           points: 3,
           bookHref: "/book/ch2#sec-2-2",
           bookLabel: "§2.2",
@@ -107,7 +107,7 @@ export const A2_RUBRIC: AssignmentRubric = {
           id: "a2-lab-tailwind",
           label: "Tailwind samples",
           description:
-            "Create Tailwind samples under app/labs/lab2/tailwind/ — spacing, typography, backgrounds, responsive prefixes, filters, and grids (id wd-tailwind-grid-system).",
+            "Create Tailwind samples under app/labs/lab2/tailwind/ — spacing, typography, backgrounds, responsive prefixes, filters, and a grid whose columns span.",
           points: 5,
           bookHref: "/book/ch2#sec-2-3",
           bookLabel: "§2.3",

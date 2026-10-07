@@ -15,6 +15,7 @@ import { preparePublicAssignmentCheck } from "./submission-form";
 import { ASSIGNMENT_STUDENT_COPY } from "./student-copy";
 import { criterionVerifyPath, criterionVerifyUrl } from "./verify-urls";
 import { resolveNameQuery } from "./names";
+import { A2_BOOK_CSS, A2_BOOK_PAGES, removeElement } from "./fixtures/a2-deploy";
 
 const ORIGIN = "https://webdev-client-git-a2-jane.vercel.app";
 const MAIN_ORIGIN = "https://jane-a1.vercel.app";
@@ -31,48 +32,22 @@ const PASS_LABS = `
   </div>
 `;
 
-const PASS_LAB2 = `
-  <div id="wd-lab2">
-    <div id="wd-css-id-selectors">
-      <p id="wd-id-selector-1"></p>
-      <p id="wd-id-selector-2"></p>
-    </div>
-    <div id="wd-css-class-selectors">
-      <p class="wd-class-selector">Class</p>
-    </div>
-    <div id="wd-css-document-structure">
-      <div class="wd-selector-1"></div>
-    </div>
-    <div id="wd-css-colors"></div>
-    <div id="wd-css-background-colors"></div>
-    <div id="wd-css-borders"></div>
-    <div id="wd-css-paddings"></div>
-    <div id="wd-css-margins"></div>
-    <div id="wd-css-box-model"></div>
-    <div id="wd-css-corners"></div>
-    <div id="wd-css-dimensions"></div>
-    <div id="wd-css-display"></div>
-    <div id="wd-css-positions">
-      <div id="wd-css-position-relative"></div>
-      <div id="wd-css-position-absolute"></div>
-      <div id="wd-css-position-fixed"></div>
-    </div>
-    <div id="wd-z-index"></div>
-    <div id="wd-float-divs"></div>
-    <div id="wd-css-grid-layout"></div>
-    <div id="wd-css-flex"></div>
-    <div class="wd-media-queries-demo"></div>
-    <div id="wd-react-icons-sampler"><svg viewBox="0 0 24 24"></svg></div>
-  </div>
-`;
+/** The book build's Lab 2 pages and compiled CSS (fixtures/a2-deploy.ts). */
+const PASS_LAB2 = A2_BOOK_PAGES["/labs/lab2"];
+const PASS_TAILWIND = A2_BOOK_PAGES["/labs/lab2/tailwind"];
 
-const PASS_TAILWIND = `
-  <div class="ms-4 font-thin">
-    <div class="bg-red-500 md:flex"></div>
-    <img class="blur-lg" alt="" />
-    <div id="wd-tailwind-grid-system" class="grid grid-cols-4 gap-4"></div>
-  </div>
-`;
+/** A Tailwind page with the book build's stylesheets and this body. */
+function tailwindPage(body: string): string {
+  const links = PASS_TAILWIND.match(/<link\b[^>]*rel="stylesheet"[^>]*>/g) ?? [];
+  return `<!DOCTYPE html><html><head>${links.join("")}</head><body>${body}</body></html>`;
+}
+
+/** Point a page's own TOC links for Lab 1 and Lab 2 at another site. */
+function offSiteToc(html: string): string {
+  return html
+    .replace('href="/labs/lab1"', 'href="https://kambaz.dev/labs/lab1"')
+    .replace('href="/labs/lab2"', 'href="https://kambaz.dev/labs/lab2"');
+}
 
 function autoPoints(results: readonly AssignmentCheckResult[]): number {
   const byCriterion = latestResultByCriterion(results);
@@ -86,6 +61,7 @@ function autoPoints(results: readonly AssignmentCheckResult[]): number {
 }
 
 function bookHtml(url: string): string {
+  if (url.includes("/_next/")) return A2_BOOK_CSS[url.split("/").pop() ?? ""] ?? "";
   if (url.includes("/labs/lab2/tailwind")) return PASS_TAILWIND;
   if (url.includes("/labs/lab2")) return PASS_LAB2;
   if (url.includes("/labs")) return PASS_LABS;
@@ -242,19 +218,15 @@ describe("runA2Checks", () => {
     assert.equal(supportsUrlSubmission("a2"), true);
   });
 
-  it("fails branch, labs nav, selectors, layout, and tailwind on a partial site", async () => {
+  it("fails branch, labs nav, layout, and tailwind on a partial site", async () => {
     const graded = await grade({
       githubUrl: REPO,
       html(url) {
+        if (url.includes("/_next/")) return bookHtml(url);
         if (url.includes("/labs/lab2/tailwind")) {
-          return `<div id="wd-tailwind-grid-system" class="ms-4 font-thin bg-red-500 md:flex grid grid-cols-4"></div>`;
+          return tailwindPage(`<div id="wd-tailwind-grid-system">Tailwind samples go here</div>`);
         }
-        if (url.includes("/labs/lab2")) {
-          return PASS_LAB2.replace('id="wd-id-selector-2"', 'id="wd-other"').replace(
-            "wd-media-queries-demo",
-            "wd-media-queries-missing",
-          );
-        }
+        if (url.includes("/labs/lab2")) return offSiteToc(removeElement(PASS_LAB2, ".wd-media-queries-demo"));
         if (url.includes("/labs")) {
           return PASS_LABS.replace(`${ORIGIN}/labs/lab2`, "/labs/other");
         }
@@ -267,15 +239,16 @@ describe("runA2Checks", () => {
     assert.equal(graded.by.get("a2-delivery-name-github")?.passed, true);
     assert.equal(graded.probed.length, 0);
     assert.equal(graded.by.get("a2-delivery-labs-nav")?.passed, false);
-    assert.equal(graded.by.get("a2-lab-page")?.passed, false);
-    assert.equal(graded.by.get("a2-lab-selectors")?.passed, false);
-    assert.match(graded.by.get("a2-lab-selectors")?.message ?? "", /wd-id-selector-2/);
+    // The Lab 2 page row reads the page itself; the TOC link is the labs-nav row.
+    assert.equal(graded.by.get("a2-lab-page")?.passed, true);
+    assert.equal(graded.by.get("a2-lab-selectors")?.passed, true);
     assert.equal(graded.by.get("a2-lab-box-model")?.passed, true);
     assert.equal(graded.by.get("a2-lab-layout")?.passed, false);
-    assert.match(graded.by.get("a2-lab-layout")?.message ?? "", /wd-media-queries-demo/);
+    assert.match(graded.by.get("a2-lab-layout")?.message ?? "", /Media queries \(§2\.1\.20\)/);
     assert.equal(graded.by.get("a2-lab-icons")?.passed, true);
     assert.equal(graded.by.get("a2-lab-tailwind")?.passed, false);
-    assert.match(graded.by.get("a2-lab-tailwind")?.message ?? "", /blur-lg/);
+    assert.match(graded.by.get("a2-lab-tailwind")?.message ?? "", /Tailwind filters/);
+    for (const row of graded.results) assert.doesNotMatch(row.message, /\bwd-/, row.id);
     assert.equal(graded.by.get("a2-kambaz-nav")?.skipped, true);
   });
 
@@ -394,7 +367,7 @@ describe("runA2Checks", () => {
     const graded = await grade({
       githubUrl: TREE,
       html(url) {
-        if (url.includes("/labs/lab2")) return bookHtml(url);
+        if (url.includes("/labs/lab2")) return offSiteToc(bookHtml(url));
         if (url.includes("/labs")) {
           return PASS_LABS.replace(
             `${ORIGIN}/labs/lab2`,
@@ -405,7 +378,9 @@ describe("runA2Checks", () => {
       },
     });
     assert.equal(graded.by.get("a2-delivery-labs-nav")?.passed, false);
-    assert.equal(graded.by.get("a2-lab-page")?.passed, false);
+    // The Lab 2 page itself is fine; only the nav row checks the links.
+    assert.equal(graded.by.get("a2-lab-page")?.passed, true);
+    assert.equal(graded.points, 35);
   });
 
   it("asks to retry, without a deduction, when GitHub returns 403 or 429", async () => {
@@ -444,37 +419,37 @@ describe("runA2Checks", () => {
       githubUrl: TREE,
       html(url) {
         if (url.includes("/labs/lab2/tailwind")) {
-          return `<p id="wd-tailwind-grid-system">ms-4 font-thin bg-red-500 md:flex blur-lg grid grid-cols-4</p>`;
+          return tailwindPage(`<p id="wd-tailwind-grid-system">ms-4 font-thin bg-red-500 md:flex blur-lg grid grid-cols-4</p>`);
         }
         return bookHtml(url);
       },
     });
     assert.equal(prose.by.get("a2-lab-tailwind")?.passed, false);
-    assert.match(prose.by.get("a2-lab-tailwind")?.message ?? "", /ms-4/);
+    assert.match(prose.by.get("a2-lab-tailwind")?.message ?? "", /Tailwind spacing/);
 
     const prefix = await grade({
       githubUrl: TREE,
       html(url) {
         if (url.includes("/labs/lab2/tailwind")) {
-          return `<div id="wd-tailwind-grid-system" class="ms-40 font-thin bg-red-500 md:flex blur-lg grid grid-cols-4"></div>`;
+          return tailwindPage(`<div id="wd-tailwind-grid-system" class="ms-40 grid grid-cols-4"><p class="col-span-1">one</p><p class="col-span-3">two</p></div>`);
         }
         return bookHtml(url);
       },
     });
     assert.equal(prefix.by.get("a2-lab-tailwind")?.passed, false);
-    assert.match(prefix.by.get("a2-lab-tailwind")?.message ?? "", /ms-4/);
+    assert.match(prefix.by.get("a2-lab-tailwind")?.message ?? "", /Tailwind spacing/);
 
     const missingGrid = await grade({
       githubUrl: TREE,
       html(url) {
         if (url.includes("/labs/lab2/tailwind")) {
-          return `<div id="wd-tailwind-grid-system" class="ms-4 font-thin bg-red-500 md:flex blur-lg grid-cols-4"></div>`;
+          return tailwindPage(`<div id="wd-tailwind-grid-system" class="grid-cols-4"><p class="col-span-1 ms-4 me-4 font-thin font-bold bg-red-500 bg-blue-500 md:flex blur-lg">one</p></div>`);
         }
         return bookHtml(url);
       },
     });
     assert.equal(missingGrid.by.get("a2-lab-tailwind")?.passed, false);
-    assert.match(missingGrid.by.get("a2-lab-tailwind")?.message ?? "", /class grid/);
+    assert.match(missingGrid.by.get("a2-lab-tailwind")?.message ?? "", /Tailwind grid system/);
 
     const missingPage = await grade({
       githubUrl: TREE,
@@ -489,7 +464,6 @@ describe("runA2Checks", () => {
             message: "missing",
           };
         }
-        if (url.includes("/labs/lab2")) return `${PASS_LAB2}\n${PASS_TAILWIND}`;
         return bookHtml(url);
       },
     });
@@ -502,15 +476,14 @@ describe("runA2Checks", () => {
     const graded = await grade({
       githubUrl: TREE,
       html(url) {
-        if (url.includes("/labs/lab2/tailwind")) return PASS_TAILWIND;
-        if (url.includes("/labs/lab2")) {
-          return PASS_LAB2.replace(/<svg[^>]*><\/svg>/, "");
+        if (url.includes("/labs/lab2") && !url.includes("tailwind")) {
+          return removeElement(PASS_LAB2, "wd-react-icons-sampler");
         }
         return bookHtml(url);
       },
     });
     assert.equal(graded.by.get("a2-lab-icons")?.passed, false);
-    assert.match(graded.by.get("a2-lab-icons")?.message ?? "", /svg/);
+    assert.match(graded.by.get("a2-lab-icons")?.message ?? "", /ReactIconsSampler/);
     assert.equal(graded.points, 35);
   });
 });

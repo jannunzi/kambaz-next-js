@@ -9,7 +9,8 @@ import {
   type AttemptedPage,
   type TargetPages,
 } from "./a1-structure";
-import type { AssignmentChecker } from "./checker-types";
+import { isTemplatePage } from "./a2-structure";
+import type { AssignmentChecker, AutoVerdict, FetchTextResult } from "./checker-types";
 import type {
   AssignmentCheckProbes,
   AssignmentCheckResult,
@@ -40,6 +41,7 @@ import {
   isVercelBranchPreviewHost,
   looksLikeDeployUrl,
   parseGithubRepoUrl,
+  urlOnDeployOrigin,
 } from "./urls";
 
 function check(
@@ -141,13 +143,7 @@ function judgeLegacySpec(
   return check(spec.criterionId, spec.label, primary.passed, primary.message, extra);
 }
 
-type Verdict =
-  | { kind: "pass"; message: string }
-  | { kind: "fail"; message: string }
-  /** No reliable signal: TA review if its gate allows, else a fail. */
-  | { kind: "review"; message: string; missMessage: string }
-  /** The page could not be fetched (timeout, network, 5xx, login wall). */
-  | { kind: "unreachable"; message: string };
+type Verdict = AutoVerdict;
 
 const DEFAULT_LAB_TARGET: StructureTarget = { kind: "labs" };
 const SITE_TARGET: StructureTarget = { kind: "site" };
@@ -318,6 +314,46 @@ function resolveVerdicts(
       }
     }
   });
+}
+
+/**
+ * Same-origin fetches for resources a page links (stylesheets), through the
+ * checker's probes, cached per run. Only paths on the deploy are fetched.
+ */
+function textFetcher(
+  origin: string,
+  probes: AssignmentCheckProbes,
+): (pathOrUrl: string) => Promise<FetchTextResult> {
+  const cache = new Map<string, Promise<FetchTextResult>>();
+  return (pathOrUrl) => {
+    let url: string;
+    try {
+      const resolved = new URL(pathOrUrl, origin);
+      if (resolved.origin !== new URL(origin).origin) {
+        return Promise.resolve({ ok: false, missing: false });
+      }
+      url = urlOnDeployOrigin(origin, resolved.pathname + resolved.search);
+    } catch {
+      return Promise.resolve({ ok: false, missing: false });
+    }
+    const hit = cache.get(url);
+    if (hit) return hit;
+    const pending = probes
+      .getHtml(url)
+      .then((result): FetchTextResult => {
+        if (result.ok) return { ok: true, text: result.html };
+        const missing = isDefiniteNotFound({
+          path: url,
+          ok: false,
+          status: result.status,
+          code: result.code,
+        });
+        return { ok: false, status: result.status, missing };
+      })
+      .catch((): FetchTextResult => ({ ok: false, missing: false }));
+    cache.set(url, pending);
+    return pending;
+  };
 }
 
 export async function runChecker(
@@ -544,9 +580,31 @@ export async function runChecker(
     }
     return check(id, label, false, message, extra);
   };
-  const labsNav =
-    labsNavPassed(deliveryHtml, delivery.labsNav, siteHost, config.idHasContent ? hasId : htmlHasId) ||
-    Boolean(delivery.labsNav.structurePassed?.(deliveryHtml, siteHost));
+  if (delivery.labsContent) {
+    // The deploy must show the student's own Labs pages: a bare
+    // create-next-app starter (or 404s everywhere under /labs) earns nothing.
+    const content = delivery.labsContent;
+    const extra = { criterionId: delivery.vercelCriterionId, groupId: "delivery" as const };
+    const id = `${delivery.vercelCriterionId}-content`;
+    const ownLabs = crawled.pages.some(
+      (page) => page.result.ok && isLabsPath(page.path) && !isTemplatePage(page.result.html),
+    );
+    results.push(
+      ownLabs
+        ? check(id, content.label, true, content.passMessage, extra)
+        : labsTarget.unreachable.length > 0
+          ? check(id, content.label, true, partlyUnreachableMessage(labsTarget.unreachable), {
+              ...extra,
+              needsReview: true,
+            })
+          : check(id, content.label, false, content.failMessage, extra),
+    );
+  }
+
+  const labsNav = delivery.labsNav.test
+    ? delivery.labsNav.test(deliveryHtml, siteHost)
+    : labsNavPassed(deliveryHtml, delivery.labsNav, siteHost, config.idHasContent ? hasId : htmlHasId) ||
+      Boolean(delivery.labsNav.structurePassed?.(deliveryHtml, siteHost));
   {
     const extra = { criterionId: delivery.labsNav.criterionId, groupId: delivery.labsNav.groupId };
     results.push(
@@ -645,9 +703,16 @@ export async function runChecker(
       attempted,
       siteHost,
     };
+    const custom = config.judgeAutoSpecs
+      ? await config.judgeAutoSpecs({
+          structure,
+          attempted,
+          fetchText: textFetcher(crawled.origin, input.probes),
+        })
+      : {};
     const verdicts = config.autoSpecs.map((spec) => ({
       spec,
-      verdict: judgeSpec(config, spec, structure),
+      verdict: custom[spec.criterionId] ?? judgeSpec(config, spec, structure),
     }));
     results.push(...withLab1NotFoundNote(resolveVerdicts(config, verdicts, results), attempted));
   }
