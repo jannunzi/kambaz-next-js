@@ -102,7 +102,6 @@ export default function CourseNavigation({ cid }: { cid: string }) {
       "`params` is a Promise — mark the layout `async` and `await params`",
       "Wrapper `wd-courses`. Heading shows `Courses {cid}`",
       "Nav left, `{children}` right — same table chrome as Account",
-      "If `npm run dev` works but `npm run build` fails with *uncached or runtime data during prerendering*, the project was created with Next.js 16.4: delete the `cacheComponents: true,` and `partialPrefetching: true,` lines from `next.config.ts`",
     ],
     code: `import { ReactNode } from "react";
 import CourseNavigation from "./Navigation";
@@ -144,6 +143,18 @@ export default async function CoursesLayout({
     embed: "kambaz-courses",
     interactiveHint:
       "Click Piazza or Zoom. Placeholder heading pages are enough this week.",
+  },
+  {
+    id: "next-16-4-build-fix",
+    title: "If npm run build fails on Next.js 16.4",
+    kind: "content",
+    bullets: [
+      "Symptom: `npm run dev` works, but `npm run build` or the Vercel deploy fails with *Next.js encountered URL data `usePathname()` in a Client Component outside of `<Suspense>`*",
+      "Further down the log: *Next.js encountered uncached or runtime data during prerendering*",
+      "Check `package.json`: `\"next\": \"16.4.0\"` means the project was created with Next.js 16.4",
+      "Fix: open `next.config.ts` and delete **both** the `cacheComponents: true,` and `partialPrefetching: true,` lines, then build again",
+      "Deleting only the first line fails with *`partialPrefetching` requires `cacheComponents` to be enabled*",
+    ],
   },
   {
     id: "placeholders",
