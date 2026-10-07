@@ -69,9 +69,10 @@ git push -u origin main`}</CodeBlock>
           </li>
         </ul>
         <p>
-          Keep the lab links you already have, including Lab 4, Lab 5, and the
-          Kambaz link from <SectionLink to="1.4.1" />. Replace the name,
-          section, and GitHub URL below with your own:
+          Keep the lab links you already have: your Lab 4 and Lab 5 links go
+          where the comment is, and keep the Kambaz link from{" "}
+          <SectionLink to="1.4.1" />. Replace the name, section, and GitHub URL
+          below with your own:
         </p>
         <CodeBlock
           language="tsx"
@@ -95,14 +96,11 @@ export default function Labs() {
         <li>
           <Link href="/labs/lab3">Lab 3: JavaScript Fundamentals</Link>
         </li>
+        {/* your Lab 4 / Lab 5 links */}
         <li>
-          <Link href="/labs/lab4">Lab 4</Link>
-        </li>
-        <li>
-          <Link href="/labs/lab5">Lab 5</Link>
-        </li>
-        <li>
-          <Link href="/">Kambaz</Link>
+          <Link href="/" id="wd-kambaz-link">
+            Kambaz
+          </Link>
         </li>
         <li>
           <a

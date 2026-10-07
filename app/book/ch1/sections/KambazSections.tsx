@@ -10,6 +10,7 @@ import DashboardDemo from "../embeds/DashboardDemo";
 import ModulesDemo from "../embeds/ModulesDemo";
 import HomeDemo from "../embeds/HomeDemo";
 import AssignmentsDemo from "../embeds/AssignmentsDemo";
+import AssignmentsStep from "../embeds/assignments-step/Assignments";
 import AssignmentEditorDemo from "../embeds/AssignmentEditorDemo";
 import DemoSignin from "../embeds/DemoSignin";
 import DemoSignup from "../embeds/DemoSignup";
@@ -1158,9 +1159,9 @@ export default function Home() {
             (QUIZZES / EXAMS / PROJECT can wait)
           </li>
           <li>
-            A list <code>id=&quot;wd-assignment-list&quot;</code>{" "}with at least
-            three assignments (A1 ENV + HTML, A2 CSS + TAILWIND, A3 JS + REACT
-            are fine examples)
+            A list <code>id=&quot;wd-assignment-list&quot;</code>{" "}with your
+            assignments, each linking to its editor. Aim for three (A1 ENV +
+            HTML, A2 CSS + TAILWIND, A3 JS + REACT are fine examples)
           </li>
           <li>
             Each row: title link to{" "}
@@ -1182,7 +1183,12 @@ export default function Home() {
             explains <code>async</code>/<code>await</code>)
           </li>
         </ul>
-        <p>Start from these stubs and fill them in:</p>
+        <p>
+          Start from these two files. <code>AssignmentItem</code>{" "}is complete,
+          and the page already renders one assignment (A1) that links to its
+          editor. Add the rest yourself: three assignments are recommended (A2
+          and A3 after A1), plus the search field, buttons, and group heading.
+        </p>
         <CodeBlock
           language="tsx"
           name="AssignmentItem"
@@ -1202,8 +1208,13 @@ export default function AssignmentItem({
 }) {
   return (
     <li className="wd-assignment-list-item">
-      {/* Link the title to /courses/\${cid}/assignments/\${aid}
-          (className wd-assignment-link), then show details underneath */}
+      <Link
+        href={\`/courses/\${cid}/assignments/\${aid}\`}
+        className="wd-assignment-link"
+      >
+        {title}
+      </Link>
+      <div>{details}</div>
     </li>
   );
 }`}</CodeBlock>
@@ -1224,11 +1235,24 @@ export default async function Assignments({
       {/* search input, + Group, + Assignment */}
       {/* h3 wd-assignments-title */}
       <ul id="wd-assignment-list">
-        {/* at least three AssignmentItems using cid */}
+        <AssignmentItem
+          cid={cid}
+          aid="123"
+          title="A1 - ENV + HTML"
+          details="Multiple Modules | Due May 13 at 11:59pm | 100 pts"
+        />
+        {/* Add more assignments here (three recommended, like A2, A3), each linking to its editor */}
       </ul>
     </div>
   );
 }`}</CodeBlock>
+        <p>The page as written renders one assignment:</p>
+        <LiveDemo
+          name="Assignments"
+          file="app/(kambaz)/courses/[cid]/assignments/page.tsx"
+        >
+          <AssignmentsStep params={Promise.resolve({ cid: "1234" })} />
+        </LiveDemo>
         <p>
           Expected result (plain HTML prototype — styling comes in{" "}
           <ChapterLink to={2} />):

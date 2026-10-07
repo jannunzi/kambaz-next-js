@@ -4,6 +4,7 @@ import { describe, it } from "node:test";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import LabsNameGithub from "../../app/labs/lab1/intermediates/1-5-LabsNameGithub";
+import AssignmentsStep from "../../app/book/ch1/embeds/assignments-step/Assignments";
 import { htmlHasStudentName, resolveNameQuery } from "../assignments/names";
 
 // Book fixes from the A1 slides-only walkthrough: a real code step for the
@@ -60,10 +61,21 @@ describe("§1.5 name, section, and GitHub link on Labs", () => {
     // The sample keeps the ids students should add (the checker has fallbacks).
     assert.match(html, /id="wd-labs"/);
     assert.match(html, /id="wd-github"/);
-    // Lab links from §1.3.10 and On your own / With AI, plus Kambaz from §1.4.1.
-    for (const href of ["/labs/lab1", "/labs/lab2", "/labs/lab3", "/labs/lab4", "/labs/lab5", "/"]) {
+    // Lab links from §1.3.10 plus the Kambaz link from §1.4.1.
+    for (const href of ["/labs/lab1", "/labs/lab2", "/labs/lab3", "/"]) {
       assert.match(html, new RegExp(`href="${href}"`));
     }
+    assert.match(html, /<a id="wd-kambaz-link" href="\/">Kambaz<\/a>/);
+  });
+
+  it("never gives away the On your own / With AI Lab 4 and Lab 5 links", () => {
+    const block = codeBlock(closing, "LabsNameGithub");
+    const demo = read("app/labs/lab1/intermediates/1-5-LabsNameGithub.tsx");
+    for (const source of [block, demo]) {
+      assert.doesNotMatch(source, /\/labs\/lab[45]/);
+      assert.match(source, /\{\/\* your Lab 4 \/ Lab 5 links \*\/\}/);
+    }
+    assert.doesNotMatch(renderToStaticMarkup(createElement(LabsNameGithub)), /lab4|lab5/);
   });
 
   it("is linked from the §1.7 checklist", () => {
@@ -129,5 +141,40 @@ describe("§1.3 Lab 1 page listings", () => {
   it("describes the App Router choice as the real 16.3 prompts do", () => {
     assert.doesNotMatch(intro, /answered\s+&quot;Would you like to use App Router\?&quot;/);
     assert.match(intro, /Would\s+you like to use App Router\? \(recommended\)/);
+  });
+});
+
+describe("§1.4.7 Assignments listing renders one assignment", () => {
+  const kambaz = "app/book/ch1/sections/KambazSections.tsx";
+  const dir = "app/book/ch1/embeds/assignments-step";
+
+  it("the live demo files are the book listings, byte for byte", () => {
+    assert.equal(read(`${dir}/Assignments.tsx`).trim(), codeBlock(kambaz, "Assignments").trim());
+    assert.equal(read(`${dir}/AssignmentItem.tsx`).trim(), codeBlock(kambaz, "AssignmentItem").trim());
+    assert.match(
+      read(kambaz),
+      /<LiveDemo\s+name="Assignments"\s+file="app\/\(kambaz\)\/courses\/\[cid\]\/assignments\/page\.tsx"\s*>\s*<AssignmentsStep params=\{Promise\.resolve\(\{ cid: "1234" \}\)\} \/>/,
+    );
+  });
+
+  it("one assignment links to its editor, then the comment asks for more", () => {
+    const listing = codeBlock(kambaz, "Assignments");
+    assert.equal(listing.match(/<AssignmentItem\b/g)?.length, 1);
+    assert.ok(
+      listing.includes(
+        "{/* Add more assignments here (three recommended, like A2, A3), each linking to its editor */}",
+      ),
+    );
+    assert.ok(listing.indexOf("<AssignmentItem") < listing.indexOf("{/* Add more assignments here"));
+  });
+
+  it("renders exactly one assignment link with text (what the A1 checker counts)", async () => {
+    const element = await AssignmentsStep({ params: Promise.resolve({ cid: "1234" }) });
+    const html = renderToStaticMarkup(element);
+    const links = [...html.matchAll(/<a\b[^>]*href="([^"]*\/assignments\/[^"/?#]+)"[^>]*>([^<]+)<\/a>/g)];
+    assert.equal(links.length, 1);
+    assert.equal(links[0][1], "/courses/1234/assignments/123");
+    assert.equal(links[0][2].trim(), "A1 - ENV + HTML");
+    assert.match(html, /<ul id="wd-assignment-list"><li class="wd-assignment-list-item">/);
   });
 });

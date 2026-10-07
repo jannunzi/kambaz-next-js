@@ -16,14 +16,11 @@ export default function Labs() {
         <li>
           <Link href="/labs/lab3">Lab 3: JavaScript Fundamentals</Link>
         </li>
+        {/* your Lab 4 / Lab 5 links */}
         <li>
-          <Link href="/labs/lab4">Lab 4</Link>
-        </li>
-        <li>
-          <Link href="/labs/lab5">Lab 5</Link>
-        </li>
-        <li>
-          <Link href="/">Kambaz</Link>
+          <Link href="/" id="wd-kambaz-link">
+            Kambaz
+          </Link>
         </li>
         <li>
           <a
