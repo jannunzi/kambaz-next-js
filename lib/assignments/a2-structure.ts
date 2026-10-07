@@ -19,15 +19,19 @@
  *     or inline styles.
  *
  * Students build the samples their own way (inline styles, their own
- * classes, CSS grid instead of floats), so each fingerprint has a strong
- * tier (the sample as the book builds it) and a weak tier (the sample's
- * core CSS is there, in a shape we can't tell apart from other samples).
- * Weak evidence is "Needs TA review" with points kept, never a fail; only
- * a sample with no evidence at all fails.
+ * classes, CSS grid or flex-basis instead of floats and percent widths), so
+ * each fingerprint has a strong tier (the sample as the book builds it) and
+ * a weak tier (the sample's core CSS is there, in a shape we can't tell
+ * apart from other samples). Weak evidence is "Needs TA review" with points
+ * kept, never a fail; only a sample with no evidence at all fails. A few
+ * known alternate builds (a Float sample laid out with grid or flex, a Grid
+ * layout sample sized with flex-basis percentages) are always TA review,
+ * even when another sample's demo already claims those elements.
  *
  * One sample can't be confirmed without ids: the ID-selector sample (its
- * CSS rules target ids). When the CSS has id rules but no element carries
- * those ids, the sample is "Needs TA review" (points kept), never a fail.
+ * CSS rules target ids). When the CSS has id rules that no element carries,
+ * the sample is "Needs TA review" (points kept), never a fail: we can't
+ * tell a missing id from a missing sample.
  *
  * Feedback names the book sample and section, never an id or class.
  */
@@ -282,6 +286,12 @@ export type Evidence = {
   scopeKeeps?: (node: DomNode) => boolean;
   /** ID selectors only: id rules exist but no element carries those ids. */
   idReview?: boolean;
+  /**
+   * The sample built another known way (a Float sample laid out with grid,
+   * Grid layout columns sized with flex-basis). Always "Needs TA review",
+   * even when another sample's demo already uses these elements.
+   */
+  alternate?: DomNode[];
 };
 
 /** The result of one book sample's fingerprint. */
@@ -316,10 +326,17 @@ function singlePropValues(
   tags: ReadonlySet<string> | null,
 ): Map<string, DomNode[]> {
   const byValue = new Map<string, DomNode[]>();
+  const wantedProp = (prop: string) => (kind === "color" ? prop === "color" : isBackground(prop));
+  const otherProp = (prop: string) => (kind === "color" ? isBackground(prop) : prop === "color");
   for (const node of page.elements) {
     if (tags && !tags.has(node.tag)) continue;
     const decls = declsOf(page, node, (decl) => authoredBase(decl) && !decl.combinator);
     if (tags && decls.some((decl) => BOX_PROPS.test(decl.prop))) continue;
+    // A text-color sample has no background of its own (that is the
+    // background sample), and a value set by several competing rules is a
+    // cascade experiment, not a color sample.
+    if (kind === "color" && declsOf(page, node, authored).some((decl) => otherProp(decl.prop))) continue;
+    if (new Set(decls.filter((decl) => wantedProp(decl.prop)).map((decl) => decl.rule)).size > 1) continue;
     for (const decl of decls) {
       const wanted = kind === "color" ? decl.prop === "color" : isBackground(decl.prop);
       if (!wanted) continue;
@@ -334,22 +351,41 @@ function singlePropValues(
   return byValue;
 }
 
-/** Authored id rules (outside @layer). */
-function hasIdRule(page: StyledPage): boolean {
+/** Authored id rules (outside @layer) that style nothing on the page. */
+function hasUnmatchedIdRule(page: StyledPage): boolean {
+  const matched = new Set<number>();
+  for (const decls of page.applied.values()) for (const decl of decls) if (decl.via === "id") matched.add(decl.rule);
   return page.rules.some(
-    (rule) => !ruleInLayer(rule) && parseSelectorList(rule.selector).some((selector) => selectorVia(selector) === "id"),
+    (rule, index) =>
+      !ruleInLayer(rule) &&
+      !matched.has(index) &&
+      parseSelectorList(rule.selector).some((selector) => selectorVia(selector) === "id"),
   );
+}
+
+/**
+ * Elements an id rule styles on its own: no class or inline style on the
+ * element sets the same property (that is the cascade experiment, where an
+ * id rule and a class rule compete).
+ */
+function idStyled(page: StyledPage, node: DomNode): boolean {
+  const decls = declsOf(page, node, (decl) => authored(decl) && !decl.media);
+  const byId = decls.filter((decl) => decl.via === "id" && !decl.combinator);
+  return byId.some((decl) => !decls.some((other) => other.via !== "id" && other.prop === decl.prop));
 }
 
 export const A2_SELECTOR_SAMPLES: SampleCheck[] = [
   {
     name: "ID selectors (§2.1.3)",
+    // Strong: an element styled by its own id rule (not a cascade
+    // experiment where a class rule sets the same property).
     evidence: (page) => ({
-      strong: where(page, (node) => declsOf(page, node, (decl) => authored(decl) && decl.via === "id").length > 0),
+      strong: where(page, (node) => idStyled(page, node)),
       weak: [],
-      // The CSS has id rules but nothing on the page carries those ids. A
-      // missing id is never a deduction: a TA confirms this one by hand.
-      idReview: hasIdRule(page),
+      // The CSS has id rules that nothing on the page carries: the ids are
+      // missing or the sample is. A missing id is never a deduction, so a TA
+      // confirms this one by hand.
+      idReview: hasUnmatchedIdRule(page),
     }),
   },
   {
@@ -388,25 +424,26 @@ export const A2_SELECTOR_SAMPLES: SampleCheck[] = [
 export const A2_BOX_MODEL_SAMPLES: SampleCheck[] = [
   {
     name: "Foreground colors (§2.1.7)",
-    // Strong: three different text colors, each set without a background.
+    // Strong: three different text colors on elements with no background of
+    // their own (text on a colored background is the background sample).
+    // Weak: one or two such colors.
     evidence: (page) => {
       const values = singlePropValues(page, "color", null);
-      return {
-        strong: values.size >= 3 ? unique([...values.values()].flat()) : [],
-        weak: where(page, (node) => hasProp(page, node, authoredBase, ["color"])),
-      };
+      const colored = unique([...values.values()].flat());
+      return { strong: values.size >= 3 ? colored : [], weak: colored };
     },
   },
   {
     name: "Background colors (§2.1.8)",
     // Strong: text (headings, paragraphs, spans) on two different
-    // backgrounds, each set without a text color and without box styling.
+    // backgrounds, each set by one rule without a text color and without
+    // box styling. Weak: one such background. Colored boxes (padding,
+    // borders, sizes) belong to the box samples, and a background set by
+    // competing rules is the cascade experiment.
     evidence: (page) => {
       const values = singlePropValues(page, "background", TEXT_TAGS);
-      return {
-        strong: values.size >= 2 ? unique([...values.values()].flat()) : [],
-        weak: where(page, (node) => hasBackground(page, node)),
-      };
+      const shaded = unique([...values.values()].flat());
+      return { strong: values.size >= 2 ? shaded : [], weak: shaded };
     },
   },
   {
@@ -529,6 +566,37 @@ export const A2_BOX_MODEL_SAMPLES: SampleCheck[] = [
   },
 ];
 
+const PICTURE_TAGS = new Set(["img", "picture", "svg", "video"]);
+
+/** A picture, or a wrapper that only holds one. */
+function isPicture(node: DomNode): boolean {
+  if (PICTURE_TAGS.has(node.tag)) return true;
+  return !node.text.trim() && node.children.length === 1 && isPicture(node.children[0]);
+}
+
+/**
+ * Grid or flex containers (own CSS) that put a picture next to text: the
+ * Float sample's "text wraps beside an image" built without float.
+ */
+function pictureBesideText(page: StyledPage): DomNode[] {
+  const out: DomNode[] = [];
+  for (const parent of page.elements) {
+    const display = propValues(page, parent, authored, ["display"]);
+    if (!display.some((value) => /grid|flex/.test(value))) continue;
+    if (propValues(page, parent, authored, ["flex-direction"]).some((value) => value.startsWith("column"))) continue;
+    const pictures = parent.children.filter(isPicture);
+    const texts = parent.children.filter((node) => !isPicture(node) && textOf(node).length > 0);
+    if (pictures.length > 0 && texts.length > 0) out.push(parent, ...pictures, ...texts);
+  }
+  return out;
+}
+
+/** flex-basis (or the flex shorthand's basis) set to a percentage. */
+function flexBasisPercent(page: StyledPage, node: DomNode): boolean {
+  if (propValues(page, node, authored, ["flex-basis"]).some((value) => /%$/.test(value))) return true;
+  return propValues(page, node, authored, ["flex"]).some((value) => /(^|\s)\d+(\.\d+)?%$/.test(value));
+}
+
 export const A2_LAYOUT_SAMPLES: SampleCheck[] = [
   {
     name: "Relative position (§2.1.13)",
@@ -593,28 +661,35 @@ export const A2_LAYOUT_SAMPLES: SampleCheck[] = [
   {
     name: "Float (§2.1.17)",
     demo: true,
-    // Strong: floats to both sides, or a floated image.
+    // Strong: floats to both sides, or a floated image. Alternate: a
+    // picture with text beside it laid out with grid or flex instead of
+    // float (TA review, points kept).
     evidence: (page) => {
       const side = (node: DomNode) =>
         propValues(page, node, authored, ["float"]).filter((value) => value === "left" || value === "right");
       const floated = where(page, (node) => side(node).length > 0);
       const sides = new Set(floated.flatMap(side));
       const strong = sides.size >= 2 || floated.some((node) => node.tag === "img") ? floated : [];
-      return { strong, weak: floated, scope: parents(strong) };
+      return { strong, weak: floated, scope: parents(strong), alternate: pictureBesideText(page) };
     },
   },
   {
     name: "Grid layout (§2.1.18)",
     demo: true,
     // Strong: a row of columns sized in percentages, or a CSS grid with
-    // columns. Weak: a percentage width.
+    // columns. Weak: a percentage width. Alternate: flex columns sized with
+    // a flex-basis percentage (TA review, points kept).
     evidence: (page) => {
       const percent = (node: DomNode) =>
         propValues(page, node, authored, ["width"]).some((value) => /%$/.test(value));
+      const basis = (node: DomNode) => flexBasisPercent(page, node);
       const strong: DomNode[] = [];
       const scope: DomNode[] = [];
+      const alternate: DomNode[] = [];
       for (const parent of page.elements) {
         const columns = parent.children.filter(percent);
+        const flexColumns = parent.children.filter(basis);
+        if (flexColumns.length >= 2) alternate.push(...flexColumns);
         if (columns.length >= 2) strong.push(...columns);
         else if (
           propValues(page, parent, authored, ["display"]).some((value) => /grid/.test(value)) &&
@@ -624,7 +699,12 @@ export const A2_LAYOUT_SAMPLES: SampleCheck[] = [
           scope.push(parent);
         }
       }
-      return { strong, weak: where(page, percent), scope: unique([...scope, ...parents(strong.filter(percent))]) };
+      return {
+        strong,
+        weak: where(page, percent),
+        scope: unique([...scope, ...parents(strong.filter(percent))]),
+        alternate,
+      };
     },
   },
   {
@@ -713,37 +793,233 @@ const FONT_SIZE = /^text-(xs|sm|base|lg|[2-9]?xl)$/;
 const FILTERS = /^(blur|brightness|contrast|grayscale|sepia|invert|saturate|hue-rotate|drop-shadow)/;
 const RESPONSIVE = /^(sm|md|lg|xl|2xl):/;
 
-/** Strong when at least `min` distinct classes are styled. */
-function utilityEvidence(hits: Map<string, DomNode[]>, min: number): Evidence {
-  const nodes = unique([...hits.values()].flat());
-  return { strong: hits.size >= min ? nodes : [], weak: nodes };
+/**
+ * The demo a Tailwind sample's elements sit in: the largest ancestor (or
+ * the element) that is still one component: a small subtree with at most
+ * two top-level titles (h1/h2; the book's spacing and type components each have two), so a compact page never becomes one
+ * "section". Every element inside it counts as that sample's; other
+ * samples' weak evidence in there doesn't count, the way §2.1 demo scopes
+ * work.
+ */
+function tailwindSection(nodes: readonly DomNode[]): DomNode[] {
+  const titles = (node: DomNode) => descendants(node).filter((inner) => inner.tag === "h1" || inner.tag === "h2").length;
+  const out = new Set<DomNode>();
+  for (const node of nodes) {
+    let top = node;
+    while (top.parent && descendants(top.parent).length <= MAX_SCOPE && titles(top.parent) <= 2) top = top.parent;
+    for (const inner of descendants(top)) out.add(inner);
+  }
+  return [...out];
 }
 
-export const A2_TAILWIND_SAMPLES: SampleCheck[] = [
-  {
-    name: "Tailwind spacing (margin and padding utilities)",
-    evidence: (page) => utilityEvidence(styledClass(page, /^-?[mp][trblxyse]?-/, /^(margin|padding)/), 2),
-  },
-  {
-    name: "Tailwind typography (font size and weight)",
+/** Elements that can be a Tailwind sample (not headings, rules, or page-wide wrappers). */
+function sampleElement(node: DomNode): boolean {
+  return !/^(h[1-6]|hr)$/.test(node.tag) && descendants(node).length <= MAX_SCOPE;
+}
+
+const MARGIN_CLASS = /^-?m[trblxyse]?-/;
+const SIDE_MARGIN_CLASS = /^-?m[lrxse]-/;
+const PADDING_CLASS = /^p[trblxyse]?-/;
+const SIDE_PADDING_CLASS = /^p[trblse]-/;
+const BG_CLASS = /^bg-[a-z]+(-\d{2,3})?$/;
+const notAuto = (decl: AppliedDecl) => !/^(auto|0|0px)$/.test(decl.value.trim());
+
+/** Utility classes on `node` (matching `pattern`) whose own rule sets one of `props`. */
+function nodeUtilities(
+  page: StyledPage,
+  node: DomNode,
+  pattern: RegExp,
+  props: RegExp,
+  test: (decl: AppliedDecl) => boolean = () => true,
+): string[] {
+  return node.classes.filter(
+    (cls) => pattern.test(cls) && classDecls(page, node, cls).some((decl) => props.test(decl.prop) && test(decl)),
+  );
+}
+
+/** Responsive (sm:, md:, …) utilities on `node` whose @media rule sets one of `props`. */
+function responsiveUtilities(page: StyledPage, node: DomNode, props: RegExp, value?: RegExp): string[] {
+  return nodeUtilities(page, node, RESPONSIVE, props, (decl) => decl.media && (!value || value.test(decl.value.trim())));
+}
+
+/** CSS that selects the element itself (utilities, own rules, inline), not `*` or base resets. */
+const selected: DeclFilter = (decl) => decl.via !== "tag";
+
+const isFlexOrGrid = (page: StyledPage, node: DomNode) =>
+  propValues(page, node, (decl) => selected(decl) && !decl.media, ["display"]).some((value) => /flex|grid/.test(value));
+
+/** A cell of a flex row or grid: its spacing and colors belong to that layout sample. */
+const isLayoutCell = (page: StyledPage, node: DomNode) => node.parent !== null && isFlexOrGrid(page, node.parent);
+
+/**
+ * A Tailwind section sample. `strong` finds the book's demo; its whole
+ * component then counts as that sample's (see tailwindSection). `weak`
+ * finds the sample's utilities used some other way.
+ */
+function tailwindSample(
+  name: string,
+  strong: (page: StyledPage) => DomNode[],
+  weak: (page: StyledPage) => DomNode[],
+  options: { responsive?: boolean } = {},
+): SampleCheck {
+  return {
+    name,
+    demo: true,
     evidence: (page) => {
-      const weights = styledClass(page, FONT_WEIGHT, /^font-weight$/);
-      const sizes = styledClass(page, FONT_SIZE, /^font-size$/);
-      const nodes = unique([...weights.values(), ...sizes.values()].flat());
-      return { strong: weights.size >= 2 || sizes.size >= 2 ? nodes : [], weak: nodes };
+      const found = strong(page);
+      return {
+        strong: found.length ? tailwindSection(found) : [],
+        weak: weak(page).filter(sampleElement),
+        // The five responsive samples joined the book on Sep 28 (before
+        // that, §2.3 had only the responsive card), and students also built
+        // "responsive prefixes" their own way. When one is missing but the
+        // page uses responsive utilities elsewhere, we can't tell a skipped
+        // sample from one built on the earlier book: TA review, points kept.
+        alternate: options.responsive && !found.length ? where(page, (node) => responsiveUtilities(page, node, /./).length > 0) : [],
+      };
     },
-  },
-  {
-    name: "Tailwind background colors",
-    evidence: (page) => utilityEvidence(styledClass(page, /^bg-[a-z]+-\d{2,3}$/, /^background/), 2),
-  },
-  {
-    name: "Tailwind responsive prefixes (sm:, md:, lg:, …)",
-    evidence: (page) => ({
-      strong: unique([...styledClass(page, RESPONSIVE, /./, (decl) => decl.media).values()].flat()),
-      weak: usingClass(page, RESPONSIVE),
-    }),
-  },
+  };
+}
+
+/**
+ * The §2.3 Tailwind page, one sample per book section. Each section is
+ * found by the utilities it uses and how its elements sit together, never
+ * by ids or text; removing a section fails the row unless its utilities
+ * still show up somewhere no other section explains (then TA review).
+ */
+export const A2_TAILWIND_SAMPLES: SampleCheck[] = [
+  tailwindSample(
+    "Tailwind margins",
+    // Strong: margin on chosen sides (start and end, or several sides on one box).
+    (page) =>
+      where(
+        page,
+        (node) =>
+          nodeUtilities(page, node, SIDE_MARGIN_CLASS, /^margin/, notAuto).length > 0 ||
+          nodeUtilities(page, node, MARGIN_CLASS, /^margin/, notAuto).length >= 2,
+      ),
+    (page) =>
+      where(
+        page,
+        (node) => !isLayoutCell(page, node) && nodeUtilities(page, node, MARGIN_CLASS, /^margin/, notAuto).length > 0,
+      ),
+  ),
+  tailwindSample(
+    "Tailwind padding",
+    // Strong: padding on two or more chosen sides of one box.
+    (page) => where(page, (node) => nodeUtilities(page, node, SIDE_PADDING_CLASS, /^padding/).length >= 2),
+    (page) =>
+      where(page, (node) => !isLayoutCell(page, node) && nodeUtilities(page, node, PADDING_CLASS, /^padding/).length > 0),
+  ),
+  tailwindSample(
+    "Tailwind font size and weight",
+    // Strong: three sibling elements in three font sizes, or in three weights.
+    (page) => {
+      const out: DomNode[] = [];
+      for (const parent of page.elements) {
+        const kids = parent.children.filter((node) => page.elements.includes(node));
+        for (const [pattern, prop] of [[FONT_SIZE, /^font-size$/], [FONT_WEIGHT, /^font-weight$/]] as const) {
+          const styled = kids.filter((node) => nodeUtilities(page, node, pattern, prop).length > 0);
+          const values = new Set(styled.flatMap((node) => nodeUtilities(page, node, pattern, prop)));
+          if (values.size >= 3) out.push(...styled);
+        }
+      }
+      return unique(out);
+    },
+    (page) =>
+      where(
+        page,
+        (node) =>
+          nodeUtilities(page, node, FONT_SIZE, /^font-size$/).length > 0 ||
+          nodeUtilities(page, node, FONT_WEIGHT, /^font-weight$/).length > 0,
+      ),
+  ),
+  tailwindSample(
+    "Tailwind background colors",
+    // Strong: three sibling boxes in three background colors, stacked (not
+    // cells of a flex row or grid, which are those samples).
+    (page) => {
+      const out: DomNode[] = [];
+      for (const parent of page.elements) {
+        if (isFlexOrGrid(page, parent)) continue;
+        const kids = parent.children.filter(
+          (node) => nodeUtilities(page, node, BG_CLASS, /^background/).length > 0 && responsiveUtilities(page, node, /./).length === 0,
+        );
+        const values = new Set(kids.flatMap((node) => nodeUtilities(page, node, BG_CLASS, /^background/)));
+        if (values.size >= 3) out.push(...kids);
+      }
+      return out;
+    },
+    (page) =>
+      where(page, (node) => !isLayoutCell(page, node) && nodeUtilities(page, node, BG_CLASS, /^background/).length > 0),
+  ),
+  tailwindSample(
+    "Tailwind responsive breakpoint (background changes at md:)",
+    (page) => where(page, (node) => responsiveUtilities(page, node, /^background/).length > 0),
+    (page) => where(page, (node) => responsiveUtilities(page, node, /^(color|--tw-text)/).length > 0),
+    { responsive: true },
+  ),
+  tailwindSample(
+    "Tailwind responsive show and hide",
+    // Strong: an element hidden at a breakpoint, or hidden until one.
+    (page) =>
+      where(
+        page,
+        (node) =>
+          responsiveUtilities(page, node, /^display$/, /^none$/).length > 0 ||
+          (propValues(page, node, (decl) => !decl.media, ["display"]).includes("none") &&
+            responsiveUtilities(page, node, /^display$/).length > 0),
+      ),
+    (page) => where(page, (node) => responsiveUtilities(page, node, /^display$/).length > 0),
+    { responsive: true },
+  ),
+  tailwindSample(
+    "Tailwind responsive flex (row at md:)",
+    (page) => where(page, (node) => responsiveUtilities(page, node, /^flex-direction$/).length > 0),
+    (page) => where(page, (node) => responsiveUtilities(page, node, /^(display|flex-wrap)$/, /flex|wrap/).length > 0),
+    { responsive: true },
+  ),
+  tailwindSample(
+    "Tailwind responsive grid (more columns at sm:, lg:)",
+    (page) => where(page, (node) => responsiveUtilities(page, node, /^grid-template-columns$/).length > 0),
+    (page) => where(page, (node) => responsiveUtilities(page, node, /^(gap|grid)/).length > 0),
+    { responsive: true },
+  ),
+  tailwindSample(
+    "Tailwind responsive spacing and text size",
+    // Strong: padding (or margin) and font size that both grow at a breakpoint.
+    (page) =>
+      where(
+        page,
+        (node) =>
+          responsiveUtilities(page, node, /^(padding|margin)/).length > 0 &&
+          responsiveUtilities(page, node, /^font-size$/).length > 0,
+      ),
+    (page) =>
+      where(
+        page,
+        (node) =>
+          responsiveUtilities(page, node, /^(padding|margin)/).length > 0 ||
+          responsiveUtilities(page, node, /^font-size$/).length > 0,
+      ),
+    { responsive: true },
+  ),
+  tailwindSample(
+    "Tailwind responsive design (card that turns into a row)",
+    // Strong: a container that becomes flex at a breakpoint, holding an
+    // element whose size changes at that breakpoint.
+    (page) =>
+      where(
+        page,
+        (node) =>
+          responsiveUtilities(page, node, /^display$/, /flex|grid/).length > 0 &&
+          descendants(node).some(
+            (inner) => inner !== node && responsiveUtilities(page, inner, /^(width|height|max-width|min-height|flex-shrink)$/).length > 0,
+          ),
+      ),
+    (page) => where(page, (node) => responsiveUtilities(page, node, /^(width|max-width|height|min-height)$/).length > 0),
+    { responsive: true },
+  ),
   {
     name: "Tailwind filters (blur)",
     evidence: (page) => ({
@@ -753,19 +1029,25 @@ export const A2_TAILWIND_SAMPLES: SampleCheck[] = [
   },
   {
     name: "Tailwind grid system (columns that span)",
+    demo: true,
     // Strong: a grid whose children span different numbers of columns.
     evidence: (page) => {
       const grids = where(
         page,
         (parent) =>
-          propValues(page, parent, anyCss, ["display"]).includes("grid") &&
-          hasProp(page, parent, anyCss, ["grid-template-columns"]),
+          propValues(page, parent, selected, ["display"]).includes("grid") &&
+          hasProp(page, parent, selected, ["grid-template-columns"]),
       );
-      const strong = grids.filter((parent) => {
-        const spans = new Set(parent.children.flatMap((node) => propValues(page, node, anyCss, ["grid-column"])));
-        return spans.size >= 2;
-      });
-      return { strong, weak: grids };
+      const spans = (parent: DomNode) =>
+        new Set(parent.children.flatMap((node) => propValues(page, node, selected, ["grid-column"])));
+      const strong = grids.filter((parent) => spans(parent).size >= 2);
+      return {
+        strong: strong.length ? tailwindSection(strong) : [],
+        weak: grids,
+        // A grid with one spanning column is this sample built smaller, even
+        // inside another sample's section: TA review.
+        alternate: grids.filter((parent) => spans(parent).size === 1),
+      };
     },
   },
 ];
@@ -816,8 +1098,8 @@ export function runSamples(
         for (const node of subtree) if (!ev.scopeKeeps?.(node)) taken.add(node);
       }
     }
-    if (own.weak.some((node) => !taken.has(node))) out.weak.push(sample.name);
-    else if (own.idReview) out.review.push(sample.name);
+    if (own.idReview) out.review.push(sample.name);
+    else if ((own.alternate?.length ?? 0) > 0 || own.weak.some((node) => !taken.has(node))) out.weak.push(sample.name);
     else out.missing.push(sample.name);
   }
   return out;

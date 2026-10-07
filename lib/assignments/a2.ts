@@ -107,7 +107,7 @@ export const A2_RUBRIC: AssignmentRubric = {
           id: "a2-lab-tailwind",
           label: "Tailwind samples",
           description:
-            "Create Tailwind samples under app/labs/lab2/tailwind/ — spacing, typography, backgrounds, responsive prefixes, filters, and a grid whose columns span.",
+            "Create every Tailwind section of §2.3 under app/labs/lab2/tailwind/: margins and padding, font size and weight, background colors, the five responsive samples (breakpoint color, show/hide, flex row, grid columns, spacing and text size), the responsive card, blurs, and a grid whose columns span. Each section is checked on its own.",
           points: 5,
           bookHref: "/book/ch2#sec-2-3",
           bookLabel: "§2.3",

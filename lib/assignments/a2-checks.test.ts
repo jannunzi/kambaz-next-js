@@ -425,7 +425,7 @@ describe("runA2Checks", () => {
       },
     });
     assert.equal(prose.by.get("a2-lab-tailwind")?.passed, false);
-    assert.match(prose.by.get("a2-lab-tailwind")?.message ?? "", /Tailwind spacing/);
+    assert.match(prose.by.get("a2-lab-tailwind")?.message ?? "", /Tailwind margins/);
 
     const prefix = await grade({
       githubUrl: TREE,
@@ -437,7 +437,7 @@ describe("runA2Checks", () => {
       },
     });
     assert.equal(prefix.by.get("a2-lab-tailwind")?.passed, false);
-    assert.match(prefix.by.get("a2-lab-tailwind")?.message ?? "", /Tailwind spacing/);
+    assert.match(prefix.by.get("a2-lab-tailwind")?.message ?? "", /Tailwind margins/);
 
     const missingGrid = await grade({
       githubUrl: TREE,

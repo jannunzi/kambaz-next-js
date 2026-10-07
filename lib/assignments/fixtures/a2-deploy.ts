@@ -158,6 +158,33 @@ export function removeElement(html: string, target: string): string {
   throw new Error(`fixture: ${target} is not closed`);
 }
 
+/** Replace the element found by `#id` or `.class` (and its subtree) with `markup`. */
+export function replaceElement(html: string, target: string, markup: string): string {
+  const marker = "\u0000fixture\u0000";
+  const attr = target.startsWith(".")
+    ? new RegExp(`(<[a-zA-Z0-9]+\\b[^>]*\\bclass="(?:[^"]* )?${target.slice(1)}(?: [^"]*)?")`)
+    : new RegExp(`(<[a-zA-Z0-9]+\\b[^>]*\\bid="${target.replace(/^#/, "")}")`);
+  return removeElement(html.replace(attr, `${marker}$1`), target).replace(marker, markup);
+}
+
+/** Add a <style> block to the page head (a student's own stylesheet). */
+export function addStyle(html: string, css: string): string {
+  return html.replace("</head>", `<style>${css}</style></head>`);
+}
+
+/**
+ * Remove the section that a heading opens (the heading's parent element),
+ * the way a student who never imported that component would ship it.
+ */
+export function removeSectionByHeading(html: string, heading: string, tag = "h2"): string {
+  const at = html.indexOf(`>${heading}</${tag}>`);
+  if (at < 0) throw new Error(`fixture: heading ${heading} not found`);
+  const open = html.lastIndexOf("<div", html.lastIndexOf(`<${tag}`, at));
+  if (open < 0) throw new Error(`fixture: no section around ${heading}`);
+  const tagged = `${html.slice(0, open)}<div id="fixture-section"${html.slice(open + 4)}`;
+  return removeElement(tagged, "fixture-section");
+}
+
 /** Remove several elements from one page. */
 export function removeFrom(site: FixtureSite, path: string, targets: readonly string[]): FixtureSite {
   return editPages(site, (html) => targets.reduce(removeElement, html), path);

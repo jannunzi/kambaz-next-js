@@ -27,9 +27,12 @@ import {
   emptySite,
   fixtureProbes,
   idsOnlySkeleton,
+  addStyle,
   override,
   removeElement,
   removeFrom,
+  removeSectionByHeading,
+  replaceElement,
   replaceText,
   stripIds,
   templateSite,
@@ -41,6 +44,7 @@ import { ASSIGNMENT_STUDENT_COPY } from "./student-copy";
 
 const LAB2 = "/labs/lab2";
 const TAILWIND = "/labs/lab2/tailwind";
+const RESPONSIVE_FIVE = ["breakpoint", "show-hide", "flex", "grid", "spacing-text"];
 
 type Graded = {
   points: number;
@@ -77,6 +81,12 @@ function assertNoIdsInFeedback(graded: Graded, label: string) {
   }
 }
 
+/** Every wd- class and id renamed, in the pages and the compiled CSS. */
+const ownClassNames: FixtureSite = (path) => {
+  const res = bookSite(path);
+  return "body" in res ? { ...res, body: res.body.replace(/wd-/g, "zz-") } : res;
+};
+
 /** Remove a book sample from the Lab 2 page (its CSS stays, like a component never imported). */
 const without = (...targets: string[]) => removeFrom(bookSite, LAB2, targets);
 
@@ -86,6 +96,8 @@ describe("A2 checker: book build variants", () => {
       ["full", bookSite],
       ["ids stripped", editPages(bookSite, stripIds)],
       ["text changed", editPages(bookSite, (html) => replaceText(html))],
+      ["ids stripped and text changed", editPages(bookSite, (html) => replaceText(stripIds(html)))],
+      ["own class names (pages and CSS)", ownClassNames],
     ] as const) {
       const graded = await grade(site);
       assert.equal(graded.points, 38, `${label}: ${graded.failed.join(", ")}`);
@@ -158,17 +170,17 @@ describe("A2 checker: book build variants", () => {
 
   /*
    * Each §2.1 sample removed on its own. "fail" costs the row; "review"
-   * keeps the points and asks a TA (the page still has that sample's CSS,
-   * built into other samples); "pass" means the concept is demonstrated
-   * elsewhere on the book page (for example the On your own cascade uses id
-   * selectors, and text colors are on two dozen elements).
+   * keeps the points and asks a TA: the page still has that sample's CSS
+   * built into other samples, or (ID selectors) the CSS has id rules that
+   * nothing on the page carries, which can't be told apart from a student
+   * who skipped the ids. No removal passes silently.
    */
-  const REMOVALS: [string, string[], string, "fail" | "review" | "pass", RegExp?][] = [
-    ["ID selectors", ["wd-css-id-selectors"], "a2-lab-selectors", "pass"],
+  const REMOVALS: [string, string[], string, "fail" | "review", RegExp][] = [
+    ["ID selectors", ["wd-css-id-selectors"], "a2-lab-selectors", "review", /ID selectors \(§2\.1\.3\)/],
     ["class selectors", ["wd-css-class-selectors"], "a2-lab-selectors", "review", /Class selectors/],
     ["document structure", ["wd-css-document-structure"], "a2-lab-selectors", "review", /Document structure/],
-    ["foreground colors", ["wd-css-colors"], "a2-lab-box-model", "pass"],
-    ["background colors", ["wd-css-background-colors"], "a2-lab-box-model", "pass"],
+    ["foreground colors", ["wd-css-colors"], "a2-lab-box-model", "fail", /Foreground colors \(§2\.1\.7\)/],
+    ["background colors", ["wd-css-background-colors"], "a2-lab-box-model", "fail", /Background colors \(§2\.1\.8\)/],
     ["borders", ["wd-css-borders"], "a2-lab-box-model", "review", /Borders/],
     ["padding", ["wd-css-paddings"], "a2-lab-box-model", "review", /Padding/],
     ["margins", ["wd-css-margins"], "a2-lab-box-model", "fail", /Margins/],
@@ -196,15 +208,88 @@ describe("A2 checker: book build variants", () => {
       if (expected === "fail") {
         assert.equal(result.passed, false, result.message);
         assert.equal(graded.points, 38 - (row === "a2-lab-icons" ? 3 : 5));
-      } else if (expected === "review") {
+      } else {
         assert.equal(result.passed, true, result.message);
         assert.equal(result.needsReview, true, result.message);
         assert.equal(graded.points, 38);
-      } else {
-        assert.equal(result.passed, true, result.message);
       }
-      if (message) assert.match(result.message, message);
+      assert.match(result.message, message);
       assertNoIdsInFeedback(graded, label);
+    });
+  }
+
+  /*
+   * Each §2.3 Tailwind section removed on its own (by its heading or its
+   * component; ids and text are never read). Sections that were in the book
+   * from the start fail the Tailwind row. The five responsive samples and
+   * the responsive card go to TA review while the page still uses
+   * responsive utilities elsewhere: the five joined the book on Sep 28, so
+   * a page built before that (only the card) can't be told apart from a
+   * skipped sample.
+   */
+  const TW_REMOVALS: [string, (html: string) => string, "fail" | "review", RegExp][] = [
+    ["Margin and Padding (spacing component)", (html) => removeSectionByHeading(html, "Margin"), "fail", /Tailwind margins and Tailwind padding samples/],
+    [
+      "Margin demo only",
+      (html) => html.replace(/<h2 class="text-3xl">Margin<\/h2>(<div class="[^"]*">[^<]*<\/div>){2}/, ""),
+      "fail",
+      /Tailwind margins sample/,
+    ],
+    [
+      "Padding demo only",
+      (html) => html.replace(/<h2 class="text-3xl mt-8">Padding<\/h2>(<div class="[^"]*">[^<]*<\/div>){2}/, ""),
+      "fail",
+      /Tailwind padding sample/,
+    ],
+    ["Font Size and Weight", (html) => removeSectionByHeading(html, "Font Size"), "fail", /Tailwind font size and weight/],
+    ["Background Colors", (html) => removeSectionByHeading(html, "Background Colors"), "fail", /Tailwind background colors/],
+    ["Blurs", (html) => removeSectionByHeading(html, "Blurs"), "fail", /Tailwind filters/],
+    ["Tailwind Grids", (html) => removeSectionByHeading(html, "Tailwind Grids"), "fail", /Tailwind grid system/],
+    ["responsive breakpoint", (html) => removeElement(html, "wd-tailwind-responsive-breakpoint"), "review", /Tailwind responsive breakpoint/],
+    ["responsive show/hide", (html) => removeElement(html, "wd-tailwind-responsive-show-hide"), "review", /Tailwind responsive show and hide/],
+    ["responsive flex", (html) => removeElement(html, "wd-tailwind-responsive-flex"), "review", /Tailwind responsive flex/],
+    ["responsive grid", (html) => removeElement(html, "wd-tailwind-responsive-grid"), "review", /Tailwind responsive grid/],
+    ["responsive spacing and text", (html) => removeElement(html, "wd-tailwind-responsive-spacing-text"), "review", /Tailwind responsive spacing and text size/],
+    [
+      "all 5 responsive sections (the card stays)",
+      (html) => RESPONSIVE_FIVE.reduce((out, name) => removeElement(out, `wd-tailwind-responsive-${name}`), html),
+      "review",
+      /responsive breakpoint.*responsive show and hide.*responsive flex.*responsive grid.*responsive spacing and text size/,
+    ],
+    ["Responsive Design card", (html) => removeSectionByHeading(html, "Responsive Design"), "review", /Tailwind responsive design/],
+    [
+      "every responsive section and the card",
+      (html) =>
+        removeSectionByHeading(
+          RESPONSIVE_FIVE.reduce((out, name) => removeElement(out, `wd-tailwind-responsive-${name}`), html),
+          "Responsive Design",
+        ),
+      "fail",
+      /responsive breakpoint.*responsive design/,
+    ],
+  ];
+
+  for (const [label, edit, expected, message] of TW_REMOVALS) {
+    it(`removed Tailwind ${label}: ${expected}`, async () => {
+      for (const [variant, prep] of [
+        ["ids kept", (html: string) => html],
+        ["ids stripped", stripIds],
+      ] as const) {
+        const graded = await grade(editPages(bookSite, (html) => prep(edit(html)), TAILWIND));
+        const row = graded.row("a2-lab-tailwind");
+        if (expected === "fail") {
+          assert.equal(graded.points, 33, `${label} (${variant}): ${graded.failed.join(", ")}`);
+          assert.deepEqual(graded.failed, ["a2-lab-tailwind"], `${label} (${variant})`);
+          assert.match(row.message, /^Missing on/, `${label} (${variant})`);
+        } else {
+          assert.equal(graded.points, 38, `${label} (${variant}): ${graded.failed.join(", ")}`);
+          assert.deepEqual(graded.failed, [], `${label} (${variant})`);
+          assert.equal(row.needsReview, true, `${label} (${variant}): ${row.message}`);
+          assert.match(row.message, /Needs TA review/, `${label} (${variant})`);
+        }
+        assert.match(row.message, message, `${label} (${variant})`);
+        assertNoIdsInFeedback(graded, label);
+      }
     });
   }
 
@@ -218,6 +303,96 @@ describe("A2 checker: book build variants", () => {
     assert.equal(noSpans.points, 38);
     assert.equal(noSpans.row("a2-lab-tailwind").needsReview, true);
     assert.match(noSpans.row("a2-lab-tailwind").message, /Tailwind grid system/);
+  });
+});
+
+describe("A2 checker: samples built another way go to TA review", () => {
+  const onLab2 = (edit: (html: string) => string) => editPages(bookSite, edit, LAB2);
+
+  async function assertReview(site: FixtureSite, row: string, sample: RegExp) {
+    const graded = await grade(site);
+    assert.equal(graded.points, 38, graded.failed.join(", "));
+    assert.deepEqual(graded.failed, []);
+    const result = graded.row(row);
+    assert.equal(result.passed, true, result.message);
+    assert.equal(result.needsReview, true, result.message);
+    assert.match(result.message, /Needs TA review/);
+    assert.match(result.message, sample);
+    assert.match(result.message, /built differently from the book/);
+    assertNoIdsInFeedback(graded, row);
+  }
+
+  it("keeps the points for a Float sample built with CSS grid", async () => {
+    await assertReview(
+      onLab2((html) =>
+        addStyle(
+          replaceElement(
+            html,
+            "wd-float-divs",
+            `<div><h2>Float</h2><div class="pic-row"><img class="pic" src="/x.jpg" alt="Starship"/><p>Text that sits next to the picture, laid out with a grid.</p></div></div>`,
+          ),
+          ".pic-row{display:grid;grid-template-columns:200px 1fr;gap:8px}.pic{width:200px}",
+        ),
+      ),
+      "a2-lab-layout",
+      /Float \(§2\.1\.17\)/,
+    );
+  });
+
+  it("keeps the points for a Float sample built with flex", async () => {
+    await assertReview(
+      onLab2((html) =>
+        addStyle(
+          replaceElement(
+            html,
+            "wd-float-divs",
+            `<div><h2>Float</h2><div class="pic-row"><div><img src="/x.jpg" alt="Starship"/></div><p>Text beside the picture.</p></div></div>`,
+          ),
+          ".pic-row{display:flex;gap:8px}",
+        ),
+      ),
+      "a2-lab-layout",
+      /Float \(§2\.1\.17\)/,
+    );
+  });
+
+  for (const [label, css] of [
+    ["flex-basis", ".cols{display:flex}.c1{flex-basis:30%;background:#eee}.c2{flex-basis:70%;background:#ddd}"],
+    ["the flex shorthand", ".cols{display:flex}.c1{flex:0 0 30%;background:#eee}.c2{flex:0 0 70%;background:#ddd}"],
+  ] as const) {
+    it(`keeps the points for Grid layout columns sized with ${label} percentages`, async () => {
+      await assertReview(
+        onLab2((html) =>
+          addStyle(
+            replaceElement(
+              html,
+              "wd-css-grid-layout",
+              `<div><h2>Grid layout</h2><div class="cols"><div class="c1">Left</div><div class="c2">Main</div></div></div>`,
+            ),
+            css,
+          ),
+        ),
+        "a2-lab-layout",
+        /Grid layout \(§2\.1\.18\)/,
+      );
+    });
+  }
+
+  it("passes a Grid layout sample built with CSS grid columns", async () => {
+    const graded = await grade(
+      onLab2((html) =>
+        addStyle(
+          replaceElement(
+            html,
+            "wd-css-grid-layout",
+            `<div><h2>Grid layout</h2><div class="g"><div class="c">Left</div><div class="c">Main</div><div class="c">Right</div></div></div>`,
+          ),
+          ".g{display:grid;grid-template-columns:25% 50% 25%}.c{background:#eee}",
+        ),
+      ),
+    );
+    assert.equal(graded.points, 38);
+    assert.ok(!graded.row("a2-lab-layout").needsReview, graded.row("a2-lab-layout").message);
   });
 });
 
@@ -297,10 +472,10 @@ describe("A2 structure: students' own variants", () => {
     const css = "@layer utilities{.ms-4{margin-inline-start:1rem}.me-4{margin-inline-end:1rem}}*{margin:0}";
     const styled = stylePage(`${sheet(css)}<p class="ms-4 me-4">a</p></body></html>`, []);
     const typo = stylePage(`${sheet(css)}<p class="ms-40 me-40">a</p></body></html>`, []);
-    const spacing = (page: ReturnType<typeof stylePage>) =>
-      runSamples(A2_TAILWIND_SAMPLES.slice(0, 1), page, A2_TAILWIND_SAMPLES);
-    assert.deepEqual(spacing(styled).found, ["Tailwind spacing (margin and padding utilities)"]);
-    assert.deepEqual(spacing(typo).missing, ["Tailwind spacing (margin and padding utilities)"]);
+    const margins = A2_TAILWIND_SAMPLES.filter((sample) => sample.name === "Tailwind margins");
+    assert.equal(margins.length, 1);
+    assert.deepEqual(runSamples(margins, styled, A2_TAILWIND_SAMPLES).found, ["Tailwind margins"]);
+    assert.deepEqual(runSamples(margins, typo, A2_TAILWIND_SAMPLES).missing, ["Tailwind margins"]);
   });
 
   it("reads the compiled stylesheet links of a Next page", () => {
