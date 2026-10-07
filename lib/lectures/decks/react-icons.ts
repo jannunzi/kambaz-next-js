@@ -33,12 +33,30 @@ export const REACT_ICONS_SLIDES: LectureSlide[] = [
     codeLanguage: "bash",
   },
   {
+    id: "utilities-css",
+    title: "Tailwind utilities, no Preflight",
+    kind: "content",
+    bullets: [
+      "**Tailwind CSS** is a library of **utilities**: small one-job classes such as `flex` and `text-3xl`",
+      "Its **theme** layer holds colors, spacing, and fonts as **CSS variables**, written `--name` and read with `var(--name)`",
+      "**Preflight** is Tailwind's base reset. It strips default heading sizes, margins, and list bullets, so this file leaves it out",
+      "`layer(...)` puts each import in a named **cascade layer**. When two rules conflict, the later layer wins",
+    ],
+    code: `/* Theme + utilities without Preflight, for the Labs */
+@import "tailwindcss/theme" layer(theme);
+@import "tailwindcss/utilities" layer(utilities);`,
+    codeLanguage: "css",
+    codeFile: "app/labs/lab2/tailwind/utilities.css",
+  },
+  {
     id: "sampler",
     title: "Six families in one sampler",
     kind: "demo",
     bullets: [
+      "Line 1 imports the `utilities.css` file from the previous slide",
       "Each icon comes from a different path: `vsc`, `ai`, `fa6`, `fa`",
-      "The parent `text-3xl` scales them — icons size in `em`",
+      "`mb-4` adds bottom margin, `font-sans` picks a sans-serif font, and `text-lg font-semibold` makes a larger, bolder heading",
+      "`flex` puts the icons in a row, `gap-3` spaces them 0.75rem apart, and `text-3xl` makes text large",
     ],
     code: `import "@/app/labs/lab2/tailwind/utilities.css";
 import { FaCalendar, FaEnvelopeOpenText, FaRegClock } from "react-icons/fa";
@@ -69,7 +87,7 @@ export default function ReactIconsSampler() {
     title: "Live ReactIconsSampler",
     kind: "demo",
     bullets: [
-      "Each icon is a plain React component sized in `em`, so the parent's text size scales it.",
+      "An **em** is relative to the parent's font size. Each icon is sized in `em`, so the parent's text size scales it.",
       "Six icons, one row, sized by the parent `text-3xl`",
       "Import the sampler into Lab 2 so it stays on the growing page",
     ],

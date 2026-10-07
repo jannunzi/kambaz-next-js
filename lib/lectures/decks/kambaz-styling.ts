@@ -37,9 +37,10 @@ export const KAMBAZ_STYLING_SLIDES: LectureSlide[] = [
   },
   {
     id: "kambaz-css",
-    title: "Step 2: kambaz.css sets the base",
+    title: "Step 2: Append the base to kambaz.css",
     kind: "content",
     bullets: [
+      "**Append** these rules below the two `@import` lines from Step 1. Pasting over the file drops the Tailwind imports",
       "Without Preflight the browser often falls back to Times, a serif font",
       "Add a system sans-serif font, `color`, `line-height`, and `box-sizing`",
     ],

@@ -75,6 +75,7 @@ export default function CourseNavigation({ cid }: { cid: string }) {
     title: "Course Navigation rules in kambaz.css",
     kind: "content",
     bullets: [
+      "Append these rules to `kambaz.css` — keep everything already in the file",
       "You write these selectors — they are not imported from a CSS kit",
       "A few app-wide rules beat a pile of utilities on every link",
       "Active item: black, white fill, `border-left: 3px solid black`",
@@ -243,7 +244,7 @@ export default function Lesson({
 {/* ...Module / Lesson tree... */}`,
     codeLanguage: "tsx",
     codeFile: "app/(kambaz)/courses/[cid]/modules/page.tsx",
-    codeAddedLines: [[8, 19], 27],
+    codeHighlightLines: [1, 4, 10, 16, 22],
   },
   {
     id: "modules-demo",
@@ -331,6 +332,78 @@ export default function CourseStatus() {
 </div>`,
       },
     ],
+  },
+  {
+    id: "modules-page",
+    title: "The full Modules page, part 1",
+    kind: "content",
+    bullets: [
+      "Home imports the Modules page, which mounts the toolbar from §2.4.4 and the same module tree",
+      "Part 1: the imports and the toolbar row inside one wrapper `div`",
+    ],
+    code: `import Lesson from "./Lesson";
+import Module from "./Module";
+
+export default function Modules() {
+  return (
+    <div>
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
+        >
+          Collapse All
+        </button>
+        <button
+          type="button"
+          className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
+        >
+          View Progress
+        </button>
+        <select
+          defaultValue="publish-all"
+          className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
+        >
+          <option value="publish-all">Publish All</option>
+        </select>
+        <button
+          type="button"
+          className="rounded border border-red-600 bg-red-600 px-3 py-1.5 text-sm font-medium text-white"
+        >
+          + Module
+        </button>
+      </div>`,
+    codeLanguage: "tsx",
+    codeFile: "app/(kambaz)/courses/[cid]/modules/page.tsx",
+  },
+  {
+    id: "modules-list",
+    title: "The full Modules page, part 2",
+    kind: "content",
+    bullets: [
+      "Part 2: the same file continues below the toolbar with the `Module` / `Lesson` tree",
+      "A `ul` gets a default margin, bullets, and 40px of left padding from the browser",
+      "`m-0 list-none p-0` removes all three, so modules line up under the toolbar",
+    ],
+    code: `      <ul id="wd-modules" className="m-0 list-none p-0">
+        <Module title="Week 1, Lecture 1 - Course Introduction, Syllabus, Agenda">
+          <Lesson title="LEARNING OBJECTIVES">
+            <li className="wd-content-item">Introduction to the course</li>
+            <li className="wd-content-item">Learn what is Web Development</li>
+          </Lesson>
+          <Lesson title="READING">
+            <li className="wd-content-item">
+              Full Stack Developer - Chapter 1 - Introduction
+            </li>
+          </Lesson>
+        </Module>
+      </ul>
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/(kambaz)/courses/[cid]/modules/page.tsx",
+    codeAddedLines: [1],
   },
   {
     id: "home-demo",
