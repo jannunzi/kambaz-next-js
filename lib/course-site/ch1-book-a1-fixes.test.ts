@@ -116,3 +116,22 @@ describe("AnchorTag relative link", () => {
     }
   });
 });
+
+describe("§1.3 Lab 1 page listings", () => {
+  const html = "app/book/ch1/sections/HtmlSections.tsx";
+  it("shows the finished lab1/page.tsx the final live demo renders", () => {
+    assert.equal(codeBlock(html, "Lab1Complete").trim(), read("app/labs/lab1/page.tsx").trim());
+  });
+
+  it("imports ParagraphTag only after the step that creates it", () => {
+    const src = read(html);
+    const created = src.indexOf('file="app/labs/lab1/ParagraphTag.tsx"');
+    const imported = src.indexOf('import ParagraphTag from "./ParagraphTag";');
+    assert.ok(created > 0 && imported > created, "ParagraphTag import comes after its file");
+  });
+
+  it("describes the App Router choice as the real 16.3 prompts do", () => {
+    assert.doesNotMatch(intro, /answered\s+&quot;Would you like to use App Router\?&quot;/);
+    assert.match(intro, /Would\s+you like to use App Router\? \(recommended\)/);
+  });
+});

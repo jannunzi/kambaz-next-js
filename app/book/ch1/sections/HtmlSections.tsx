@@ -287,27 +287,8 @@ export default function Lab1() {
           adds vertical space around it. Browsers ignore extra spaces, tabs, and
           newlines in your source, so without paragraph tags those blocks blend
           together. Create <code>app/labs/lab1/ParagraphTag.tsx</code>{" "}for this
-          section, then import it into Lab 1 the same way you imported{" "}
-          <code>HeadingTags</code>:
+          section; you will import it into Lab 1 once it is finished.
         </p>
-        <CodeBlock
-          language="tsx"
-          name="Lab1"
-          file="app/labs/lab1/page.tsx"
-        >{`import HeadingTags from "./HeadingTags";
-import ParagraphTag from "./ParagraphTag";
-
-export default function Lab1() {
-  return (
-    <div id="wd-lab1">
-      <h2>Lab 1</h2>
-      <h3>HTML Examples</h3>
-      <HeadingTags />
-      <ParagraphTag />
-      {/* do the next exercise here */}
-    </div>
-  );
-}`}</CodeBlock>
         <p>
           Without paragraph tags around later blocks, the browser treats the
           text as one contiguous stream that flows left to right and wraps only
@@ -391,6 +372,28 @@ export default function Lab1() {
         <LiveDemo name="ParagraphTag" file="app/labs/lab1/ParagraphTag.tsx">
           <ParagraphTag />
         </LiveDemo>
+        <p>
+          Now import <code>ParagraphTag</code>{" "}into Lab 1 the same way you
+          imported <code>HeadingTags</code>:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab1"
+          file="app/labs/lab1/page.tsx"
+        >{`import HeadingTags from "./HeadingTags";
+import ParagraphTag from "./ParagraphTag";
+
+export default function Lab1() {
+  return (
+    <div id="wd-lab1">
+      <h2>Lab 1</h2>
+      <h3>HTML Examples</h3>
+      <HeadingTags />
+      <ParagraphTag />
+      {/* do the next exercise here */}
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Still in <code>ParagraphTag.tsx</code>, add two more{" "}
           <code>&lt;p&gt;</code>{" "}elements that introduce you — for example
@@ -2451,6 +2454,41 @@ export default function LabsLayout({
           (Vercel, name, GitHub) and Kambaz screens stay on the A1 page — see{" "}
           <SectionLink to="1.4.9" />{" "}for the Kambaz recap.
         </p>
+        <p>
+          Here is the finished <code>app/labs/lab1/page.tsx</code>, importing
+          every Lab 1 component in section order:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab1Complete"
+          file="app/labs/lab1/page.tsx"
+        >{`import HeadingTags from "./HeadingTags";
+import ParagraphTag from "./ParagraphTag";
+import ListTags from "./ListTags";
+import Tables from "./Tables";
+import Images from "./Images";
+import Forms from "./forms/Forms";
+import HighlightedParagraph from "./HighlightedParagraph";
+import HighlightedBox from "./HighlightedBox";
+import AnchorTag from "./AnchorTag";
+
+export default function Lab1() {
+  return (
+    <div id="wd-lab1">
+      <h2>Lab 1</h2>
+      <h3>HTML Examples</h3>
+      <HeadingTags />
+      <ParagraphTag />
+      <ListTags />
+      <Tables />
+      <Images />
+      <Forms />
+      <HighlightedParagraph />
+      <HighlightedBox />
+      <AnchorTag />
+    </div>
+  );
+}`}</CodeBlock>
         <LiveDemo name="Lab1" file="app/labs/lab1/page.tsx">
           <Lab1 />
         </LiveDemo>

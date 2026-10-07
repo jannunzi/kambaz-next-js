@@ -786,9 +786,10 @@ npm run dev`}</CodeBlock>
             <strong>App Router</strong>
           </OfficialLink>{" "}
           — Next.js
-          &apos;s current routing model (you chose it when you answered
-          &quot;Would you like to use App Router?&quot; during{" "}
-          <code>create-next-app</code>). An older Next.js style put routes under
+          &apos;s current routing model. It is part of the recommended defaults
+          you accepted in <code>create-next-app</code>{" "}(the defaults line
+          lists App Router; if you customized, you answered Yes to &quot;Would
+          you like to use App Router? (recommended)&quot;). An older Next.js style put routes under
           a <code>pages/</code>{" "}directory (the Pages Router). This course uses
           the App Router exclusively: look for an <code>app/</code>{" "}folder, not{" "}
           <code>pages/</code>.
