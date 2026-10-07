@@ -1,3 +1,4 @@
+import Link from "next/link";
 import CourseInfoFooter from "@/app/course-info/CourseInfoFooter";
 import CourseInfoHeader from "@/app/course-info/CourseInfoHeader";
 import CourseInfoSection from "@/app/course-info/CourseInfoSection";
@@ -64,6 +65,9 @@ export default function PrivacyPage() {
       <CourseInfoSection id="contact" title="Contact">
         <p>
           <a href="mailto:jannunzi@gmail.com">jannunzi@gmail.com</a>
+        </p>
+        <p>
+          See also the <Link href="/terms">Terms of Service</Link>.
         </p>
       </CourseInfoSection>
 
