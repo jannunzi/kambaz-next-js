@@ -607,13 +607,15 @@ Ok to proceed? (y)`}</CodeBlock>
         <p>
           Next comes one question. Keep the highlighted answer,{" "}
           <strong>Yes, use recommended defaults</strong>, and press{" "}
-          <strong>Enter</strong>. The defaults are exactly what this course uses:
-          TypeScript, ESLint,{" "}
+          <strong>Enter</strong>. The defaults are what this course uses:
+          TypeScript, ESLint, no React Compiler,{" "}
           <OfficialLink href="https://tailwindcss.com/">
             Tailwind CSS
           </OfficialLink>
-          , the App Router, no <code>src/</code>{" "}directory, and the{" "}
-          <code>@/*</code>{" "}import alias.{" "}
+          , no <code>src/</code>{" "}directory, the App Router, the{" "}
+          <code>@/*</code>{" "}import alias, and an <code>AGENTS.md</code>{" "}file
+          (with a <code>CLAUDE.md</code>{" "}that points to it) holding Next.js
+          notes for AI coding assistants.{" "}
           <OfficialLink href="https://nextjs.org/docs/app/api-reference/turbopack">
             Turbopack
           </OfficialLink>{" "}
@@ -623,14 +625,28 @@ Ok to proceed? (y)`}</CodeBlock>
         <CodeBlock language="shell">{`? Would you like to use the recommended Next.js defaults? › - Use arrow-keys. Return to submit.
 ❯   Yes, use recommended defaults
     TypeScript, ESLint, No React Compiler, Tailwind CSS, No src/ directory, App Router, AGENTS.md
-    No, reuse previous settings
     No, customize settings`}</CodeBlock>
         <p>
-          If you pick <strong>No, customize settings</strong>{" "}instead, answer
-          Yes to TypeScript, ESLint, Tailwind CSS, and the App Router, No to a{" "}
-          <code>src/</code>{" "}directory and the React Compiler, and keep the
-          default import alias.
+          If you have run <code>create-next-app</code>{" "}on this computer
+          before, the list has a third choice in the middle,{" "}
+          <strong>No, reuse previous settings</strong>. Skip it and keep{" "}
+          <strong>Yes, use recommended defaults</strong>.
         </p>
+        <p>
+          If you pick <strong>No, customize settings</strong>{" "}instead, you
+          answer each setting yourself. Pressing <strong>Enter</strong>{" "}on
+          every question keeps the same answers as the defaults; these are the
+          answers to give:
+        </p>
+        <CodeBlock language="shell">{`✔ Would you like to use the recommended Next.js defaults? › No, customize settings
+✔ Would you like to use TypeScript? … Yes
+✔ Which linter would you like to use? › ESLint
+✔ Would you like to use React Compiler? … No
+✔ Would you like to use Tailwind CSS? … Yes
+✔ Would you like your code inside a \`src/\` directory? … No
+✔ Would you like to use App Router? (recommended) … Yes
+✔ Would you like to customize the import alias (\`@/*\` by default)? … No
+✔ Would you like to include AGENTS.md to guide coding agents to write up-to-date Next.js code? … Yes`}</CodeBlock>
         <p id="next-16-4-cache-components-fix">
           <strong>Created your project on or after October 6, 2026?</strong>{" "}
           Open <code>package.json</code>. If it says{" "}

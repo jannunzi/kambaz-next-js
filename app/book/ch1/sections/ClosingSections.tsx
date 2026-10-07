@@ -1,6 +1,9 @@
 import Section from "../../components/Section";
+import SectionLink from "../../components/SectionLink";
 import CodeBlock from "../../components/CodeBlock";
+import LiveDemo from "../../components/LiveDemo";
 import Link from "next/link";
+import LabsNameGithub from "@/app/labs/lab1/intermediates/1-5-LabsNameGithub";
 
 export default function ClosingSections() {
   return (
@@ -43,6 +46,89 @@ git push -u origin main`}</CodeBlock>
           the terminal asks for a password. Keep the token private — treat it
           like a password.
         </p>
+        <p id="labs-name-github">
+          Now that the repository exists, put your name, your section, and a
+          link to the repository on the Labs index, so graders can tell whose
+          deploy they are looking at and find its source. Open{" "}
+          <code>app/labs/page.tsx</code>{" "}and add three things to the page
+          from <SectionLink to="1.3.10" />:
+        </p>
+        <ul>
+          <li>
+            An <code>h2</code>{" "}with your full name exactly as it appears in
+            Canvas, first name first and last name second.
+          </li>
+          <li>
+            A paragraph with your course and section from Canvas, such as{" "}
+            <code>CS4550 Section 01</code>{" "}or <code>CS5610 Section 09</code>.
+          </li>
+          <li>
+            A link to your <code>webdev-client</code>{" "}repository on GitHub
+            with id <code>wd-github</code>. Use your own repository URL, not the
+            one in the sample.
+          </li>
+        </ul>
+        <p>
+          Keep the lab links you already have, including Lab 4, Lab 5, and the
+          Kambaz link from <SectionLink to="1.4.1" />. Replace the name,
+          section, and GitHub URL below with your own:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="LabsNameGithub"
+          file="app/labs/page.tsx"
+        >{`import Link from "next/link";
+
+export default function Labs() {
+  return (
+    <div id="wd-labs">
+      <h1>Labs</h1>
+      <h2>Jose Annunziato</h2>
+      <p>CS4550 Section 01</p>
+      <ul>
+        <li>
+          <Link href="/labs/lab1">Lab 1: HTML Examples</Link>
+        </li>
+        <li>
+          <Link href="/labs/lab2">Lab 2: CSS Basics</Link>
+        </li>
+        <li>
+          <Link href="/labs/lab3">Lab 3: JavaScript Fundamentals</Link>
+        </li>
+        <li>
+          <Link href="/labs/lab4">Lab 4</Link>
+        </li>
+        <li>
+          <Link href="/labs/lab5">Lab 5</Link>
+        </li>
+        <li>
+          <Link href="/">Kambaz</Link>
+        </li>
+        <li>
+          <a
+            href="https://github.com/jannunzi/webdev-client"
+            id="wd-github"
+            target="_blank"
+            rel="noreferrer"
+          >
+            GitHub repository
+          </a>
+        </li>
+      </ul>
+    </div>
+  );
+}`}</CodeBlock>
+        <p>
+          Your name and section sit under the Labs heading, and the GitHub link
+          opens your repository in a new tab:
+        </p>
+        <LiveDemo name="LabsNameGithub" file="app/labs/page.tsx">
+          <LabsNameGithub />
+        </LiveDemo>
+        <p>Commit and push the change:</p>
+        <CodeBlock language="shell">{`git add .
+git commit -m "Add name, section, and GitHub link to Labs"
+git push`}</CodeBlock>
       </Section>
 
       <Section id="sec-1-6" title="1.6 Deploying Next.js Projects to the Web">
@@ -73,8 +159,9 @@ git push -u origin main`}</CodeBlock>
           <li>Prototyped Kambaz screens with HTML and React.</li>
           <li>Pushed the project to GitHub.</li>
           <li>
-            Ensured Labs lists your full name and a{" "}
-            <code>wd-github</code>{" "}repository link.
+            Added your full name, your section, and a{" "}
+            <code>wd-github</code>{" "}link to your repository on the Labs page (
+            <a href="#labs-name-github">§1.5</a>).
           </li>
           <li>Deployed to Vercel and submitted both URLs in Canvas.</li>
         </ol>
