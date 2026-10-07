@@ -31,7 +31,13 @@ export type HtmlFetchResult =
 
 export type UrlProbeResult =
   | { ok: true; status: number }
-  | { ok: false; status?: number; message: string };
+  | {
+      ok: false;
+      status?: number;
+      message: string;
+      /** Rate limit, 5xx, or network error: not evidence the repo is missing. */
+      transient?: boolean;
+    };
 
 export type AssignmentCheckProbes = {
   getHtml: (url: string) => Promise<HtmlFetchResult>;

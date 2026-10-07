@@ -139,6 +139,30 @@ describe("fix 2: Assignments list must contain links", () => {
   });
 });
 
+describe("TOC Chapter 1 link (wd-toc-book-link)", () => {
+  const LINK = '<a id="wd-toc-book-link" href="https://kambaz.dev/book/ch1">Chapter 1</a>';
+  it("the full https://kambaz.dev/book/ch1 address passes with or without the id", async () => {
+    const pages = passingDeployPages();
+    assert.equal((await check(pages)).byCriterion.get("a1-lab-toc-ai")?.passed, true);
+    const stripped = await check(pages, { transform: stripWdIds });
+    assert.equal(stripped.byCriterion.get("a1-lab-toc-ai")?.passed, true);
+    assert.equal(stripped.byCriterion.get("a1-lab-toc-ai")?.needsReview, undefined);
+  });
+  it("a relative /book/ch1 link without the id passes", async () => {
+    const pages = passingDeployPages();
+    for (const path of Object.keys(pages)) {
+      pages[path] = pages[path].split(LINK).join('<a href="/book/ch1">Chapter 1</a>');
+    }
+    assert.equal((await check(pages, { transform: stripWdIds })).byCriterion.get("a1-lab-toc-ai")?.passed, true);
+  });
+  it("no Chapter 1 link and no id fails", async () => {
+    const pages = passingDeployPages();
+    for (const path of Object.keys(pages)) pages[path] = pages[path].split(LINK).join("Chapter 1");
+    const graded = await check(pages, { transform: stripWdIds });
+    assert.equal(graded.byCriterion.get("a1-lab-toc-ai")?.passed, false);
+  });
+});
+
 describe("fix 2b: assignment links with a broken course id template", () => {
   it("still counts as an Assignments list when ids are stripped", async () => {
     const pages = passingDeployPages();

@@ -543,7 +543,7 @@ export const A1_LAB_EXERCISE_SECTIONS: readonly A1LabExerciseSection[] = [
         id: "a1-lab-toc-ai",
         kind: "ai",
         description:
-          "Chapter 1 link in the labs TOC (id wd-toc-book-link). This link is expected to 404 in your own app (your app does not have the course-book routes). A1 only checks that an element with id wd-toc-book-link exists.",
+          "Chapter 1 link in the labs TOC (id wd-toc-book-link). Your own app has no /book routes, so the link uses the full course-book address, https://kambaz.dev/book/ch1, and opens the chapter. Keep the id wd-toc-book-link on it; the ids help us test your work.",
         points: 2,
         auto: {
           kind: "ids",

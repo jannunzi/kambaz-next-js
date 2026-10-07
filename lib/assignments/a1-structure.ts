@@ -342,9 +342,10 @@ export const A1_STRUCTURE_FALLBACKS: Readonly<Record<string, StructureFallback>>
     onMiss: "fail",
   },
   "a1-lab-toc-ai": {
+    // No id: a link to /book/ch1 (https://kambaz.dev/book/ch1 or relative).
     looksFor: "a link to the book (/book/ch1)",
     test: (ctx) =>
-      htmlHasAnchorPathMatching(renderedMarkup(ctx.labsHtml), /^\/book(\/|$)/i),
+      htmlHasAnchorPathMatching(renderedMarkup(ctx.labsHtml), /^\/book\/ch1(\/|$)/i),
     onMiss: "fail",
   },
   // Kambaz screens

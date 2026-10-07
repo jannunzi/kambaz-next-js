@@ -13,7 +13,11 @@ import {
 } from "./fetch-classify";
 import { htmlHasAllIds, htmlHasAnchorPath, htmlHasAnyId, htmlHasId } from "./html";
 import { hasUsableNameQuery, htmlHasStudentName, type NameQuery } from "./names";
-import { NEEDS_RECHECK_ROW_MESSAGE, needsReviewMessage } from "./check-status";
+import {
+  GITHUB_RECHECK_MESSAGE,
+  NEEDS_RECHECK_ROW_MESSAGE,
+  needsReviewMessage,
+} from "./check-status";
 import { ASSIGNMENT_STUDENT_COPY } from "./student-copy";
 import {
   a2GithubSchemeMessage,
@@ -178,19 +182,23 @@ export async function runChecker(
     );
     if (github.ok && input.probes.probeUrl) {
       const probe = await input.probes.probeUrl(github.repo.href);
-      results.push(
-        check(
+      // Only a 404 means "not found or private". Rate limits, 5xx and network
+      // errors keep the points and are flagged for a re-check.
+      const transient = !probe.ok && probe.status !== 404;
+      results.push({
+        ...check(
           "github-public",
           "GitHub repository is public",
-          probe.ok,
+          probe.ok || transient,
           probe.ok
             ? ASSIGNMENT_STUDENT_COPY.githubOk
-            : probe.status === 404
-              ? ASSIGNMENT_STUDENT_COPY.githubPrivate
-              : probe.message || ASSIGNMENT_STUDENT_COPY.githubUnreachable,
+            : transient
+              ? GITHUB_RECHECK_MESSAGE
+              : ASSIGNMENT_STUDENT_COPY.githubPrivate,
           { criterionId: delivery.github.criterionId, groupId: delivery.github.groupId },
         ),
-      );
+        ...(transient ? { needsReview: true } : {}),
+      });
     }
   }
 
@@ -201,6 +209,7 @@ export async function runChecker(
     const schemeMessage = githubRaw ? a2GithubSchemeMessage(githubRaw) : null;
     let passed = false;
     let message = branch.missingMessage;
+    let branchTransient = false;
     if (!githubRaw) {
       passed = false;
       message = branch.missingMessage;
@@ -222,8 +231,13 @@ export async function runChecker(
       if (probe.ok && probe.status === 200) {
         passed = true;
         message = branch.passMessage;
-      } else if (probe.status === 403 || probe.status === 429) {
-        passed = false;
+      } else if (
+        !probe.ok &&
+        (probe.transient || probe.status === 403 || probe.status === 429 || (probe.status ?? 0) >= 500)
+      ) {
+        // GitHub was busy: keep the points and flag it, never a deduction.
+        passed = true;
+        branchTransient = true;
         message = ASSIGNMENT_STUDENT_COPY.githubRetry;
       } else if (!probe.ok && probe.status === 404) {
         passed = false;
@@ -235,12 +249,13 @@ export async function runChecker(
           : probe.message || branch.notFoundMessage;
       }
     }
-    results.push(
-      check(branch.criterionId, branch.label, passed, message, {
+    results.push({
+      ...check(branch.criterionId, branch.label, passed, message, {
         criterionId: branch.criterionId,
         groupId: branch.groupId,
       }),
-    );
+      ...(branchTransient ? { needsReview: true } : {}),
+    });
   }
 
   const vercel = looksLikeDeployUrl(input.vercelUrl);

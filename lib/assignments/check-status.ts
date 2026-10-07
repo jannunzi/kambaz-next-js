@@ -16,6 +16,10 @@ export const NEEDS_RECHECK_ROW_MESSAGE =
 export const NEEDS_RECHECK_SUMMARY =
   "Needs re-check. The deploy could not be opened, so nothing was scored. This is not a grade.";
 
+/** GitHub rate limit / 5xx / timeout on the public-repo probe. */
+export const GITHUB_RECHECK_MESSAGE =
+  "Needs re-check: GitHub was busy (rate limit or a temporary error), so the repo could not be confirmed public. Not marked wrong; no points taken off.";
+
 export function needsReviewMessage(looksFor?: string): string {
   return looksFor
     ? `Needs TA review: no wd- id and no clear match for ${looksFor}. Not marked wrong; no points taken off.`
