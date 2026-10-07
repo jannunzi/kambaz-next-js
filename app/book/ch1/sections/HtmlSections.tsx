@@ -2426,9 +2426,11 @@ export default function LabsLayout({
         </LiveDemo>
         <OnYourOwn>
           In <code>TOC.tsx</code>, add a small personal touch above or below the
-          lab links — your name, a one-line motto, or a <code>Link</code>{" "}back
-          to the book chapter. Keep the shared layout structure; only the TOC
-          content should feel like yours.
+          lab links — your name, a one-line motto, or a link back to the book
+          chapter that uses the full address{" "}
+          <code>https://kambaz.dev/book/ch1</code>{" "}(your app has no{" "}
+          <code>/book</code>{" "}routes). Keep the shared layout structure; only
+          the TOC content should feel like yours.
         </OnYourOwn>
         <WithAI
           prompt={`In app/labs/TOC.tsx, keep any personal name or motto I added. Add a link to the course book at https://kambaz.dev/book/ch1 labeled "Chapter 1" (id wd-toc-book-link) with the other lab links. Do not change the layout table in layout.tsx.`}

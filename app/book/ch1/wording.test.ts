@@ -47,6 +47,8 @@ describe("Chapter 1 A1 wording", () => {
     const toc = promptsIn(html).find((p) => p.includes("wd-toc-book-link"));
     assert.ok(toc, "TOC With AI prompt");
     assert.match(toc, /https:\/\/kambaz\.dev\/book\/ch1/);
+    assert.doesNotMatch(prose(html), /a Link back to the book chapter/);
+    assert.match(prose(html), /a link back to the book chapter that uses the full address https:\/\/kambaz\.dev\/book\/ch1/);
     assert.doesNotMatch(html, /expected to 404/i);
     assert.doesNotMatch(ch1, /only checks that an element with id/i);
   });
