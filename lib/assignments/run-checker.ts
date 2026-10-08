@@ -156,9 +156,22 @@ function capitalize(text: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
+/**
+ * One sentence for a target page that doesn't exist. When several Lab pages
+ * returned the same 404, it names them together (e.g. "/labs and
+ * /labs/lab1 returned HTTP 404"), so withLab1NotFoundNote doesn't repeat it.
+ */
 function missingPageMessage(target: TargetPages): string {
-  const status = target.status ? `returned HTTP ${target.status}` : "was not found";
-  return `${capitalize(target.name)} wasn't found on your deploy (${target.example} ${status}), so this item couldn't pass.`;
+  const paths = target.missingPaths?.length ? target.missingPaths : [target.example];
+  const where = pathList(paths.map((path) => ({ path })));
+  const plural = paths.length > 1;
+  const status = target.status
+    ? `returned HTTP ${target.status}`
+    : plural
+      ? "were not found"
+      : "was not found";
+  const verb = /\bpages$/i.test(target.name) ? "weren't" : "wasn't";
+  return `${capitalize(target.name)} ${verb} found on your deploy (${where} ${status}), so this item couldn't pass.`;
 }
 
 function unreachablePageMessage(target: TargetPages): string {
@@ -205,7 +218,9 @@ function withLab1NotFoundNote(
   const note = `The Lab 1 page (/labs/lab1) returned HTTP ${lab1.status ?? 404}.`;
   return results.map((row) => {
     if (row.groupId !== "lab" || row.passed || row.skipped) return row;
-    if (/\/labs\/lab1\)? returned HTTP/.test(row.message)) return row;
+    // Already names /labs/lab1's 404 (e.g. "/labs and /labs/lab1 returned
+    // HTTP 404"): don't say it twice.
+    if (/\/labs\/lab1\b[^.]*? returned HTTP/.test(row.message)) return row;
     return { ...row, message: `${note} ${row.message}` };
   });
 }

@@ -10,8 +10,11 @@
  *     Save is not a grade),
  *   - no item still needs TA review or a re-check unless staff explicitly
  *     decided it,
- *   - and (when known) the submission matches one roster student with no
- *     duplicate on file.
+ *   - (when known) the submission matches one roster student with no
+ *     duplicate on file,
+ *   - and the student hasn't submitted again since the staff grade was
+ *     saved ("resubmitted after grading": the grade needs a re-run and a
+ *     new Save).
  * Until then there is no Canvas percentage, only points "in progress".
  */
 import { criterionCoverage } from "./checkers";
@@ -49,6 +52,14 @@ export type FinalGradeStaffInput = {
   criterionOverrides?: CriterionPassMap | null;
   /** The check run this grade was decided against (stored with the grade). */
   checkResults?: readonly AssignmentCheckResult[] | null;
+  /** When staff last saved the grade (`graded_at` in the export). */
+  gradedAt?: Date | string | null;
+  /**
+   * The student's submission time staff were grading when they saved
+   * (newer saves only). A later submission makes the grade out of date even
+   * if it landed while staff were grading.
+   */
+  gradedSubmissionAt?: Date | string | null;
 };
 
 export type FinalGradeInput = {
@@ -64,7 +75,48 @@ export type FinalGradeInput = {
   staff?: FinalGradeStaffInput | null;
   /** Roster flags: one roster student, no duplicate on file. */
   roster?: { unmatched?: boolean; duplicates?: number };
+  /**
+   * The student's last submission time (`submitted_at` in the export). A
+   * staff Save never changes it, so a time after the staff grade means the
+   * student resubmitted.
+   */
+  submittedAt?: Date | string | null;
 };
+
+/** ready_reason when the student submitted again after the staff grade. */
+export const RESUBMITTED_AFTER_GRADING = "resubmitted after grading";
+
+/**
+ * Before this fix a staff Save also reset the submission time to the moment
+ * of the Save, a few milliseconds (at most seconds) after gradedAt. Saves
+ * from then don't store gradedSubmissionAt; for them a submission time this
+ * close after gradedAt is the Save's own stamp, not a resubmission.
+ */
+export const LEGACY_SAVE_STAMP_MS = 60_000;
+
+function timeMs(value: Date | string | null | undefined): number | null {
+  if (value == null || value === "") return null;
+  const ms = value instanceof Date ? value.getTime() : new Date(value).getTime();
+  return Number.isFinite(ms) && ms > 0 ? ms : null;
+}
+
+/**
+ * True when the student submitted after the saved staff grade: the
+ * submission time is after graded_at, or after the submission staff were
+ * grading when they saved. Unknown times never count as a resubmission.
+ */
+export function resubmittedAfterGrading(
+  submittedAt: Date | string | null | undefined,
+  staff: Pick<FinalGradeStaffInput, "gradedAt" | "gradedSubmissionAt"> | null | undefined,
+): boolean {
+  if (!staff) return false;
+  const submitted = timeMs(submittedAt);
+  if (submitted == null) return false;
+  const graded = timeMs(staff.gradedAt);
+  const basis = timeMs(staff.gradedSubmissionAt);
+  if (basis != null) return submitted > basis || (graded != null && submitted > graded);
+  return graded != null && submitted > graded + LEGACY_SAVE_STAMP_MS;
+}
 
 export type FinalGrade = {
   checkStatus: CheckRunStatus;
@@ -214,6 +266,7 @@ export function finalGrade(input: FinalGradeInput): FinalGrade {
     reasons.push(`duplicate submission (${input.roster.duplicates + 1} on file)`);
   }
   if (input.roster?.unmatched) reasons.push("submission does not match a roster student");
+  if (resubmittedAfterGrading(input.submittedAt, staff)) reasons.push(RESUBMITTED_AFTER_GRADING);
 
   const ready = reasons.length === 0 && points != null;
   const canvasPercent = ready ? pointsPercent(points, maxPoints) : null;
@@ -266,5 +319,6 @@ export function finalGradeForStaffRow(
     results: row.checkResults ?? [],
     staff,
     roster: { unmatched: row.unmatched, duplicates: row.priorSubmissions?.length ?? 0 },
+    submittedAt: row.submittedAt,
   });
 }

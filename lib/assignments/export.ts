@@ -15,6 +15,14 @@
  *     staff-entered value, blank until staff graded every manual item.
  *   - A saved staff grade replaces the auto score.
  *
+ * Times (ISO, UTC):
+ *   - `submitted_at`: the student's last submission. A staff Save never
+ *     changes it.
+ *   - `graded_at`: the last staff Save (same value as `staff_graded_at`).
+ *   A row whose submitted_at is after graded_at (or after the submission
+ *   staff were grading) is not ready, with ready_reason "resubmitted after
+ *   grading": re-run and save it again.
+ *
  * `confidence`:
  *   - full_marks: ready, every point earned; load as is.
  *   - confident_deduction: ready, some points lost; load with feedback.
@@ -41,7 +49,10 @@ export type SubmissionExportRow = {
   clerkUserId: string;
   githubUrl: string;
   submittedUrl: string;
+  /** The student's last submission (ISO). Staff saves never change it. */
   submittedAt: string;
+  /** The last staff Save (ISO), or "" when there is none. */
+  gradedAt: string;
   lastCheckedAt: string;
   checkerVersion: string;
   checkStatus: CheckRunStatus;
@@ -155,6 +166,7 @@ export function buildSubmissionExportRow(input: {
     githubUrl: row.githubUrl ?? "",
     submittedUrl: row.vercelUrl ?? "",
     submittedAt: isoOrEmpty(row.submittedAt),
+    gradedAt: grade ? isoOrEmpty(grade.gradedAt) : "",
     lastCheckedAt: isoOrEmpty(row.lastCheckedAt),
     checkerVersion: row.checkerVersion ?? "",
     checkStatus: final.checkStatus,
@@ -210,6 +222,7 @@ const SUBMISSION_COLUMNS = [
   "github_url",
   "submitted_url",
   "submitted_at",
+  "graded_at",
   "last_checked_at",
   "checker_version",
   "check_status",
@@ -248,6 +261,7 @@ export function submissionExportCsv(
     row.githubUrl,
     row.submittedUrl,
     row.submittedAt,
+    row.gradedAt,
     row.lastCheckedAt,
     row.checkerVersion,
     row.checkStatus,

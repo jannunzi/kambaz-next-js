@@ -309,7 +309,9 @@ export default async function AssignmentDetailPage({
                 ? {
                     githubUrl: selectedStudent.githubUrl ?? "",
                     vercelUrl: selectedStudent.vercelUrl,
-                    updatedAt: new Date().toISOString(),
+                    // The real submission time (never "now"), so the grade
+                    // isn't read as resubmitted after grading.
+                    updatedAt: selectedStudent.submittedAt ?? "",
                     lastCheckedAt: selectedStudent.lastCheckedAt,
                     checkResults: selectedStudent.checkResults,
                     email: selectedStudent.email,

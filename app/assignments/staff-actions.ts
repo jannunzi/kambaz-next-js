@@ -25,7 +25,7 @@ import {
   assignmentSubmissionStore,
   findSubmissionForStaffStudent,
   listSubmissionsForAssignment,
-  writeAssignmentSubmission,
+  writeStaffGrade,
 } from "@/lib/assignments/submissions";
 import { getChecker } from "@/lib/assignments/checkers";
 import { checkerVersionLabel } from "@/lib/assignments/checker-version";
@@ -178,6 +178,11 @@ export async function saveAssignmentGrade(input: {
   studentKey: string;
   rows: CriterionGradeRow[];
   checkResults?: AssignmentCheckResult[];
+  /**
+   * The submission time on the grader's screen. Stored with the grade so a
+   * resubmission that lands while staff grade still reads as out of date.
+   */
+  submittedAt?: string;
 }): Promise<GradeSaveActionResult> {
   const { userId, isAuthenticated } = await auth();
   const staff = await isActualStaff();
@@ -271,15 +276,18 @@ export async function saveAssignmentGrade(input: {
   });
 
   try {
-    const doc = await writeAssignmentSubmission({
+    // A staff Save is not a submission: the student's submission time and
+    // URLs stay as they are (only the grade and its check run are written).
+    const doc = await writeStaffGrade({
       clerkUserId: target.doc.clerkUserId,
       assignmentId: target.assignmentId,
-      githubUrl: target.doc.githubUrl,
-      vercelUrl,
-      checkResults,
-      checked: checkResults.length > 0,
       staffGrade,
+      checkResults,
+      seenSubmittedAt: input.submittedAt ?? null,
     });
+    if (!doc) {
+      return { ok: false, code: "not_found", message: ASSIGNMENT_STUDENT_COPY.noSubmission };
+    }
     const grade = gradeViewFromStaffGrade({
       studentClerkUserId: doc.clerkUserId,
       assignmentId: doc.assignmentId,
