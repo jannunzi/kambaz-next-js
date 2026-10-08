@@ -1,7 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { formatPointsPercent } from "@/lib/assignments/grade";
+import { getAssignment } from "@/lib/assignments/catalog";
+import { finalGradeForStaffRow } from "@/lib/assignments/final-grade";
+import { checkRunStatus, needsReviewCriterionIds } from "@/lib/assignments/check-status";
 import {
   adjacentStaffStudentKeys,
   countStaffGradeFilters,
@@ -24,24 +26,39 @@ import {
 const staffSelectClass =
   "mt-1 box-border block h-10 w-full truncate rounded border border-neutral-400 bg-white px-3 font-normal";
 
-function studentStatus(row: StaffStudentRow): string {
+function studentStatus(assignmentId: string, row: StaffStudentRow): string {
   if (row.unmatched) return "unmatched";
   if (!row.hasSubmission) return "not submitted";
-  if (hasStaffGradeSave(row.staffGrade)) return "graded";
+  if (hasStaffGradeSave(row.staffGrade)) {
+    // A saved grade is "graded" only once it is final (same rule as the export).
+    const rubric = getAssignment(assignmentId)?.rubric;
+    if (rubric && !finalGradeForStaffRow(assignmentId, rubric, row).ready) {
+      return "grading in progress";
+    }
+    return "graded";
+  }
   return "ungraded";
 }
 
-function studentOptionLabel(row: StaffStudentRow): string {
-  return `${row.name} · ${studentStatus(row)}`;
+function checkNote(row: StaffStudentRow): string {
+  if (!row.hasSubmission || hasStaffGradeSave(row.staffGrade)) return "";
+  if (checkRunStatus(row.checkResults) === "needs_recheck") return " · needs re-check";
+  const review = needsReviewCriterionIds(row.checkResults).length;
+  return review ? ` · ${review} to review` : "";
 }
 
-function selectedScore(row: StaffStudentRow): string {
+function studentOptionLabel(assignmentId: string, row: StaffStudentRow): string {
+  return `${row.name} · ${studentStatus(assignmentId, row)}${checkNote(row)}`;
+}
+
+/** Same grade and percentage as the export (finalGrade); a % only when ready for Canvas. */
+function selectedScore(assignmentId: string, row: StaffStudentRow): string {
   if (!hasStaffGradeSave(row.staffGrade) || !row.staffGrade) return "";
-  const score = formatPointsPercent(
-    row.staffGrade.earnedPoints,
-    row.staffGrade.totalPoints,
-  );
-  return score === "—" ? "" : score;
+  const assignment = getAssignment(assignmentId);
+  if (!assignment?.rubric) return "";
+  const final = finalGradeForStaffRow(assignmentId, assignment.rubric, row);
+  if (final.ready) return final.canvasScore;
+  return final.points == null ? "" : `${final.points} / ${final.maxPoints} · not ready for Canvas`;
 }
 
 export default function StaffGraderNav({
@@ -71,7 +88,7 @@ export default function StaffGraderNav({
   const submitted = visible.filter((row) => row.hasSubmission).length;
   const selectedRow =
     findStaffStudent(visible, selectedKey) ?? findStaffStudent(queue, selectedKey);
-  const score = selectedRow ? selectedScore(selectedRow) : "";
+  const score = selectedRow ? selectedScore(assignmentId, selectedRow) : "";
   const prior = selectedRow ? priorSubmissionLabel(selectedRow.priorSubmissions) : "";
 
   function go(
@@ -171,7 +188,7 @@ export default function StaffGraderNav({
             <option value="">Your own checklist</option>
             {visible.map((row) => (
               <option key={row.key} value={row.key}>
-                {studentOptionLabel(row)}
+                {studentOptionLabel(assignmentId, row)}
               </option>
             ))}
           </select>

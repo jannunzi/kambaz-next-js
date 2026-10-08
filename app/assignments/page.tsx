@@ -4,8 +4,18 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { formatLongDate } from "@/app/syllabus/data/dates";
 import { assignmentsIntro } from "@/app/syllabus/data/assignments";
 import { supportsUrlSubmission } from "@/lib/assignments/access";
-import { listAssignmentIds, listAssignments, rubricPointTotal } from "@/lib/assignments/catalog";
-import { studentVisibleSubmission } from "@/lib/assignments/staff";
+import {
+  getAssignment,
+  listAssignmentIds,
+  listAssignments,
+  rubricPointTotal,
+} from "@/lib/assignments/catalog";
+import { finalGrade } from "@/lib/assignments/final-grade";
+import {
+  hasStaffGradeSave,
+  rosterFlagsForSubmission,
+  studentVisibleSubmission,
+} from "@/lib/assignments/staff";
 import { listSubmissionsForAssignment } from "@/lib/assignments/submissions";
 import {
   SIGN_IN_FOR_SUBMISSION_STATUS,
@@ -20,6 +30,7 @@ import {
 } from "@/lib/config";
 import { canvasUserIdFromMetadata } from "@/lib/roster/emails";
 import { loadClerkRosterEmails } from "@/lib/roster/load-clerk-emails";
+import { listCanvasRoster } from "@/lib/roster/list";
 import { lookupCanvasRoster } from "@/lib/roster/lookup";
 import type { CanvasRosterEntry } from "@/lib/roster/types";
 import AssignmentHubNav from "./components/AssignmentHubNav";
@@ -62,24 +73,41 @@ async function loadSubmissionStatuses(): Promise<{
     if (!rosterEntry) {
       return { note: null, statuses: new Map() };
     }
-    const chosen = (
-      await Promise.all(urlIds.map((id) => listSubmissionsForAssignment(id)))
-    ).map((submissions) =>
+    const lists = await Promise.all(urlIds.map((id) => listSubmissionsForAssignment(id)));
+    const chosen = lists.map((submissions) =>
       studentVisibleSubmission({
         clerkUserId: userId,
         rosterEntry,
         submissions,
       }),
     );
+    // "Graded" only once the grade is final (finalGrade, same as the export).
+    const rosterList = chosen.some((doc) => hasStaffGradeSave(doc?.staffGrade))
+      ? await listCanvasRoster()
+      : null;
+    const rosterEntries = rosterList?.status === "ok" ? rosterList.entries : [];
     const statuses = new Map<AssignmentId, StudentSubmissionStatus>();
     urlIds.forEach((id, index) => {
       const doc = chosen[index] ?? null;
+      const rubric = getAssignment(id)?.rubric;
+      const gradeFinal = Boolean(
+        doc &&
+          rubric &&
+          hasStaffGradeSave(doc.staffGrade) &&
+          finalGrade({
+            assignmentId: id,
+            rubric,
+            results: doc.checkResults ?? [],
+            staff: doc.staffGrade,
+            roster: rosterFlagsForSubmission(rosterEntries, lists[index], doc.clerkUserId),
+          }).ready,
+      );
       const status = statusForViewer({
         signedIn: true,
         rosterMatched: true,
         assignmentId: id,
         hasSubmission: Boolean(doc),
-        staffGrade: doc?.staffGrade,
+        staffGrade: gradeFinal ? doc?.staffGrade : null,
       });
       if (status) statuses.set(id, status);
     });
