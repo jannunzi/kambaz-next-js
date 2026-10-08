@@ -100,6 +100,7 @@ async function loadSubmissionStatuses(): Promise<{
             results: doc.checkResults ?? [],
             staff: doc.staffGrade,
             roster: rosterFlagsForSubmission(rosterEntries, lists[index], doc.clerkUserId),
+            submittedAt: doc.updatedAt ?? doc.createdAt,
           }).ready,
       );
       const status = statusForViewer({

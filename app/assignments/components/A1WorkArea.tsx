@@ -3,12 +3,13 @@
 import { useState, useTransition } from "react";
 import type { AssignmentCheckResult } from "@/lib/assignments/checks";
 import { listRubricCriteria } from "@/lib/assignments/catalog";
-import { criterionCoverage } from "@/lib/assignments/checkers";
 import {
+  autoChangedSaveWarning,
+  autoChangedSinceDecision,
+  carryStaffDecisions,
   gradeRowsFromResults,
-  rowIsStaffDecided,
-  withCustomPoints,
   withOverrideChecked,
+  withPointsInput,
   type CriterionGradeRow,
 } from "@/lib/assignments/grade-rows";
 import { finalGrade, finalGradeLine, type FinalGrade } from "@/lib/assignments/final-grade";
@@ -136,12 +137,19 @@ function A1WorkSession({
         rubric: assignment.rubric,
         results: submission?.checkResults ?? [],
         staff: savedGrade
-          ? { rows: savedGrade.rows, checkResults: savedGrade.checkResults }
+          ? {
+              rows: savedGrade.rows,
+              checkResults: savedGrade.checkResults,
+              gradedAt: savedGrade.savedAt,
+              gradedSubmissionAt: savedGrade.gradedSubmissionAt,
+            }
           : null,
         roster,
+        submittedAt: submission?.updatedAt,
       })
     : null;
-  // What a Save would record right now (staff only).
+  // What a Save would record right now (staff only). A Save now is graded
+  // against the submission on screen, so it is never "resubmitted after".
   const draftFinal: FinalGrade | null =
     staffMode && draft && assignment.rubric
       ? finalGrade({
@@ -155,22 +163,12 @@ function A1WorkSession({
 
   function onResults(next: AssignmentCheckResult[]) {
     setLiveResults(next);
-    // A new run resets the auto rows; manual items staff already set keep
-    // their decision (the checker never grades them).
-    setDraft((current) => {
-      const kept = new Map(
-        (current ?? savedGrade?.rows ?? [])
-          .filter(
-            (row) =>
-              criterionCoverage(assignment.id, row.criterionId) === "manual" &&
-              rowIsStaffDecided(row),
-          )
-          .map((row) => [row.criterionId, row]),
-      );
-      return gradeRowsFromResults(criteria, next).map(
-        (row) => kept.get(row.criterionId) ?? row,
-      );
-    });
+    // A new run updates Auto on every row. Every row staff already decided
+    // (manual items and overridden auto items) keeps its decision; when its
+    // Auto result changed, the row is flagged and Save asks first.
+    setDraft((current) =>
+      carryStaffDecisions(current ?? savedGrade?.rows ?? null, gradeRowsFromResults(criteria, next)),
+    );
     setLive(true);
     setGradeNote(null);
     setGradeError(null);
@@ -194,11 +192,12 @@ function A1WorkSession({
     setLive(true);
   }
 
-  function onPoints(criterionId: string, points: number) {
+  /** `null`: staff cleared the Points box, so the row goes back to unset. */
+  function onPoints(criterionId: string, points: number | null) {
     setDraft((current) => {
       const base = current ?? savedGrade?.rows ?? [];
       return base.map((row) =>
-        row.criterionId === criterionId ? withCustomPoints(row, points) : row,
+        row.criterionId === criterionId ? withPointsInput(row, points) : row,
       );
     });
     setLive(true);
@@ -206,6 +205,13 @@ function A1WorkSession({
 
   function onSaveGrade() {
     if (!selectedStudent || !draft) return;
+    const labelById = new Map(criteria.map((criterion) => [criterion.id, criterion.label]));
+    const warning = autoChangedSaveWarning(
+      draft
+        .filter(autoChangedSinceDecision)
+        .map((row) => labelById.get(row.criterionId) ?? row.criterionId),
+    );
+    if (warning && !window.confirm(warning)) return;
     setPendingGrade(true);
     setGradeError(null);
     startTransition(async () => {
@@ -214,6 +220,7 @@ function A1WorkSession({
         studentKey: selectedStudent.key,
         rows: draft,
         checkResults: liveResults ?? savedGrade?.checkResults ?? [],
+        submittedAt: submission?.updatedAt || undefined,
       });
       setPendingGrade(false);
       if (!result.ok) {
@@ -229,8 +236,14 @@ function A1WorkSession({
             assignmentId: assignment.id,
             rubric: assignment.rubric,
             results: result.grade.checkResults,
-            staff: { rows: result.grade.rows, checkResults: result.grade.checkResults },
+            staff: {
+              rows: result.grade.rows,
+              checkResults: result.grade.checkResults,
+              gradedAt: result.grade.savedAt,
+              gradedSubmissionAt: result.grade.gradedSubmissionAt,
+            },
             roster,
+            submittedAt: submission?.updatedAt,
           })
         : null;
       setGradeNote(
