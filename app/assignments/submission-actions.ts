@@ -10,11 +10,13 @@ import { runConfiguredChecks, type AssignmentCheckResult } from "@/lib/assignmen
 import { fetchDeployHtml, probeGithubRepo } from "@/lib/assignments/fetch-deploy";
 import { resolveNameQuery, type NameSource } from "@/lib/assignments/names";
 import {
+  commitStoredAssignmentSubmission,
+  listSubmissionsForAssignment,
   readAssignmentSubmission,
-  writeAssignmentSubmission,
 } from "@/lib/assignments/submissions";
 import {
   toSubmissionView,
+  type AssignmentSubmissionDoc,
   type AssignmentSubmissionView,
 } from "@/lib/assignments/submissions-store";
 import {
@@ -22,7 +24,16 @@ import {
   preparePublicAssignmentCheck,
 } from "@/lib/assignments/submission-form";
 import { ASSIGNMENT_STUDENT_COPY } from "@/lib/assignments/student-copy";
-import { isAssignmentId } from "@/lib/assignments/catalog";
+import { getAssignment, isAssignmentId } from "@/lib/assignments/catalog";
+import {
+  NOT_SUBMITTED_CLOSED,
+  SUBMISSIONS_CLOSED,
+  assignmentDueInstant,
+  isSubmissionBeforeDue,
+} from "@/lib/assignments/lock";
+import { listAssignmentReopens } from "@/lib/assignments/reopens";
+import { studentVisibleSubmission } from "@/lib/assignments/staff";
+import { submissionPersistMessage } from "@/lib/assignments/submission-status";
 import type { AssignmentId } from "@/lib/assignments/types";
 import { isAssignmentProgressConfigured } from "@/lib/config";
 import {
@@ -49,7 +60,8 @@ export type SubmissionActionResult =
         | "not_on_roster"
         | "roster_empty"
         | "invalid"
-        | "persist_failed";
+        | "persist_failed"
+        | "submissions_closed";
       message: string;
     };
 
@@ -239,6 +251,25 @@ export async function runPublicAssignmentChecks(input: {
   };
 }
 
+async function visibleSubmissionForSave(
+  clerkUserId: string,
+  assignmentId: AssignmentId,
+  identity: AssignmentSubmissionIdentity,
+): Promise<AssignmentSubmissionDoc | null> {
+  if (identity.rosterEmail || identity.canvasUserId) {
+    const submissions = await listSubmissionsForAssignment(assignmentId);
+    return studentVisibleSubmission({
+      clerkUserId,
+      rosterEntry: {
+        email: identity.rosterEmail,
+        canvasUserId: identity.canvasUserId,
+      },
+      submissions,
+    });
+  }
+  return readAssignmentSubmission(clerkUserId, assignmentId);
+}
+
 export async function saveAssignmentSubmission(input: {
   assignmentId: string;
   githubUrl: string;
@@ -273,24 +304,64 @@ export async function saveAssignmentSubmission(input: {
   }
 
   try {
-    const doc = await writeAssignmentSubmission({
-      clerkUserId: authz.userId,
+    const now = new Date();
+    const dueAt = assignmentDueInstant({
+      assignmentId: input.assignmentId,
+      sharedDueDate: getAssignment(input.assignmentId)?.dueDate,
+      section: authz.identity.section,
+    });
+    let reopens: Awaited<ReturnType<typeof listAssignmentReopens>> = [];
+    let prior: AssignmentSubmissionDoc | null = null;
+    if (!isSubmissionBeforeDue(now, dueAt)) {
+      try {
+        reopens = await listAssignmentReopens(input.assignmentId);
+        prior = await visibleSubmissionForSave(
+          authz.userId,
+          input.assignmentId as AssignmentId,
+          authz.identity,
+        );
+      } catch (error) {
+        console.error("assignment submission lock check failed", error);
+        return {
+          ok: false,
+          code: "submissions_closed",
+          message: SUBMISSIONS_CLOSED,
+        };
+      }
+    }
+    const saved = await commitStoredAssignmentSubmission({
+      now,
+      dueAt,
+      reopens,
+      student: {
+        clerkUserId: authz.userId,
+        rosterEmail: authz.identity.rosterEmail,
+        canvasUserId: authz.identity.canvasUserId,
+        email: authz.identity.email,
+      },
+      prior,
       assignmentId: input.assignmentId as AssignmentId,
       githubUrl,
       vercelUrl,
       identity: authz.identity,
     });
+    if (!saved.ok) {
+      return {
+        ok: false,
+        code: saved.code,
+        message: saved.message || (prior ? SUBMISSIONS_CLOSED : NOT_SUBMITTED_CLOSED),
+      };
+    }
     return {
       ok: true,
       persisted: true,
       submission: {
-        ...toSubmissionView(doc),
+        ...toSubmissionView(saved.doc),
         checkResults: undefined,
       },
     };
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Could not save the submission.";
+    const message = submissionPersistMessage(error);
     console.error("assignment submission persist failed", message);
     return { ok: false, code: "persist_failed", message };
   }

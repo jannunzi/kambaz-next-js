@@ -5,6 +5,7 @@ import { formatPointsPercent } from "@/lib/assignments/grade";
 import {
   adjacentStaffStudentKeys,
   countStaffGradeFilters,
+  filterStaffQueueByReopen,
   filterStaffQueueBySection,
   filterStaffQueueByStatus,
   findStaffStudent,
@@ -12,6 +13,7 @@ import {
   listStaffQueueSections,
   priorSubmissionLabel,
   resolveStaffGradeFilter,
+  resolveStaffReopenFilter,
   resolveStaffSectionFilter,
   STAFF_GRADE_FILTERS,
   staffGradeFilterLabel,
@@ -32,7 +34,10 @@ function studentStatus(row: StaffStudentRow): string {
 }
 
 function studentOptionLabel(row: StaffStudentRow): string {
-  return `${row.name} · ${studentStatus(row)}`;
+  const bits = [row.name, studentStatus(row)];
+  if (row.regradeResubmission) bits.push("regrade");
+  if (row.reopen) bits.push(row.reopen.label);
+  return bits.join(" · ");
 }
 
 function selectedScore(row: StaffStudentRow): string {
@@ -50,20 +55,27 @@ export default function StaffGraderNav({
   selectedKey,
   selectedSection,
   selectedFilter,
+  reopenFilter,
 }: {
   assignmentId: string;
   queue: StaffStudentRow[];
   selectedKey?: string;
   selectedSection?: string;
   selectedFilter?: string;
+  reopenFilter?: string;
 }) {
   const router = useRouter();
   const sections = listStaffQueueSections(queue);
   const section = resolveStaffSectionFilter(selectedSection, sections);
   const filter: StaffGradeFilter = resolveStaffGradeFilter(selectedFilter);
+  const reopen = resolveStaffReopenFilter(reopenFilter);
   const sectionQueue = filterStaffQueueBySection(queue, section);
   const counts = countStaffGradeFilters(sectionQueue);
-  const visible = filterStaffQueueByStatus(sectionQueue, filter);
+  const visible = filterStaffQueueByReopen(
+    filterStaffQueueByStatus(sectionQueue, filter),
+    reopen,
+  );
+  const reopenedRows = visible.filter((row) => row.reopen);
   const { previous, next, index } = adjacentStaffStudentKeys(
     visible,
     selectedKey,
@@ -78,31 +90,49 @@ export default function StaffGraderNav({
     key: string | null,
     nextSection = section,
     nextFilter: StaffGradeFilter = filter,
+    nextReopen = reopen,
   ) {
     router.push(
       staffGraderHref(assignmentId, {
         section: nextSection,
         student: key,
         filter: nextFilter,
+        reopen: nextReopen,
       }),
     );
   }
 
   function onSectionChange(value: string) {
     const nextSection = value || undefined;
-    const nextQueue = filterStaffQueueByStatus(
-      filterStaffQueueBySection(queue, nextSection),
-      filter,
+    const nextQueue = filterStaffQueueByReopen(
+      filterStaffQueueByStatus(
+        filterStaffQueueBySection(queue, nextSection),
+        filter,
+      ),
+      reopen,
     );
     const keep = findStaffStudent(nextQueue, selectedKey)?.key ?? null;
-    go(keep, nextSection, filter);
+    go(keep, nextSection, filter, reopen);
   }
 
   function onFilterChange(value: string) {
     const nextFilter = resolveStaffGradeFilter(value);
-    const nextQueue = filterStaffQueueByStatus(sectionQueue, nextFilter);
+    const nextQueue = filterStaffQueueByReopen(
+      filterStaffQueueByStatus(sectionQueue, nextFilter),
+      reopen,
+    );
     const keep = findStaffStudent(nextQueue, selectedKey)?.key ?? null;
-    go(keep, section, nextFilter);
+    go(keep, section, nextFilter, reopen);
+  }
+
+  function onReopenFilterChange(value: string) {
+    const nextReopen = resolveStaffReopenFilter(value);
+    const nextQueue = filterStaffQueueByReopen(
+      filterStaffQueueByStatus(sectionQueue, filter),
+      nextReopen,
+    );
+    const keep = findStaffStudent(nextQueue, selectedKey)?.key ?? null;
+    go(keep, section, filter, nextReopen);
   }
 
   if (queue.length === 0) {
@@ -161,6 +191,21 @@ export default function StaffGraderNav({
             ))}
           </select>
         </label>
+        <label
+          htmlFor="staff-reopen-filter"
+          className="w-44 shrink-0 text-sm font-semibold"
+        >
+          Resubmission
+          <select
+            id="staff-reopen-filter"
+            className={staffSelectClass}
+            value={reopen ?? ""}
+            onChange={(event) => onReopenFilterChange(event.target.value)}
+          >
+            <option value="">All students</option>
+            <option value="reopened">Reopened</option>
+          </select>
+        </label>
         <label className="min-w-0 flex-1 text-sm font-semibold">
           Student
           <select
@@ -198,6 +243,21 @@ export default function StaffGraderNav({
           {score ? <p className="mb-1">{score}</p> : null}
           {prior ? <p className="mb-0 break-words">{prior}</p> : null}
         </div>
+      ) : null}
+      {reopenedRows.length > 0 ? (
+        <ul className="mb-0 mt-3 flex list-none flex-wrap gap-2 p-0">
+          {reopenedRows.map((row) => (
+            <li key={row.key}>
+              <button
+                type="button"
+                className="rounded-full border border-sky-700 bg-sky-100 px-2 py-0.5 text-xs font-semibold text-sky-950 hover:bg-sky-200"
+                onClick={() => go(row.key)}
+              >
+                {row.name}: {row.reopen?.label}
+              </button>
+            </li>
+          ))}
+        </ul>
       ) : null}
     </section>
   );

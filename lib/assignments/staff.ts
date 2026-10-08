@@ -96,6 +96,13 @@ export type StaffStudentRow = {
   staffGrade?: AssignmentStaffGrade;
   /** Older submissions for the same student. The row itself is the newest. */
   priorSubmissions?: PriorSubmissionNote[];
+  regradeResubmission?: boolean;
+  previousStaffGrade?: AssignmentStaffGrade;
+  reopen?: {
+    label: string;
+    closesAt: string;
+    message: string;
+  } | null;
 };
 
 export type StaffQueueOptions = {
@@ -226,15 +233,48 @@ function gradedAtIso(value: Date | string | undefined): string {
   return Number.isFinite(ms) ? new Date(ms).toISOString() : "";
 }
 
+/**
+ * Saved totals win when they are present. An older grade that only stored
+ * per-criterion points is summed. No numeric points at all stays unset so
+ * the note shows an em dash.
+ */
+export function staffGradePointTotal(
+  grade: AssignmentStaffGrade,
+): { earnedPoints: number; totalPoints: number } | null {
+  if (
+    typeof grade.earnedPoints === "number" &&
+    typeof grade.totalPoints === "number" &&
+    grade.totalPoints > 0
+  ) {
+    return { earnedPoints: grade.earnedPoints, totalPoints: grade.totalPoints };
+  }
+  const rows = grade.rows ?? [];
+  const hasRowPoints = rows.some(
+    (row) => typeof row.points === "number" || typeof row.maxPoints === "number",
+  );
+  if (!hasRowPoints) return null;
+  const earnedPoints = rows.reduce(
+    (sum, row) => sum + (typeof row.points === "number" ? row.points : 0),
+    0,
+  );
+  const totalPoints = rows.reduce(
+    (sum, row) => sum + (typeof row.maxPoints === "number" ? row.maxPoints : 0),
+    0,
+  );
+  if (totalPoints <= 0) return null;
+  return { earnedPoints, totalPoints };
+}
+
 function priorNote(doc: AssignmentSubmissionDoc): PriorSubmissionNote {
   const url = doc.vercelUrl?.trim() || doc.githubUrl?.trim() || "(no url)";
   const note: PriorSubmissionNote = { url, at: submissionStamp(doc) };
   const grade = doc.staffGrade;
   if (grade && hasStaffGradeSave(grade)) {
     const gradedAt = gradedAtIso(grade.gradedAt);
+    const points = staffGradePointTotal(grade);
     note.graded = {
-      earnedPoints: grade.earnedPoints,
-      totalPoints: grade.totalPoints,
+      earnedPoints: points?.earnedPoints ?? Number.NaN,
+      totalPoints: points?.totalPoints ?? 0,
       ...(gradedAt ? { gradedAt } : {}),
     };
   }
@@ -314,6 +354,8 @@ function rowFromSubmission(
     checkResults: doc.checkResults,
     staffGrade: doc.staffGrade,
     priorSubmissions: undefined,
+    regradeResubmission: doc.regradeResubmission,
+    previousStaffGrade: doc.previousStaffGrade,
   };
 }
 
@@ -634,12 +676,27 @@ export function visibleStaffQueue(
   return filterStaffQueueByStatus(staffQueueForSection(queue, section), filter);
 }
 
+export function resolveStaffReopenFilter(
+  value: string | undefined | null,
+): "reopened" | undefined {
+  return value === "reopened" ? "reopened" : undefined;
+}
+
+export function filterStaffQueueByReopen(
+  queue: readonly StaffStudentRow[],
+  reopen: string | undefined | null,
+): StaffStudentRow[] {
+  if (resolveStaffReopenFilter(reopen) !== "reopened") return [...queue];
+  return queue.filter((row) => Boolean(row.reopen));
+}
+
 export function staffGraderHref(
   assignmentId: string,
   options?: {
     section?: string | null;
     student?: string | null;
     filter?: string | null;
+    reopen?: string | null;
   },
 ): string {
   const params = new URLSearchParams();
@@ -649,6 +706,7 @@ export function staffGraderHref(
   if (section) params.set("section", section);
   if (filter !== "all") params.set("filter", filter);
   if (student) params.set("student", student);
+  if (resolveStaffReopenFilter(options?.reopen)) params.set("reopen", "reopened");
   const query = params.toString();
   return query
     ? `/assignments/${assignmentId}?${query}`

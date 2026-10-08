@@ -3,6 +3,10 @@ import "server-only";
 import { normalizeEmail } from "../roster/emails";
 import { getCollection } from "../mongo";
 import { selectRosterSubmission } from "./staff";
+import {
+  commitAssignmentSubmission,
+  type CommitSubmissionResult,
+} from "./submit-lock";
 import type { AssignmentId } from "./types";
 import {
   ASSIGNMENT_SUBMISSIONS_COLLECTION,
@@ -11,9 +15,14 @@ import {
   upsertAssignmentSubmission,
   type AssignmentStaffGrade,
   type AssignmentSubmissionDoc,
+  type AssignmentSubmissionHistoryDoc,
   type AssignmentSubmissionIdentity,
+  type SubmissionHistoryStore,
   type SubmissionStore,
 } from "./submissions-store";
+
+export const ASSIGNMENT_SUBMISSION_HISTORY_COLLECTION =
+  "assignment_submission_history";
 
 export type { AssignmentStaffGrade, AssignmentSubmissionDoc, SubmissionStore };
 
@@ -97,6 +106,50 @@ export async function writeAssignmentSubmission(input: {
 }): Promise<AssignmentSubmissionDoc> {
   const store = await readyStore();
   return upsertAssignmentSubmission(store, input);
+}
+
+export async function getAssignmentSubmissionHistoryCollection() {
+  return getCollection<AssignmentSubmissionHistoryDoc>(
+    ASSIGNMENT_SUBMISSION_HISTORY_COLLECTION,
+  );
+}
+
+export function mongoSubmissionHistoryStore(
+  collection: Awaited<ReturnType<typeof getAssignmentSubmissionHistoryCollection>>,
+): SubmissionHistoryStore {
+  return {
+    async insert(doc) {
+      await collection.insertOne(doc);
+    },
+  };
+}
+
+let historyIndexesPromise: Promise<void> | null = null;
+
+export async function ensureAssignmentSubmissionHistoryIndexes(): Promise<void> {
+  const collection = await getAssignmentSubmissionHistoryCollection();
+  await collection.createIndex({ assignmentId: 1, rosterEmail: 1 });
+  await collection.createIndex({ assignmentId: 1, clerkUserId: 1, recordedAt: -1 });
+}
+
+export async function submissionHistoryStore(): Promise<SubmissionHistoryStore> {
+  const collection = await getAssignmentSubmissionHistoryCollection();
+  historyIndexesPromise ??= ensureAssignmentSubmissionHistoryIndexes().catch(
+    (error) => {
+      historyIndexesPromise = null;
+      console.error("assignment submission history index ensure failed", error);
+    },
+  );
+  await historyIndexesPromise;
+  return mongoSubmissionHistoryStore(collection);
+}
+
+export async function commitStoredAssignmentSubmission(
+  input: Omit<Parameters<typeof commitAssignmentSubmission>[0], "store" | "history">,
+): Promise<CommitSubmissionResult> {
+  const store = await readyStore();
+  const history = await submissionHistoryStore();
+  return commitAssignmentSubmission({ ...input, store, history });
 }
 
 export async function findSubmissionForStaffStudent(input: {

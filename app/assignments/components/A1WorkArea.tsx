@@ -10,12 +10,15 @@ import {
   type CriterionGradeRow,
 } from "@/lib/assignments/grade-rows";
 import type { AssignmentGradeView } from "@/lib/assignments/grade-rows";
+import type { ReopenPanelState, StudentLockView } from "@/lib/assignments/lock";
 import { ASSIGNMENT_STUDENT_COPY } from "@/lib/assignments/student-copy";
-import { type StaffStudentRow } from "@/lib/assignments/staff";
+import { regradeStaffNote } from "@/lib/assignments/submission-status";
+import type { StaffStudentRow } from "@/lib/assignments/staff";
 import type { AssignmentHubItem } from "@/lib/assignments/types";
 import type { AssignmentSubmissionView } from "@/lib/assignments/submissions-store";
 import { saveAssignmentGrade } from "../staff-actions";
 import A1SubmissionForm, { type SubmissionGateReason } from "./A1SubmissionForm";
+import ReopenSubmissionPanel from "./ReopenSubmissionPanel";
 import AssignmentChecklist from "./AssignmentChecklist";
 import { AssignmentViewer } from "./AssignmentViewer";
 import StaffGraderNav from "./StaffGraderNav";
@@ -38,17 +41,23 @@ export default function A1WorkArea({
   selectedStudent?: StaffStudentRow | null;
   selectedSection?: string;
   selectedFilter?: string;
+  reopenFilter?: string;
+  lockView?: StudentLockView;
+  reopenPanel?: ReopenPanelState | null;
 }) {
   return (
     <AssignmentViewer serverUserId={serverUserId} authEnabled={authEnabled}>
       {(viewerUserId) => (
         <A1WorkSession
-          key={`${viewerUserId ?? "out"}:${props.selectedStudent?.key ?? "self"}:${props.initialGrade?.savedAt ?? "none"}:${props.initialSubmission?.updatedAt ?? "none"}`}
+          key={`${viewerUserId ?? "out"}:${props.selectedStudent?.key ?? "self"}:${props.initialGrade?.savedAt ?? "none"}:${props.initialSubmission?.updatedAt ?? "none"}:${props.lockView?.kind ?? "open"}`}
           {...props}
           initialSubmission={
             viewerUserId === serverUserId ? props.initialSubmission : null
           }
           initialGrade={viewerUserId === serverUserId ? props.initialGrade : null}
+          lockView={
+            viewerUserId === serverUserId ? props.lockView : { kind: "open" }
+          }
         />
       )}
     </AssignmentViewer>
@@ -67,6 +76,9 @@ function A1WorkSession({
   selectedStudent,
   selectedSection,
   selectedFilter,
+  reopenFilter,
+  lockView = { kind: "open" },
+  reopenPanel = null,
 }: {
   assignment: AssignmentHubItem;
   initialSubmission: AssignmentSubmissionView | null;
@@ -79,6 +91,9 @@ function A1WorkSession({
   selectedStudent?: StaffStudentRow | null;
   selectedSection?: string;
   selectedFilter?: string;
+  reopenFilter?: string;
+  lockView?: StudentLockView;
+  reopenPanel?: ReopenPanelState | null;
 }) {
   const staffMode = Boolean(selectedStudent);
   const [submission, setSubmission] = useState(initialSubmission);
@@ -166,7 +181,23 @@ function A1WorkSession({
           selectedKey={selectedStudent?.key}
           selectedSection={selectedSection}
           selectedFilter={selectedFilter}
+          reopenFilter={reopenFilter}
         />
+      ) : null}
+
+      {staffMode && selectedStudent && reopenPanel ? (
+        <ReopenSubmissionPanel
+          assignmentId={assignment.id}
+          studentKey={selectedStudent.key}
+          studentName={selectedStudent.name}
+          panel={reopenPanel}
+          canReopen={!impersonating}
+        />
+      ) : null}
+      {staffMode && submission?.regradeResubmission ? (
+        <p className="rounded-lg border border-sky-300 bg-sky-50 px-4 py-3 font-sans text-sm text-sky-950">
+          {regradeStaffNote(submission)}
+        </p>
       ) : null}
 
       {staffMode && selectedStudent && !selectedStudent.hasSubmission ? (
@@ -191,6 +222,7 @@ function A1WorkSession({
           onResults={onResults}
           onSubmission={setSubmission}
           onDeployUrlChange={setDeployUrl}
+          lockView={lockView}
         />
       )}
 

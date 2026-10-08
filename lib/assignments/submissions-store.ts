@@ -30,6 +30,13 @@ export type AssignmentSubmissionIdentity = {
   section?: string;
 };
 
+export type PreviousSubmissionSnapshot = {
+  githubUrl: string;
+  vercelUrl: string;
+  updatedAt: Date | string;
+  clerkUserId: string;
+};
+
 export type AssignmentSubmissionDoc = AssignmentSubmissionIdentity & {
   clerkUserId: string;
   assignmentId: AssignmentId;
@@ -40,6 +47,25 @@ export type AssignmentSubmissionDoc = AssignmentSubmissionIdentity & {
   lastCheckedAt?: Date;
   checkResults?: AssignmentCheckResult[];
   staffGrade?: AssignmentStaffGrade;
+  /** Set when this document is a resubmit during a staff reopen window. */
+  regradeResubmission?: boolean;
+  regradeSubmittedAt?: Date | string;
+  previousStaffGrade?: AssignmentStaffGrade;
+  previousSubmission?: PreviousSubmissionSnapshot;
+};
+
+export type AssignmentSubmissionHistoryDoc = {
+  kind: "prior" | "regrade";
+  recordedAt: Date;
+  assignmentId: AssignmentId;
+  clerkUserId: string;
+  rosterEmail?: string;
+  regradeResubmission?: boolean;
+  githubUrl: string;
+  vercelUrl: string;
+  updatedAt: Date | string;
+  staffGrade?: AssignmentStaffGrade;
+  previousStaffGrade?: AssignmentStaffGrade;
 };
 
 export type AssignmentSubmissionView = AssignmentSubmissionIdentity & {
@@ -49,6 +75,15 @@ export type AssignmentSubmissionView = AssignmentSubmissionIdentity & {
   lastCheckedAt?: string;
   checkResults?: AssignmentCheckResult[];
   staffGrade?: AssignmentStaffGrade;
+  regradeResubmission?: boolean;
+  regradeSubmittedAt?: string;
+  previousStaffGrade?: AssignmentStaffGrade;
+  previousSubmission?: {
+    githubUrl: string;
+    vercelUrl: string;
+    updatedAt: string;
+    clerkUserId: string;
+  };
 };
 
 export type SubmissionStore = {
@@ -60,6 +95,10 @@ export type SubmissionStore = {
   listByAssignment?(
     assignmentId: AssignmentId,
   ): Promise<AssignmentSubmissionDoc[]>;
+};
+
+export type SubmissionHistoryStore = {
+  insert(doc: AssignmentSubmissionHistoryDoc): Promise<void>;
 };
 
 function toIso(value: Date | string): string {
@@ -79,6 +118,7 @@ export function toStaffGradeView(
 export function toSubmissionView(
   doc: AssignmentSubmissionDoc,
 ): AssignmentSubmissionView {
+  const previous = doc.previousSubmission;
   return {
     githubUrl: doc.githubUrl,
     vercelUrl: doc.vercelUrl,
@@ -91,6 +131,19 @@ export function toSubmissionView(
     canvasUserId: doc.canvasUserId,
     section: doc.section,
     staffGrade: toStaffGradeView(doc.staffGrade),
+    regradeResubmission: doc.regradeResubmission || undefined,
+    regradeSubmittedAt: doc.regradeSubmittedAt
+      ? toIso(doc.regradeSubmittedAt)
+      : undefined,
+    previousStaffGrade: toStaffGradeView(doc.previousStaffGrade),
+    previousSubmission: previous
+      ? {
+          githubUrl: previous.githubUrl,
+          vercelUrl: previous.vercelUrl,
+          updatedAt: toIso(previous.updatedAt),
+          clerkUserId: previous.clerkUserId,
+        }
+      : undefined,
   };
 }
 
@@ -121,6 +174,13 @@ export async function upsertAssignmentSubmission(
     checked?: boolean;
     identity?: AssignmentSubmissionIdentity;
     staffGrade?: AssignmentStaffGrade | null;
+    /**
+     * Resubmit during a staff reopen. Copies the previous grade from this
+     * document (often the roster-matched submission, which may use an older
+     * Clerk id). Omitted on ordinary saves, including every save before the
+     * due instant.
+     */
+    regradeFrom?: AssignmentSubmissionDoc | null;
   },
   now: Date = new Date(),
 ): Promise<AssignmentSubmissionDoc> {
@@ -129,7 +189,9 @@ export async function upsertAssignmentSubmission(
   const staffGrade =
     input.staffGrade === null
       ? undefined
-      : (input.staffGrade ?? existing?.staffGrade);
+      : (input.staffGrade ??
+        input.regradeFrom?.staffGrade ??
+        existing?.staffGrade);
   const doc: AssignmentSubmissionDoc = {
     clerkUserId: input.clerkUserId,
     assignmentId: input.assignmentId,
@@ -139,13 +201,62 @@ export async function upsertAssignmentSubmission(
     updatedAt: now,
     lastCheckedAt: input.checked ? now : existing?.lastCheckedAt,
     checkResults: input.checkResults ?? existing?.checkResults,
-    email: identity.email ?? existing?.email,
-    rosterEmail: identity.rosterEmail ?? existing?.rosterEmail,
-    name: identity.name ?? existing?.name,
-    canvasUserId: identity.canvasUserId ?? existing?.canvasUserId,
-    section: identity.section ?? existing?.section,
+    email: identity.email ?? existing?.email ?? input.regradeFrom?.email,
+    rosterEmail:
+      identity.rosterEmail ??
+      existing?.rosterEmail ??
+      input.regradeFrom?.rosterEmail,
+    name: identity.name ?? existing?.name ?? input.regradeFrom?.name,
+    canvasUserId:
+      identity.canvasUserId ??
+      existing?.canvasUserId ??
+      input.regradeFrom?.canvasUserId,
+    section: identity.section ?? existing?.section ?? input.regradeFrom?.section,
     staffGrade,
   };
+  if (input.regradeFrom) {
+    doc.regradeResubmission = true;
+    doc.regradeSubmittedAt = now;
+    doc.previousStaffGrade =
+      input.regradeFrom.previousStaffGrade ?? input.regradeFrom.staffGrade;
+    doc.previousSubmission = {
+      githubUrl: input.regradeFrom.githubUrl,
+      vercelUrl: input.regradeFrom.vercelUrl,
+      updatedAt: input.regradeFrom.updatedAt,
+      clerkUserId: input.regradeFrom.clerkUserId,
+    };
+  } else if (existing?.regradeResubmission) {
+    doc.regradeResubmission = true;
+    if (existing.regradeSubmittedAt) {
+      doc.regradeSubmittedAt = existing.regradeSubmittedAt;
+    }
+    if (existing.previousStaffGrade) {
+      doc.previousStaffGrade = existing.previousStaffGrade;
+    }
+    if (existing.previousSubmission) {
+      doc.previousSubmission = existing.previousSubmission;
+    }
+  }
   await store.upsert(doc);
   return doc;
+}
+
+export function submissionHistoryFromDoc(
+  kind: AssignmentSubmissionHistoryDoc["kind"],
+  doc: AssignmentSubmissionDoc,
+  recordedAt: Date,
+): AssignmentSubmissionHistoryDoc {
+  return {
+    kind,
+    recordedAt,
+    assignmentId: doc.assignmentId,
+    clerkUserId: doc.clerkUserId,
+    rosterEmail: doc.rosterEmail,
+    regradeResubmission: kind === "regrade" ? true : doc.regradeResubmission,
+    githubUrl: doc.githubUrl,
+    vercelUrl: doc.vercelUrl,
+    updatedAt: doc.updatedAt,
+    staffGrade: doc.staffGrade,
+    previousStaffGrade: doc.previousStaffGrade,
+  };
 }

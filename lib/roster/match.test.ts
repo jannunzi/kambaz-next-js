@@ -137,6 +137,27 @@ describe("roster matching", () => {
     assert.equal(result.status, "matched");
   });
 
+  it("matches a roster alias stored only in emails", () => {
+    const result = matchRoster({
+      emails: ["alias@northeastern.edu"],
+      mongoEntries: [
+        {
+          email: "primary@northeastern.edu",
+          name: "Jane Doe",
+          emails: ["Alias@Northeastern.edu"],
+        },
+      ],
+      envEmails: [],
+      mongoCount: 1,
+    });
+    assert.equal(result.status, "matched");
+    if (result.status === "matched") {
+      assert.equal(result.entry.name, "Jane Doe");
+      assert.equal(result.entry.email, "alias@northeastern.edu");
+      assert.deepEqual(result.entry.emails, ["Alias@Northeastern.edu"]);
+    }
+  });
+
   it("builds an identity filter across email and Canvas id fields", () => {
     const filter = rosterIdentityMatchFilter({
       emails: ["chen.rya@northeastern.edu"],
@@ -145,6 +166,7 @@ describe("roster matching", () => {
     assert.ok(filter);
     const clauses = filter.$or as Record<string, unknown>[];
     assert.ok(clauses.some((clause) => "sisLoginId" in clause));
+    assert.ok(clauses.some((clause) => "emails" in clause));
     assert.ok(clauses.some((clause) => clause.canvasUserId === "12345"));
     assert.equal(rosterIdentityMatchFilter({ emails: [], canvasUserIds: [] }), null);
   });

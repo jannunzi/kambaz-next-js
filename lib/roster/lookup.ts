@@ -21,6 +21,7 @@ const ROSTER_MATCH_PROJECTION = {
   sis_login_id: 1,
   loginId: 1,
   login_id: 1,
+  emails: 1,
   name: 1,
   section: 1,
   source: 1,

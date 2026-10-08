@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
+import { pointsPercent } from "./grade";
 import {
   GRADE_ROW_COPY,
   changedCriterionIds,
@@ -72,6 +73,26 @@ describe("override detection and points", () => {
       earnedPoints: 5,
       totalPoints: 8,
       percent: 62.5,
+    });
+  });
+
+  it("leaves a skipped Name on Labs row out of the student auto total", () => {
+    const rows = [
+      row({ criterionId: "rest", autoPassed: true, maxPoints: 110 }),
+      row({
+        criterionId: "a1-delivery-name-section",
+        autoPassed: false,
+        maxPoints: 3,
+      }),
+    ];
+    assert.deepEqual(
+      studentAutoPoints(rows, new Set(), new Set(["a1-delivery-name-section"])),
+      { earnedPoints: 110, totalPoints: 110, percent: 100 },
+    );
+    assert.deepEqual(studentAutoPoints(rows, new Set()), {
+      earnedPoints: 110,
+      totalPoints: 113,
+      percent: pointsPercent(110, 113),
     });
   });
 

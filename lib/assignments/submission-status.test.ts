@@ -10,6 +10,7 @@ import {
   hasSavedStaffGrade,
   notSubmittedMessage,
   showSubmittedConfirmation,
+  submissionPersistMessage,
   signedOutStatusNote,
   statusForAssignment,
   statusForViewer,
@@ -55,6 +56,7 @@ describe("student submission status", () => {
     assert.equal(submissionStatusLabel("not_submitted"), "Not submitted");
     assert.equal(submissionStatusLabel("submitted"), "Submitted");
     assert.equal(submissionStatusLabel("graded"), "Graded");
+    assert.equal(submissionStatusLabel("reopened"), "Reopened");
   });
 
   it("treats a saved staff grade as graded and ignores an empty snapshot", () => {
@@ -91,6 +93,15 @@ describe("student submission status", () => {
         staffGrade: GRADE_95,
       }),
       "graded",
+    );
+    assert.equal(
+      statusForAssignment({
+        assignmentId: "a1",
+        hasSubmission: true,
+        staffGrade: GRADE_95,
+        reopened: true,
+      }),
+      "reopened",
     );
     assert.equal(
       statusForAssignment({ assignmentId: "a3", hasSubmission: false }),
@@ -215,16 +226,28 @@ describe("submit confirmation copy", () => {
       submitActionLabel({ hasSubmission: true, pending: true }),
       "Updating…",
     );
+    assert.equal(
+      submitActionLabel({ hasSubmission: true, pending: false, regrade: true }),
+      "Resubmit for regrade",
+    );
+    assert.equal(
+      submitActionLabel({ hasSubmission: true, pending: true, regrade: true }),
+      "Resubmitting…",
+    );
+    assert.equal(
+      submitActionLabel({ hasSubmission: false, pending: false, regrade: true }),
+      "Submit",
+    );
   });
 
-  it("hides the Submitted banner when the submit call failed", () => {
+  it("keeps the Submitted banner when an update fails", () => {
     assert.equal(
       showSubmittedConfirmation({ hasSubmission: true, submitFailed: false }),
       true,
     );
     assert.equal(
       showSubmittedConfirmation({ hasSubmission: true, submitFailed: true }),
-      false,
+      true,
     );
     assert.equal(
       showSubmittedConfirmation({ hasSubmission: false, submitFailed: false }),
@@ -310,6 +333,25 @@ describe("submit confirmation copy", () => {
     assert.match(first.body, /Could not submit/);
   });
 
+  it("shows the lock message when submissions are closed", () => {
+    const empty = submitFailureCopy({
+      hasSubmission: false,
+      code: "submissions_closed",
+      detail: "Not submitted. Submissions closed.",
+    });
+    assert.equal(empty.title, "Not submitted. Submissions closed.");
+    assert.equal(empty.body, "");
+    const filed = submitFailureCopy({
+      hasSubmission: true,
+      submittedAt: "2026-09-28T00:52:00.000Z",
+      code: "submissions_closed",
+      detail: "Submissions closed.",
+    });
+    assert.equal(filed.title, "Submissions closed.");
+    assert.equal(filed.body, "");
+    assert.doesNotMatch(`${filed.title} ${filed.body}`, /Update failed|not submitted/i);
+  });
+
   it("says a failed update kept the previous submission", () => {
     const failed = submitFailureCopy({
       hasSubmission: true,
@@ -319,13 +361,17 @@ describe("submit confirmation copy", () => {
     assert.equal(failed.title, "Update failed");
     assert.equal(
       failed.body,
-      "Update failed. Your previous submission from Sun, Sep 27, 8:52 PM ET is still on file.",
+      "Update failed. Your previous submission from Sun, Sep 27, 8:52 PM ET is still on file. Could not submit.",
     );
+    assert.match(failed.body, /Could not submit/);
     assert.doesNotMatch(`${failed.title} ${failed.body}`, /not submitted/i);
     assert.equal(
       submitFailureCopy({ hasSubmission: true, submittedAt: null }).body,
       "Update failed. Your previous submission is still on file.",
     );
+    assert.equal(submissionPersistMessage(new Error("db down")), "db down");
+    assert.equal(submissionPersistMessage(null), "Could not submit.");
+    assert.doesNotMatch(submissionPersistMessage(undefined), /save the submission/i);
   });
 
   it("uses Submit and Update submission in the student helper copy", () => {

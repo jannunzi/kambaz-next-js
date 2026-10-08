@@ -9,8 +9,10 @@ describe("staff grader dropdowns", () => {
   );
   const selects = [...source.matchAll(/<select\b[\s\S]*?>/g)].map((match) => match[0]);
 
-  it("renders Section, Show, and Student as closed dropdowns", () => {
-    assert.equal(selects.length, 3);
+  it("renders Section, Show, Resubmission, and Student as closed dropdowns", () => {
+    assert.equal(selects.length, 4);
+    assert.match(source, /htmlFor="staff-reopen-filter"/);
+    assert.match(source, /id="staff-reopen-filter"/);
     assert.doesNotMatch(source, /form-select/);
     assert.match(source, /"mt-1 box-border block h-10 w-full/);
     for (const tag of selects) {

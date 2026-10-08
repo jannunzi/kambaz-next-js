@@ -278,8 +278,15 @@ export default function AssignmentChecklist({
     [rows, savedRows, live, audience],
   );
   const autoByCriterion = useMemo(() => latestResultByCriterion(results), [results]);
+  const skippedIds = useMemo(() => {
+    const ids = new Set<string>();
+    for (const [id, result] of autoByCriterion) {
+      if (result.skipped) ids.add(id);
+    }
+    return ids;
+  }, [autoByCriterion]);
   const staffPoints = gradePoints(rows);
-  const studentPoints = studentAutoPoints(rows, manualIds);
+  const studentPoints = studentAutoPoints(rows, manualIds, skippedIds);
   const headerPoints = audience === "staff" ? staffPoints : studentPoints;
 
   if (!rubric) return null;
@@ -341,7 +348,7 @@ export default function AssignmentChecklist({
         const groupPoints =
           audience === "staff"
             ? gradePoints(groupRows)
-            : studentAutoPoints(groupRows, manualIds);
+            : studentAutoPoints(groupRows, manualIds, skippedIds);
         return (
           <section
             key={group.id}

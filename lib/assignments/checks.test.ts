@@ -644,6 +644,14 @@ describe("student-facing copy", () => {
     );
     assert.match(
       ASSIGNMENT_STUDENT_COPY.nameAndSectionDeliveryNote,
+      /^Name on Labs is your full Canvas name/i,
+    );
+    assert.doesNotMatch(
+      ASSIGNMENT_STUDENT_COPY.nameAndSectionDeliveryNote,
+      /Name and section is/,
+    );
+    assert.match(
+      ASSIGNMENT_STUDENT_COPY.nameAndSectionDeliveryNote,
       /not a checkbox or control in Run checks/i,
     );
     assert.match(ASSIGNMENT_STUDENT_COPY.nameMissing, /full Canvas name/i);
