@@ -29,8 +29,6 @@ export default function SignUpPage() {
       <SignUp />
       <p className="mt-6 text-sm">
         <Link href="/book">Back to the course book</Link>
-        {" · "}
-        <Link href="/quizzes/take">Graded quizzes</Link>
       </p>
     </main>
   );

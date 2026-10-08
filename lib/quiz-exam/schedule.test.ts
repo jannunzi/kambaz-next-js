@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import {
   addEasternDays,
   CANVAS_ONLY_QUIZ_SENTENCE,
+  isCanvasOnlyQuiz,
   answerWindowCopy,
   canRevealAnswers,
   etWallTimeToUtc,
@@ -240,8 +241,8 @@ describe("answer-window copy", () => {
     assert.match(syllabusTakeWindowSentence(q2), /week of Oct 12/);
   });
 
-  it("tells closed Quiz 1 and Quiz 2 they are on Canvas, with no answer dates", () => {
-    for (const id of ["q1", "q2"]) {
+  it("tells closed graded quizzes they are taken in Canvas, with no answer dates", () => {
+    for (const id of ["q1", "q2", "q3", "q4", "q5", "q6"]) {
       const schedule = getQuizSchedule(id);
       assert.ok(schedule, id);
       for (const phase of [
@@ -266,13 +267,14 @@ describe("answer-window copy", () => {
         schedule.takeUnlockAt,
         "open",
       );
-      assert.match(enabled.paragraphs.join(" "), /week of/);
-      assert.doesNotMatch(enabled.paragraphs.join(" "), /taken on Canvas/);
+      // Even a staff-enabled section never invites a website attempt.
+      assert.deepEqual(enabled.paragraphs, [CANVAS_ONLY_QUIZ_SENTENCE], id);
+      assert.doesNotMatch(enabled.paragraphs.join(" "), /still has to enable|week of/i);
     }
   });
 
-  it("shows the Canvas message for closed Q1 and Q2 when answers are off", () => {
-    for (const id of ["q1", "q2"]) {
+  it("shows the Canvas message for closed Q1–Q6 when answers are off", () => {
+    for (const id of ["q1", "q2", "q3", "q4", "q5", "q6"]) {
       const schedule = getQuizSchedule(id);
       assert.ok(schedule, id);
       const noAttempt = answerWindowCopy(
@@ -327,6 +329,16 @@ describe("answer-window copy", () => {
       assert.equal(review.closeAt.toISOString(), schedule.answersCloseAt.toISOString(), id);
 
       const duringTake = new Date(schedule.takeLockAt.getTime() - 60_000);
+      if (isCanvasOnlyQuiz(id)) {
+        // Q3–Q6 are taken in Canvas: the website never promises an answer week.
+        for (const phase of ["submitted_waiting", "answers_open", "answers_closed"] as const) {
+          assert.deepEqual(
+            answerWindowCopy(schedule, phase, review.openAt).paragraphs,
+            [CANVAS_ONLY_QUIZ_SENTENCE],
+            `${id} ${phase}`,
+          );
+        }
+      } else {
       const waiting = answerWindowCopy(schedule, "submitted_waiting", duringTake);
       const openCopy = answerWindowCopy(schedule, "answers_open", review.openAt);
       const closedCopy = answerWindowCopy(schedule, "answers_closed", review.closeAt);
@@ -338,6 +350,7 @@ describe("answer-window copy", () => {
       assert.equal(waiting.paragraphs.length, 1, id);
       assert.equal(openCopy.paragraphs.length, 1, id);
       assert.equal(closedCopy.paragraphs.length, 1, id);
+      }
 
       assert.equal(getAnswerRevealPhase(schedule, duringTake, true), "submitted_waiting", id);
       assert.equal(getAnswerRevealPhase(schedule, review.openAt, true), "answers_open", id);

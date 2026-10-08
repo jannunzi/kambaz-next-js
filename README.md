@@ -50,6 +50,16 @@ a “Search on YouTube” fallback. Results are cached for 24 hours.
 
 ## Graded quizzes (Clerk + MongoDB Atlas)
 
+> **Fall 2026: graded quizzes Q1–Q6 are taken in Canvas** (Jose, Oct 7).
+> `/quizzes/take` and `/quizzes/take/q1`–`q6` show students a “Taken in
+> Canvas” note and never render the exam form; the submit action refuses
+> to store a student attempt for Q1–Q6 even if a section is Enabled
+> (`isCanvasOnlyQuiz` / `canvasOnlySubmitBlocked` in
+> `lib/quiz-exam/schedule.ts`). Stored website attempts stay reviewable,
+> staff attempt review and impersonation smoke tests still work, and
+> exams X1/X2 are unchanged. The rest of this section describes the
+> website take machinery that staff tooling still uses.
+
 Anyone may browse the book, syllabus, labs, practice, assignments, and terms —
 signed in or not. **Only Canvas-roster students** can start or submit a graded
 quiz at `/quizzes/take/q3`. Author review (answers shown) at `/quizzes` and

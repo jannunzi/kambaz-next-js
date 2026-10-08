@@ -458,13 +458,40 @@ export function formatEasternCivilTimestamp(date: Date | string): string {
   return `${parts.year}-${pad(parts.month)}-${pad(parts.day)}T${pad(parts.hour)}:${pad(parts.minute)}:${pad(parts.second)}`;
 }
 
-/** Q1 and Q2 are taken on Canvas. */
+/**
+ * Graded quizzes (Q1–Q6) are taken in Canvas (Jose, Oct 7 2026). Students
+ * cannot start or submit a graded quiz attempt on this site. Staff
+ * impersonation can still smoke-test the form (never saved), and stored
+ * website attempts (Q1) stay reviewable. Exams (X1/X2) are unchanged.
+ */
 export function isCanvasOnlyQuiz(quizId: string): boolean {
-  return quizId === "q1" || quizId === "q2";
+  return /^q[1-9]$/.test(quizId);
 }
 
 export const CANVAS_ONLY_QUIZ_SENTENCE =
-  "Quiz 1 and Quiz 2 are taken on Canvas, not on this site.";
+  "Graded quizzes are taken in Canvas, not on this site.";
+
+/** Shown when a student lands on a Canvas-only quiz page on this site. */
+export const CANVAS_ONLY_QUIZ_PAGE_COPY = {
+  title: "Taken in Canvas",
+  paragraphs: [
+    CANVAS_ONLY_QUIZ_SENTENCE,
+    "Open this quiz from your Canvas course. There is no graded attempt to start on this site.",
+  ],
+} as const;
+
+/**
+ * Server-side guard for the website submit action. A student can never
+ * store a graded attempt for a Canvas-only quiz, even if a staff take
+ * override is "open". Staff impersonation smoke tests are never saved,
+ * so they stay allowed.
+ */
+export function canvasOnlySubmitBlocked(
+  quizId: string,
+  impersonating: boolean,
+): boolean {
+  return isCanvasOnlyQuiz(quizId) && !impersonating;
+}
 
 /** Student-facing take window. Dates are display-only; staff still enable taking. */
 export function syllabusTakeWindowSentence(schedule: QuizSchedule): string {
@@ -497,7 +524,7 @@ export function answerWindowCopy(
 
   if (
     isCanvasOnlyQuiz(schedule.quizId) &&
-    (phase === "take_closed" || override === "closed")
+    (phase === "take_closed" || phase === "take_open" || override === "closed")
   ) {
     return {
       title: "Taken on Canvas",

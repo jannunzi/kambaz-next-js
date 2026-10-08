@@ -4,6 +4,7 @@ import { describe, it } from "node:test";
 import {
   CANVAS_FALLBACK_PERMISSION_BLURB,
   CANVAS_FALLBACK_QUIZZES,
+  CANVAS_QUIZ_TAKEN_HERE_SENTENCE,
   canvasFallbackIdent,
   canvasQuizDescriptionHtml,
   canvasQuizTakeUrl,
@@ -16,12 +17,35 @@ import {
 } from "./schedule";
 
 describe("Canvas quiz fallback copy", () => {
-  it("keeps the website take URL first and a staff-permission blurb", () => {
-    for (const quiz of CANVAS_FALLBACK_QUIZZES) {
+  it("says Q1–Q6 are taken in Canvas and never links a website take page", () => {
+    const quizzes = CANVAS_FALLBACK_QUIZZES.filter((quiz) => quiz.quizId.startsWith("q"));
+    assert.deepEqual(
+      quizzes.map((quiz) => quiz.quizId),
+      ["q1", "q2", "q3", "q4", "q5", "q6"],
+    );
+    for (const quiz of quizzes) {
+      const html = canvasQuizDescriptionHtml(quiz);
+      assert.equal(canvasQuizTakeUrl(quiz.quizId), null, quiz.quizId);
+      assert.equal(quiz.takePath, null, quiz.quizId);
+      assert.match(html, new RegExp(CANVAS_QUIZ_TAKEN_HERE_SENTENCE.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+      assert.match(html, /taken here in Canvas, not on the course website/);
+      assert.doesNotMatch(html, /kambaz\.dev|quizzes\/take|<a /i, quiz.quizId);
+      assert.doesNotMatch(html, /on the course site:|Take .* on the course site/i, quiz.quizId);
+      assert.doesNotMatch(html, new RegExp(CANVAS_FALLBACK_PERMISSION_BLURB.slice(0, 30)), quiz.quizId);
+      assert.doesNotMatch(html, /website quiz|graded on the website/i, quiz.quizId);
+      assert.doesNotMatch(html, /Correct answers are available/i, quiz.quizId);
+      assert.doesNotMatch(html, /Clerk|Kambaz|Lab [0-9]|wd-/i, quiz.quizId);
+    }
+  });
+
+  it("keeps the website take URL first and a staff-permission blurb for exams", () => {
+    for (const quiz of CANVAS_FALLBACK_QUIZZES.filter((row) => row.quizId.startsWith("x"))) {
       const html = canvasQuizDescriptionHtml(quiz);
       const url = canvasQuizTakeUrl(quiz.quizId);
+      assert.ok(url, quiz.quizId);
+      assert.equal(quiz.takePath, `/quizzes/take/${quiz.quizId}`);
       assert.match(html, new RegExp(url.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
-      assert.match(html, /kambaz\.dev\/quizzes\/take\//);
+      assert.match(html, /kambaz\.dev\/quizzes\/take\/x[12]/);
       assert.match(html, /ask your instructor or TA for permission/i);
       assert.doesNotMatch(html, /use this Canvas quiz instead of the website/i);
       assert.doesNotMatch(html, /take this Canvas quiz by default/i);
@@ -39,10 +63,17 @@ describe("Canvas quiz fallback copy", () => {
       );
       assert.doesNotMatch(html.replaceAll(url, ""), /Clerk|Kambaz|Lab [0-9]|wd-/i);
       assert.ok(html.indexOf(url) < html.indexOf(CANVAS_FALLBACK_PERMISSION_BLURB));
-      if (quiz.quizId.startsWith("q")) {
-        assert.match(html, /coding items are graded on the website/i);
+      assert.doesNotMatch(html, /coding items are graded on the website/i);
+    }
+  });
+
+  it("gives Canvas-taken quizzes no public website URL in the follow-up copy", () => {
+    for (const row of listCanvasQuizFollowupCopy()) {
+      if (row.quizId.startsWith("q")) {
+        assert.equal(row.publicUrl, null, row.quizId);
+        assert.doesNotMatch(row.html, /quizzes\/take/, row.quizId);
       } else {
-        assert.doesNotMatch(html, /coding items are graded on the website/i);
+        assert.equal(row.publicUrl, `https://kambaz.dev/quizzes/take/${row.quizId}`);
       }
     }
   });
@@ -98,6 +129,8 @@ describe("Canvas quiz fallback copy", () => {
     assert.match(sample, /<lock_at>2026-10-04T23:59:00<\/lock_at>/);
     assert.doesNotMatch(sample, /2026-09-27/);
     assert.doesNotMatch(sample, /2026-09-21T00:00:00/);
+    assert.match(sample, /taken here in Canvas, not on the course website/);
+    assert.doesNotMatch(sample, /quizzes\/take|kambaz\.dev/);
   });
 
   it("lists Q1–Q6 and X1/X2 with stable fallback identifiers", () => {

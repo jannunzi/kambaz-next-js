@@ -160,8 +160,16 @@ describe("Canvas fallback banks", () => {
     assert.equal(QUIZ_TIME_LIMIT_MINUTES.x1, 90);
   });
 
-  it("puts website URL + permission blurb in every quiz meta source", () => {
-    for (const quizId of ["q1", "q2", "q3", "q4", "q5", "q6", "x1", "x2"] as const) {
+  it("says quizzes are taken in Canvas and keeps the website URL only for exams", () => {
+    for (const quizId of ["q1", "q2", "q3", "q4", "q5", "q6"] as const) {
+      const quiz = getCanvasFallbackQuiz(quizId);
+      assert.ok(quiz);
+      const html = canvasQuizDescriptionHtml(quiz);
+      assert.doesNotMatch(html, /quizzes\/take/);
+      assert.doesNotMatch(html, /permission to take this Canvas quiz instead/);
+      assert.match(html, /taken here in Canvas/);
+    }
+    for (const quizId of ["x1", "x2"] as const) {
       const quiz = getCanvasFallbackQuiz(quizId);
       assert.ok(quiz);
       const html = canvasQuizDescriptionHtml(quiz);

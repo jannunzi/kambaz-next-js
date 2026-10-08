@@ -175,6 +175,12 @@ export default function QuizAccessOverridePanel({
         quiz. <strong>Disable</strong> turns it off again after a test.
         Off (dates only) is the default. Practice quizzes are unchanged.
       </p>
+      <p className="mt-0 mb-3 text-sm text-neutral-700">
+        Staff note: Q1–Q6 are taken in Canvas. <strong>Enable</strong> on a
+        quiz no longer lets students start or submit it on this site; it only
+        opens exams (X1/X2). Use <strong>Viewing as: Student</strong> to
+        smoke-test a quiz form (never saved).
+      </p>
       <h2 className="mt-4 mb-1 text-lg font-semibold tracking-tight">
         Answers visible to students
       </h2>

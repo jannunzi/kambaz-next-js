@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <quiz identifier="gwebdev_q1_fallback" xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd">
   <title>Q1 — HTML</title>
-  <description>&lt;p&gt;Take Q1 — HTML on the course site:&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://kambaz.dev/quizzes/take/q1&quot;&gt;https://kambaz.dev/quizzes/take/q1&lt;/a&gt;&lt;/p&gt;&lt;p&gt;If the website quiz is unavailable, ask your instructor or TA for permission to take this Canvas quiz instead.&lt;/p&gt;</description>
+  <description>&lt;p&gt;Q1 — HTML. This graded quiz is taken here in Canvas, not on the course website.&lt;/p&gt;</description>
   <unlock_at>2026-09-28T00:00:00</unlock_at>
   <due_at>2026-10-04T23:59:00</due_at>
   <lock_at>2026-10-04T23:59:00</lock_at>

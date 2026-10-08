@@ -47,9 +47,13 @@ export default function TakeQuizIndexPage() {
         Graded quizzes
       </h1>
       <p className="rounded-lg border border-sky-300 bg-sky-50 px-4 py-3 text-sky-950">
-        {CANVAS_ONLY_QUIZ_SENTENCE} {STUDENT_COPY.takeIndexLead} After you
-        submit, the same URL is how you come back for your score and — during
-        the class-wide review week — the answers. Practice self-checks stay on{" "}
+        <strong>{CANVAS_ONLY_QUIZ_SENTENCE}</strong> Open each quiz from your
+        Canvas course. You cannot start a graded quiz here.
+      </p>
+      <p className="text-sm text-neutral-700">
+        {STUDENT_COPY.takeIndexLead} After you submit an exam, the same URL is
+        how you come back for your score and — during the class-wide review
+        week — the answers. Ungraded practice self-checks stay on{" "}
         <Link href="/book/practice">/book/practice</Link>.
         <StaffOnly>
           {" "}
@@ -68,21 +72,17 @@ export default function TakeQuizIndexPage() {
               className="rounded-lg border border-neutral-300 bg-white p-4 shadow-sm"
             >
               <h2 className="mt-0 mb-2 text-lg font-semibold">{bank.title}</h2>
-              <p className="mt-0 text-sm text-neutral-700">
-                {questions} questions
-                {quizId.startsWith("q")
-                  ? " (8 topic items + 2 coding items)"
-                  : " (one from each topic group)"}
-                {minutes ? ` · about ${minutes} minutes` : ""}
-                {" · 100 points"}
-              </p>
+              {isCanvasOnlyQuiz(quizId) ? null : (
+                <p className="mt-0 text-sm text-neutral-700">
+                  {questions} questions (one from each topic group)
+                  {minutes ? ` · about ${minutes} minutes` : ""}
+                  {" · 100 points"}
+                </p>
+              )}
               {isCanvasOnlyQuiz(quizId) ? (
                 <p className="text-sm text-neutral-700">
+                  This quiz is the week of {quizWeekOfLabel(quizId)}.{" "}
                   {CANVAS_ONLY_QUIZ_SENTENCE}
-                </p>
-              ) : quizId.startsWith("q") ? (
-                <p className="text-sm text-neutral-700">
-                  This quiz is the week of {quizWeekOfLabel(quizId)}. Not open yet.
                 </p>
               ) : schedule ? (
                 <p className="text-sm text-neutral-700">
@@ -98,9 +98,7 @@ export default function TakeQuizIndexPage() {
                   href={`/quizzes/take/${quizId}`}
                   className="book-practice-cta inline-block rounded border border-neutral-800 bg-neutral-800 px-3 py-2 text-sm"
                 >
-                  {quizId.startsWith("q")
-                    ? "Open"
-                    : `Take or review ${bank.title}`}
+                  {`Take or review ${bank.title}`}
                 </Link>
               )}
             </li>

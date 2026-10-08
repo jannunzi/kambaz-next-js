@@ -137,12 +137,15 @@ describe("assignment catalog", () => {
     }
   });
 
-  it("re-exports Canvas quiz fallback copy with the website take URL", () => {
+  it("re-exports Canvas quiz copy: quizzes in Canvas, exams keep the website URL", () => {
     const quizzes = listCanvasQuizFollowupCopy();
     assert.equal(quizzes.length, 8);
-    assert.match(quizzes[0]?.html ?? "", /quizzes\/take\/q1/);
-    assert.match(quizzes[0]?.html ?? "", /permission to take this Canvas quiz instead/);
+    assert.doesNotMatch(quizzes[0]?.html ?? "", /quizzes\/take/);
+    assert.match(quizzes[0]?.html ?? "", /taken here in Canvas/);
     assert.doesNotMatch(quizzes[0]?.html ?? "", /Clerk|Kambaz|Lab [0-9]/);
+    const x1 = quizzes.find((row) => row.quizId === "x1");
+    assert.match(x1?.html ?? "", /quizzes\/take\/x1/);
+    assert.match(x1?.html ?? "", /permission to take this Canvas quiz instead/);
   });
 
   it("keeps unique criterion ids and book deep links on A1 and A2", () => {

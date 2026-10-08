@@ -22,8 +22,6 @@ export default function AssignmentHubNav({
       {" · "}
       <Link href="/slides">Slides</Link>
       {" · "}
-      <Link href="/quizzes/take">Graded quizzes</Link>
-      {" · "}
       <Link href="/book/practice">Practice (ungraded)</Link>
       <InstructorPeopleLink />
     </p>

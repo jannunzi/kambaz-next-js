@@ -19,7 +19,9 @@ describe("shared course chrome", () => {
     assert.ok(hrefs.includes("/blog"));
     assert.ok(hrefs.indexOf("/blog") === hrefs.indexOf("/book") + 1);
     assert.ok(hrefs.includes("/assignments"));
-    assert.ok(hrefs.includes("/quizzes/take"));
+    // Graded quizzes are taken in Canvas, so the course nav has no quiz-take link.
+    assert.ok(!(hrefs as readonly string[]).includes("/quizzes/take"));
+    assert.ok(!hrefs.some((href) => href.startsWith("/quizzes")));
     assert.ok(hrefs.includes("/office-hours"));
     assert.ok(hrefs.includes("/slides"));
     assert.ok(hrefs.includes("/videos"));
@@ -33,10 +35,22 @@ describe("shared course chrome", () => {
     );
   });
 
-  it("treats nested book and quiz-take paths as current", () => {
+  it("keeps graded-quiz take links out of student navigation", () => {
+    for (const file of [
+      "app/course-info/links.ts",
+      "app/syllabus/components/SyllabusNav.tsx",
+      "app/sign-in/[[...sign-in]]/page.tsx",
+      "app/sign-up/[[...sign-up]]/page.tsx",
+      "app/assignments/components/AssignmentHubNav.tsx",
+    ]) {
+      assert.doesNotMatch(read(file), /\/quizzes\/take/, file);
+    }
+  });
+
+  it("treats nested book and assignment paths as current", () => {
     assert.equal(isCourseInfoCurrent("/book/ch1", "/book"), true);
-    assert.equal(isCourseInfoCurrent("/quizzes/take/q1", "/quizzes/take"), true);
-    assert.equal(isCourseInfoCurrent("/quizzes", "/quizzes/take"), false);
+    assert.equal(isCourseInfoCurrent("/assignments/a1", "/assignments"), true);
+    assert.equal(isCourseInfoCurrent("/assignmentsx", "/assignments"), false);
     assert.equal(isCourseInfoCurrent("/account/profile", "/account/signin"), true);
     assert.equal(isCourseInfoCurrent("/syllabus", "/book"), false);
     assert.equal(isCourseInfoCurrent("/videos", "/videos"), true);

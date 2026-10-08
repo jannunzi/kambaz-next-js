@@ -103,14 +103,14 @@ describe("course website account copy", () => {
     assert.doesNotMatch(ALL_COPY, /school email is fine/i);
   });
 
-  it("keeps graded-quiz roster gating on the Canvas email", () => {
+  it("says graded quizzes are taken in Canvas, not on this site", () => {
     assert.match(
       COURSE_WEBSITE_ACCOUNT_COPY.quizRosterSeparate,
       /same Northeastern email you use on Canvas/i,
     );
     assert.match(
       COURSE_WEBSITE_ACCOUNT_COPY.quizRosterSeparate,
-      /Taking a graded quiz still requires that Canvas email/i,
+      /Graded quizzes are taken in Canvas, not on this site/,
     );
     assert.match(
       COURSE_WEBSITE_ACCOUNT_COPY.quizRosterSeparate,
@@ -118,8 +118,10 @@ describe("course website account copy", () => {
     );
     assert.match(
       COURSE_WEBSITE_ACCOUNT_COPY.signUpPageHint,
-      /taking a graded quiz still requires your Canvas roster email/i,
+      /Graded quizzes are taken in Canvas, not on this site/,
     );
+    assert.doesNotMatch(ALL_COPY, /taking a graded quiz/i);
+    assert.doesNotMatch(ALL_COPY, /take a graded quiz/i);
     assert.doesNotMatch(ALL_COPY, /pre-created/i);
     assert.doesNotMatch(ALL_COPY, /Canvas login/i);
     assert.doesNotMatch(ALL_COPY, /Northeastern login/i);

@@ -15,6 +15,7 @@ import {
 import { isWebsiteCodingQuizId } from "@/lib/question-bank";
 import { buildAttemptReview } from "@/lib/quiz-exam/review";
 import {
+  CANVAS_ONLY_QUIZ_PAGE_COPY,
   canRevealAnswers,
   getAnswerRevealPhase,
   getQuizSchedule,
@@ -55,7 +56,9 @@ export async function generateMetadata({
   const bank = getExamBank(quizId);
   return {
     title: bank
-      ? `Take ${bank.title} — CS 4550 / CS 5610`
+      ? isCanvasOnlyQuiz(quizId)
+        ? `${bank.title} (taken in Canvas) — CS 4550 / CS 5610`
+        : `Take ${bank.title} — CS 4550 / CS 5610`
       : "Graded quiz",
   };
 }
@@ -88,10 +91,51 @@ function TakeNav({
   );
 }
 
+/** Graded quizzes are taken in Canvas; this page never starts one for a student. */
+function CanvasQuizNote({
+  quizId,
+  signInToReview = false,
+}: {
+  quizId: string;
+  signInToReview?: boolean;
+}) {
+  return (
+    <StatusPanel title={CANVAS_ONLY_QUIZ_PAGE_COPY.title} tone="warn">
+      {CANVAS_ONLY_QUIZ_PAGE_COPY.paragraphs.map((text) => (
+        <p key={text}>{text}</p>
+      ))}
+      {signInToReview ? (
+        <p>
+          If you already submitted this quiz on this site earlier,{" "}
+          <Link
+            href={`/sign-in?redirect_url=${encodeURIComponent(`/quizzes/take/${quizId}`)}`}
+          >
+            sign in
+          </Link>{" "}
+          to see that attempt.
+        </p>
+      ) : null}
+    </StatusPanel>
+  );
+}
+
 export default async function TakeExamPage({ params }: PageProps) {
   const { quizId } = await params;
   const bank = getExamBank(quizId);
   if (!bank) notFound();
+  const canvasOnly = isCanvasOnlyQuiz(quizId);
+
+  if (canvasOnly && !isQuizTakingConfigured()) {
+    return (
+      <article>
+        <TakeNav quizId={quizId} showAuthorReview={false} />
+        <h1 className="mt-0 text-3xl font-semibold tracking-tight">
+          {bank.title}
+        </h1>
+        <CanvasQuizNote quizId={quizId} />
+      </article>
+    );
+  }
 
   if (!isQuizTakingConfigured()) {
     return (
@@ -105,6 +149,17 @@ export default async function TakeExamPage({ params }: PageProps) {
   }
 
   const { isAuthenticated, redirectToSignIn, sessionClaims } = await auth();
+  if (!isAuthenticated && canvasOnly) {
+    return (
+      <article>
+        <TakeNav quizId={quizId} showAuthorReview={false} />
+        <h1 className="mt-0 text-3xl font-semibold tracking-tight">
+          {bank.title}
+        </h1>
+        <CanvasQuizNote quizId={quizId} signInToReview />
+      </article>
+    );
+  }
   if (!isAuthenticated) {
     return redirectToSignIn();
   }
@@ -130,6 +185,7 @@ export default async function TakeExamPage({ params }: PageProps) {
   if (roster.status === "empty") {
     return (
       <article>
+        {canvasOnly ? <CanvasQuizNote quizId={quizId} /> : null}
         <StatusPanel title="Canvas roster has not been loaded" tone="warn">
           <p>
             You are signed in, but this course has no roster yet. Graded
@@ -146,6 +202,7 @@ export default async function TakeExamPage({ params }: PageProps) {
   if (roster.status === "not_on_roster" || roster.status === "not_configured") {
     return (
       <article>
+        {canvasOnly ? <CanvasQuizNote quizId={quizId} /> : null}
         <StatusPanel title={STUDENT_COPY.notOnRosterTitle} tone="warn">
           <p>{STUDENT_COPY.notOnRosterPage}</p>
           <p>
@@ -173,10 +230,12 @@ export default async function TakeExamPage({ params }: PageProps) {
       ? "submitted_waiting"
       : "take_open";
 
+  // Students never get the form for a Canvas-only quiz, even if a staff
+  // take override is open. Impersonation still smoke-tests it (not saved).
   const showForm =
     Boolean(schedule) &&
     !attempt &&
-    (impersonating || phase === "take_open");
+    (impersonating || (phase === "take_open" && !canvasOnly));
   const questions = showForm
     ? drawWebsiteAttempt(quizId, `${user.id}:${bank.id}`).map(toStudentQuestion)
     : [];
@@ -189,7 +248,7 @@ export default async function TakeExamPage({ params }: PageProps) {
       <h1 className="mt-0 text-3xl font-semibold tracking-tight">
         {bank.title}
       </h1>
-      {schedule && !(isCanvasOnlyQuiz(quizId) && phase !== "take_open") ? (
+      {schedule && !canvasOnly ? (
         <p className="mt-3 mb-0 text-sm text-neutral-700">
           {syllabusTakeWindowSentence(schedule)}
         </p>
@@ -223,7 +282,7 @@ export default async function TakeExamPage({ params }: PageProps) {
         <>
           {impersonating &&
           schedule &&
-          !isTakeWindowOpen(schedule, now, takeOverride) ? (
+          (canvasOnly || !isTakeWindowOpen(schedule, now, takeOverride)) ? (
             <div className="mt-4">
               <WindowBanner
                 schedule={schedule}
@@ -262,6 +321,10 @@ export default async function TakeExamPage({ params }: PageProps) {
             />
           </div>
         </>
+      ) : canvasOnly ? (
+        <div className="mt-4">
+          <CanvasQuizNote quizId={quizId} />
+        </div>
       ) : schedule ? (
         <div className="mt-4">
           <WindowBanner
