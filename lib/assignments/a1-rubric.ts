@@ -140,7 +140,8 @@ export function evaluateRubricSpec(
     idPresent?: (html: string, id: string) => boolean;
   },
 ): { passed: boolean; message: string } {
-  if (spec.kind === "manual") {
+  if (spec.kind === "manual" || spec.kind === "structure") {
+    // "structure" rows are judged by their checker's own rules, never here.
     return { passed: false, message: spec.failMessage };
   }
 
