@@ -28,6 +28,9 @@ export function isPasswordChangeExemptPath(pathname: string): boolean {
   if (path === "/_next" || path.startsWith("/_next/")) return true;
   if (path === "/__clerk" || path.startsWith("/__clerk/")) return true;
   if (path === "/sign-out" || path.startsWith("/sign-out/")) return true;
+  // Public legal pages. Stay reachable during the password-change gate.
+  if (path === "/privacy" || path.startsWith("/privacy/")) return true;
+  if (path === "/terms" || path.startsWith("/terms/")) return true;
   if (STATIC_FILE.test(path)) return true;
   return false;
 }

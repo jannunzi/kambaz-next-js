@@ -98,6 +98,7 @@ const KENNETH_ORIGIN =
   "https://kambaz-next-js-sp26-git-a1-kenneth-aldridges-projects.vercel.app";
 const SIGNIN_HTML = `
   <div id="wd-signin-screen">
+    <input placeholder="username" /><input type="password" placeholder="password" />
     <button id="wd-signin-btn">Sign in</button>
   </div>
 `;
@@ -113,7 +114,7 @@ function htmlForPath(url: string): string {
   if (url.includes("/labs/lab1")) {
     return `
       <div id="wd-lab1">
-        <div id="wd-h-tag"><h1></h1><h2></h2><h3></h3><h4></h4><h5></h5><h6></h6></div>
+        <div id="wd-h-tag"><h1>One</h1><h2>Two</h2><h3>Three</h3><h4>Four</h4><h5>Five</h5><h6>Six</h6></div>
         <div id="wd-your-heading"><span id="wd-your-span">hi</span></div>
         <div id="wd-p-tag"><p id="wd-p-1"></p></div>
         <p id="wd-p-your-1"></p><p id="wd-p-your-2"></p>
@@ -130,7 +131,7 @@ function htmlForPath(url: string): string {
         <a id="wd-your-link" href="#"></a><a id="wd-your-github" href="#"></a>
         <a id="wd-home-link" href="/labs"></a>
         <a id="wd-lab4-link" href="/labs/lab4"></a>
-        <div id="wd-ai-headings"></div>
+        <div id="wd-ai-headings"><h4>Lab notes</h4><h5>What I built</h5><h6>Next step</h6></div>
         <p id="wd-ai-p"></p>
         <ul id="wd-ai-html-tags"></ul>
         <table><tr><td>Q4</td></tr><tr><td>Q10</td></tr></table>
@@ -144,7 +145,7 @@ function htmlForPath(url: string): string {
   if (url.includes("/dashboard")) {
     return '<div id="wd-dashboard"></div><nav id="wd-kambaz-navigation"></nav>';
   }
-  if (url.includes("/account/signup")) return '<div id="wd-signup-screen"></div>';
+  if (url.includes("/account/signup")) return '<div id="wd-signup-screen"><input placeholder="username" /></div>';
   if (url.includes("/account/profile")) {
     return '<div id="wd-profile-screen"></div><div id="wd-account-navigation"></div>';
   }
@@ -158,7 +159,7 @@ function htmlForPath(url: string): string {
     return '<div id="wd-assignments-editor"><input id="wd-name" /></div>';
   }
   if (/\/courses\/[^/]+\/assignments/i.test(url)) {
-    return '<div id="wd-assignments"></div>';
+    return '<div id="wd-assignments"><ul id="wd-assignment-list"><li><a href="/courses/1234/assignments/123">A1</a></li><li><a href="/courses/1234/assignments/124">A2</a></li><li><a href="/courses/1234/assignments/125">A3</a></li></ul></div>';
   }
   return "<html><body>Home</body></html>";
 }
@@ -272,7 +273,7 @@ describe("runA1Checks", () => {
     assert.equal(name.passed, false);
     assert.equal(
       name.message,
-      "Sign in with your roster (Northeastern) account to check your name on Labs",
+      "Sign in with your Canvas email so Run checks can compare your name on Labs with the course roster. Staff check your name again when grading.",
     );
     assert.equal(name.message, ASSIGNMENT_STUDENT_COPY.nameCheckNeedsRoster);
     assert.equal(
@@ -646,6 +647,12 @@ describe("student-facing copy", () => {
       ASSIGNMENT_STUDENT_COPY.nameAndSectionDeliveryNote,
       /not a checkbox or control in Run checks/i,
     );
+    assert.match(ASSIGNMENT_STUDENT_COPY.nameAndSection, /checks? (looks for it|for it) automatically|looks for it automatically/i);
+    assert.match(ASSIGNMENT_STUDENT_COPY.nameAndSection, /roster name of the account you are signed in with/i);
+    assert.match(ASSIGNMENT_STUDENT_COPY.nameAndSection, /sign in with your Canvas email/i);
+    assert.match(ASSIGNMENT_STUDENT_COPY.nameAndSection, /section is not checked/i);
+    assert.match(ASSIGNMENT_STUDENT_COPY.nameAndSectionDeliveryNote, /checked automatically/i);
+    assert.match(ASSIGNMENT_STUDENT_COPY.nameCheckNeedsRoster, /Sign in with your Canvas email/i);
     assert.match(ASSIGNMENT_STUDENT_COPY.nameMissing, /full Canvas name/i);
     assert.match(ASSIGNMENT_STUDENT_COPY.nameMissing, /no Name and section checkbox in Run checks/i);
     assert.match(ASSIGNMENT_STUDENT_COPY.nameOk, /full Canvas name on Labs/i);
@@ -671,13 +678,16 @@ describe("student-facing copy", () => {
       /never marks it pass or fail/i,
     );
     assert.doesNotMatch(ASSIGNMENT_STUDENT_COPY.manualCheckHint, /Best \/ Better/i);
+    assert.match(ASSIGNMENT_STUDENT_COPY.manualCheckHint, /does not mean you lost points/i);
+    assert.match(ASSIGNMENT_STUDENT_COPY.manualCheckLabNote, /does not mean you lost points/i);
+    assert.match(ASSIGNMENT_STUDENT_COPY.manualCheckHint, /after you submit/i);
   });
 
   it("describes origin normalize, Labs/Kambaz crawl, and optional GitHub", () => {
     assert.match(ASSIGNMENT_STUDENT_COPY.checkInstructions, /normalize the deploy origin/i);
     assert.match(ASSIGNMENT_STUDENT_COPY.checkInstructions, /Labs and Lab pages/i);
     assert.match(ASSIGNMENT_STUDENT_COPY.checkInstructions, /Kambaz/i);
-    assert.match(ASSIGNMENT_STUDENT_COPY.checkInstructions, /wd-\*/i);
+    assert.match(ASSIGNMENT_STUDENT_COPY.checkInstructions, /Keep the wd-\* ids/i);
     assert.match(ASSIGNMENT_STUDENT_COPY.checkInstructions, /GitHub URL is optional/i);
     assert.doesNotMatch(ASSIGNMENT_STUDENT_COPY.checkInstructions, /Best \/ Better/i);
   });

@@ -88,7 +88,11 @@ export default function CssProperties() {
           <ForegroundColors />
         </LiveDemo>
         <p>
-          Now import each demo into <code>page.tsx</code>:
+          Now import each demo into <code>page.tsx</code>. Every later demo
+          component gets the same two lines, an <code>import</code>{" "}at the top
+          and a tag inside <code>#wd-lab2</code>.{" "}
+          <SectionLink to="2.3.7" />{" "}shows the finished{" "}
+          <code>page.tsx</code>{" "}with all of them:
         </p>
         <CodeBlock
           language="tsx"
@@ -905,13 +909,17 @@ export default function Lab2() {
       Square
     </div>
   </div>
+  <br /><br /><br /><br /><br /><br /><br />
 </div>`}</CodeBlock>
         <p>
           The three boxes stack on top of one another, each offset from the
           top-left corner of the shared relative container by its own{" "}
           <code>top</code>/<code>left</code>{" "}pair — proof that
           &quot;absolute&quot; means relative to an ancestor, not to some
-          fixed point on the screen:
+          fixed point on the screen. Absolute boxes take up no space, so the
+          tall portrait box hangs below the 150px container; the row of{" "}
+          <code>&lt;br /&gt;</code>{" "}tags after it leaves room so the next
+          section doesn&apos;t slide underneath:
         </p>
         <LiveDemo mode="styled" name="Positions (absolute)" file="app/labs/lab2/Positions.tsx">
           <PositionAbsolute />
@@ -940,7 +948,8 @@ export default function Lab2() {
           Setting <code>position</code>{" "}to <code>fixed</code>{" "}anchors an
           element to the browser&apos;s <strong>viewport</strong>{" "}instead of
           any ancestor, so it stays put even while the rest of the page
-          scrolls. Add one fixed box to the bottom-right of the demo:
+          scrolls. Add one fixed box pinned to the right edge of the window,
+          halfway down (<code>right: 0</code>, <code>bottom: 50%</code>):
         </p>
         <CodeBlock
           language="css"
@@ -1059,9 +1068,12 @@ export default function Lab2() {
           <code>absolute</code>, or <code>fixed</code>, they can end up
           overlapping. By default, later elements in the HTML render on top
           of earlier ones. The <code>z-index</code>{" "}property overrides that
-          default stacking order directly — a higher{" "}
-          <code>z-index</code>{" "}always renders above a lower one, regardless
-          of source order:
+          default stacking order directly — among positioned siblings like
+          these boxes, which share one container, a higher{" "}
+          <code>z-index</code>{" "}renders above a lower one regardless of source
+          order. (A positioned parent with its own <code>z-index</code>{" "}starts
+          a separate stack, and its children can&apos;t rise above elements
+          outside it. That rarely comes up in these labs.)
         </p>
         <CodeBlock
           language="css"
@@ -1161,9 +1173,7 @@ img.wd-float-right {
           language="tsx"
           name="Float"
           file="app/labs/lab2/Float.tsx"
-        >{`import "./index.css";
-
-const STARSHIP =
+        >{`const STARSHIP =
   "https://www.staradvertiser.com/wp-content/uploads/2021/08/web1_Starship-gap2.jpg";
 const LOREM =
   "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eius hic reprehenderit doloremque adipisci iste deserunt. Inventore, hic. Esse nihil unde aut, dignissimos eos consequatur veniam distinctio?";
@@ -1413,27 +1423,25 @@ export default function Float() {
           language="css"
           name="Lab2 styles"
           file="app/labs/lab2/index.css"
-        >{`.wd-width-75px {
+        >{`.wd-width-110px {
   /* Room for "Column 1" + 10px padding under border-box */
   width: 110px;
   flex-shrink: 0;
 }`}</CodeBlock>
         <p>
-          Apply <code>wd-width-75px</code>{" "}to Column 1 and keep{" "}
+          Apply <code>wd-width-110px</code>{" "}to Column 1 and keep{" "}
           <code>wd-flex-grow-1</code>{" "}on Column 3:
         </p>
         <CodeBlock
           language="tsx"
           name="Flex"
           file="app/labs/lab2/Flex.tsx"
-        >{`import "./index.css";
-
-export default function Flex() {
+        >{`export default function Flex() {
   return (
     <div id="wd-css-flex">
       <h2>Flex</h2>
       <div className="wd-flex-row-container">
-        <div className="wd-bg-color-yellow wd-width-75px">Column 1</div>
+        <div className="wd-bg-color-yellow wd-width-110px">Column 1</div>
         <div className="wd-bg-color-blue wd-fg-color-white">Column 2</div>
         <div className="wd-bg-color-red wd-fg-color-white wd-flex-grow-1">
           Column 3
@@ -1452,7 +1460,7 @@ export default function Flex() {
           fixed width, then confirm which columns stretch and which stay pinned.
         </OnYourOwn>
         <WithAI
-          prompt={`In app/labs/lab2/Flex.tsx, keep my personal fourth flex row unchanged. After the sample rows, add one more sample flex row with id wd-ai-flex: three children, the first with wd-width-75px, the last with wd-flex-grow-1, and background classes so it is obvious which column stretches. Do not overwrite my personal row.`}
+          prompt={`In app/labs/lab2/Flex.tsx, keep my personal fourth flex row unchanged. After the sample rows, add one more sample flex row with id wd-ai-flex: three children, the first with wd-width-110px, the last with wd-flex-grow-1, and background classes so it is obvious which column stretches. Do not overwrite my personal row.`}
         >
           Paste this prompt to add another sample grow/pin row — then confirm
           which column stretches and which stays pinned:
@@ -1574,7 +1582,9 @@ export default function MediaQueriesDemo() {
         <p>
           Notice that only the last <code>@media</code>{" "}block has no{" "}
           <code>max-width</code>, so it matches every width from 1250px
-          upward. A <strong>breakpoint</strong>{" "}is a viewport width at
+          upward. The ranges share their edges: at exactly 1000px or 1250px
+          two blocks match, and the later block in the file wins (source
+          order, <SectionLink to="2.1.6" />). A <strong>breakpoint</strong>{" "}is a viewport width at
           which styles change, for example through a media query. The
           matching bullet is bold and underlined so you can see which rule
           is active. The phone frame is 375px, so the default green

@@ -17,11 +17,15 @@ import {
 } from "./must-change-password";
 
 describe("password change allowlist", () => {
-  it("exempts the set-password page, sign-out, static files, and API routes", () => {
+  it("exempts the set-password page, privacy policy, terms of service, sign-out, static files, and API routes", () => {
     for (const path of [
       "/account/set-password",
       "/account/set-password/",
       "/account/set-password/extra",
+      "/privacy",
+      "/privacy/",
+      "/terms",
+      "/terms/",
       "/api",
       "/api/lab5/hello",
       "/trpc/quiz",
@@ -134,6 +138,14 @@ describe("password change redirect", () => {
     assert.equal(
       passwordChangeRedirect({
         pathname: "/sign-out",
+        signedIn: true,
+        mustChangePassword: true,
+      }),
+      null,
+    );
+    assert.equal(
+      passwordChangeRedirect({
+        pathname: "/privacy",
         signedIn: true,
         mustChangePassword: true,
       }),

@@ -100,6 +100,19 @@ function findSlide(deckSlug: string, id: string) {
   return slide;
 }
 
+/** Body of a book `<CodeBlock name=… file=…>` listing, unescaped. */
+function bookCodeBlock(bookFile: string, name: string, file: string): string {
+  const source = readFileSync(join(process.cwd(), bookFile), "utf8");
+  const escape = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = source.match(
+    new RegExp(
+      `name="${escape(name)}"\\s+file="${escape(file)}"\\s*>\\{\`([\\s\\S]*?)\`\\}</CodeBlock>`,
+    ),
+  );
+  assert.ok(match, `${bookFile} missing CodeBlock ${name} (${file})`);
+  return match[1].replace(/\\([`$\\])/g, "$1");
+}
+
 describe("lecture catalog", () => {
   it("lists slugs in book-spine order (Ch1–Ch6, then Project decks)", () => {
     assert.deepEqual(listLectureSlugs(), [
@@ -1202,10 +1215,10 @@ describe("lecture decks", () => {
     assert.equal(counts["kambaz-account"], 15);
     assert.equal(counts["kambaz-dashboard"], 8);
     assert.equal(counts["kambaz-navigation"], 8);
-    assert.equal(counts["kambaz-courses"], 8);
+    assert.equal(counts["kambaz-courses"], 10);
     assert.equal(counts["kambaz-modules"], 12);
     assert.equal(counts["kambaz-assignments"], 12);
-    assert.equal(counts["css-intro"], 22);
+    assert.equal(counts["css-intro"], 23);
     assert.equal(counts["css-colors"], 10);
     assert.equal(counts["css-box-model"], 18);
     assert.equal(counts["css-size-and-position"], 22);
@@ -1213,17 +1226,17 @@ describe("lecture decks", () => {
     assert.equal(counts["css-float"], 9);
     assert.equal(counts["css-flex"], 12);
     assert.equal(counts["css-rotation"], 6);
-    assert.equal(counts["react-icons"], 9);
+    assert.equal(counts["react-icons"], 10);
     assert.equal(counts["tailwind-intro"], 9);
     assert.equal(counts["tailwind-spacing"], 8);
     assert.equal(counts["tailwind-typography"], 7);
     assert.equal(counts["tailwind-colors"], 6);
-    assert.equal(counts["tailwind-filters-and-grid"], 15);
+    assert.equal(counts["tailwind-filters-and-grid"], 20);
     assert.equal(counts["tailwind-responsive"], 23);
     assert.equal(counts["kambaz-styling"], 8);
-    assert.equal(counts["kambaz-nav-styling"], 7);
+    assert.equal(counts["kambaz-nav-styling"], 11);
     assert.equal(counts["kambaz-dashboard-styling"], 7);
-    assert.equal(counts["kambaz-courses-styling"], 14);
+    assert.equal(counts["kambaz-courses-styling"], 17);
     assert.equal(counts["kambaz-assignments-styling"], 9);
     assert.equal(counts["kambaz-account-styling"], 8);
     assert.equal(counts["intro-to-javascript"], 8);
@@ -1758,7 +1771,7 @@ describe("lecture decks", () => {
         "path-links": "js-path-parameters",
         "todo-list": "js-todo-list",
       },
-      "kambaz-database": { nav: "kambaz-styled-nav" },
+      "kambaz-database": { nav: "kambaz-links-nav" },
       "kambaz-dashboard-data": { page: "kambaz-styled-dashboard" },
       "kambaz-courses-data": { "course-nav": "kambaz-styled-course-nav" },
       "kambaz-modules-data": { page: "kambaz-styled-modules" },
@@ -1850,6 +1863,16 @@ describe("lecture decks", () => {
       for (const slide of deck.slides) {
         if (slide.embed) used.add(slide.embed);
       }
+    }
+    // §3.9 data-driven snapshots registered for Sandy to retarget ch3 decks
+    // off the ch2 kambaz-styled-* embeds without breaking ch2 styling decks.
+    for (const id of [
+      "kambaz-ch3-dashboard",
+      "kambaz-ch3-modules",
+      "kambaz-ch3-assignments",
+      "kambaz-ch3-people",
+    ] as const) {
+      used.add(id);
     }
     assert.deepEqual(
       [...LECTURE_EMBED_IDS].sort(),
@@ -1943,7 +1966,7 @@ describe("lecture decks", () => {
       assert.doesNotMatch(lecture.summary, /kambaz-next-js/, deck.slug);
     }
     const creating = slideText("creating-a-nextjs-react-application");
-    assert.match(creating, /npx create-next-app@latest webdev-client/);
+    assert.match(creating, /npx create-next-app@16.3 webdev-client/);
     assert.match(creating, /cd webdev-client/);
     const diagrams = join(process.cwd(), "app/slides/_components/diagrams");
     for (const file of sourceFilesUnder(diagrams)) {
@@ -2251,6 +2274,8 @@ describe("lecture decks", () => {
     assert.match(mq, /MediaQueriesDemo\.tsx/);
     assert.match(mq, /MediaQueriesDemo\.css/);
     assert.doesNotMatch(mq, /@screen-sm-min/);
+    // Tailwind breakpoint prefixes are defined in tailwind-responsive, not Lecture 4.
+    assert.doesNotMatch(mq, /`(?:sm|md|lg|xl|2xl):/);
     assert.doesNotMatch(mq, /min-width: 576px/);
 
     const float = slideText("css-float");
@@ -2270,7 +2295,7 @@ describe("lecture decks", () => {
     const flex = slideText("css-flex");
     assert.match(flex, /wd-flex-row-container/);
     assert.match(flex, /wd-flex-grow-1/);
-    assert.match(flex, /wd-width-75px/);
+    assert.match(flex, /wd-width-110px/);
     assert.match(flex, /Flex\.tsx/);
 
     const rotation = slideText("css-rotation");
@@ -2287,6 +2312,44 @@ describe("lecture decks", () => {
     assert.match(icons, /react-icons\/fa/);
     assert.match(icons, /text-3xl/);
     assert.doesNotMatch(icons, /kit\.fontawesome/);
+    // The sampler imports utilities.css, so a slide must create it first (book §2.2).
+    const iconIds = getLectureDeck("react-icons")!.slides.map((slide) => slide.id);
+    assert.ok(iconIds.indexOf("utilities-css") > iconIds.indexOf("install"));
+    assert.ok(iconIds.indexOf("utilities-css") < iconIds.indexOf("sampler"));
+    const utilitiesCss = findSlide("react-icons", "utilities-css");
+    assert.equal(utilitiesCss.codeFile, "app/labs/lab2/tailwind/utilities.css");
+    assert.equal(
+      utilitiesCss.code,
+      bookCodeBlock(
+        "app/book/ch2/sections/IconsAndTailwind.tsx",
+        "Tailwind utilities",
+        "app/labs/lab2/tailwind/utilities.css",
+      ),
+    );
+    assert.match(findSlide("react-icons", "sampler").code ?? "", /^import "@\/app\/labs\/lab2\/tailwind\/utilities\.css";/);
+    assert.match(utilitiesCss.bullets?.join("\n") ?? "", /\*\*Preflight\*\*/);
+    assert.match(utilitiesCss.bullets?.join("\n") ?? "", /\*\*utilities\*\*/);
+    // §2.3.7's finished Lab 2 page, split at its blank lines, closes Lecture 6.
+    const finishedIds = [
+      "lab2-final-imports",
+      "lab2-final-intro",
+      "lab2-final-selectors",
+      "lab2-final-structure",
+      "lab2-final-samples",
+    ];
+    const finished = finishedIds.map((id) => {
+      const slide = findSlide("tailwind-filters-and-grid", id);
+      assert.equal(slide.codeFile, "app/labs/lab2/page.tsx");
+      assert.ok(slide.title.length <= 42);
+      return slide.code ?? "";
+    });
+    assert.equal(
+      finished.join("\n\n"),
+      bookCodeBlock("app/book/ch2/sections/IconsAndTailwind.tsx", "Lab2 (finished)", "app/labs/lab2/page.tsx"),
+    );
+    const gridIds = getLectureDeck("tailwind-filters-and-grid")!.slides.map((slide) => slide.id);
+    assert.deepEqual(gridIds.slice(-6), [...finishedIds, "next-up"]);
+    assert.match(findSlide("css-size-and-position", "absolute-tsx").code ?? "", /<br \/><br \/>/);
 
     const intro = slideText("tailwind-intro");
     assert.match(intro, /@import "tailwindcss"/);
@@ -2401,6 +2464,8 @@ describe("lecture decks", () => {
     assert.match(shell, /wd-main-content-offset/);
     assert.match(shell, /font-sans/);
     assert.doesNotMatch(shell, /labs\/lab2\/tailwind\/utilities\.css/);
+    // Step 2 adds to Step 1's file; replacing it would drop the Tailwind imports.
+    assert.match(findSlide("kambaz-styling", "kambaz-css").bullets?.[0] ?? "", /\*\*Append\*\*/);
 
     const nav = slideText("kambaz-nav-styling");
     assert.match(nav, /wd-kambaz-navigation/);
@@ -2426,6 +2491,69 @@ describe("lecture decks", () => {
     assert.match(courses, /wd-course-status/);
     assert.doesNotMatch(courses, /react-bootstrap/i);
     assert.doesNotMatch(courses, /\bd-flex\b/);
+    // Chapter 2 Kambaz slides copy the book listings exactly (split at natural boundaries).
+    const KAMBAZ_BOOK = "app/book/ch2/sections/KambazStyling.tsx";
+    const joinedCode = (deck: string, ids: string[], file: string) =>
+      ids
+        .map((id) => {
+          const slide = findSlide(deck, id);
+          assert.equal(slide.codeFile, file, `${deck} ${id}`);
+          assert.ok(slide.title.length <= 42, `${deck} ${id}`);
+          return slide.code ?? "";
+        })
+        .join("\n");
+    // §2.4.4 shows the full Modules page right after the toolbar; it carries the list styles.
+    const modulesFile = "app/(kambaz)/courses/[cid]/modules/page.tsx";
+    assert.equal(
+      joinedCode("kambaz-courses-styling", ["modules-page", "modules-list"], modulesFile),
+      bookCodeBlock(KAMBAZ_BOOK, "Modules page", modulesFile),
+    );
+    assert.match(
+      findSlide("kambaz-courses-styling", "modules-list").code ?? "",
+      /^ {6}<ul id="wd-modules" className="m-0 list-none p-0">/,
+    );
+    assert.deepEqual(findSlide("kambaz-courses-styling", "modules-list").codeAddedLines, [1]);
+    assert.deepEqual(
+      findSlide("kambaz-courses-styling", "toolbar").codeHighlightLines,
+      [1, 4, 10, 16, 22],
+    );
+    assert.equal(findSlide("kambaz-courses-styling", "toolbar").codeAddedLines, undefined);
+    const coursesIds = getLectureDeck("kambaz-courses-styling")!.slides.map((slide) => slide.id);
+    const toolbarAt = coursesIds.indexOf("toolbar");
+    assert.deepEqual(coursesIds.slice(toolbarAt, toolbarAt + 4), [
+      "toolbar",
+      "modules-page",
+      "modules-list",
+      "modules-demo",
+    ]);
+    // Course Navigation keeps the Chapter 1 order (Modules before Assignments).
+    const courseNavFile = "app/(kambaz)/courses/[cid]/Navigation.tsx";
+    const courseNav = joinedCode("kambaz-courses-styling", ["course-nav", "course-nav-rest"], courseNavFile);
+    assert.equal(courseNav, bookCodeBlock(KAMBAZ_BOOK, "CourseNavigation", courseNavFile));
+    assert.ok(courseNav.indexOf("wd-course-modules-link") < courseNav.indexOf("wd-course-assignments-link"));
+    assert.match(findSlide("kambaz-courses-styling", "course-nav").bullets?.join("\n") ?? "", /use client/);
+    const statusFile = "app/(kambaz)/courses/[cid]/home/Status.tsx";
+    assert.equal(
+      findSlide("kambaz-courses-styling", "status").code,
+      bookCodeBlock(KAMBAZ_BOOK, "CourseStatus", statusFile),
+    );
+    const homeFile = "app/(kambaz)/courses/[cid]/home/page.tsx";
+    assert.equal(
+      findSlide("kambaz-courses-styling", "flex-layouts").codeBlocks?.find((block) => block.file === homeFile)?.code,
+      bookCodeBlock(KAMBAZ_BOOK, "Home", homeFile),
+    );
+    // The full sidebar: NEU link, six tiles, white Account icon, no "use client".
+    const navFile = "app/(kambaz)/Navigation.tsx";
+    const sidebar = joinedCode(
+      "kambaz-nav-styling",
+      ["tsx", "neu-link", "account-dashboard", "courses-calendar", "inbox-labs"],
+      navFile,
+    );
+    assert.equal(sidebar, bookCodeBlock(KAMBAZ_BOOK, "KambazNavigation", navFile));
+    assert.doesNotMatch(sidebar, /use client/);
+    assert.match(sidebar, /id="wd-neu-link"/);
+    assert.match(sidebar, /<FaRegCircleUser className="inline-block text-3xl text-white" \/>/);
+    assert.doesNotMatch(slideText("kambaz-nav-styling"), /Optional Northeastern/);
 
     const assignments = slideText("kambaz-assignments-styling");
     assert.match(assignments, /wd-people-table/);
@@ -3204,7 +3332,7 @@ describe("lecture decks", () => {
     assert.match(expressCode, /app\.listen\(4000\)/);
     assert.ok(!authoredSlideBullets(express).some((row) => row.includes("app.listen")));
 
-    assert.equal(createApp.code, "npx create-next-app@latest webdev-client");
+    assert.equal(createApp.code, "npx create-next-app@16.3 webdev-client");
     assert.equal(createApp.codeLanguage, "bash");
     assert.match(welcome.code ?? "", /Welcome to Web Dev/);
     assert.equal(welcome.codeFile, "app/page.tsx");
@@ -3237,4 +3365,82 @@ describe("lecture decks", () => {
     assert.ok(server);
     assert.deepEqual(server.addedLines, [[3, 6]]);
   });
+
+  it("marks assignments toolbar lines that differ from the previous listing", () => {
+    const slide = findSlide("kambaz-assignments-styling", "toolbar");
+    const file = slide.codeFile;
+    assert.equal(file, "app/(kambaz)/courses/[cid]/assignments/page.tsx");
+    let previous: string | null = null;
+    for (const slug of listLectureSlugs()) {
+      const deck = getLectureDeck(slug);
+      assert.ok(deck);
+      for (const row of deck.slides) {
+        if (slug === "kambaz-assignments-styling" && row.id === "toolbar") {
+          assert.ok(previous, "a prior slide lists assignments/page.tsx");
+          assert.deepEqual(slide.codeAddedLines, addedLineMarks(previous, slide.code ?? ""));
+          return;
+        }
+        for (const block of lectureSlideCodeBlocks(row)) {
+          if (block.file === file && block.code) previous = block.code;
+        }
+      }
+    }
+    assert.fail("toolbar slide not found in lecture order");
+  });
 });
+
+/** Lines in `next` that are new or changed versus `prev` (exact line equality). */
+function addedLineMarks(prev: string, next: string): Array<number | [number, number]> {
+  const before = prev.replace(/\n$/, "").split("\n");
+  const after = next.replace(/\n$/, "").split("\n");
+  const n = before.length;
+  const m = after.length;
+  const dp = Array.from({ length: n + 1 }, () => new Uint16Array(m + 1));
+  for (let i = n - 1; i >= 0; i--) {
+    for (let j = m - 1; j >= 0; j--) {
+      dp[i][j] =
+        before[i] === after[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+    }
+  }
+  const kept = new Set<number>();
+  let i = 0;
+  let j = 0;
+  while (i < n && j < m) {
+    if (before[i] === after[j]) {
+      kept.add(j + 1);
+      i += 1;
+      j += 1;
+    } else if (dp[i + 1][j] >= dp[i][j + 1]) {
+      i += 1;
+    } else {
+      j += 1;
+    }
+  }
+  const changed: number[] = [];
+  for (let line = 1; line <= m; line++) {
+    if (!kept.has(line)) changed.push(line);
+  }
+  const marks: Array<number | [number, number]> = [];
+  let start: number | null = null;
+  let end: number | null = null;
+  const flush = () => {
+    if (start == null || end == null) return;
+    marks.push(start === end ? start : [start, end]);
+    start = null;
+    end = null;
+  };
+  for (const line of changed) {
+    if (start == null || end == null) {
+      start = end = line;
+      continue;
+    }
+    if (line === end + 1) {
+      end = line;
+      continue;
+    }
+    flush();
+    start = end = line;
+  }
+  flush();
+  return marks;
+}

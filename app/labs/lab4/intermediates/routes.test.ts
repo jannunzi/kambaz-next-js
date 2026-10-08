@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { createElement, Fragment, isValidElement, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, it } from "node:test";
@@ -15,6 +16,7 @@ import Counter from "../Counter";
 import BooleanStateVariables from "../BooleanStateVariables";
 import StringStateVariables from "../StringStateVariables";
 import DateStateVariable from "../DateStateVariable";
+import Lab4 from "../page";
 import ObjectStateVariable from "../ObjectStateVariable";
 import ArrayStateVariable from "../ArrayStateVariable";
 import ParentStateComponent from "../ParentStateComponent";
@@ -153,4 +155,69 @@ describe("Lab 4 intermediate routes", () => {
       }
     });
   }
+
+  it("keeps the date listing identical to the lab file and mounts that component", () => {
+    const read = (rel: string) => readFileSync(new URL(rel, import.meta.url), "utf8");
+    const labFile = read("../DateStateVariable.tsx").trim();
+    assert.match(labFile, /new Date\(2026, 0, 15, 10, 30\)/);
+    assert.match(labFile, /new Date\(year, month - 1, day, 0, 0\)/);
+    assert.doesNotMatch(labFile, /new Date\(\)/);
+    assert.doesNotMatch(labFile, /new Date\(e\.target\.value\)/);
+    assert.doesNotMatch(labFile, /suppressHydrationWarning|BrowserDateState|next\/dynamic/);
+
+    const book = read("../../../book/ch4/sections/EventsAndState.tsx");
+    const bookBlock = book.match(
+      /<CodeBlock\b[^>]*name="DateStateVariable"[^>]*>\{`([\s\S]*?)`\}<\/CodeBlock>/,
+    );
+    assert.ok(bookBlock);
+    assert.equal(unescapeTemplate(bookBlock[1]).trim(), labFile);
+
+    const deck = read("../../../../lib/lectures/decks/form-state-types.ts");
+    const slide = deck.match(/id: "date"[\s\S]*?code: `([\s\S]*?)`,\n    codeLanguage:/);
+    assert.ok(slide);
+    assert.equal(unescapeTemplate(slide[1]).trim(), labFile);
+
+    const page = read("../page.tsx");
+    assert.match(page, /import DateStateVariable from "\.\/DateStateVariable"/);
+    assert.match(page, /<DateStateVariable\s*\/>/);
+    assert.doesNotMatch(page, /BrowserDateState/);
+
+    const step = read("./[slug]/page.tsx");
+    assert.match(step, /import DateStateVariable from "\.\.\/\.\.\/DateStateVariable"/);
+    assert.match(step, /\n  DateStateVariable,/);
+    assert.doesNotMatch(step, /BrowserDateState/);
+    assert.doesNotMatch(book, /ClientDateDemo|BrowserDateState/);
+
+    const [year, month, day] = "2027-03-15".split("-").map(Number);
+    const picked = new Date(year, month - 1, day, 0, 0);
+    assert.equal(picked.getFullYear(), 2027);
+    assert.equal(picked.getMonth(), 2);
+    assert.equal(picked.getDate(), 15);
+
+    const html = markup(createElement(DateStateVariable));
+    assert.equal(html, markup(createElement(DateStateVariable)));
+    assert.match(html, /Thu Jan 15 2026/);
+    assert.match(html, /2026-01-15/);
+    assert.doesNotMatch(html, /2026-01-14/);
+
+    const labHtml = markup(createElement(Lab4));
+    assert.match(labHtml, /id="wd-date-state-variables"/);
+    assert.match(labHtml, /2026-01-15/);
+  });
 });
+
+function unescapeTemplate(raw: string): string {
+  let out = "";
+  for (let i = 0; i < raw.length; i++) {
+    if (raw[i] === "\\" && i + 1 < raw.length) {
+      const next = raw[i + 1];
+      if (next === "`" || next === "\\" || next === "$") {
+        out += next;
+        i++;
+        continue;
+      }
+    }
+    out += raw[i];
+  }
+  return out;
+}

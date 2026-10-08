@@ -1,0 +1,53 @@
+@import "tailwindcss/theme" layer(theme);
+@import "tailwindcss/utilities" layer(utilities);
+
+/* System sans-serif — Tailwind utilities alone
+   do not set the body font */
+#wd-kambaz {
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    "Noto Sans",
+    "Liberation Sans",
+    Arial,
+    sans-serif;
+  color: #212529;
+  line-height: 1.5;
+}
+#wd-kambaz,
+#wd-kambaz * {
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .wd-main-content-offset {
+    margin-left: 120px;
+  }
+}
+
+.list-group.wd {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.list-group.wd > .list-group-item {
+  display: block;
+  padding: 0.4rem 0.75rem;
+  text-decoration: none;
+  border: 0;
+  border-left: 3px solid transparent;
+  color: #dc2626;
+  background-color: transparent;
+  white-space: nowrap;
+}
+
+.list-group.wd > .list-group-item.active {
+  color: black;
+  background-color: white;
+  border-left: 3px solid black !important;
+  font-weight: 600;
+}

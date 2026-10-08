@@ -1,7 +1,7 @@
 import DemoSignin from "./DemoSignin";
 import DemoSignup from "./DemoSignup";
 import DemoProfile from "./DemoProfile";
-import AccountNavigation from "@/app/(kambaz)/account/Navigation";
+import AccountNavigation from "./_styled/AccountNavigation";
 
 /** Account screens side-by-side for §1.4.2 — book stubs, not live auth pages. */
 export default function AccountScreensDemo() {

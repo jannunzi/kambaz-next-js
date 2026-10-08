@@ -1,5 +1,11 @@
+type House = {
+  bedrooms: number;
+  address?: { street: string; city: string; zip?: string };
+  garage?: { cars: number };
+};
+
 export default function OptionalChaining() {
-  const house = {
+  const house: House = {
     bedrooms: 4,
     address: {
       street: "Via Roma",

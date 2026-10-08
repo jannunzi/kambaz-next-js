@@ -69,26 +69,47 @@ export const FORM_STATE_TYPES_SLIDES: LectureSlide[] = [
     title: "Date: format for type=date",
     kind: "demo",
     bullets: [
-      "`useState(new Date())` holds a Date object, not a string",
+      "`useState(new Date(2026, 0, 15, 10, 30))` — year, month, day, hour, minute. Months start at 0",
       "`type=\"date\"` wants `YYYY-MM-DD` — helper `dateObjectToHtmlDateString`",
-      "`onChange` builds `new Date(e.target.value)` from the picker",
+      "`htmlDateStringToDate` reads the picker as a local date, so the day you pick stays that day",
     ],
-    code: `function dateObjectToHtmlDateString(date: Date) {
+    code: `"use client";
+
+import { useState } from "react";
+
+function dateObjectToHtmlDateString(date: Date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return \`\${year}-\${month}-\${day}\`;
 }
 
-<input
-  type="date"
-  value={dateObjectToHtmlDateString(startDate)}
-  onChange={(e) => setStartDate(new Date(e.target.value))}
-  id="wd-start-date"
-/>`,
+function htmlDateStringToDate(dateString: string) {
+  const [year, month, day] = dateString.split("-").map(Number);
+  return new Date(year, month - 1, day, 0, 0);
+}
+
+export default function DateStateVariable() {
+  const [startDate, setStartDate] = useState(new Date(2026, 0, 15, 10, 30));
+  return (
+    <div id="wd-date-state-variables">
+      <h2>Date State Variables</h2>
+      <h3>{startDate.toDateString()}</h3>
+      <h3>{dateObjectToHtmlDateString(startDate)}</h3>
+      <input
+        type="date"
+        className="rounded border border-neutral-300 px-3 py-1.5"
+        value={dateObjectToHtmlDateString(startDate)}
+        onChange={(e) => setStartDate(htmlDateStringToDate(e.target.value))}
+        id="wd-start-date"
+      />
+      <hr />
+    </div>
+  );
+}`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab4/DateStateVariable.tsx",
-    codeHighlightLines: [[1, 6], [10, 11]],
+    codeHighlightLines: [[5, 15], 18, 28],
     embed: "date-state",
   },
   {

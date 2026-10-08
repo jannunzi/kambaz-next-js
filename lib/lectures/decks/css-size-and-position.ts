@@ -270,6 +270,7 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
     bullets: [
       "Paste the TSX below inside `#wd-css-positions`, after the previous section.",
       "`wd-pos-relative` plus `height: 150` is the containing block",
+      "Absolute boxes take up no space, so the portrait hangs below the 150px box. The `<br />` row keeps the next section from sliding underneath",
     ],
     code: `<div id="wd-css-position-absolute">
   <h2>Absolute position</h2>
@@ -284,10 +285,11 @@ export const CSS_SIZE_AND_POSITION_SLIDES: LectureSlide[] = [
       Square
     </div>
   </div>
+  <br /><br /><br /><br /><br /><br /><br />
 </div>`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab2/Positions.tsx",
-    codeHighlightLines: [[3, 12]],
+    codeHighlightLines: [[3, 13]],
   },
   {
     id: "absolute-live",
