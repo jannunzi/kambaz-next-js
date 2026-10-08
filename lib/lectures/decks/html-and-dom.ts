@@ -211,7 +211,7 @@ content will render as a single paragraph.
     bullets: [
       "In this course you write the same tags as **JSX** in `.tsx` components",
       "Keep each HTML topic in its own file under `app/labs/lab1/`, then import it into `page.tsx`",
-      "Wrapper id `wd-lab1` so graders and DevTools Find land on the same node",
+      "Wrapper id `wd-lab1` helps us test your work and find the node in DevTools",
     ],
     code: `export default function Lab1() {
   return (

@@ -287,27 +287,8 @@ export default function Lab1() {
           adds vertical space around it. Browsers ignore extra spaces, tabs, and
           newlines in your source, so without paragraph tags those blocks blend
           together. Create <code>app/labs/lab1/ParagraphTag.tsx</code>{" "}for this
-          section, then import it into Lab 1 the same way you imported{" "}
-          <code>HeadingTags</code>:
+          section; you will import it into Lab 1 once it is finished.
         </p>
-        <CodeBlock
-          language="tsx"
-          name="Lab1"
-          file="app/labs/lab1/page.tsx"
-        >{`import HeadingTags from "./HeadingTags";
-import ParagraphTag from "./ParagraphTag";
-
-export default function Lab1() {
-  return (
-    <div id="wd-lab1">
-      <h2>Lab 1</h2>
-      <h3>HTML Examples</h3>
-      <HeadingTags />
-      <ParagraphTag />
-      {/* do the next exercise here */}
-    </div>
-  );
-}`}</CodeBlock>
         <p>
           Without paragraph tags around later blocks, the browser treats the
           text as one contiguous stream that flows left to right and wraps only
@@ -391,6 +372,28 @@ export default function Lab1() {
         <LiveDemo name="ParagraphTag" file="app/labs/lab1/ParagraphTag.tsx">
           <ParagraphTag />
         </LiveDemo>
+        <p>
+          Now import <code>ParagraphTag</code>{" "}into Lab 1 the same way you
+          imported <code>HeadingTags</code>:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab1"
+          file="app/labs/lab1/page.tsx"
+        >{`import HeadingTags from "./HeadingTags";
+import ParagraphTag from "./ParagraphTag";
+
+export default function Lab1() {
+  return (
+    <div id="wd-lab1">
+      <h2>Lab 1</h2>
+      <h3>HTML Examples</h3>
+      <HeadingTags />
+      <ParagraphTag />
+      {/* do the next exercise here */}
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Still in <code>ParagraphTag.tsx</code>, add two more{" "}
           <code>&lt;p&gt;</code>{" "}elements that introduce you — for example
@@ -1892,6 +1895,18 @@ export default function Forms() {
         <WithAI
           prompt={`Overwrite the same file app/labs/lab1/forms/YourForm.tsx only. Keep id="wd-your-form" — the same id as On your own. No second file. No new form id: do not invent wd-ai-form, wd-ai-your-form, or any similar id. Unlike earlier With AI steps that add a new wd-ai-* id, this step reuses wd-your-form. Forms.tsx still imports that one YourForm only; do not import or render a second form. Cover every control from Lab 1 forms: labeled text/password fields, textarea bio, two radio name-groups (class standing plus one more exclusive choice such as full-time/part-time), at least three checkboxes, a single select and a multiple select (four+ options, two preselected), email, number (graduation year with min/max), date, range 0–10, submit Save and type=button Cancel with their own ids. Use obvious SAMPLE placeholders (Jane Doe, jane@university.edu) — I will replace them with my own details.`}
         >
+          <p className="mt-0">
+            <strong>
+              This step replaces your On your own form. It does not add a
+              second one.
+            </strong>{" "}
+            The assistant rewrites the same <code>YourForm.tsx</code>{" "}with
+            SAMPLE placeholders, and then you put your own details back. When
+            you finish there is still exactly one{" "}
+            <code>app/labs/lab1/forms/YourForm.tsx</code>, one form with id{" "}
+            <code>wd-your-form</code>, and one <code>YourForm</code>{" "}import
+            in <code>Forms.tsx</code>.
+          </p>
           The profile form is a lot of markup. Paste this prompt so the
           assistant overwrites the <strong>same file</strong>,{" "}
           <code>app/labs/lab1/forms/YourForm.tsx</code>. Keep{" "}
@@ -2414,18 +2429,21 @@ export default function LabsLayout({
         </LiveDemo>
         <OnYourOwn>
           In <code>TOC.tsx</code>, add a small personal touch above or below the
-          lab links — your name, a one-line motto, or a <code>Link</code>{" "}back
-          to the book chapter. Keep the shared layout structure; only the TOC
-          content should feel like yours.
+          lab links — your name, a one-line motto, or a link back to the book
+          chapter that uses the full address{" "}
+          <code>https://kambaz.dev/book/ch1</code>{" "}(your app has no{" "}
+          <code>/book</code>{" "}routes). Keep the shared layout structure; only
+          the TOC content should feel like yours.
         </OnYourOwn>
         <WithAI
-          prompt={`In app/labs/TOC.tsx, keep any personal name or motto I added. Add a Next.js Link to /book/ch1 labeled "Chapter 1" (id wd-toc-book-link) with the other lab links. Do not change the layout table in layout.tsx.`}
+          prompt={`In app/labs/TOC.tsx, keep any personal name or motto I added. Add a link to the course book at https://kambaz.dev/book/ch1 labeled "Chapter 1" (id wd-toc-book-link) with the other lab links. Do not change the layout table in layout.tsx.`}
         >
           Ask the assistant to add a Chapter 1 link in the TOC — leave your
-          name or motto as the personal bit. This link is expected to 404 in
-          your own app (your app does not have the course-book routes). A1
-          only checks that an element with id <code>wd-toc-book-link</code>{" "}
-          exists:
+          name or motto as the personal bit. Your own app has no{" "}
+          <code>/book</code>{" "}routes, so the link uses the full course-book
+          address, <code>https://kambaz.dev/book/ch1</code>, and opens this
+          chapter. Keep the id <code>wd-toc-book-link</code>{" "}on it; the ids
+          help us test your work:
         </WithAI>
       </Section>
 
@@ -2451,6 +2469,41 @@ export default function LabsLayout({
           (Vercel, name, GitHub) and Kambaz screens stay on the A1 page — see{" "}
           <SectionLink to="1.4.9" />{" "}for the Kambaz recap.
         </p>
+        <p>
+          Here is the finished <code>app/labs/lab1/page.tsx</code>, importing
+          every Lab 1 component in section order:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab1Complete"
+          file="app/labs/lab1/page.tsx"
+        >{`import HeadingTags from "./HeadingTags";
+import ParagraphTag from "./ParagraphTag";
+import ListTags from "./ListTags";
+import Tables from "./Tables";
+import Images from "./Images";
+import Forms from "./forms/Forms";
+import HighlightedParagraph from "./HighlightedParagraph";
+import HighlightedBox from "./HighlightedBox";
+import AnchorTag from "./AnchorTag";
+
+export default function Lab1() {
+  return (
+    <div id="wd-lab1">
+      <h2>Lab 1</h2>
+      <h3>HTML Examples</h3>
+      <HeadingTags />
+      <ParagraphTag />
+      <ListTags />
+      <Tables />
+      <Images />
+      <Forms />
+      <HighlightedParagraph />
+      <HighlightedBox />
+      <AnchorTag />
+    </div>
+  );
+}`}</CodeBlock>
         <LiveDemo name="Lab1" file="app/labs/lab1/page.tsx">
           <Lab1 />
         </LiveDemo>

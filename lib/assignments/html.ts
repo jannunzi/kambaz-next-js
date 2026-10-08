@@ -250,3 +250,201 @@ export function uniqueUrls(urls: readonly (string | null | undefined)[]): string
   }
   return next;
 }
+
+/*
+ * Structure helpers for checks that must not depend on wd-* ids.
+ * They read rendered markup only: <script> (RSC payloads) and <style> blocks
+ * are removed first so text inside them cannot count as page structure.
+ */
+
+/** Rendered markup without <script>, <style>, <template>, or HTML comments. */
+export function renderedMarkup(html: string): string {
+  return html
+    .replace(/<script\b[\s\S]*?<\/script\s*>/gi, "")
+    .replace(/<style\b[\s\S]*?<\/style\s*>/gi, "")
+    .replace(/<template\b[\s\S]*?<\/template\s*>/gi, "")
+    .replace(/<!--[\s\S]*?-->/g, "");
+}
+
+/** Number of start tags for tagName in rendered markup. */
+export function countTag(html: string, tagName: string): number {
+  const re = new RegExp(`<${escapeRegExp(tagName)}\\b`, "gi");
+  return renderedMarkup(html).match(re)?.length ?? 0;
+}
+
+/** Inner HTML of every element with this tag name (nesting-aware). */
+export function tagInnerHtml(html: string, tagName: string): string[] {
+  const source = renderedMarkup(html);
+  const tag = escapeRegExp(tagName);
+  const openRe = new RegExp(`<${tag}\\b[^>]*>`, "gi");
+  const inners: string[] = [];
+  let match: RegExpExecArray | null;
+  while ((match = openRe.exec(source))) {
+    if (/\/\s*>$/.test(match[0])) {
+      inners.push("");
+      continue;
+    }
+    const start = match.index + match[0].length;
+    const tagRe = new RegExp(`<(/?)${tag}\\b[^>]*>`, "gi");
+    tagRe.lastIndex = start;
+    let depth = 1;
+    let closer: RegExpExecArray | null;
+    let end = source.length;
+    while ((closer = tagRe.exec(source))) {
+      if (!closer[1] && /\/\s*>$/.test(closer[0])) continue;
+      depth += closer[1] ? -1 : 1;
+      if (depth === 0) {
+        end = closer.index;
+        break;
+      }
+    }
+    inners.push(source.slice(start, end));
+  }
+  return inners;
+}
+
+/** How many <outer> elements contain at least one <inner> start tag. */
+export function countTagContaining(html: string, outer: string, inner: string): number {
+  const innerRe = new RegExp(`<${escapeRegExp(inner)}\\b`, "i");
+  return tagInnerHtml(html, outer).filter((body) => innerRe.test(body)).length;
+}
+
+/** Every <a href> value in rendered markup, in document order. */
+export function anchorHrefs(html: string): string[] {
+  const hrefs: string[] = [];
+  const re = /<a\b[^>]*\bhref\s*=\s*["']([^"']*)["'][^>]*>/gi;
+  let match: RegExpExecArray | null;
+  const source = renderedMarkup(html);
+  while ((match = re.exec(source))) hrefs.push(match[1]);
+  return hrefs;
+}
+
+/** True when any <a href> pathname matches pattern (on siteHost when given). */
+export function htmlHasAnchorPathMatching(
+  html: string,
+  pattern: RegExp,
+  siteHost?: string,
+): boolean {
+  const expected = siteHost?.trim().toLowerCase().replace(/\.$/, "") ?? "";
+  return anchorHrefs(html).some((href) => {
+    if (expected) {
+      const host = anchorHrefHost(href);
+      if (host && host !== expected) return false;
+    }
+    const path = anchorPathname(href);
+    return path != null && pattern.test(path);
+  });
+}
+
+/** Absolute http(s) anchors as URL objects. */
+export function externalAnchorUrls(html: string): URL[] {
+  const urls: URL[] = [];
+  for (const href of anchorHrefs(html)) {
+    const trimmed = href.trim();
+    if (!/^https?:\/\//i.test(trimmed)) continue;
+    try {
+      urls.push(new URL(trimmed));
+    } catch {
+      // ignore malformed hrefs
+    }
+  }
+  return urls;
+}
+
+/** Form controls by kind in rendered markup. */
+export function formControlKinds(html: string): Set<"text" | "textarea" | "radio" | "checkbox" | "select" | "password"> {
+  const kinds = new Set<"text" | "textarea" | "radio" | "checkbox" | "select" | "password">();
+  const source = renderedMarkup(html);
+  if (/<textarea\b/i.test(source)) kinds.add("textarea");
+  if (/<select\b/i.test(source)) kinds.add("select");
+  const inputRe = /<input\b([^>]*)>/gi;
+  let match: RegExpExecArray | null;
+  while ((match = inputRe.exec(source))) {
+    const type = /\btype\s*=\s*["']?([a-z-]+)/i.exec(match[1])?.[1]?.toLowerCase() ?? "text";
+    if (type === "radio") kinds.add("radio");
+    else if (type === "checkbox") kinds.add("checkbox");
+    else if (type === "password") kinds.add("password");
+    else if (["text", "email", "search", "tel", "url", "number"].includes(type)) kinds.add("text");
+  }
+  return kinds;
+}
+
+/** Visible text (tags removed, entities for spaces collapsed). */
+export function renderedText(html: string): string {
+  return renderedMarkup(html)
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;|&#160;/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * Remove every wd-* id attribute (and RSC payload ids) from HTML. Used to
+ * prove a check grades structure rather than the book's ids.
+ */
+export function stripWdIds(html: string): string {
+  return html
+    .replace(/\s+id\s*=\s*(["'])wd-[^"']*\1/gi, "")
+    .replace(/\s+id\s*=\s*wd-[^\s/>]+/gi, "")
+    .replace(/\\?"id\\?"\s*:\s*\\?"wd-[^"\\]*\\?"/g, '"id":""');
+}
+
+const VOID_TAGS = new Set([
+  "img", "input", "br", "hr", "source", "meta", "link", "area", "base", "col", "embed", "track", "wbr",
+]);
+
+export type IdElement = {
+  /** Lower-case tag name. */
+  tag: string;
+  /** The start tag itself, attributes included. */
+  open: string;
+  /** Inner HTML ("" for void or self-closing elements). */
+  inner: string;
+};
+
+/**
+ * Every rendered element carrying this id (script payloads ignored), with
+ * its tag, start tag, and inner HTML. Nesting-aware.
+ */
+export function elementsWithId(html: string, id: string): IdElement[] {
+  const source = renderedMarkup(html);
+  const safe = escapeRegExp(id);
+  const openRe = new RegExp(
+    `<([a-zA-Z][\\w:-]*)\\b[^>]*?\\bid\\s*=\\s*(?:["']${safe}["']|${safe}(?=[\\s/>]))[^>]*>`,
+    "gi",
+  );
+  const found: IdElement[] = [];
+  let match: RegExpExecArray | null;
+  while ((match = openRe.exec(source))) {
+    const tag = match[1].toLowerCase();
+    const open = match[0];
+    if (VOID_TAGS.has(tag) || /\/\s*>$/.test(open)) {
+      found.push({ tag, open, inner: "" });
+      continue;
+    }
+    const start = match.index + open.length;
+    const tagRe = new RegExp(`<(/?)${escapeRegExp(match[1])}\\b[^>]*>`, "gi");
+    tagRe.lastIndex = start;
+    let depth = 1;
+    let closer: RegExpExecArray | null;
+    let end = source.length;
+    while ((closer = tagRe.exec(source))) {
+      if (!closer[1] && /\/\s*>$/.test(closer[0])) continue;
+      depth += closer[1] ? -1 : 1;
+      if (depth === 0) {
+        end = closer.index;
+        break;
+      }
+    }
+    found.push({ tag, open, inner: source.slice(start, end) });
+  }
+  return found;
+}
+
+/** Value of one attribute in a start tag, or null. */
+export function startTagAttr(open: string, name: string): string | null {
+  const re = new RegExp(`\\s${escapeRegExp(name)}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, "i");
+  const match = re.exec(open);
+  if (!match) return null;
+  return match[1] ?? match[2] ?? match[3] ?? "";
+}

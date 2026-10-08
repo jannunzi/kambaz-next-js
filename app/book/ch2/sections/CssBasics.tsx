@@ -64,6 +64,15 @@ export default function CssBasics() {
         <LiveDemo mode="styled" name="StyleAttribute" file="app/labs/lab2/page.tsx">
           <StyleAttribute />
         </LiveDemo>
+        <p>
+          The book&apos;s Lab 2 demos use a sans-serif font so they match the
+          rest of this page. Your own Lab 2 page will most likely render in a
+          serif font such as Times. That&apos;s expected: you commented out{" "}
+          <code>globals.css</code>{" "}in <SectionLink to="1.2.5" />, so Lab 2
+          gets the browser&apos;s default font. Lab 2 never sets a font, and
+          the colors, borders, and layout are what to compare against the
+          demos.
+        </p>
       
         <OnYourOwn>
           Still in{" "}
@@ -165,7 +174,7 @@ export default function Lab2() {
           Even though the paragraph no longer has a <code>style</code>{" "}
           attribute, it now has a green background and white text — the{" "}
           <code>p</code>{" "}selector in <code>index.css</code>{" "}reaches every
-          paragraph in the file, current and future, without touching the
+          paragraph on the page, current and future, without touching the
           markup again:
         </p>
         <LiveDemo mode="styled" name="CssImport" file="app/labs/lab2/index.css">
@@ -179,17 +188,31 @@ export default function Lab2() {
           <code>p</code>{" "}on the page.
         </p>
       
+        <p>
+          One catch: Next.js treats every CSS file you import as global. Once
+          Lab 2 has loaded, its rules stay in the browser when you click a{" "}
+          <code>next/link</code>{" "}link to another page, so a bare{" "}
+          <code>h3</code>{" "}rule would also restyle the headings in Lab 1 and
+          Kambaz until you reload. For the practice rules below, write the tag
+          after <code>#wd-lab2</code>, the id of the Lab 2 wrapper{" "}
+          <code>div</code>, as in <code>#wd-lab2 h3</code>. That limits the
+          rule to tags inside Lab 2. <SectionLink to="2.1.3" />{" "}explains the{" "}
+          <code>#</code>{" "}and <SectionLink to="2.1.5" />{" "}explains the
+          space between the two selectors. The sample <code>p</code>{" "}rule is
+          only temporary: <SectionLink to="2.1.3" />{" "}comments it out.
+        </p>
         <OnYourOwn>
-          In <code>index.css</code>, add a second tag
-          rule that styles every <code>h3</code>{" "}(pick a background and text color),
-          then confirm it applies to the headings already in{" "}
+          In <code>index.css</code>, add a second rule
+          that styles every <code>h3</code>{" "}in Lab 2 (pick a background and text
+          color), written as <code>#wd-lab2 h3</code>{" "}so it doesn&apos;t leak into
+          other pages. Then confirm it applies to the headings already in{" "}
           <code>page.tsx</code>{" "}without changing their markup.
         </OnYourOwn>
         <WithAI
-          prompt={`In app/labs/lab2/index.css, keep my personal h3 tag rule unchanged. After the sample p rule, add one more sample tag rule for h2 with a distinct background and text color (for example navy background and white text). Do not change any markup in page.tsx.`}
+          prompt={`In app/labs/lab2/index.css, keep my personal #wd-lab2 h3 rule unchanged. After the sample p rule, add one more sample rule for h2 inside Lab 2, written as #wd-lab2 h2 so it does not leak into other pages, with a distinct background and text color (for example navy background and white text). Do not change any markup in page.tsx.`}
         >
-          Paste this prompt to add an extra sample tag rule — then reload Lab 2
-          and confirm every h2 picks it up without markup changes:
+          Paste this prompt to add an extra sample rule — then reload Lab 2
+          and confirm every h2 in Lab 2 picks it up without markup changes:
         </WithAI>
       </Section>
 
@@ -365,7 +388,7 @@ p#wd-id-selector-2 {
       <p className="wd-selector-3">
         This paragraph&apos;s red background is referenced as
         <br />
-        .selector-2 .selector3
+        .wd-selector-1 .wd-selector-3
         <br />
         meaning the descendant of some ancestor.
         <br />
@@ -401,9 +424,9 @@ p#wd-id-selector-2 {
         <p>
           The paragraph renders with a red background from the first,
           broader descendant rule, while the span nested directly inside it
-          switches to yellow-on-blue from the second, stricter child rule —
-          both rules matching the same paragraph, with the more specific one
-          winning for the span:
+          switches to yellow-on-blue from the second, stricter child rule. The
+          first rule matches the paragraph and the second matches only the
+          span, so the span shows its own colors on top of the red paragraph:
         </p>
         <LiveDemo
           mode="styled"
@@ -448,10 +471,11 @@ p#wd-id-selector-2 {
           </li>
           <li>
             <strong>Source order</strong>: if two rules have the same
-            specificity, the rule declared later in the CSS wins — this is
-            why the ID selectors in <SectionLink to="2.1.3" />{" "}had to come after (or replace) the
-            tag selector from <SectionLink to="2.1.2" />, not merely exist alongside it with
-            lower specificity resolving the conflict on their own.
+            specificity, the rule declared later in the CSS wins. Order only
+            breaks ties. The id selectors in <SectionLink to="2.1.3" />{" "}outrank
+            the <code>p</code>{" "}tag selector from <SectionLink to="2.1.2" />{" "}no
+            matter where they appear in the file, so they would win even if
+            that tag rule came after them.
           </li>
           <li>
             <strong>Inheritance</strong>: some properties, like{" "}
