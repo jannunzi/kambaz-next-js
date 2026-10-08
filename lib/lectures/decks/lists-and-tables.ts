@@ -72,49 +72,74 @@ Follow these steps
     title: "Example",
     kind: "content",
     bullets: [
-      "Start with the pancake steps as **plain text** — no `ol` yet",
+      "Create `app/labs/lab1/ListTags.tsx` and import it into `page.tsx`",
+      "Start with the pancake steps as **plain text**, no `ol` yet",
       "Browsers **ignore** white spaces. The numbers look like a list in the file and fail on the page",
     ],
-    code: `How to make pancakes:
-1. Mix dry ingredients.
-2. Add wet ingredients.
-3. Stir to combine.`,
+    code: `export default function ListTags() {
+  return (
+    <div id="wd-lists">
+      <h4>List Tags</h4>
+      <h5>Ordered List Tag</h5>
+      How to make pancakes:
+      1. Mix dry ingredients.
+      2. Add wet ingredients.
+      3. Stir to combine.
+      4. Heat a skillet or griddle.
+      5. Pour batter onto the skillet.
+      6. Cook until bubbly on top.
+      7. Flip and cook the other side.
+      8. Serve and enjoy!
+    </div>
+  );
+}`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab1/ListTags.tsx",
   },
   {
     id: "pancakes-after",
     title: "Add ol and li for ordered list",
-    kind: "demo",
+    kind: "content",
     bullets: [
-      "Wrap the list in `ol` and each step in `li`",
+      "Wrap the list in `ol` and each step in `li`. Drop the typed numbers",
       "The browser numbers them. Lab 1 sample id: `wd-pancakes`",
     ],
-    embed: "list-tags",
-    code: `How to make pancakes:
-<ol id="wd-pancakes">
-  <li>Mix dry ingredients.</li>
-  <li>Add wet ingredients.</li>
-  <li>Stir to combine.</li>
-  <li>Heat a skillet or griddle.</li>
-  <li>Pour batter onto the skillet.</li>
-  <li>Cook until bubbly on top.</li>
-  <li>Flip and cook the other side.</li>
-  <li>Serve and enjoy!</li>
-</ol>`,
+    code: `export default function ListTags() {
+  return (
+    <div id="wd-lists">
+      <h4>List Tags</h4>
+      <h5>Ordered List Tag</h5>
+      How to make pancakes:
+      <ol id="wd-pancakes">
+        <li>Mix dry ingredients.</li>
+        <li>Add wet ingredients.</li>
+        <li>Stir to combine.</li>
+        <li>Heat a skillet or griddle.</li>
+        <li>Pour batter onto the skillet.</li>
+        <li>Cook until bubbly on top.</li>
+        <li>Flip and cook the other side.</li>
+        <li>Serve and enjoy!</li>
+      </ol>
+    </div>
+  );
+}`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab1/ListTags.tsx",
-    codeAddedLines: [[2, 11]],
+    codeAddedLines: [[7, 16]],
   },
   {
     id: "books-ul",
     title: "Use ul for unordered lists",
-    kind: "demo",
+    kind: "content",
     bullets: [
-      "Favorite books — order is **not** the point",
+      "After the pancake list, add favorite books — order is **not** the point",
       "Lab 1 sample id: `wd-my-books`",
     ],
-    code: `<h5>Unordered List Tag</h5>
+    code: `How to make pancakes:
+<ol id="wd-pancakes">
+  {/* pancake steps */}
+</ol>
+<h5>Unordered List Tag</h5>
 My favorite books (in no particular order)
 <ul id="wd-my-books">
   <li>Dune</li>
@@ -125,6 +150,12 @@ My favorite books (in no particular order)
 </ul>`,
     codeLanguage: "tsx",
     codeFile: "app/labs/lab1/ListTags.tsx",
+    codeAddedLines: [[5, 13]],
+  },
+  {
+    id: "list-tags-live",
+    title: "List Tags: live demo",
+    kind: "demo",
     embed: "list-tags",
   },
   {
@@ -255,12 +286,73 @@ My favorite books (in no particular order)
     embed: "tables",
   },
   {
+    id: "images-intro",
+    title: "Image Tag",
+    kind: "content",
+    bullets: [
+      "`<img>` places a picture: a remote URL or a file in your project",
+      "`src` points at the file. Give `width` or `height`; the other scales",
+      "`alt` describes the picture when it cannot load. That matters for **accessibility**",
+    ],
+    code: `<img
+  src="my-picture.jpg"
+  width="200px"
+  height="300px"
+/>
+{/* src references a local or remote image.
+    width / height configure size; one alone scales the other */}`,
+    codeLanguage: "html",
+  },
+  {
+    id: "images",
+    title: "Remote and Local Images",
+    kind: "content",
+    bullets: [
+      "Save a Tesla Bot picture as `public/images/teslabot.jpg`. It loads from `/images/teslabot.jpg`",
+      "`<img />` and `<br />` are **void elements**: no body, so JSX closes them with `/>`",
+      "Create `Images.tsx` and import it into `page.tsx`",
+    ],
+    code: `export default function Images() {
+  return (
+    <div id="wd-images">
+      <h4>Image tag</h4>
+      Loading an image from the internet:
+      <br />
+      <img
+        id="wd-starship"
+        width="400px"
+        alt="Starship"
+        src="https://www.staradvertiser.com/wp-content/uploads/2021/08/web1_Starship-gap2.jpg"
+      />
+      <br />
+      Loading a local image:
+      <br />
+      <img
+        id="wd-teslabot"
+        src="/images/teslabot.jpg"
+        height="200px"
+        alt="Tesla Bot (Optimus) humanoid robot"
+      />
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab1/Images.tsx",
+  },
+  {
+    id: "images-live",
+    title: "Image Tag: live demo",
+    kind: "demo",
+    embed: "images",
+  },
+  {
     id: "next-up",
     title: "Next: web forms",
     kind: "title",
     bullets: [
       "Lists and tables structure collections. Tables are data, **not layout**",
-      "Next: labels, text, buttons, file, radio vs checkbox, select, typed inputs",
+      "Images load from a remote URL or from `public/images`",
+      "Next: labels, text fields, radios, checkboxes, dropdowns, typed inputs, buttons",
     ],
   },
 ];

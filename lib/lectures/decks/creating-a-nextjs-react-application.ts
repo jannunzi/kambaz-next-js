@@ -33,11 +33,12 @@ export const CREATING_A_NEXTJS_REACT_APPLICATION_SLIDES: LectureSlide[] = [
     title: "A User component",
     kind: "demo",
     bullets: [
+      "**JSX**: HTML-like markup written right inside a JavaScript function",
       "Same function, different data → different UI",
     ],
     code: `import user from "./user.json";
 
-function User() {
+export default function User() {
   return (
     <div>
       Username: {user.username}<br/>
@@ -47,7 +48,7 @@ function User() {
   );
 }`,
     codeLanguage: "tsx",
-    codeFile: "User.tsx",
+    codeFile: "app/components/User.tsx",
     embed: "user-card",
   },
   {
@@ -56,23 +57,56 @@ function User() {
     kind: "demo",
     bullets: [
       "Creating a React application requires **Node.js**",
-      "At the command line — **App Router**, not a Vite SPA",
+      "Run it at the command line, from your course folder. It names the project **webdev-client**",
+      "Pin **@16.3**, not `@latest`. Next.js 16.4 turns on **Cache Components** (a setting that prerenders and caches parts of each page), and Kambaz then fails `npm run build`",
     ],
     code: "npx create-next-app@16.3 webdev-client",
     codeLanguage: "bash",
   },
   {
-    id: "defaults",
-    title: "Name the project webdev-client",
+    id: "defaults-explained",
+    title: "What the Defaults Set Up",
     kind: "content",
     bullets: [
-      "The command names the project **webdev-client**",
-      "Use the recommended Next.js defaults? › **Yes, use recommended defaults**",
-      "Defaults: **TypeScript** · **ESLint** · **Tailwind CSS** · **App Router** · no `src/` · `@/*` alias",
-      "Pin **@16.3**, not `@latest`: Next.js 16.4 turns on Cache Components and Kambaz fails `npm run build`",
+      "**TypeScript**: a superset of JavaScript that adds static typing",
+      "**ESLint**: a code checker. **React Compiler**: an optional optimizer, left off",
+      "**Tailwind CSS**: a utility-first framework. You style with small classes such as `p-4` (padding)",
+      "**App Router**: Next.js’s current routing model. Folders under `app/` become URLs",
+      "No `src/` folder. **AGENTS.md**: Next.js notes for AI coding assistants",
     ],
-    interactiveHint:
-      "If a prompt offers Pages Router, say no. This course is App Router only.",
+  },
+  {
+    id: "defaults",
+    title: "Accept the Recommended Defaults",
+    kind: "content",
+    bullets: [
+      "At **Ok to proceed? (y)**, press Enter",
+      "Keep **Yes, use recommended defaults** and press **Enter**",
+      "Ran it before? Skip the middle choice, **No, reuse previous settings**",
+    ],
+    code: `? Would you like to use the recommended Next.js defaults? › - Use arrow-keys. Return to submit.
+❯   Yes, use recommended defaults
+    TypeScript, ESLint, No React Compiler, Tailwind CSS, No src/ directory, App Router, AGENTS.md
+    No, customize settings`,
+    codeLanguage: "text",
+  },
+  {
+    id: "customize-settings",
+    title: "Or Customize: Give These Answers",
+    kind: "content",
+    bullets: [
+      "**No, customize settings** asks each question. Pressing **Enter** on every one keeps the defaults’ answers",
+    ],
+    code: `✔ Would you like to use the recommended Next.js defaults? › No, customize settings
+✔ Would you like to use TypeScript? … Yes
+✔ Which linter would you like to use? › ESLint
+✔ Would you like to use React Compiler? … No
+✔ Would you like to use Tailwind CSS? … Yes
+✔ Would you like your code inside a \`src/\` directory? … No
+✔ Would you like to use App Router? (recommended) … Yes
+✔ Would you like to customize the import alias (\`@/*\` by default)? … No
+✔ Would you like to include AGENTS.md to guide coding agents to write up-to-date Next.js code? … Yes`,
+    codeLanguage: "text",
   },
   {
     id: "npm-run-dev",
@@ -120,7 +154,8 @@ npm run dev`,
     ],
     code: `import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-// import "./globals.css";`,
+// import "./globals.css";
+// ... leave the rest of this file alone`,
     codeLanguage: "tsx",
     codeFile: "app/layout.tsx",
     codeAddedLines: [3],
@@ -153,6 +188,7 @@ import { Geist, Geist_Mono } from "next/font/google";
     bullets: [
       "Create pages to practice Web skills",
       "File path **is** the URL: `app/labs/lab1/page.tsx` → `/labs/lab1`",
+      "`id=\"wd-lab1\"` is an **attribute**: a `name=\"value\"` pair on the opening tag",
     ],
     code: `export default function Lab1() {
   return (
@@ -203,16 +239,35 @@ export default function Home() {
     title: "Drop User onto a page",
     kind: "demo",
     bullets: [
-      "Create `app/components/User.tsx`. Import it — you did not register a route",
+      "Create `app/components/User.tsx` and its data, `app/components/user.json`",
+      "Import `User` into the page. You did not register a route",
     ],
-    code: `import User from "./components/User";
-
+    code: `import Link from "next/link";
+import User from "./components/User";
 export default function Home() {
-  return <User name="Ada" email="ada@example.com" />;
+  return (
+    <div>
+      <h1>Welcome to Web Dev</h1>
+      <Link href="./labs/lab1">
+            Lab 1 - HTML</Link>
+      <User />
+    </div>
+  );
 }`,
     codeLanguage: "tsx",
     codeFile: "app/page.tsx",
-    codeAddedLines: [1, 4],
+    codeAddedLines: [2, 9],
+    codeBlocks: [
+      {
+        file: "app/components/user.json",
+        language: "json",
+        code: `{
+  "username": "alice",
+  "first": "Alice",
+  "last": "Wonderland"
+}`,
+      },
+    ],
     embed: "user-card",
   },
   {

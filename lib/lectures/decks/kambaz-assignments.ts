@@ -75,9 +75,9 @@ export const KAMBAZ_ASSIGNMENTS_SLIDES: LectureSlide[] = [
     title: "Extract AssignmentItem",
     kind: "content",
     bullets: [
-      "List id `wd-assignment-list` with **at least three** rows",
-      "A1 ENV + HTML, A2 CSS + TAILWIND, A3 JS + REACT",
-      "`Link` from `next/link` — not `<a>` — class `wd-assignment-link`",
+      "Same idea as `CourseCard`: one `AssignmentItem` per row, with props `cid`, `aid`, `title`, `details`",
+      "The title is a `Link` from `next/link`, not `<a>`, with class `wd-assignment-link`",
+      "It goes to `/courses/${cid}/assignments/${aid}`, and `details` sits underneath",
     ],
     code: `import Link from "next/link";
 
@@ -94,13 +94,60 @@ export default function AssignmentItem({
 }) {
   return (
     <li className="wd-assignment-list-item">
-      {/* Link the title to /courses/\${cid}/assignments/\${aid}
-          (className wd-assignment-link), then show details underneath */}
+      <Link
+        href={\`/courses/\${cid}/assignments/\${aid}\`}
+        className="wd-assignment-link"
+      >
+        {title}
+      </Link>
+      <div>{details}</div>
     </li>
   );
 }`,
     codeLanguage: "tsx",
     codeFile: "app/(kambaz)/courses/[cid]/assignments/AssignmentItem.tsx",
+  },
+  {
+    id: "await-params",
+    title: "Page awaits cid from params",
+    kind: "content",
+    bullets: [
+      "Same `async` / `await params` shape as the courses layout",
+      "The page renders one assignment, A1, linked to its editor. Add the rest yourself. Aim for three (A2 and A3 after A1)",
+      "Also add the search box, `+ Group`, `+ Assignment`, and the `wd-assignments-title` heading",
+    ],
+    code: `import AssignmentItem from "./AssignmentItem";
+
+export default async function Assignments({
+  params,
+}: {
+  params: Promise<{ cid: string }>;
+}) {
+  const { cid } = await params;
+  return (
+    <div id="wd-assignments">
+      {/* search input, + Group, + Assignment */}
+      {/* h3 wd-assignments-title */}
+      <ul id="wd-assignment-list">
+        <AssignmentItem
+          cid={cid}
+          aid="123"
+          title="A1 - ENV + HTML"
+          details="Multiple Modules | Due May 13 at 11:59pm | 100 pts"
+        />
+        {/* Add more assignments here (three recommended, like A2, A3), each linking to its editor */}
+      </ul>
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/(kambaz)/courses/[cid]/assignments/page.tsx",
+  },
+  {
+    id: "await-params-live",
+    title: "Assignments starter: live demo",
+    kind: "demo",
+    embed: "kambaz-assignments-step",
   },
   {
     id: "target-editor",
@@ -181,30 +228,71 @@ export default function AssignmentItem({
     ],
   },
   {
-    id: "await-params",
-    title: "Page awaits cid from params",
+    id: "labs-name-github",
+    title: "Name, Section, and GitHub on Labs",
     kind: "content",
     bullets: [
-      "Same `async` / `await params` shape as the courses layout",
-      "Use `cid` so each `AssignmentItem` links to the right course",
+      "Graders need to know whose deploy this is and where its source lives",
+      "In `app/labs/page.tsx`: an `h2` with your full name as in Canvas, then a `p` with your course and section",
+      "Link `wd-github` to **your** `webdev-client` repository. Your Lab 4 and Lab 5 links go where the comment is",
     ],
-    code: `import AssignmentItem from "./AssignmentItem";
+    code: `import Link from "next/link";
 
-export default async function Assignments({
-  params,
-}: {
-  params: Promise<{ cid: string }>;
-}) {
-  const { cid } = await params;
+export default function Labs() {
   return (
-    <div id="wd-assignments">
-      <ul id="wd-assignment-list">
-        {/* at least three AssignmentItems using cid */}
+    <div id="wd-labs">
+      <h1>Labs</h1>
+      <h2>Jose Annunziato</h2>
+      <p>CS4550 Section 01</p>
+      <ul>
+        <li>
+          <Link href="/labs/lab1">Lab 1: HTML Examples</Link>
+        </li>
+        <li>
+          <Link href="/labs/lab2">Lab 2: CSS Basics</Link>
+        </li>
+        <li>
+          <Link href="/labs/lab3">Lab 3: JavaScript Fundamentals</Link>
+        </li>
+        {/* your Lab 4 / Lab 5 links */}
+        <li>
+          <Link href="/" id="wd-kambaz-link">
+            Kambaz
+          </Link>
+        </li>
+        <li>
+          <a
+            href="https://github.com/jannunzi/webdev-client"
+            id="wd-github"
+            target="_blank"
+            rel="noreferrer"
+          >
+            GitHub repository
+          </a>
+        </li>
       </ul>
     </div>
   );
 }`,
     codeLanguage: "tsx",
-    codeFile: "app/(kambaz)/courses/[cid]/assignments/page.tsx",
+    codeFile: "app/labs/page.tsx",
+  },
+  {
+    id: "labs-name-github-live",
+    title: "Labs name and GitHub: live demo",
+    kind: "demo",
+    embed: "labs-name-github",
+  },
+  {
+    id: "labs-name-github-push",
+    title: "Commit and Push the Change",
+    kind: "content",
+    bullets: [
+      "From the project root, commit the Labs page and push it to GitHub",
+    ],
+    code: `git add .
+git commit -m "Add name, section, and GitHub link to Labs"
+git push`,
+    codeLanguage: "bash",
   },
 ];

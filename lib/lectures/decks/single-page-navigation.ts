@@ -125,12 +125,14 @@ export default function TOC() {
     bullets: [
       "`layout.tsx` keeps the TOC. `{children}` is the page that **swaps**",
       "`page.tsx` creates a URL. `layout.tsx` does **not**",
+      "`Readonly<…>` is TypeScript: the function cannot change its props object",
     ],
     code: `import { ReactNode } from "react";
 import TOC from "./TOC";
 
-export default function LabsLayout({ children }:
-  Readonly<{ children: ReactNode }>) {
+export default function LabsLayout({
+  children,
+}: Readonly<{ children: ReactNode }>) {
   return (
     <table>
       <tbody>
@@ -146,7 +148,7 @@ export default function LabsLayout({ children }:
 }`,
     codeLanguage: "tsx",
     codeFile: "app/labs/layout.tsx",
-    codeAddedLines: [2, [11, 13]],
+    codeAddedLines: [2, [12, 14]],
     embed: "labs-layout",
     interactiveHint:
       "Click Lab 2 in the live TOC. The left column stays. Only the page column — {children} — changes.",
