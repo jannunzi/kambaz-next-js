@@ -1966,7 +1966,7 @@ describe("lecture decks", () => {
       assert.doesNotMatch(lecture.summary, /kambaz-next-js/, deck.slug);
     }
     const creating = slideText("creating-a-nextjs-react-application");
-    assert.match(creating, /npx create-next-app@latest webdev-client/);
+    assert.match(creating, /npx create-next-app@16.3 webdev-client/);
     assert.match(creating, /cd webdev-client/);
     const diagrams = join(process.cwd(), "app/slides/_components/diagrams");
     for (const file of sourceFilesUnder(diagrams)) {
@@ -3332,7 +3332,7 @@ describe("lecture decks", () => {
     assert.match(expressCode, /app\.listen\(4000\)/);
     assert.ok(!authoredSlideBullets(express).some((row) => row.includes("app.listen")));
 
-    assert.equal(createApp.code, "npx create-next-app@latest webdev-client");
+    assert.equal(createApp.code, "npx create-next-app@16.3 webdev-client");
     assert.equal(createApp.codeLanguage, "bash");
     assert.match(welcome.code ?? "", /Welcome to Web Dev/);
     assert.equal(welcome.codeFile, "app/page.tsx");

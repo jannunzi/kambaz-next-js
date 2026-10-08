@@ -1,14 +1,21 @@
 import type { AssignmentSubmissionView } from "@/lib/assignments/submissions-store";
 import {
+  NOT_GRADED_YET,
   storedSubmissionLinks,
-  submissionGradeLine,
   submittedBannerHeading,
 } from "@/lib/assignments/submission-status";
 
+/**
+ * The grade line comes from finalGrade (via A1WorkArea), the same function
+ * the staff view and export use: "Graded: X / Y (Z%)" only when the grade is
+ * ready for Canvas, otherwise "Grading in progress" with no percentage.
+ */
 export default function SubmittedConfirmation({
   submission,
+  gradeLine,
 }: {
   submission: AssignmentSubmissionView;
+  gradeLine?: string;
 }) {
   const heading =
     submittedBannerHeading(submission.updatedAt) ?? "Submitted";
@@ -36,7 +43,7 @@ export default function SubmittedConfirmation({
           ))}
         </ul>
       ) : null}
-      <p className="mb-0 mt-2 font-semibold">{submissionGradeLine(submission.staffGrade)}</p>
+      <p className="mb-0 mt-2 font-semibold">{gradeLine ?? NOT_GRADED_YET}</p>
     </div>
   );
 }

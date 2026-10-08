@@ -23,6 +23,8 @@ import {
 } from "@/lib/assignments/submission-form";
 import { ASSIGNMENT_STUDENT_COPY } from "@/lib/assignments/student-copy";
 import { isAssignmentId } from "@/lib/assignments/catalog";
+import { getChecker } from "@/lib/assignments/checkers";
+import { checkerVersionLabel } from "@/lib/assignments/checker-version";
 import type { AssignmentId } from "@/lib/assignments/types";
 import { isAssignmentProgressConfigured } from "@/lib/config";
 import {
@@ -272,6 +274,22 @@ export async function saveAssignmentSubmission(input: {
     };
   }
 
+  // Check the submitted URLs and store the results with the submission, so
+  // staff always see results for exactly what was submitted.
+  let checkResults: AssignmentCheckResult[] = [];
+  try {
+    checkResults = await runChecksForAssignment({
+      assignmentId: input.assignmentId,
+      githubUrl,
+      vercelUrl,
+      nameSource: authz.nameSource,
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Checks failed.";
+    console.error("assignment submission checks failed", message);
+  }
+  const checker = getChecker(input.assignmentId);
+
   try {
     const doc = await writeAssignmentSubmission({
       clerkUserId: authz.userId,
@@ -279,14 +297,15 @@ export async function saveAssignmentSubmission(input: {
       githubUrl,
       vercelUrl,
       identity: authz.identity,
+      // An empty array clears results stored for an earlier URL.
+      checkResults,
+      checked: checkResults.length > 0,
+      checkerVersion: checker ? checkerVersionLabel(checker.rulesVersion) : undefined,
     });
     return {
       ok: true,
       persisted: true,
-      submission: {
-        ...toSubmissionView(doc),
-        checkResults: undefined,
-      },
+      submission: toSubmissionView(doc),
     };
   } catch (error) {
     const message =

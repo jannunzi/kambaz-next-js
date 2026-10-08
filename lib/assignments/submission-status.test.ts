@@ -15,7 +15,6 @@ import {
   statusForViewer,
   storedSubmissionLinks,
   studentSubmissionStatus,
-  submissionGradeLine,
   submissionStatusLabel,
   submitActionLabel,
   submitFailureCopy,
@@ -272,8 +271,6 @@ describe("submit confirmation copy", () => {
   });
 
   it("formats a saved grade like the grades pages, and says when there is no grade", () => {
-    assert.equal(submissionGradeLine(null), NOT_GRADED_YET);
-    assert.equal(submissionGradeLine({}), NOT_GRADED_YET);
     assert.equal(NOT_GRADED_YET, "Not graded yet");
     const line = formatGradedConfirmation(GRADE_95);
     assert.equal(line, "Graded: 95 / 100 (95.0%)");
@@ -285,14 +282,6 @@ describe("submit confirmation copy", () => {
         totalCount: 0,
         passedIds: [],
       })}`,
-    );
-    assert.equal(submissionGradeLine(GRADE_95), "Graded: 95 / 100 (95.0%)");
-    assert.equal(
-      submissionGradeLine({
-        gradedAt: GRADE_95.gradedAt,
-        rows: [{ points: 95, maxPoints: 100 }],
-      }),
-      "Graded: 95 / 100 (95.0%)",
     );
   });
 

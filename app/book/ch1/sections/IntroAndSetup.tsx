@@ -586,45 +586,99 @@ cd 2049/winter/webdev`}</CodeBlock>
           From that folder (or from the IDE&apos;s integrated terminal), create
           the app with:
         </p>
-        <CodeBlock language="shell">{`npx create-next-app@latest`}</CodeBlock>
+        <CodeBlock language="shell">{`npx create-next-app@16.3 webdev-client`}</CodeBlock>
+        <p>
+          The <code>@16.3</code>{" "}pins the starter project to Next.js 16.3,
+          the version this book is tested with. Don&apos;t use{" "}
+          <code>@latest</code>: since October 6, 2026 it installs Next.js 16.4,
+          whose starter turns on <strong>Cache Components</strong>, and the
+          Kambaz pages you build later in this chapter then fail{" "}
+          <code>npm run build</code>{" "}and every Vercel deploy, even though{" "}
+          <code>npm run dev</code>{" "}still works.
+        </p>
         <p>
           The first time you run this, npm may ask permission to download the{" "}
-          <code>create-next-app</code>{" "}package. Accept and continue:
+          <code>create-next-app</code>{" "}package. Accept and continue (the last
+          number may be higher; any 16.3.x is fine):
         </p>
         <CodeBlock language="shell">{`Need to install the following packages:
-create-next-app@15.3.5
+  create-next-app@16.3.8
 Ok to proceed? (y)`}</CodeBlock>
         <p>
-          When prompted for a project name, enter{" "}
-          <code>webdev-client</code>. For the remaining prompts — TypeScript,
-          ESLint,{" "}
+          Next comes one question. Keep the highlighted answer,{" "}
+          <strong>Yes, use recommended defaults</strong>, and press{" "}
+          <strong>Enter</strong>. The defaults are exactly what this course uses:
+          TypeScript, ESLint,{" "}
           <OfficialLink href="https://tailwindcss.com/">
             Tailwind CSS
           </OfficialLink>
-          , <code>src/</code>{" "}directory, App Router,{" "}
+          , the App Router, no <code>src/</code>{" "}directory, and the{" "}
+          <code>@/*</code>{" "}import alias.{" "}
           <OfficialLink href="https://nextjs.org/docs/app/api-reference/turbopack">
             Turbopack
-          </OfficialLink>
-          , and the <code>@/*</code>{" "}import alias — choose the defaults
-          (typically Yes for TypeScript, ESLint, Tailwind, App Router, and
-          Turbopack; No for a <code>src/</code>{" "}directory and for customizing
-          the alias). Exact wording can vary slightly by{" "}
-          <code>create-next-app</code>{" "}version.
+          </OfficialLink>{" "}
+          is already the default bundler, so there is no separate question for
+          it.
         </p>
-        <CodeBlock language="shell">{`✔ What is your project named? … webdev-client
-✔ Would you like to use TypeScript? … No / Yes
-✔ Would you like to use ESLint? … No / Yes
-✔ Would you like to use Tailwind CSS? … No / Yes
-✔ Would you like your code inside a \`src/\` directory? … No / Yes
-✔ Would you like to use App Router? (recommended) … No / Yes
-✔ Would you like to use Turbopack for \`next dev\`? … No / Yes
-✔ Would you like to customize the import alias (\`@/*\` by default)? … No / Yes`}</CodeBlock>
+        <CodeBlock language="shell">{`? Would you like to use the recommended Next.js defaults? › - Use arrow-keys. Return to submit.
+❯   Yes, use recommended defaults
+    TypeScript, ESLint, No React Compiler, Tailwind CSS, No src/ directory, App Router, AGENTS.md
+    No, reuse previous settings
+    No, customize settings`}</CodeBlock>
+        <p>
+          If you pick <strong>No, customize settings</strong>{" "}instead, answer
+          Yes to TypeScript, ESLint, Tailwind CSS, and the App Router, No to a{" "}
+          <code>src/</code>{" "}directory and the React Compiler, and keep the
+          default import alias.
+        </p>
+        <p id="next-16-4-cache-components-fix">
+          <strong>Created your project on or after October 6, 2026?</strong>{" "}
+          Open <code>package.json</code>. If it says{" "}
+          <code>&quot;next&quot;: &quot;16.4.0&quot;</code>, your project is on
+          Next.js 16.4. (Projects created on October 6 before 2:35 PM ET got
+          16.3.8 and don&apos;t need this fix.) On 16.4,{" "}
+          <code>npm run dev</code>{" "}works, but <code>npm run build</code>{" "}and
+          Vercel deploys fail once you add the book&apos;s code. The first error
+          you see is usually{" "}
+          <em>
+            Next.js encountered URL data <code>usePathname()</code>{" "}in a
+            Client Component outside of <code>&lt;Suspense&gt;</code>
+          </em>
+          ; further down the log there is also{" "}
+          <em>Next.js encountered uncached or runtime data during prerendering</em>
+          .
+        </p>
+        <p>
+          To fix it, open <code>next.config.ts</code>{" "}and delete both the{" "}
+          <code>cacheComponents: true,</code>{" "}and the{" "}
+          <code>partialPrefetching: true,</code>{" "}lines. Delete both: removing
+          only the first one fails with{" "}
+          <em>
+            <code>partialPrefetching</code>{" "}requires{" "}
+            <code>cacheComponents</code>{" "}to be enabled
+          </em>
+          . Leave everything else in the file alone and commit the change. After
+          that, <code>npm run build</code>{" "}and Vercel deploys of the
+          book&apos;s code work again.
+        </p>
+        <CodeBlock language="ts" file="next.config.ts">{`const nextConfig: NextConfig = {
+  /* config options here */
+  cacheComponents: true,    // delete this line
+  partialPrefetching: true, // delete this line
+  // ... leave the rest of this file alone
+};`}</CodeBlock>
         <p>
           Wait while dependencies install (<code>react</code>,{" "}
           <code>react-dom</code>, <code>next</code>, TypeScript types, Tailwind,
           ESLint, and related packages). When it finishes you should see a
-          success message and a new <code>webdev-client</code>{" "}directory. Change
-          into that directory and start the development server:
+          success message and a new <code>webdev-client</code>{" "}directory. If
+          it also says{" "}
+          <em>
+            A new version of <code>create-next-app</code>{" "}is available
+          </em>
+          , ignore it: updating <code>create-next-app</code>{" "}puts you back on
+          Next.js 16.4. Change into that directory and start the development
+          server:
         </p>
         <CodeBlock language="shell">{`cd webdev-client
 npm run dev`}</CodeBlock>
