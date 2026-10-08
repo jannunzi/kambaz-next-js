@@ -3,6 +3,7 @@ import SectionLink from "../../components/SectionLink";
 import ChapterLink from "../../components/ChapterLink";
 import CodeBlock from "../../components/CodeBlock";
 import Link from "next/link";
+import HandInLink from "../../components/HandInLink";
 
 export default function Conclusion() {
   return (
@@ -101,8 +102,8 @@ git push -u origin a5`}</CodeBlock>
             <SectionLink to="1.6" />).
           </li>
           <li>
-            In Canvas, submit the Vercel URL for the{" "}
-            <code>a5</code>{" "}branch deployment. Graders will also use
+            On <HandInLink id="a5" />{" "}(not in Canvas), submit the Vercel
+            URL for the <code>a5</code>{" "}branch deployment. Graders will also use
             the Render API and both GitHub{" "}
             <code>a5</code>{" "}branches.
           </li>

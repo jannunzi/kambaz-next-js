@@ -3,6 +3,7 @@ import SectionLink from "../../components/SectionLink";
 import CodeBlock from "../../components/CodeBlock";
 import LiveDemo from "../../components/LiveDemo";
 import Link from "next/link";
+import HandInLink from "../../components/HandInLink";
 import LabsNameGithub from "@/app/labs/lab1/intermediates/1-5-LabsNameGithub";
 
 export default function ClosingSections() {
@@ -144,8 +145,10 @@ git push`}</CodeBlock>
           After the first deploy, open the project&apos;s settings and disable{" "}
           <strong>Deployment Protection</strong>{" "}(sometimes labeled as a Vercel
           Authentication / password gate on preview or production URLs). Graders
-          must open your site without logging into Vercel. Submit both the
-          GitHub repository URL and the Vercel deployment URL in Canvas.
+          must open your site without logging into Vercel. Hand in A1 on
+          kambaz.dev, not in Canvas: sign in at{" "}
+          <HandInLink id="a1" />{" "}and submit both the GitHub repository URL
+          and the Vercel deployment URL there. Your grade is posted in Canvas.
         </p>
       </Section>
 
@@ -161,7 +164,10 @@ git push`}</CodeBlock>
             <code>wd-github</code>{" "}link to your repository on the Labs page (
             <a href="#labs-name-github">§1.5</a>).
           </li>
-          <li>Deployed to Vercel and submitted both URLs in Canvas.</li>
+          <li>
+            Deployed to Vercel and submitted both URLs on{" "}
+            <HandInLink id="a1" />.
+          </li>
         </ol>
         <p>
           Continue practicing in{" "}
