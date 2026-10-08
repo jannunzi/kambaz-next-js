@@ -273,7 +273,7 @@ describe("runA1Checks", () => {
     assert.equal(name.passed, false);
     assert.equal(
       name.message,
-      "Sign in with your roster (Northeastern) account to check your name on Labs",
+      "Sign in with your Canvas email so Run checks can compare your name on Labs with the course roster. Staff check your name again when grading.",
     );
     assert.equal(name.message, ASSIGNMENT_STUDENT_COPY.nameCheckNeedsRoster);
     assert.equal(
@@ -647,6 +647,12 @@ describe("student-facing copy", () => {
       ASSIGNMENT_STUDENT_COPY.nameAndSectionDeliveryNote,
       /not a checkbox or control in Run checks/i,
     );
+    assert.match(ASSIGNMENT_STUDENT_COPY.nameAndSection, /checks? (looks for it|for it) automatically|looks for it automatically/i);
+    assert.match(ASSIGNMENT_STUDENT_COPY.nameAndSection, /roster name of the account you are signed in with/i);
+    assert.match(ASSIGNMENT_STUDENT_COPY.nameAndSection, /sign in with your Canvas email/i);
+    assert.match(ASSIGNMENT_STUDENT_COPY.nameAndSection, /section is not checked/i);
+    assert.match(ASSIGNMENT_STUDENT_COPY.nameAndSectionDeliveryNote, /checked automatically/i);
+    assert.match(ASSIGNMENT_STUDENT_COPY.nameCheckNeedsRoster, /Sign in with your Canvas email/i);
     assert.match(ASSIGNMENT_STUDENT_COPY.nameMissing, /full Canvas name/i);
     assert.match(ASSIGNMENT_STUDENT_COPY.nameMissing, /no Name and section checkbox in Run checks/i);
     assert.match(ASSIGNMENT_STUDENT_COPY.nameOk, /full Canvas name on Labs/i);
@@ -672,13 +678,16 @@ describe("student-facing copy", () => {
       /never marks it pass or fail/i,
     );
     assert.doesNotMatch(ASSIGNMENT_STUDENT_COPY.manualCheckHint, /Best \/ Better/i);
+    assert.match(ASSIGNMENT_STUDENT_COPY.manualCheckHint, /does not mean you lost points/i);
+    assert.match(ASSIGNMENT_STUDENT_COPY.manualCheckLabNote, /does not mean you lost points/i);
+    assert.match(ASSIGNMENT_STUDENT_COPY.manualCheckHint, /after you submit/i);
   });
 
   it("describes origin normalize, Labs/Kambaz crawl, and optional GitHub", () => {
     assert.match(ASSIGNMENT_STUDENT_COPY.checkInstructions, /normalize the deploy origin/i);
     assert.match(ASSIGNMENT_STUDENT_COPY.checkInstructions, /Labs and Lab pages/i);
     assert.match(ASSIGNMENT_STUDENT_COPY.checkInstructions, /Kambaz/i);
-    assert.match(ASSIGNMENT_STUDENT_COPY.checkInstructions, /wd-\*/i);
+    assert.match(ASSIGNMENT_STUDENT_COPY.checkInstructions, /Keep the wd-\* ids/i);
     assert.match(ASSIGNMENT_STUDENT_COPY.checkInstructions, /GitHub URL is optional/i);
     assert.doesNotMatch(ASSIGNMENT_STUDENT_COPY.checkInstructions, /Best \/ Better/i);
   });

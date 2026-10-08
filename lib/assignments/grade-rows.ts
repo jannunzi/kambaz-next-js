@@ -20,6 +20,12 @@ export type CriterionGradeRow = {
   overridePassed: boolean;
   points: number;
   decided?: boolean;
+  /**
+   * Draft only (never stored): the Auto result a carried staff decision was
+   * made against, set by carryStaffDecisions when a new run's Auto result
+   * differs from it. See autoChangedSinceDecision.
+   */
+  decidedOnAuto?: boolean;
 };
 
 export type GradeAudience = "staff" | "student";
@@ -38,6 +44,11 @@ export type AssignmentGradeView = {
   gradedByClerkUserId: string;
   gradedByEmail?: string;
   savedAt: string;
+  /**
+   * The student's submission time this grade was decided against (saved
+   * with the grade). A later submission means the grade is out of date.
+   */
+  gradedSubmissionAt?: string;
 };
 
 export type RowFill = "green" | "red" | "yellow" | "neutral" | "review";
@@ -67,6 +78,7 @@ export const GRADE_ROW_COPY = {
   notDecided: "not decided yet",
   needsRecheck: "Needs a re-check",
   unsetLegend: "Not set by staff yet (doesn't count until you set it)",
+  autoChanged: "auto result changed since you decided this",
 } as const;
 
 export function defaultPointsFor(overridePassed: boolean, maxPoints: number): number {
@@ -89,32 +101,71 @@ export function isOverridden(row: CriterionGradeRow): boolean {
   return row.points !== defaultPointsFor(row.overridePassed, row.maxPoints);
 }
 
+/** A fresh staff decision on this row, against its current Auto result. */
+function decidedNow(row: CriterionGradeRow): CriterionGradeRow {
+  const { decidedOnAuto: _carried, ...rest } = row;
+  void _carried;
+  return { ...rest, decided: true };
+}
+
 export function withOverrideChecked(
   row: CriterionGradeRow,
   overridePassed: boolean,
 ): CriterionGradeRow {
-  return {
+  return decidedNow({
     ...row,
     overridePassed,
     points: defaultPointsFor(overridePassed, row.maxPoints),
-    decided: true,
-  };
+  });
 }
 
 export function withCustomPoints(
   row: CriterionGradeRow,
   points: number,
 ): CriterionGradeRow {
-  return {
+  return decidedNow({
     ...row,
     points: clampPoints(points, row.maxPoints),
-    decided: true,
-  };
+  });
 }
 
 /** Staff accept the row as it stands (e.g. a TA-review item, or a manual item at 0). */
 export function withDecided(row: CriterionGradeRow): CriterionGradeRow {
-  return { ...row, decided: true };
+  return decidedNow(row);
+}
+
+/**
+ * Back to unset: no staff decision, Override and points follow Auto again.
+ * A manual item goes back to "Not graded yet".
+ */
+export function withCleared(row: CriterionGradeRow): CriterionGradeRow {
+  const { decidedOnAuto: _carried, ...rest } = row;
+  void _carried;
+  return {
+    ...rest,
+    overridePassed: row.autoPassed,
+    points: defaultPointsFor(row.autoPassed, row.maxPoints),
+    decided: false,
+  };
+}
+
+/**
+ * The Points box value as staff typed it. Empty (or not a number) means
+ * "no value": the row goes back to unset instead of being recorded as 0.
+ */
+export function pointsFromInput(raw: string): number | null {
+  const text = raw.trim();
+  if (text === "") return null;
+  const value = Number(text);
+  return Number.isFinite(value) ? value : null;
+}
+
+/** Apply what staff typed in a row's Points box (empty clears the row). */
+export function withPointsInput(
+  row: CriterionGradeRow,
+  points: number | null,
+): CriterionGradeRow {
+  return points == null ? withCleared(row) : withCustomPoints(row, points);
 }
 
 /**
@@ -225,6 +276,55 @@ export function gradeRowsFromResults(
   });
 }
 
+/**
+ * A new Run on a draft or a saved grade. Every row staff already decided
+ * keeps its decision (Override, points, decided), on top of the new Auto
+ * result; undecided rows take the new run as is. When the new Auto result
+ * differs from the one staff decided against, the decision is still kept
+ * but the row is flagged (autoChangedSinceDecision) so staff can look again
+ * before saving. Nothing here decides a row staff haven't set, so a partial
+ * grade stays partial.
+ */
+export function carryStaffDecisions(
+  previous: readonly CriterionGradeRow[] | null | undefined,
+  fresh: readonly CriterionGradeRow[],
+): CriterionGradeRow[] {
+  const decided = new Map(
+    (previous ?? []).filter(rowIsStaffDecided).map((row) => [row.criterionId, row]),
+  );
+  return fresh.map((row) => {
+    const prior = decided.get(row.criterionId);
+    if (!prior) return row;
+    const decidedOnAuto =
+      typeof prior.decidedOnAuto === "boolean" ? prior.decidedOnAuto : prior.autoPassed;
+    return {
+      criterionId: row.criterionId,
+      maxPoints: row.maxPoints,
+      autoPassed: row.autoPassed,
+      overridePassed: prior.overridePassed,
+      points: clampPoints(prior.points, row.maxPoints),
+      decided: true,
+      ...(decidedOnAuto !== row.autoPassed ? { decidedOnAuto } : {}),
+    };
+  });
+}
+
+/** A kept staff decision whose Auto result changed in a later run. */
+export function autoChangedSinceDecision(row: CriterionGradeRow): boolean {
+  return (
+    rowIsStaffDecided(row) &&
+    typeof row.decidedOnAuto === "boolean" &&
+    row.decidedOnAuto !== row.autoPassed
+  );
+}
+
+/** Confirm text before a Save that keeps decisions whose Auto result changed. */
+export function autoChangedSaveWarning(labels: readonly string[]): string | null {
+  if (labels.length === 0) return null;
+  const items = labels.length === 1 ? "1 item" : `${labels.length} items`;
+  return `${items} you decided earlier now ${labels.length === 1 ? "has" : "have"} a different auto result: ${labels.join(", ")}. Your earlier decision is kept on ${labels.length === 1 ? "it" : "each"}. Save anyway?`;
+}
+
 /** Older `staffGrade` documents: pass/fail overrides, no per-row points. */
 export type LegacyStaffGrade = {
   acceptedProposed?: boolean;
@@ -235,6 +335,8 @@ export type LegacyStaffGrade = {
   gradedByEmail?: string;
   gradedByClerkUserId?: string;
   gradedAt?: Date | string;
+  /** Submission time the grade was decided against (newer saves). */
+  gradedSubmissionAt?: Date | string;
   rows?: readonly {
     criterionId: string;
     autoPassed: boolean;
@@ -317,7 +419,16 @@ export function gradeViewFromStaffGrade(input: {
     gradedByClerkUserId: staffGrade.gradedByClerkUserId ?? "",
     gradedByEmail: staffGrade.gradedByEmail,
     savedAt,
+    ...(isoOrUndefined(staffGrade.gradedSubmissionAt)
+      ? { gradedSubmissionAt: isoOrUndefined(staffGrade.gradedSubmissionAt) }
+      : {}),
   };
+}
+
+function isoOrUndefined(value: Date | string | undefined | null): string | undefined {
+  if (!value) return undefined;
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime()) ? undefined : date.toISOString();
 }
 
 /** Fields written onto `assignment_submissions.staffGrade`. */
@@ -328,6 +439,8 @@ export function staffGradeRecordFromRows(input: {
   gradedByEmail?: string;
   gradedByClerkUserId?: string;
   gradedAt?: Date;
+  /** The student's submission time staff graded (see recordStaffGrade). */
+  gradedSubmissionAt?: Date;
 }): {
   earnedPoints: number;
   totalPoints: number;
@@ -338,10 +451,15 @@ export function staffGradeRecordFromRows(input: {
   gradedByEmail?: string;
   gradedByClerkUserId?: string;
   gradedAt: Date;
+  gradedSubmissionAt?: Date;
   rows: CriterionGradeRow[];
   checkResults: AssignmentCheckResult[];
 } {
-  const rows = input.rows.map((row) => ({ ...row }));
+  // decidedOnAuto is a draft-only marker; it is never stored.
+  const rows = input.rows.map(({ decidedOnAuto: _draftOnly, ...row }) => {
+    void _draftOnly;
+    return { ...row };
+  });
   const totals = gradePoints(rows);
   const criterionOverrides: Record<string, boolean> = {};
   for (const row of rows) {
@@ -358,6 +476,7 @@ export function staffGradeRecordFromRows(input: {
     gradedByEmail: input.gradedByEmail,
     gradedByClerkUserId: input.gradedByClerkUserId,
     gradedAt: input.gradedAt ?? new Date(),
+    ...(input.gradedSubmissionAt ? { gradedSubmissionAt: input.gradedSubmissionAt } : {}),
     rows,
     checkResults: sanitizeCheckResults(input.checkResults),
   };

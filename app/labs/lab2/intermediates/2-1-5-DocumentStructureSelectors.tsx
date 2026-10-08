@@ -13,7 +13,7 @@ export default function DocumentStructureSelectors() {
             <p className="wd-selector-3">
               This paragraph&apos;s red background is referenced as
               <br />
-              .selector-2 .selector3
+              .wd-selector-1 .wd-selector-3
               <br />
               meaning the descendant of some ancestor.
               <br />

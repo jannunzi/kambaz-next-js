@@ -41,11 +41,16 @@ git push -u origin a3`}</CodeBlock>
         </li>
         <li>
           Confirm <code>app/labs/TOC.tsx</code>{" "}and{" "}
-          <code>app/labs/page.tsx</code>{" "}still list every lab and Kambaz,
-          plus a link to your GitHub repository with id{" "}
-          <code>wd-github</code>{" "}and your full name (first name first,
-          last name second, matching Canvas) on the Labs page — the same
-          requirements from <SectionLink to="1.7" />, now revisited for this chapter.
+          <code>app/labs/page.tsx</code>{" "}still link Lab 1, Lab 2, Lab 3,
+          and Kambaz, plus a link to your GitHub repository
+          (<code>https://github.com/&lt;you&gt;/&lt;repo&gt;</code>; keep the id{" "}
+          <code>wd-github</code>, which helps us test your work) and your
+          full name (first name first, last name second, matching Canvas)
+          on the Labs page — the same requirements from{" "}
+          <SectionLink to="1.7" />, now revisited for this chapter. Run{" "}
+          <code>npm run build</code>{" "}before you push: a page that works in{" "}
+          <code>npm run dev</code>{" "}can still fail the build, and then the
+          Vercel deployment fails too.
         </li>
         <li>
           Push any remaining changes to the <code>a3</code>{" "}branch and

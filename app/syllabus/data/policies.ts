@@ -20,6 +20,8 @@ export const regradePolicy: PolicyBlock = {
     "You may request a regrade, or resubmit an assignment for a regrade, only for the assignment immediately before the one you are working on. Older assignments are not open for a regrade.",
     "That window opens when you receive a grade for the prior assignment, and it lasts one week from when the grade is posted.",
     "While you are working on A2, once A1 is graded you have one week to resubmit A1 for a regrade. While you are working on A4, you may only seek a regrade for A3 — not A2 or A1.",
+    "Quizzes (Q1–Q6) can also be regraded within one week from when the quiz grade is posted. Quizzes cannot be retaken or resubmitted, so a quiz regrade is only a recheck of how your existing answers were graded.",
+    "To request a regrade for an assignment or a quiz, make a private post to Instructors on Piazza.",
   ],
 };
 

@@ -1,6 +1,10 @@
 import type { RubricGroupId } from "./types";
 
-export type RubricAutoKind = "ids" | "headings" | "manual";
+/**
+ * "structure": judged only by the checker's own structure rules
+ * (`AssignmentChecker.judgeAutoSpecs`, used by A2); the spec never reads ids.
+ */
+export type RubricAutoKind = "ids" | "headings" | "manual" | "structure";
 
 export type A1RubricAutoSpec = {
   criterionId: string;

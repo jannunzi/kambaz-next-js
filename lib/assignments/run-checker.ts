@@ -10,7 +10,8 @@ import {
   type AttemptedPage,
   type TargetPages,
 } from "./a1-structure";
-import type { AssignmentChecker } from "./checker-types";
+import { isTemplatePage } from "./a2-structure";
+import type { AssignmentChecker, AutoVerdict, FetchTextResult } from "./checker-types";
 import type {
   AssignmentCheckProbes,
   AssignmentCheckResult,
@@ -41,6 +42,7 @@ import {
   isVercelBranchPreviewHost,
   looksLikeDeployUrl,
   parseGithubRepoUrl,
+  urlOnDeployOrigin,
 } from "./urls";
 
 function check(
@@ -142,13 +144,7 @@ function judgeLegacySpec(
   return check(spec.criterionId, spec.label, primary.passed, primary.message, extra);
 }
 
-type Verdict =
-  | { kind: "pass"; message: string }
-  | { kind: "fail"; message: string }
-  /** No reliable signal: TA review if its gate allows, else a fail. */
-  | { kind: "review"; message: string; missMessage: string }
-  /** The page could not be fetched (timeout, network, 5xx, login wall). */
-  | { kind: "unreachable"; message: string };
+type Verdict = AutoVerdict;
 
 const DEFAULT_LAB_TARGET: StructureTarget = { kind: "labs" };
 const SITE_TARGET: StructureTarget = { kind: "site" };
@@ -157,9 +153,22 @@ function capitalize(text: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
+/**
+ * One sentence for a target page that doesn't exist. When several Lab pages
+ * returned the same 404, it names them together (e.g. "/labs and
+ * /labs/lab1 returned HTTP 404"), so withLab1NotFoundNote doesn't repeat it.
+ */
 function missingPageMessage(target: TargetPages): string {
-  const status = target.status ? `returned HTTP ${target.status}` : "was not found";
-  return `${capitalize(target.name)} wasn't found on your deploy (${target.example} ${status}), so this item couldn't pass.`;
+  const paths = target.missingPaths?.length ? target.missingPaths : [target.example];
+  const where = pathList(paths.map((path) => ({ path })));
+  const plural = paths.length > 1;
+  const status = target.status
+    ? `returned HTTP ${target.status}`
+    : plural
+      ? "were not found"
+      : "was not found";
+  const verb = /\bpages$/i.test(target.name) ? "weren't" : "wasn't";
+  return `${capitalize(target.name)} ${verb} found on your deploy (${where} ${status}), so this item couldn't pass.`;
 }
 
 function unreachablePageMessage(target: TargetPages): string {
@@ -206,7 +215,9 @@ function withLab1NotFoundNote(
   const note = `The Lab 1 page (/labs/lab1) returned HTTP ${lab1.status ?? 404}.`;
   return results.map((row) => {
     if (row.groupId !== "lab" || row.passed || row.skipped) return row;
-    if (/\/labs\/lab1\)? returned HTTP/.test(row.message)) return row;
+    // Already names /labs/lab1's 404 (e.g. "/labs and /labs/lab1 returned
+    // HTTP 404"): don't say it twice.
+    if (/\/labs\/lab1\b[^.]*? returned HTTP/.test(row.message)) return row;
     return { ...row, message: `${note} ${row.message}` };
   });
 }
@@ -331,6 +342,46 @@ function resolveVerdicts(
       }
     }
   });
+}
+
+/**
+ * Same-origin fetches for resources a page links (stylesheets), through the
+ * checker's probes, cached per run. Only paths on the deploy are fetched.
+ */
+function textFetcher(
+  origin: string,
+  probes: AssignmentCheckProbes,
+): (pathOrUrl: string) => Promise<FetchTextResult> {
+  const cache = new Map<string, Promise<FetchTextResult>>();
+  return (pathOrUrl) => {
+    let url: string;
+    try {
+      const resolved = new URL(pathOrUrl, origin);
+      if (resolved.origin !== new URL(origin).origin) {
+        return Promise.resolve({ ok: false, missing: false });
+      }
+      url = urlOnDeployOrigin(origin, resolved.pathname + resolved.search);
+    } catch {
+      return Promise.resolve({ ok: false, missing: false });
+    }
+    const hit = cache.get(url);
+    if (hit) return hit;
+    const pending = probes
+      .getHtml(url)
+      .then((result): FetchTextResult => {
+        if (result.ok) return { ok: true, text: result.html };
+        const missing = isDefiniteNotFound({
+          path: url,
+          ok: false,
+          status: result.status,
+          code: result.code,
+        });
+        return { ok: false, status: result.status, missing };
+      })
+      .catch((): FetchTextResult => ({ ok: false, missing: false }));
+    cache.set(url, pending);
+    return pending;
+  };
 }
 
 export async function runChecker(
@@ -557,9 +608,31 @@ export async function runChecker(
     }
     return check(id, label, false, message, extra);
   };
-  const labsNav =
-    labsNavPassed(deliveryHtml, delivery.labsNav, siteHost, config.idHasContent ? hasId : htmlHasId) ||
-    Boolean(delivery.labsNav.structurePassed?.(deliveryHtml, siteHost));
+  if (delivery.labsContent) {
+    // The deploy must show the student's own Labs pages: a bare
+    // create-next-app starter (or 404s everywhere under /labs) earns nothing.
+    const content = delivery.labsContent;
+    const extra = { criterionId: delivery.vercelCriterionId, groupId: "delivery" as const };
+    const id = `${delivery.vercelCriterionId}-content`;
+    const ownLabs = crawled.pages.some(
+      (page) => page.result.ok && isLabsPath(page.path) && !isTemplatePage(page.result.html),
+    );
+    results.push(
+      ownLabs
+        ? check(id, content.label, true, content.passMessage, extra)
+        : labsTarget.unreachable.length > 0
+          ? check(id, content.label, true, partlyUnreachableMessage(labsTarget.unreachable), {
+              ...extra,
+              needsReview: true,
+            })
+          : check(id, content.label, false, content.failMessage, extra),
+    );
+  }
+
+  const labsNav = delivery.labsNav.test
+    ? delivery.labsNav.test(deliveryHtml, siteHost)
+    : labsNavPassed(deliveryHtml, delivery.labsNav, siteHost, config.idHasContent ? hasId : htmlHasId) ||
+      Boolean(delivery.labsNav.structurePassed?.(deliveryHtml, siteHost));
   {
     const extra = { criterionId: delivery.labsNav.criterionId, groupId: delivery.labsNav.groupId };
     results.push(
@@ -658,9 +731,16 @@ export async function runChecker(
       attempted,
       siteHost,
     };
+    const custom = config.judgeAutoSpecs
+      ? await config.judgeAutoSpecs({
+          structure,
+          attempted,
+          fetchText: textFetcher(crawled.origin, input.probes),
+        })
+      : {};
     const verdicts = config.autoSpecs.map((spec) => ({
       spec,
-      verdict: judgeSpec(config, spec, structure),
+      verdict: custom[spec.criterionId] ?? judgeSpec(config, spec, structure),
     }));
     results.push(...withLab1NotFoundNote(resolveVerdicts(config, verdicts, results), attempted));
   }

@@ -82,7 +82,7 @@ export default function CourseCard({
     kind: "content",
     bullets: [
       "`grid-cols-1` default, `sm:grid-cols-2`, `xl:grid-cols-3`, `2xl:grid-cols-4`",
-      "`gap-8` is ~32px — the 30–40px gutter the target shots show",
+      "`gap-8` is ~32px of white space between cards. The space grows when a grid column is wider than its card",
       "Existing `CourseCard` calls stay the same",
     ],
     code: `import CourseCard from "./CourseCard";
@@ -140,7 +140,7 @@ export default function Dashboard() {
     bullets: [
       "Dashboard tile selected in the sidebar (white / red)",
       "`Dashboard` title, rule, `Published Courses (3)`, second rule",
-      "Cards ~300px with 30–40px gaps; four across at the widest width",
+      "Cards ~300px with at least 32px (the `gap-8` gutter) between them; four across at the widest width",
     ],
   },
   {

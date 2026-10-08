@@ -18,7 +18,7 @@
  *       re-check with points kept; it is never graded against other pages.
  */
 export const A1_CHECKER_RULES_VERSION = "a1-rules-v2";
-export const A2_CHECKER_RULES_VERSION = "a2-rules-v1";
+export const A2_CHECKER_RULES_VERSION = "a2-rules-v2";
 /**
  * A3 history:
  *   v1: structure-only checks (no ids, no fixed text), cross-screen

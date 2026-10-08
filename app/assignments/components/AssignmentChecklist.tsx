@@ -1,15 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { criterionCoverage } from "@/lib/assignments/checkers";
 import { listRubricCriteria, nestRubricCriteria } from "@/lib/assignments/catalog";
 import type { AssignmentCheckResult } from "@/lib/assignments/checks";
 import { latestResultByCriterion } from "@/lib/assignments/checks";
 import {
   GRADE_ROW_COPY,
+  autoChangedSinceDecision,
   changedCriterionIds,
   gradePoints,
+  pointsFromInput,
   rowPresentation,
   studentAutoPoints,
   visibleCheckMessage,
@@ -131,7 +133,7 @@ function CriterionRow({
   result?: AssignmentCheckResult;
   vercelUrl?: string;
   onOverride?: (criterionId: string, checked: boolean) => void;
-  onPoints?: (criterionId: string, points: number) => void;
+  onPoints?: (criterionId: string, points: number | null) => void;
 }) {
   const presentation = rowPresentation({
     row,
@@ -155,6 +157,10 @@ function CriterionRow({
   const staff = audience === "staff";
   const showAuto = scored && (staff || !manual) && !result?.needsRecheck;
   const staffUnset = staff && unset;
+  const autoChanged = autoChangedSinceDecision(row);
+  // What staff are typing in the Points box. While they edit, an empty box
+  // stays empty (the row is unset) instead of jumping back to a number.
+  const [pointsText, setPointsText] = useState<string | null>(null);
   const scoreLabel =
     staffUnset && manual
       ? `${criterion.points} pts · not graded yet`
@@ -207,12 +213,14 @@ function CriterionRow({
               step={1}
               inputMode="numeric"
               className="w-16 rounded border border-neutral-500 bg-white px-2 py-1 text-neutral-950"
-              value={staffUnset && manual ? "" : row.points}
+              value={pointsText ?? (staffUnset && manual ? "" : row.points)}
               placeholder={staffUnset ? "–" : undefined}
               onChange={(event) => {
-                const next = event.target.value === "" ? 0 : Number(event.target.value);
-                onPoints?.(criterion.id, next);
+                // Empty means no value: the row goes back to unset, never 0.
+                setPointsText(event.target.value);
+                onPoints?.(criterion.id, pointsFromInput(event.target.value));
               }}
+              onBlur={() => setPointsText(null)}
             />
             <span>/ {row.maxPoints}</span>
           </label>
@@ -239,6 +247,14 @@ function CriterionRow({
           <span className="font-sans text-sm font-semibold">
             {presentation.mark && presentation.mark !== "override" ? `${presentation.mark} ` : null}
             {presentation.label}
+          </span>
+        ) : null}
+        {staff && autoChanged ? (
+          <span
+            className="rounded border border-amber-700 bg-amber-100 px-2 py-0.5 font-sans text-xs font-semibold text-amber-950"
+            data-auto-changed="true"
+          >
+            ⚠ {GRADE_ROW_COPY.autoChanged}
           </span>
         ) : null}
         {presentation.changed ? (
@@ -320,7 +336,7 @@ export default function AssignmentChecklist({
   draftFinal?: FinalGrade | null;
   vercelUrl?: string;
   onOverride?: (criterionId: string, checked: boolean) => void;
-  onPoints?: (criterionId: string, points: number) => void;
+  onPoints?: (criterionId: string, points: number | null) => void;
 }) {
   const rubric = assignment.rubric;
   const criteria = useMemo(
@@ -364,6 +380,16 @@ export default function AssignmentChecklist({
   const unsetLabels = criteria
     .filter((criterion) => unsetIds.has(criterion.id))
     .map((criterion) => criterion.label);
+  // Staff decisions kept from before a Run whose Auto result changed.
+  const autoChangedLabels =
+    audience === "staff"
+      ? criteria
+          .filter((criterion) => {
+            const row = byId.get(criterion.id);
+            return row ? autoChangedSinceDecision(row) : false;
+          })
+          .map((criterion) => criterion.label)
+      : [];
 
   if (!rubric) return null;
 
@@ -437,6 +463,14 @@ export default function AssignmentChecklist({
             data-unset-count={unsetLabels.length}
           >
             Still to set ({unsetLabels.length}): {unsetLabels.join(", ")}. Use Full credit, No credit, Override or Points on each.
+          </p>
+        ) : null}
+        {autoChangedLabels.length > 0 ? (
+          <p
+            className="mb-0 mt-1 rounded border border-amber-700 bg-amber-100 px-2 py-1 text-sm text-amber-950"
+            data-auto-changed-count={autoChangedLabels.length}
+          >
+            ⚠ Auto result changed since you decided ({autoChangedLabels.length}): {autoChangedLabels.join(", ")}. Your earlier decision is kept; check each before you save.
           </p>
         ) : null}
         {final && audience === "student" && scored && !recheck && !final.ready ? (
@@ -535,7 +569,7 @@ function GroupList({
   vercelUrl?: string;
   rowFor: (criterion: RubricCriterion) => CriterionGradeRow;
   onOverride?: (criterionId: string, checked: boolean) => void;
-  onPoints?: (criterionId: string, points: number) => void;
+  onPoints?: (criterionId: string, points: number | null) => void;
 }) {
   const blocks = nestRubricCriteria(criteria);
   const hasNesting = blocks.some((block) => block.type === "nested");

@@ -198,13 +198,24 @@ describe("assignment catalog", () => {
     assert.ok(deliveryIntro.includes(ASSIGNMENT_STUDENT_COPY.nameAndSectionDeliveryNote));
     assert.match(
       deliveryIntro,
-      /full Canvas name on Labs \(first then last, matching the roster\), not a checkbox or control in Run checks/i,
+      /full Canvas name on Labs \(first then last, matching the roster\)/i,
     );
+    assert.match(deliveryIntro, /checked automatically/i);
+    assert.match(deliveryIntro, /not a checkbox or control in Run checks/i);
+    assert.match(deliveryIntro, /section is not checked/i);
+    // Keep asking for the ids, but never say graders look for them.
+    assert.match(deliveryIntro, /Keep the wd-github id/);
+    assert.match(deliveryIntro, /the ids help us test your work/);
+    assert.doesNotMatch(deliveryIntro, /graders (still )?look for/i);
+    for (const row of listRubricCriteria(A1_RUBRIC)) {
+      assert.doesNotMatch(row.description ?? "", /required ids/i, row.id);
+    }
     const labIntro = A1_RUBRIC.groups.find((group) => group.id === "lab")?.intro ?? "";
     assert.match(labIntro, /Manual check badge/i);
     assert.match(labIntro, /staff grade that row on your deploy URL/i);
     assert.match(labIntro, /never marks it pass or fail/i);
     assert.match(labIntro, /not a failed auto check/i);
+    assert.match(labIntro, /does not mean you lost points/i);
     assert.ok(findCriterion(A1_RUBRIC, "a1-kambaz-assignments")?.onYourOwn);
     assert.equal(supportsUrlSubmission("a1"), true);
 

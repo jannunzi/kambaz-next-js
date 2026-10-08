@@ -111,6 +111,11 @@ export type TargetPages = {
   /** HTTP status of a definite not-found, when there was one. */
   status?: number;
   /**
+   * When the target is missing: every path in it that returned that status
+   * (Lab pages: /labs and /labs/lab1 first), so one message names them all.
+   */
+  missingPaths?: string[];
+  /**
    * Pages in this target that the crawl tried but couldn't open (timeout,
    * network, 5xx, login wall). A miss with any of these is a re-check, never
    * a fail: the item may be on the page we couldn't read.
@@ -143,6 +148,14 @@ function stateOf(
   return { state: "missing", status: failed.find((page) => page.status)?.status };
 }
 
+/** /labs, then /labs/lab1, then the other Lab pages. */
+function labPathRank(path: string): number {
+  const clean = path.replace(/\/+$/, "");
+  if (clean === "/labs") return 0;
+  if (clean === "/labs/lab1") return 1;
+  return 2;
+}
+
 export function targetPages(ctx: StructureContext, target: StructureTarget): TargetPages {
   const attempted = ctx.attempted ?? [];
   if (target.kind === "site") {
@@ -164,10 +177,19 @@ export function targetPages(ctx: StructureContext, target: StructureTarget): Tar
         ? { name: "the Lab 1 page", example: "/labs/lab1" }
         : { name: "the Labs pages", example: "/labs" };
     const lab1 = tried.find((page) => page.path === "/labs/lab1");
+    const state = stateOf(pages, tried);
+    const missingPaths =
+      state.state === "missing"
+        ? [...new Set(tried.filter((page) => page.status === state.status).map((page) => page.path))].sort(
+            (a, b) => labPathRank(a) - labPathRank(b) || a.localeCompare(b),
+          )
+        : undefined;
     return {
-      ...stateOf(pages, tried),
+      ...state,
+      ...(missingPaths?.length ? { missingPaths } : {}),
       pages,
-      ...named,
+      // Every Lab page is missing, not only Lab 1: one plain sentence for all.
+      ...((missingPaths?.length ?? 0) > 1 ? { name: "the Labs pages", example: "/labs" } : named),
       unreachable: tried.filter(isUnreachable),
       ...(target.kind === "labPage" && lab1 && isDefiniteNotFound(lab1)
         ? { lab1NotFound: lab1.status }
