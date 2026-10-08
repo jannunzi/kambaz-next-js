@@ -26,6 +26,8 @@ export type A1RubricAutoSpec = {
   requireClassTokenPatterns?: { label: string; pattern: string }[];
   /** A start tag that must appear inside the element with this id. */
   requireDescendantTag?: { id: string; tag: string };
+  /** A start tag that must appear inside an element with any of these ids. */
+  requireDescendantTagInAnyId?: { ids: string[]; tag: string };
   passMessage: string;
   failMessage: string;
 };

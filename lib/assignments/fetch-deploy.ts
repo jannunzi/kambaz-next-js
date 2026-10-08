@@ -3,6 +3,7 @@ import "server-only";
 import { ASSIGNMENT_STUDENT_COPY } from "./student-copy";
 import type { HtmlFetchResult, UrlProbeResult } from "./checks";
 import { COURSE_SITE_ORIGIN } from "@/lib/course-site/origin";
+import { probeGithub } from "./github-probe";
 import { isBlockedHostname, isVercelAuthWallUrl, looksLikeDeployUrl } from "./urls";
 
 const FETCH_TIMEOUT_MS = 10_000;
@@ -112,33 +113,7 @@ export async function fetchDeployHtml(url: string): Promise<HtmlFetchResult> {
   }
 }
 
+/** Public-repo probe; rate limits and other transient errors never fail a check. */
 export async function probeGithubRepo(url: string): Promise<UrlProbeResult> {
-  try {
-    let treePage = false;
-    try {
-      treePage = /\/tree\//.test(new URL(url).pathname);
-    } catch {
-      treePage = false;
-    }
-    let res = await fetchWithTimeout(url, { method: treePage ? "GET" : "HEAD" });
-    if (!treePage && (res.status === 405 || res.status === 501)) {
-      res = await fetchWithTimeout(url, { method: "GET" });
-    }
-    if (res.body) {
-      await res.body.cancel().catch(() => undefined);
-    }
-    if (res.status === 404) {
-      return { ok: false, status: 404, message: ASSIGNMENT_STUDENT_COPY.githubPrivate };
-    }
-    if (!res.ok) {
-      return {
-        ok: false,
-        status: res.status,
-        message: ASSIGNMENT_STUDENT_COPY.githubUnreachable,
-      };
-    }
-    return { ok: true, status: res.status };
-  } catch {
-    return { ok: false, message: ASSIGNMENT_STUDENT_COPY.githubUnreachable };
-  }
+  return probeGithub(url, { userAgent: USER_AGENT });
 }

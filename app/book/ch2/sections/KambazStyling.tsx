@@ -11,6 +11,7 @@ import KambazNavigation from "../embeds/_styled/Navigation";
 import CourseNavigation from "../embeds/_styled/courses/cid/Navigation";
 import Dashboard from "../embeds/_styled/dashboard/Dashboard";
 import Home from "../embeds/_styled/courses/cid/home/page";
+import Modules from "../embeds/_styled/courses/cid/modules/page";
 import Assignments from "../embeds/_styled/courses/cid/assignments/Assignments";
 import PeopleTable from "../embeds/_styled/courses/cid/people/PeopleTable";
 import AssignmentEditor from "../embeds/_styled/courses/cid/assignments/AssignmentEditor";
@@ -52,7 +53,10 @@ export default function KambazStyling() {
         (without Preflight the browser often falls back to Times),{" "}
         <code>box-sizing</code>, and later the fixed-sidebar offset. Kambaz
         does not import the Labs file <code>utilities.css</code>.
-        The Kambaz layout imports only <code>kambaz.css</code>, once. Putting{" "}
+        The Kambaz layout imports <code>kambaz.css</code>. (Course Navigation
+        in <SectionLink to="2.4.3" />{" "}imports it too, so its list-group rules
+        come along wherever that component renders. Next.js still bundles the
+        file only once.) Putting{" "}
         <code>font-sans</code>{" "}on the root as well means Tailwind&apos;s
         system stack applies even if the CSS rule is incomplete:
       </p>
@@ -104,11 +108,12 @@ export default function KambazLayout({
       <p>
         With that shell in place, the remaining table wrappers come out of{" "}
         <code>app/(kambaz)/layout.tsx</code>{" "}(if any),{" "}
-        <code>app/(kambaz)/courses/[cid]/layout.tsx</code>, and{" "}
-        <code>app/(kambaz)/courses/[cid]/home/page.tsx</code>, replaced with{" "}
-        <code>flex</code>{" "}containers so the Course Navigation sidebar and Course
-        Status column sit beside the main content through CSS instead of table
-        cells. Both course files come back into focus below once Navigation and
+        <code>app/(kambaz)/courses/[cid]/layout.tsx</code>,{" "}
+        <code>app/(kambaz)/courses/[cid]/home/page.tsx</code>, and{" "}
+        <code>app/(kambaz)/account/layout.tsx</code>, replaced with{" "}
+        <code>flex</code>{" "}containers so the Course Navigation sidebar, the
+        Account Navigation sidebar, and the Course Status column sit beside the
+        main content through CSS instead of table cells. Both course files come back into focus below once Navigation and
         Status are styled — including the responsive hide order (
         <code>hidden lg:block</code>{" "}for Status first, then{" "}
         <code>hidden md:block</code>{" "}for both sidebars together).
@@ -156,16 +161,22 @@ export default function KambazLayout({
       <p>
         If we rebuild the sidebar with React Icons and Tailwind so
         each link becomes an icon-and-label tile, then pin the whole bar to the
-        window, the gap closes. The markup can stay inline as in the starter below:
+        window, the gap closes. Keep every link from <SectionLink to="1.4.3.1" />,
+        in the same order, including the Northeastern link (
+        <code>wd-neu-link</code>), which now shows the logo from{" "}
+        <code>public/images/NEU.png</code>{" "}instead of the word
+        Northeastern. Every link becomes the same black tile with a red icon,
+        except Account, whose icon is white, and Dashboard, which is
+        highlighted:
       </p>
       <CodeBlock
         language="tsx"
         name="KambazNavigation"
         file="app/(kambaz)/Navigation.tsx"
-      >{`"use client";
-
-import { AiOutlineDashboard } from "react-icons/ai";
-import { FaRegCircleUser } from "react-icons/fa6";
+      >{`import { AiOutlineDashboard } from "react-icons/ai";
+import { IoCalendarOutline } from "react-icons/io5";
+import { LiaBookSolid, LiaCogSolid } from "react-icons/lia";
+import { FaInbox, FaRegCircleUser } from "react-icons/fa6";
 import Link from "next/link";
 
 export default function KambazNavigation() {
@@ -174,12 +185,28 @@ export default function KambazNavigation() {
       id="wd-kambaz-navigation"
       className="fixed bottom-0 top-0 z-20 hidden w-[120px] bg-black md:block"
     >
+      <a
+        href="https://www.northeastern.edu/"
+        id="wd-neu-link"
+        target="_blank"
+        rel="noreferrer"
+        className="block bg-black py-3 text-center"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/NEU.png"
+          width={75}
+          height={75}
+          alt="Northeastern University"
+          className="mx-auto"
+        />
+      </a>
       <Link
         href="/account"
         id="wd-account-link"
         className="block bg-black py-3 text-center text-sm text-white no-underline"
       >
-        <FaRegCircleUser className="inline-block text-3xl text-red-500" />
+        <FaRegCircleUser className="inline-block text-3xl text-white" />
         <br />
         Account
       </Link>
@@ -192,7 +219,42 @@ export default function KambazNavigation() {
         <br />
         Dashboard
       </Link>
-      {/* ...Courses, Calendar, Inbox, Labs... */}
+      <Link
+        href="/dashboard"
+        id="wd-course-link"
+        className="block bg-black py-3 text-center text-sm text-white no-underline"
+      >
+        <LiaBookSolid className="inline-block text-3xl text-red-600" />
+        <br />
+        Courses
+      </Link>
+      <Link
+        href="/calendar"
+        id="wd-calendar-link"
+        className="block bg-black py-3 text-center text-sm text-white no-underline"
+      >
+        <IoCalendarOutline className="inline-block text-3xl text-red-600" />
+        <br />
+        Calendar
+      </Link>
+      <Link
+        href="/inbox"
+        id="wd-inbox-link"
+        className="block bg-black py-3 text-center text-sm text-white no-underline"
+      >
+        <FaInbox className="inline-block text-3xl text-red-600" />
+        <br />
+        Inbox
+      </Link>
+      <Link
+        href="/labs"
+        id="wd-labs-link"
+        className="block bg-black py-3 text-center text-sm text-white no-underline"
+      >
+        <LiaCogSolid className="inline-block text-3xl text-red-600" />
+        <br />
+        Labs
+      </Link>
     </nav>
   );
 }`}</CodeBlock>
@@ -219,14 +281,16 @@ export default function KambazNavigation() {
   }
 }`}</CodeBlock>
       <p>
-        Optionally the Northeastern logo sits above Account (a plain{" "}
-        <code>&lt;img&gt;</code>{" "}to <code>/images/NEU.png</code>) so the bar
-        matches the target screenshots. With those classes in place, the live
-        component looks like this
-        (contained so <code>fixed</code> does not escape this figure):
+        The logo is a plain <code>&lt;img&gt;</code>. If{" "}
+        <code>public/images/NEU.png</code>{" "}isn&apos;t in your project yet, save
+        any Northeastern logo there under that name. The{" "}
+        <code>eslint-disable</code>{" "}comment only silences ESLint&apos;s
+        suggestion to use <code>next/image</code>. With those classes in place,
+        the sidebar looks like this (contained so <code>fixed</code>{" "}
+        does not escape this figure):
       </p>
       <LiveDemo mode="styled" name="Styled result" file="app/(kambaz)/Navigation.tsx">
-        <ContainFixed height={360}>
+        <ContainFixed height={600}>
           <KambazNavigation />
           <div style={{ marginLeft: 120, padding: "1rem", color: "#6b7280" }}>
             Dashboard, Courses, and every other Kambaz screen render here,
@@ -243,25 +307,37 @@ export default function KambazNavigation() {
           use red icons, except the Account icon, which is white
         </li>
         <li>
-          highlight the active link with a white background and red text;
-          leave the others black with white text
+          highlight one link with a white background and red text (Dashboard,
+          for now); leave the others black with white text
         </li>
         <li>
           center icons and labels in the bar
         </li>
       </ul>
+      <p>
+        <strong>Which link is highlighted?</strong>{" "}In this chapter the
+        Dashboard tile is highlighted by hand: its classes say{" "}
+        <code>bg-white text-red-600</code>{" "}and every other tile says{" "}
+        <code>bg-black text-white</code>. So Dashboard stays highlighted on every
+        Kambaz page, even on Account or Labs. That&apos;s expected for A2.
+        Making the highlight follow the URL takes the{" "}
+        <code>usePathname()</code>{" "}hook, which reads the current path so each
+        link can compare it with its own <code>href</code>.{" "}
+        <SectionLink to="2.4.3" />{" "}uses it for Course Navigation, and{" "}
+        <SectionLink to="3.9.1" />{" "}applies the same idea to this sidebar.
+      </p>
       <OnYourOwn>
-        In <code>Navigation.tsx</code>, finish any
-        remaining sidebar links with fitting React Icons, then confirm the active
-        link (white background, red text) and the{" "}
+        In <code>Navigation.tsx</code>, swap in a different React Icon for one of
+        the tiles (keep Account&apos;s white), then confirm Dashboard is still
+        highlighted (white background, red text) and the{" "}
         <code>wd-main-content-offset</code>{" "}rule in <code>kambaz.css</code>{" "}still
-        keep content clear of the fixed bar.
+        keeps content clear of the fixed bar.
       </OnYourOwn>
       <WithAI
         prompt={`In app/(kambaz)/Navigation.tsx, keep my personal sidebar links and icon choices unchanged. After the existing tiles, add one more sample link with id wd-ai-nav-help to /labs with a fitting icon (for example FaCircleQuestion) and the same tile classes as the idle black/white links. Do not change Account/Dashboard or my personal icons. Do not overwrite wd-main-content-offset in app/(kambaz)/kambaz.css.`}
       >
-        Paste this prompt to add a second sample tile — then confirm the active
-        link has a white background and red text, and content stays clear of the bar:
+        Paste this prompt to add a second sample tile — then confirm Dashboard
+        still has a white background and red text, and content stays clear of the bar:
       </WithAI>
 
       <h3
@@ -439,7 +515,9 @@ export default function Dashboard() {
         </li>
         <li>
           keep cards roughly 300 pixels wide regardless of window width, with
-          30–40 pixels of white space between them
+          at least 32 pixels (the <code>gap-8</code>{" "}gutter) of white space
+          between them; the space grows when a grid column is wider than its
+          card
         </li>
         <li>
           fit at least 4 course cards in a row at the widest window size, wrapping
@@ -496,10 +574,24 @@ export default function Dashboard() {
       </LiveDemo>
       <p>
         If we keep the sidebar narrow (~140px) — only the label
-        column — and refactor the plain links into a list group, the gap closes. Here{" "}
-        <code>usePathname</code>{" "}highlights the active route. Nested
-        paths count as active too (so <code>/assignments/123</code> still lights up
-        Assignments) with <code>startsWith</code>:
+        column — and refactor the plain links into a list group, the gap closes.
+        Keep the links in their <SectionLink to="1.4.4" />{" "}order (Home,
+        Modules, Piazza, Zoom, Assignments, Quizzes, Grades, People) so the
+        sidebar matches <FigureLink to="2.4.3" />. Here{" "}
+        <code>usePathname</code>{" "}highlights the active route: it returns the
+        current URL path, and each link compares that path with its own{" "}
+        <code>href</code>. Nested paths count as active too (so{" "}
+        <code>/assignments/123</code>{" "}still lights up Assignments) with{" "}
+        <code>startsWith</code>.
+      </p>
+      <p>
+        The first line, <code>&quot;use client&quot;</code>, is new. Next.js
+        renders components on the server by default, and server components
+        can&apos;t use hooks such as <code>usePathname</code>, which need the
+        browser. <code>&quot;use client&quot;</code>{" "}at the very top of a file
+        marks that component to run in the browser too, so the hook works.
+        Components without hooks, like the Kambaz Navigation sidebar above,
+        don&apos;t need it:
       </p>
       <CodeBlock
         language="tsx"
@@ -513,6 +605,7 @@ import "../../kambaz.css";
 export default function CourseNavigation({ cid }: { cid: string }) {
   const pathname = usePathname() ?? "";
   const home = \`/courses/\${cid}/home\`;
+  const modules = \`/courses/\${cid}/modules\`;
   const assignments = \`/courses/\${cid}/assignments\`;
   return (
     <div id="wd-courses-navigation" className="wd list-group rounded-none text-lg">
@@ -528,6 +621,18 @@ export default function CourseNavigation({ cid }: { cid: string }) {
         Home
       </Link>
       <Link
+        href={modules}
+        id="wd-course-modules-link"
+        className={
+          pathname === modules
+            ? "list-group-item active border-0"
+            : "list-group-item border-0 text-red-600"
+        }
+      >
+        Modules
+      </Link>
+      {/* ...Piazza and Zoom, same pattern... */}
+      <Link
         href={assignments}
         id="wd-course-assignments-link"
         className={
@@ -538,7 +643,7 @@ export default function CourseNavigation({ cid }: { cid: string }) {
       >
         Assignments
       </Link>
-      {/* ...Modules, Piazza, Zoom, Quizzes, Grades, People... */}
+      {/* ...Quizzes, Grades, People, same pattern... */}
     </div>
   );
 }`}</CodeBlock>
@@ -751,6 +856,71 @@ export default function Lesson({
 </div>
 {/* ...Module / Lesson tree... */}`}</CodeBlock>
       <p>
+        Put the toolbar above the module tree in{" "}
+        <code>modules/page.tsx</code>. The tree is the same{" "}
+        <code>Module</code>/<code>Lesson</code>{" "}markup from{" "}
+        <SectionLink to="1.4.5" />; the only new class on it is{" "}
+        <code>m-0 list-none p-0</code>{" "}on <code>&lt;ul id=&quot;wd-modules&quot;&gt;</code>,
+        which removes the bullets and the browser&apos;s left indent so the
+        modules line up with the toolbar. The listing shows one module to save
+        space. Keep every module and lesson you built in{" "}
+        <ChapterLink to={1} />{" "}where the comments say so:
+      </p>
+      <CodeBlock
+        language="tsx"
+        name="Modules page"
+        file="app/(kambaz)/courses/[cid]/modules/page.tsx"
+      >{`import Lesson from "./Lesson";
+import Module from "./Module";
+
+export default function Modules() {
+  return (
+    <div>
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
+        >
+          Collapse All
+        </button>
+        <button
+          type="button"
+          className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
+        >
+          View Progress
+        </button>
+        <select
+          defaultValue="publish-all"
+          className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
+        >
+          <option value="publish-all">Publish All</option>
+        </select>
+        <button
+          type="button"
+          className="rounded border border-red-600 bg-red-600 px-3 py-1.5 text-sm font-medium text-white"
+        >
+          + Module
+        </button>
+      </div>
+      <ul id="wd-modules" className="m-0 list-none p-0">
+        <Module title="Week 1, Lecture 1 - Course Introduction, Syllabus, Agenda">
+          <Lesson title="LEARNING OBJECTIVES">
+            <li className="wd-content-item">Introduction to the course</li>
+            <li className="wd-content-item">Learn what is Web Development</li>
+          </Lesson>
+          <Lesson title="READING">
+            <li className="wd-content-item">
+              Full Stack Developer - Chapter 1 - Introduction
+            </li>
+          </Lesson>
+          {/* ...keep the rest of your Chapter 1 lessons (SLIDES, ...) */}
+        </Module>
+        {/* ...keep your other Chapter 1 modules (Week 2, ...) */}
+      </ul>
+    </div>
+  );
+}`}</CodeBlock>
+      <p>
         With those classes in place, the screen looks like this:
       </p>
       <LiveDemo
@@ -758,33 +928,7 @@ export default function Lesson({
         name="Styled result"
         file="app/(kambaz)/courses/[cid]/modules/page.tsx"
       >
-        <div className="mb-3 flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
-          >
-            Collapse All
-          </button>
-          <button
-            type="button"
-            className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
-          >
-            View Progress
-          </button>
-          <select
-            defaultValue="publish-all"
-            className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
-          >
-            <option value="publish-all">Publish All</option>
-          </select>
-          <button
-            type="button"
-            className="rounded border border-red-600 bg-red-600 px-3 py-1.5 text-sm font-medium text-white"
-          >
-            + Module
-          </button>
-        </div>
-        {/* ...Module / Lesson tree... */}
+        <Modules />
       </LiveDemo>
       <p>The finished Modules screen is expected to:</p>
       <ul>
@@ -863,7 +1007,7 @@ export default function CourseStatus() {
   return (
     <div id="wd-course-status">
       <h2 className="mb-3 text-xl font-semibold">Course Status</h2>
-      <div className="flex gap-1">
+      <div className="mb-1 flex gap-1">
         <button
           type="button"
           className="inline-flex min-w-0 flex-1 items-center justify-center rounded border border-neutral-300 bg-white px-1.5 py-1.5 text-xs"
@@ -923,61 +1067,8 @@ export default function CourseStatus() {
   <div className="min-w-0 flex-1">{children}</div>
 </div>`}</CodeBlock>
       <p>
-        Home imports the Modules page, which mounts the toolbar from{" "}
-        <SectionLink to="2.4.4" />{" "}and the same module tree:
+        Home imports the Modules page from <SectionLink to="2.4.4" />:
       </p>
-      <CodeBlock
-        language="tsx"
-        name="Modules page"
-        file="app/(kambaz)/courses/[cid]/modules/page.tsx"
-      >{`import Lesson from "./Lesson";
-import Module from "./Module";
-
-export default function Modules() {
-  return (
-    <div>
-      <div className="mb-3 flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
-        >
-          Collapse All
-        </button>
-        <button
-          type="button"
-          className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
-        >
-          View Progress
-        </button>
-        <select
-          defaultValue="publish-all"
-          className="rounded border border-neutral-300 bg-white px-3 py-1.5 text-sm"
-        >
-          <option value="publish-all">Publish All</option>
-        </select>
-        <button
-          type="button"
-          className="rounded border border-red-600 bg-red-600 px-3 py-1.5 text-sm font-medium text-white"
-        >
-          + Module
-        </button>
-      </div>
-      <ul id="wd-modules" className="m-0 list-none p-0">
-        <Module title="Week 1, Lecture 1 - Course Introduction, Syllabus, Agenda">
-          <Lesson title="LEARNING OBJECTIVES">
-            <li className="wd-content-item">Introduction to the course</li>
-            <li className="wd-content-item">Learn what is Web Development</li>
-          </Lesson>
-          <Lesson title="READING">
-            <li className="wd-content-item">
-              Full Stack Developer - Chapter 1 - Introduction
-            </li>
-          </Lesson>
-        </Module>
-      </ul>
-    </div>
-  );
-}`}</CodeBlock>
       <CodeBlock
         language="tsx"
         name="Home"
@@ -1490,7 +1581,15 @@ export default function AssignmentEditor() {
       <p>
         If we start with Sign in and apply Tailwind form utilities for
         full-width inputs, spacing, and a primary Sign in button — then reuse
-        the same patterns on Sign up and Profile — the account forms close the gap:
+        the same patterns on Sign up and Profile — the account forms close the gap.
+        This markup replaces what your <ChapterLink to={1} />{" "}
+        <code>Signin</code>{" "}function returns. Keep the{" "}
+        <code>import Link from &quot;next/link&quot;;</code>{" "}line at the top of
+        the file. Everything else from <SectionLink to="1.4.2.1" />{" "}stays the
+        same: the <code>wd-username</code>/<code>wd-password</code>{" "}classes,
+        the <code>defaultValue</code>{" "}starter credentials, and the{" "}
+        <code>/dashboard</code>{" "}target from <SectionLink to="1.4.3" />. Only
+        Tailwind classes are added:
       </p>
       <CodeBlock
         language="tsx"
@@ -1499,19 +1598,19 @@ export default function AssignmentEditor() {
       >{`<div id="wd-signin-screen" className="max-w-sm">
   <h1 className="mb-3 text-2xl font-semibold">Sign in</h1>
   <input
-    id="wd-username"
     placeholder="username"
-    className="mb-2 w-full rounded border border-neutral-300 px-3 py-2"
+    defaultValue="ada"
+    className="wd-username mb-2 w-full rounded border border-neutral-300 px-3 py-2"
   />
   <input
-    id="wd-password"
     placeholder="password"
     type="password"
-    className="mb-2 w-full rounded border border-neutral-300 px-3 py-2"
+    defaultValue="123"
+    className="wd-password mb-2 w-full rounded border border-neutral-300 px-3 py-2"
   />
   <Link
     id="wd-signin-btn"
-    href="/account/profile"
+    href="/dashboard"
     className="mb-2 block w-full rounded bg-blue-600 px-3 py-2 text-center text-white no-underline"
   >
     Sign in
@@ -1533,19 +1632,19 @@ export default function AssignmentEditor() {
         <div id="wd-signin-screen" className="max-w-sm">
           <h1 className="mb-3 text-2xl font-semibold">Sign in</h1>
           <input
-            id="wd-username"
             placeholder="username"
-            className="mb-2 w-full rounded border border-neutral-300 px-3 py-2"
+            defaultValue="ada"
+            className="wd-username mb-2 w-full rounded border border-neutral-300 px-3 py-2"
           />
           <input
-            id="wd-password"
             placeholder="password"
             type="password"
-            className="mb-2 w-full rounded border border-neutral-300 px-3 py-2"
+            defaultValue="123"
+            className="wd-password mb-2 w-full rounded border border-neutral-300 px-3 py-2"
           />
           <Link
             id="wd-signin-btn"
-            href="/account/profile"
+            href="/dashboard"
             className="mb-2 block w-full rounded bg-blue-600 px-3 py-2 text-center text-white no-underline"
           >
             Sign in

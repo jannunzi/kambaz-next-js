@@ -1956,7 +1956,7 @@ describe("lecture decks", () => {
       assert.doesNotMatch(lecture.summary, /kambaz-next-js/, deck.slug);
     }
     const creating = slideText("creating-a-nextjs-react-application");
-    assert.match(creating, /npx create-next-app@latest webdev-client/);
+    assert.match(creating, /npx create-next-app@16.3 webdev-client/);
     assert.match(creating, /cd webdev-client/);
     const diagrams = join(process.cwd(), "app/slides/_components/diagrams");
     for (const file of sourceFilesUnder(diagrams)) {
@@ -2283,7 +2283,7 @@ describe("lecture decks", () => {
     const flex = slideText("css-flex");
     assert.match(flex, /wd-flex-row-container/);
     assert.match(flex, /wd-flex-grow-1/);
-    assert.match(flex, /wd-width-75px/);
+    assert.match(flex, /wd-width-110px/);
     assert.match(flex, /Flex\.tsx/);
 
     const rotation = slideText("css-rotation");
@@ -3396,7 +3396,7 @@ describe("lecture decks", () => {
     assert.match(expressCode, /app\.listen\(4000\)/);
     assert.ok(!authoredSlideBullets(express).some((row) => row.includes("app.listen")));
 
-    assert.equal(createApp.code, "npx create-next-app@latest webdev-client");
+    assert.equal(createApp.code, "npx create-next-app@16.3 webdev-client");
     assert.equal(createApp.codeLanguage, "bash");
     assert.match(welcome.code ?? "", /Welcome to Web Dev/);
     assert.equal(welcome.codeFile, "app/page.tsx");
