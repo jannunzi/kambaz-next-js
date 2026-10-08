@@ -37,6 +37,20 @@ export function mongoSubmissionStore(
         { upsert: true },
       );
     },
+    async setCheckRun(clerkUserId, assignmentId, fields) {
+      // Only the check fields: a concurrent staff Save keeps its grade.
+      const result = await collection.updateOne(
+        { clerkUserId, assignmentId },
+        {
+          $set: {
+            checkResults: fields.checkResults,
+            lastCheckedAt: fields.lastCheckedAt,
+            checkerVersion: fields.checkerVersion,
+          },
+        },
+      );
+      return result.matchedCount > 0;
+    },
     async listByAssignment(assignmentId) {
       return collection.find({ assignmentId }).toArray();
     },
@@ -66,6 +80,11 @@ async function readyStore(): Promise<SubmissionStore> {
   return mongoSubmissionStore(collection);
 }
 
+/** Indexed submission store for server actions that batch their own writes. */
+export async function assignmentSubmissionStore(): Promise<SubmissionStore> {
+  return readyStore();
+}
+
 export async function readAssignmentSubmission(
   clerkUserId: string,
   assignmentId: AssignmentId,
@@ -92,6 +111,7 @@ export async function writeAssignmentSubmission(input: {
   vercelUrl: string;
   checkResults?: AssignmentSubmissionDoc["checkResults"];
   checked?: boolean;
+  checkerVersion?: string;
   identity?: AssignmentSubmissionIdentity;
   staffGrade?: AssignmentStaffGrade | null;
 }): Promise<AssignmentSubmissionDoc> {

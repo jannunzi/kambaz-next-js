@@ -1,6 +1,7 @@
 import { A2_RUBRIC } from "./a2";
 import type { A1RubricAutoSpec } from "./a1-rubric-types";
 import type { AssignmentChecker } from "./checker-types";
+import { A2_CHECKER_RULES_VERSION } from "./checker-version";
 /**
  * Same follow-up budget as A1. Seeds already include the A2 checklist
  * screens; follow-ups cover a second course id when the dashboard uses one.
@@ -177,6 +178,7 @@ const autoIds = new Set<string>([
 
 export const A2_CHECKER: AssignmentChecker = {
   assignmentId: "a2",
+  rulesVersion: A2_CHECKER_RULES_VERSION,
   seedPaths: A2_SEED_PATHS,
   followupCap: A2_CHECKER_FOLLOWUP_CAP,
   extraCourseScreens: ["people/table"],
