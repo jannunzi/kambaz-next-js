@@ -78,9 +78,10 @@ export default function Kambaz() {
           course (<code>/courses/…</code>).
         </p>
         <p>
-          The component is a Client Component: it calls{" "}
-          <code>usePathname</code>{" "}to highlight the active route. Each
-          mapped <code>Link</code>{" "}needs <code>key={"{link.label}"}</code>:
+          The component is a Client Component: it reads the current path
+          with <code>usePathname</code>, then highlights the active
+          route. Each mapped <code>Link</code>{" "}needs{" "}
+          <code>key={"{link.label}"}</code>:
         </p>
         <CodeBlock
           language="tsx"
@@ -191,8 +192,12 @@ export default function KambazNavigation() {
         title="3.9.2 Implementing a Kambaz Database"
       >
         <p>
-          Collect the JSON the UI will read under{" "}
-          <code>app/(kambaz)/database</code>. Start with{" "}
+          The JSON files under <code>database/</code>{" "}are a stand-in
+          for a real database until a later chapter adds a server — not
+          an actual database. The folder is named <code>database</code>{" "}
+          because screens will <code>import * as db</code>. Collect the
+          JSON the UI will read under <code>app/(kambaz)/database</code>.
+          Start with{" "}
           <code>courses.json</code>{" "}— each course has an{" "}
           <code>_id</code>{" "}(the value you will encode in the URL),{" "}
           <code>name</code>, <code>description</code>, and{" "}
@@ -476,8 +481,9 @@ export default async function CoursesLayout({
           navigation. Start from an array of sections — Home, Modules,
           Piazza, Zoom, Assignments, Quizzes, Grades, People — and build
           each <code>href</code>{" "}as{" "}
-          <code>{`/courses/\${cid}/\${segment}`}</code>. Highlight with{" "}
-          <code>usePathname</code>. The layout already passes{" "}
+          <code>{`/courses/\${cid}/\${segment}`}</code>. Read the current
+          path with <code>usePathname</code>{" "}and highlight the active
+          route. The layout already passes{" "}
           <code>cid</code>{" "}as a prop, so this file does not need{" "}
           <code>useParams</code>.
         </p>
@@ -582,9 +588,11 @@ export default function CourseNavigation({ cid }: { cid: string }) {
           ]}
         />
         <p>
-          <code>Breadcrumb</code>{" "}is a Client Component so it can read{" "}
-          <code>usePathname</code>. The layout passes the{" "}
-          <code>course</code>{" "}found in <SectionLink to="3.9.4" />:
+          <code>Breadcrumb</code>{" "}is another use of reading the current
+          path (<SectionLink to="3.7.2" />
+          ): a Client Component calls <code>usePathname</code>{" "}and takes
+          the last segment, not only a nav highlight. The layout passes
+          the <code>course</code>{" "}found in <SectionLink to="3.9.4" />:
         </p>
         <CodeBlock
           language="tsx"

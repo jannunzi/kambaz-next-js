@@ -876,10 +876,10 @@ export default function Lab3() {
         >
           <p>
             In the previous section we discussed passing data to a
-            component through attributes. Another way to pass data to a
-            component is in its body, that is, between the opening and
-            closing tag of the element. In HTML it is common to wrap
-            content with specific tags to add certain formatting. For
+            component through attributes. Another way is composition:
+            nest JSX in the body, between the opening and closing tags,
+            without naming that content as props. In HTML it is common to
+            wrap content with specific tags to add certain formatting. For
             instance the tags <code>h1</code>{" "}and <code>p</code>{" "}format
             the content in their bodies with specific font sizes and
             margins — they take the content in the body and return a
