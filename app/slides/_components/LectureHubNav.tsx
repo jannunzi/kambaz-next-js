@@ -33,8 +33,6 @@ export default function LectureHubNav({
       ))}
       {" · "}
       <Link href="/assignments">Assignments</Link>
-      {" · "}
-      <Link href="/quizzes/take">Quizzes</Link>
     </p>
   );
 }
