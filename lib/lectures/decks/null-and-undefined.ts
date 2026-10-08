@@ -68,6 +68,42 @@ export const NULL_AND_UNDEFINED_SLIDES: LectureSlide[] = [
     ],
   },
   {
+    id: "lab3-page-3-2-7",
+    title: "Add NullUndefined to Lab 3",
+    kind: "content",
+    bullets: [
+      "Import `NullUndefined` into `app/labs/lab3/page.tsx` and render it last",
+      "Every later Lab 3 component is added the same way: one import at the top, one tag at the bottom of the `wd-lab3` `div`",
+    ],
+    code: `import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab3/page.tsx",
+    codeAddedLines: [8, 21],
+  },
+  {
     id: "recap",
     title: "JavaScript basics recap",
     kind: "content",

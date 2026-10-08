@@ -742,7 +742,7 @@ const LECTURE_SUMMARIES: Record<
   "path-params-and-todos": {
     title: "Path Parameters and Todos",
     summary:
-      "usePathname on the Labs TOC, [a]/[b] path params, then map todos.json — §3.7.2–3.7.4.",
+      "usePathname on the Labs TOC, [a]/[b] path params, map todos.json, then the complete Lab 3 page — §3.7.2–3.7.5.",
     chapter: 3,
     topicId: "parameterizing",
     bookSectionId: "sec-3-7-2",

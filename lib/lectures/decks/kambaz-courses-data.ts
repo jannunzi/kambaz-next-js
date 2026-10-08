@@ -28,9 +28,16 @@ export const KAMBAZ_COURSES_DATA_SLIDES: LectureSlide[] = [
     bullets: [
       "`params` is a `Promise` — `const { cid } = await params`",
       "`courses.find((c) => c._id === cid)` — the same `find` as §3.4.5",
+      "`Breadcrumb` is the heading text: the course name this layout just found",
       "Open two dashboard cards and confirm the heading name changes",
     ],
-    code: `export default async function CoursesLayout({
+    code: `import { ReactNode } from "react";
+import { FaAlignJustify } from "react-icons/fa6";
+import CourseNavigation from "./Navigation";
+import Breadcrumb from "./Breadcrumb";
+import { courses } from "../../database";
+
+export default async function CoursesLayout({
   children,
   params,
 }: Readonly<{
@@ -57,18 +64,25 @@ export const KAMBAZ_COURSES_DATA_SLIDES: LectureSlide[] = [
 }`,
     codeLanguage: "tsx",
     codeFile: "app/(kambaz)/courses/[cid]/layout.tsx",
-    codeHighlightLines: [8, 9, 14, 19],
+    codeHighlightLines: [14, 15, 20, 25],
   },
   {
     id: "course-nav",
     title: "Course nav maps LINKS with cid",
     kind: "demo",
     bullets: [
+      "`\"use client\"` lets `usePathname` read the URL and highlight the active section",
       "On your own: Home, Modules, Piazza, Zoom, Assignments, Quizzes, Grades, People",
       "Each `href` is `` /courses/${cid}/${segment} ``",
       "The layout already passes `cid` — this file does not need `useParams`",
     ],
-    code: `const LINKS = [
+    code: `"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import "../../kambaz.css";
+
+const LINKS = [
   { segment: "home", id: "wd-course-home-link", label: "Home" },
   { segment: "modules", id: "wd-course-modules-link", label: "Modules" },
   { segment: "piazza", id: "wd-course-piazza-link", label: "Piazza" },
@@ -82,6 +96,7 @@ export const KAMBAZ_COURSES_DATA_SLIDES: LectureSlide[] = [
 export default function CourseNavigation({ cid }: { cid: string }) {
   const pathname = usePathname() ?? "";
   const inCourse = pathname.startsWith(\`/courses/\${cid}\`);
+
   return (
     <div id="wd-courses-navigation" className="wd list-group rounded-none text-lg">
       {LINKS.map(({ segment, id, label }) => {
@@ -91,9 +106,16 @@ export default function CourseNavigation({ cid }: { cid: string }) {
             (segment !== "home" && pathname.startsWith(href))
           : segment === "home";
         return (
-          <Link key={id} href={href} id={id}
-            className={active ? "list-group-item active border-0"
-              : "list-group-item border-0 text-red-600"}>
+          <Link
+            key={id}
+            href={href}
+            id={id}
+            className={
+              active
+                ? "list-group-item active border-0"
+                : "list-group-item border-0 text-red-600"
+            }
+          >
             {label}
           </Link>
         );
@@ -103,7 +125,7 @@ export default function CourseNavigation({ cid }: { cid: string }) {
 }`,
     codeLanguage: "tsx",
     codeFile: "app/(kambaz)/courses/[cid]/Navigation.tsx",
-    codeHighlightLines: [[1, 10], 18],
+    codeHighlightLines: [[7, 16], 25],
     embed: "kambaz-styled-course-nav",
   },
   {
@@ -114,6 +136,7 @@ export default function CourseNavigation({ cid }: { cid: string }) {
       "Client Component so it can call `usePathname`",
       "Course name from the object the layout found; section from the URL",
       "`course?.name` guards a missing `find` — the same `?.` as §3.4.17",
+      "On Home it reads `Rocket Propulsion > Home`; the part after `>` follows the URL",
     ],
     code: `"use client";
 
@@ -129,7 +152,7 @@ export default function Breadcrumb({
   const label = section.charAt(0).toUpperCase() + section.slice(1);
   return (
     <span>
-      Course {course?.name} &gt; {label}
+      {course?.name} &gt; {label}
     </span>
   );
 }`,

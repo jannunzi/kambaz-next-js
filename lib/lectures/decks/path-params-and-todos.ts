@@ -7,7 +7,7 @@ export const PATH_PARAMS_AND_TODOS_SLIDES: LectureSlide[] = [
     kind: "title",
     bullets: [
       "Chapter 3 · Path Parameters and Todos",
-      "§3.7.2–3.7.4 · the URL, then a JSON list",
+      "§3.7.2–3.7.5 · the URL, a JSON list, the full Lab 3 page",
     ],
   },
   {
@@ -26,9 +26,11 @@ export const PATH_PARAMS_AND_TODOS_SLIDES: LectureSlide[] = [
     title: "TOC maps links and highlights",
     kind: "content",
     bullets: [
-      "`\"use client\"` because `usePathname` reads the address bar",
-      "Each `Link` uses `key={link.id}` and a `match` predicate",
-      "Visit `/labs/lab3` and confirm Lab 3 picks up the blue pill",
+      "Your Chapter 1 TOC has no `\"use client\"`, no `LINKS`, no `match` — **replace the whole file**",
+      "`\"use client\"` because `usePathname` reads the address bar. Each `li` uses `key={link.id}`",
+      "The active link gets an inline style object (§3.5.2) — Labs pages don’t load Tailwind",
+      "`aria-current=\"page\"` tells screen readers which link is the current page",
+      "Visit `/labs/lab3`: only Lab 3 is a blue pill with white text",
     ],
     code: `"use client";
 
@@ -43,31 +45,39 @@ const LINKS = [
   { href: "/", id: "wd-kambaz-link", label: "Kambaz", match: () => false },
 ] as const;
 
+const activeStyle = {
+  backgroundColor: "#2563eb",
+  color: "white",
+  borderRadius: "4px",
+  padding: "2px 8px",
+  textDecoration: "none",
+};
+
 export default function TOC() {
   const pathname = usePathname() ?? "";
   return (
     <ul>
-      {LINKS.map((link) => (
-        <li key={link.id}>
-          <Link
-            href={link.href}
-            id={link.id}
-            className={
-              link.match(pathname)
-                ? "rounded bg-blue-600 px-2 py-0.5 text-white no-underline"
-                : undefined
-            }
-          >
-            {link.label}
-          </Link>
-        </li>
-      ))}
+      {LINKS.map((link) => {
+        const active = link.match(pathname);
+        return (
+          <li key={link.id}>
+            <Link
+              href={link.href}
+              id={link.id}
+              style={active ? activeStyle : undefined}
+              aria-current={active ? "page" : undefined}
+            >
+              {link.label}
+            </Link>
+          </li>
+        );
+      })}
     </ul>
   );
 }`,
     codeLanguage: "tsx",
     codeFile: "app/labs/TOC.tsx",
-    codeHighlightLines: [[6, 11], [18, 27]],
+    codeHighlightLines: [[6, 12], [14, 20], 27, [33, 34]],
   },
   {
     id: "path-page",
@@ -122,6 +132,104 @@ export default function PathParameters() {
     embed: "js-path-parameters",
   },
   {
+    id: "lab3-page-3-7-3",
+    title: "Add PathParameters to Lab 3",
+    kind: "content",
+    bullets: [
+      "Import `PathParameters` and render it after the `Highlight`. The `add/[a]/[b]/page.tsx` route is a page of its own, so Lab 3 does not import it",
+    ],
+    code: `import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+import ReduceFunction from "./ReduceFunction";
+import JsonStringify from "./JsonStringify";
+import House from "./House";
+import Spreader from "./Spreader";
+import Destructing from "./Destructing";
+import FunctionDestructing from "./FunctionDestructing";
+import DestructingImports from "./DestructingImports";
+import OptionalChaining from "./OptionalChaining";
+import Classes from "./Classes";
+import Styles from "./Styles";
+import ClientComponentDemo from "./ClientComponentDemo";
+import ServerComponentDemo from "./ServerComponentDemo";
+import Add from "./Add";
+import Square from "./Square";
+import Highlight from "./Highlight";
+import PathParameters from "./PathParameters";
+
+export default function Lab3() {
+  console.log("Hello World!");
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+      <ReduceFunction />
+      <JsonStringify />
+      <House />
+      <Spreader />
+      <Destructing />
+      <FunctionDestructing />
+      <DestructingImports />
+      <OptionalChaining />
+      <Classes />
+      <Styles />
+      <ClientComponentDemo />
+      <ServerComponentDemo />
+      <Add a={3} b={4} />
+      <h4>Square of 4</h4>
+      <Square>4</Square>
+      <hr />
+      <Highlight>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </Highlight>
+      <PathParameters />
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab3/page.tsx",
+    codeAddedLines: [37, 84],
+  },
+  {
     id: "todo-item",
     title: "TodoItem takes one object",
     kind: "content",
@@ -155,6 +263,24 @@ export default TodoItem;`,
     codeHighlightLines: [[7, 11], 14],
   },
   {
+    id: "todos-json",
+    title: "The list lives in todos.json",
+    kind: "content",
+    bullets: [
+      "A `.json` file is data. Next.js can `import` it as a JavaScript value",
+      "Each todo has a `title`, a `status`, and `done`",
+      "`done: true` starts the checkbox checked",
+    ],
+    code: `[
+  { "title": "Buy milk", "status": "CANCELED", "done": true },
+  { "title": "Pickup the kids", "status": "IN PROGRESS", "done": false },
+  { "title": "Walk the dog", "status": "DEFERRED", "done": false }
+]`,
+    codeLanguage: "json",
+    codeFile: "app/labs/lab3/todos/todos.json",
+    codeHighlightLines: [[2, 4]],
+  },
+  {
     id: "todo-list",
     title: "TodoList maps JSON onto rows",
     kind: "demo",
@@ -183,6 +309,109 @@ export default function TodoList() {
     codeFile: "app/labs/lab3/todos/TodoList.tsx",
     codeHighlightLines: [2, [9, 11]],
     embed: "js-todo-list",
+  },
+  {
+    id: "lab3-complete",
+    title: "Complete Lab 3 page",
+    kind: "content",
+    bullets: [
+      "Import `TodoList` from its subfolder, `./todos/TodoList`, and render it last",
+      "`TodoItem` is rendered inside `TodoList`, so the page does not import it",
+      "This is the finished Lab 3 page: every component in book order, each under its own heading",
+      "Your On your own and With AI additions live inside those components; extra `Add`, `Square`, and `Highlight` go right after them",
+    ],
+    code: `import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+import LegacyFunctions from "./LegacyFunctions";
+import ArrowFunctions from "./ArrowFunctions";
+import ImpliedReturn from "./ImpliedReturn";
+import TemplateLiterals from "./TemplateLiterals";
+import SimpleArrays from "./SimpleArrays";
+import ArrayIndexAndLength from "./ArrayIndexAndLength";
+import AddingAndRemovingToFromArrays from "./AddingAndRemovingToFromArrays";
+import ForLoops from "./ForLoops";
+import MapFunction from "./MapFunction";
+import FindFunction from "./FindFunction";
+import FindIndex from "./FindIndex";
+import FilterFunction from "./FilterFunction";
+import IncludesSomeEvery from "./IncludesSomeEvery";
+import ReduceFunction from "./ReduceFunction";
+import JsonStringify from "./JsonStringify";
+import House from "./House";
+import Spreader from "./Spreader";
+import Destructing from "./Destructing";
+import FunctionDestructing from "./FunctionDestructing";
+import DestructingImports from "./DestructingImports";
+import OptionalChaining from "./OptionalChaining";
+import Classes from "./Classes";
+import Styles from "./Styles";
+import ClientComponentDemo from "./ClientComponentDemo";
+import ServerComponentDemo from "./ServerComponentDemo";
+import Add from "./Add";
+import Square from "./Square";
+import Highlight from "./Highlight";
+import PathParameters from "./PathParameters";
+import TodoList from "./todos/TodoList";
+
+export default function Lab3() {
+  console.log("Hello World!");
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+      <LegacyFunctions />
+      <ArrowFunctions />
+      <ImpliedReturn />
+      <TemplateLiterals />
+      <SimpleArrays />
+      <ArrayIndexAndLength />
+      <AddingAndRemovingToFromArrays />
+      <ForLoops />
+      <MapFunction />
+      <FindFunction />
+      <FindIndex />
+      <FilterFunction />
+      <IncludesSomeEvery />
+      <ReduceFunction />
+      <JsonStringify />
+      <House />
+      <Spreader />
+      <Destructing />
+      <FunctionDestructing />
+      <DestructingImports />
+      <OptionalChaining />
+      <Classes />
+      <Styles />
+      <ClientComponentDemo />
+      <ServerComponentDemo />
+      <Add a={3} b={4} />
+      <h4>Square of 4</h4>
+      <Square>4</Square>
+      <hr />
+      <Highlight>
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+      </Highlight>
+      <PathParameters />
+      <TodoList />
+    </div>
+  );
+}`,
+    codeLanguage: "tsx",
+    codeFile: "app/labs/lab3/page.tsx",
+    codeAddedLines: [38, 86],
   },
   {
     id: "recap",
