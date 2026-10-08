@@ -1,6 +1,10 @@
 import type { RubricGroupId } from "./types";
 
-export type RubricAutoKind = "ids" | "headings" | "manual";
+/**
+ * "structure": judged only by the checker's own structure rules
+ * (`AssignmentChecker.judgeAutoSpecs`, used by A2); the spec never reads ids.
+ */
+export type RubricAutoKind = "ids" | "headings" | "manual" | "structure";
 
 export type A1RubricAutoSpec = {
   criterionId: string;
@@ -26,6 +30,8 @@ export type A1RubricAutoSpec = {
   requireClassTokenPatterns?: { label: string; pattern: string }[];
   /** A start tag that must appear inside the element with this id. */
   requireDescendantTag?: { id: string; tag: string };
+  /** A start tag that must appear inside an element with any of these ids. */
+  requireDescendantTagInAnyId?: { ids: string[]; tag: string };
   passMessage: string;
   failMessage: string;
 };

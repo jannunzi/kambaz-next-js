@@ -57,8 +57,8 @@ export default function KambazNavigation() {
       </Link>
       {LINKS.map((link) => {
         const active =
-          link.label === "Dashboard" || link.label === "Courses"
-            ? pathname.includes("/dashboard") || pathname.includes("/courses")
+          link.label === "Courses"
+            ? pathname.includes("/courses")
             : pathname.includes(link.path);
         const Icon = link.icon;
         return (

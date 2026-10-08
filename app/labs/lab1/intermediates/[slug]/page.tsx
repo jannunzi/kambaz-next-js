@@ -29,6 +29,7 @@ import AnchorTag from "../1-3-10-AnchorTag";
 import AnchorHrefPatterns from "../1-3-10b-AnchorHrefPatterns";
 import LabsIndex from "../1-3-11-LabsIndex";
 import LabsLayoutDemo from "../1-3-12-LabsLayout";
+import LabsNameGithub from "../1-5-LabsNameGithub";
 import { notFound } from "next/navigation";
 
 const STEPS: Record<string, ComponentType> = {
@@ -62,6 +63,7 @@ const STEPS: Record<string, ComponentType> = {
   "1-3-10b-AnchorHrefPatterns": AnchorHrefPatterns,
   "1-3-11-LabsIndex": LabsIndex,
   "1-3-12-LabsLayout": LabsLayoutDemo,
+  "1-5-LabsNameGithub": LabsNameGithub,
 };
 
 export default async function IntermediateStepPage({

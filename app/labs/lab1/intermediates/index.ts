@@ -28,6 +28,7 @@ export { default as AnchorTag } from "./1-3-10-AnchorTag";
 export { default as AnchorHrefPatterns } from "./1-3-10b-AnchorHrefPatterns";
 export { default as LabsIndex } from "./1-3-11-LabsIndex";
 export { default as LabsLayoutDemo } from "./1-3-12-LabsLayout";
+export { default as LabsNameGithub } from "./1-5-LabsNameGithub";
 
 export const LAB1_INTERMEDIATES = [
   { slug: "1-2-4-Lab1Starter", title: "1.2.5 Lab 1 Starter", file: "1-2-4-Lab1Starter" },
@@ -60,4 +61,5 @@ export const LAB1_INTERMEDIATES = [
   { slug: "1-3-10b-AnchorHrefPatterns", title: "1.3.9 Anchor href Patterns", file: "1-3-10b-AnchorHrefPatterns" },
   { slug: "1-3-11-LabsIndex", title: "1.3.10 Labs Index", file: "1-3-11-LabsIndex" },
   { slug: "1-3-12-LabsLayout", title: "1.3.11 Labs Layout", file: "1-3-12-LabsLayout" },
+  { slug: "1-5-LabsNameGithub", title: "1.5 Name, Section, and GitHub Link on Labs", file: "1-5-LabsNameGithub" },
 ] as const;

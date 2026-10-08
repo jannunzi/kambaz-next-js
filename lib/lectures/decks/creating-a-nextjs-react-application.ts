@@ -58,7 +58,7 @@ function User() {
       "Creating a React application requires **Node.js**",
       "At the command line — **App Router**, not a Vite SPA",
     ],
-    code: "npx create-next-app@latest webdev-client",
+    code: "npx create-next-app@16.3 webdev-client",
     codeLanguage: "bash",
   },
   {
@@ -66,10 +66,10 @@ function User() {
     title: "Name the project webdev-client",
     kind: "content",
     bullets: [
-      "What is your project named? › **webdev-client**",
-      "**TypeScript** — Yes · **ESLint** — Yes · **Tailwind CSS** — Yes",
-      "`src/` directory — **No** · **App Router** — **Yes** (required)",
-      "**Turbopack** for `next dev` — Yes · import alias `@/*` — keep default",
+      "The command names the project **webdev-client**",
+      "Use the recommended Next.js defaults? › **Yes, use recommended defaults**",
+      "Defaults: **TypeScript** · **ESLint** · **Tailwind CSS** · **App Router** · no `src/` · `@/*` alias",
+      "Pin **@16.3**, not `@latest`: Next.js 16.4 turns on Cache Components and Kambaz fails `npm run build`",
     ],
     interactiveHint:
       "If a prompt offers Pages Router, say no. This course is App Router only.",

@@ -8,6 +8,7 @@ import {
   ASSIGNMENT_SUBMISSIONS_COLLECTION,
   listAssignmentSubmissions,
   loadAssignmentSubmission,
+  recordStaffGrade,
   upsertAssignmentSubmission,
   type AssignmentStaffGrade,
   type AssignmentSubmissionDoc,
@@ -36,6 +37,29 @@ export function mongoSubmissionStore(
         { $set: doc },
         { upsert: true },
       );
+    },
+    async setCheckRun(clerkUserId, assignmentId, fields) {
+      // Only the check fields: a concurrent staff Save keeps its grade.
+      const result = await collection.updateOne(
+        { clerkUserId, assignmentId },
+        {
+          $set: {
+            checkResults: fields.checkResults,
+            lastCheckedAt: fields.lastCheckedAt,
+            checkerVersion: fields.checkerVersion,
+          },
+        },
+      );
+      return result.matchedCount > 0;
+    },
+    async setStaffGrade(clerkUserId, assignmentId, fields) {
+      // Only the grade (and the run it was decided on): never updatedAt,
+      // so a staff Save doesn't change the student's submission time.
+      const set: Partial<AssignmentSubmissionDoc> = { staffGrade: fields.staffGrade };
+      if (fields.checkResults) set.checkResults = fields.checkResults;
+      if (fields.lastCheckedAt) set.lastCheckedAt = fields.lastCheckedAt;
+      const result = await collection.updateOne({ clerkUserId, assignmentId }, { $set: set });
+      return result.matchedCount > 0;
     },
     async listByAssignment(assignmentId) {
       return collection.find({ assignmentId }).toArray();
@@ -66,6 +90,11 @@ async function readyStore(): Promise<SubmissionStore> {
   return mongoSubmissionStore(collection);
 }
 
+/** Indexed submission store for server actions that batch their own writes. */
+export async function assignmentSubmissionStore(): Promise<SubmissionStore> {
+  return readyStore();
+}
+
 export async function readAssignmentSubmission(
   clerkUserId: string,
   assignmentId: AssignmentId,
@@ -92,6 +121,7 @@ export async function writeAssignmentSubmission(input: {
   vercelUrl: string;
   checkResults?: AssignmentSubmissionDoc["checkResults"];
   checked?: boolean;
+  checkerVersion?: string;
   identity?: AssignmentSubmissionIdentity;
   staffGrade?: AssignmentStaffGrade | null;
 }): Promise<AssignmentSubmissionDoc> {
@@ -115,4 +145,19 @@ export async function findSubmissionForStaffStudent(input: {
       submissions,
     ) ?? null
   );
+}
+
+/**
+ * Staff Save: store the grade without touching the submission time or URLs
+ * (see recordStaffGrade). Returns null when the submission is gone.
+ */
+export async function writeStaffGrade(input: {
+  clerkUserId: string;
+  assignmentId: AssignmentId;
+  staffGrade: AssignmentStaffGrade;
+  checkResults?: AssignmentSubmissionDoc["checkResults"];
+  seenSubmittedAt?: string | null;
+}): Promise<AssignmentSubmissionDoc | null> {
+  const store = await readyStore();
+  return recordStaffGrade(store, input);
 }
