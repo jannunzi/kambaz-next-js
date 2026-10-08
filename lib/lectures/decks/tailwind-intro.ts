@@ -65,6 +65,7 @@ export const TAILWIND_INTRO_SLIDES: LectureSlide[] = [
       "`import \"./index.css\"` — same pattern as Lab 2’s custom CSS",
       "Because this file is `app/labs/lab2/tailwind/page.tsx`, it has its own URL",
       "`p-8` and `text-4xl` only work here because this page imported Tailwind",
+      "Preflight resets every heading to body-text size and weight, so each heading in this lab carries its own classes, such as `text-4xl font-bold`. Leave them off and it renders as plain 16px text",
     ],
     code: `import "./index.css";
 

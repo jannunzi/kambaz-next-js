@@ -10,6 +10,7 @@ import DashboardDemo from "../embeds/DashboardDemo";
 import ModulesDemo from "../embeds/ModulesDemo";
 import HomeDemo from "../embeds/HomeDemo";
 import AssignmentsDemo from "../embeds/AssignmentsDemo";
+import AssignmentsStep from "../embeds/assignments-step/Assignments";
 import AssignmentEditorDemo from "../embeds/AssignmentEditorDemo";
 import DemoSignin from "../embeds/DemoSignin";
 import DemoSignup from "../embeds/DemoSignup";
@@ -141,10 +142,11 @@ export default function TOC() {
           attribute is named <code>class</code>; in JSX it must be{" "}
           <code>className</code>{" "}because <code>class</code>{" "}is a reserved word
           in JavaScript — the same reason labels use <code>htmlFor</code>{" "}
-          instead of <code>for</code>. Keep these names exactly as written:
-          automated tests (and graders) look for them to verify your markup. They
-          can also hook up CSS later in <ChapterLink to={2} />; with Tailwind commented out
-          they may not change how the page looks yet.
+          instead of <code>for</code>. Keep these names as written, especially
+          when you copy the code: the <code>wd-*</code>{" "}ids and class names
+          help us test your work, and they also hook up CSS later in{" "}
+          <ChapterLink to={2} />; with Tailwind commented out they may not
+          change how the page looks yet.
         </p>
         <p>
           Create the Sign in screen as follows:
@@ -404,7 +406,10 @@ export default function AccountLayout({
 }`}</CodeBlock>
         <p>
           Three absolute account links — Signin, Signup, and Profile — ready to
-          sit in the layout&apos;s left column:
+          sit in the layout&apos;s left column. Build all three for this
+          chapter. (The finished Kambaz on the course site shows only the links
+          that fit whether you are signed in, for example Signin and Signup
+          when signed out. You add that behavior in a later chapter.)
         </p>
         <LiveDemo
           name="AccountNavigation"
@@ -1125,8 +1130,8 @@ export default function Home() {
           time. From the Dashboard, open a course, then choose Assignments in
           Course Navigation. The polished target is below; match the plain
           HTML demo for this chapter. Exact due dates may differ. Keep the
-          given <code>id</code>{" "}and <code>className</code>{" "}values so later
-          chapters and graders can find them.{" "}
+          given <code>id</code>{" "}and <code>className</code>{" "}values: later
+          chapters build on them, and the ids help us test your work.{" "}
           <ChapterLink to={2} />{" "}will style this screen with Tailwind.
         </p>
         <BookFigure
@@ -1158,9 +1163,9 @@ export default function Home() {
             (QUIZZES / EXAMS / PROJECT can wait)
           </li>
           <li>
-            A list <code>id=&quot;wd-assignment-list&quot;</code>{" "}with at least
-            three assignments (A1 ENV + HTML, A2 CSS + TAILWIND, A3 JS + REACT
-            are fine examples)
+            A list <code>id=&quot;wd-assignment-list&quot;</code>{" "}with your
+            assignments, each linking to its editor. Aim for three (A1 ENV +
+            HTML, A2 CSS + TAILWIND, A3 JS + REACT are fine examples)
           </li>
           <li>
             Each row: title link to{" "}
@@ -1182,7 +1187,12 @@ export default function Home() {
             explains <code>async</code>/<code>await</code>)
           </li>
         </ul>
-        <p>Start from these stubs and fill them in:</p>
+        <p>
+          Start from these two files. <code>AssignmentItem</code>{" "}is complete,
+          and the page already renders one assignment (A1) that links to its
+          editor. Add the rest yourself: three assignments are recommended (A2
+          and A3 after A1), plus the search field, buttons, and group heading.
+        </p>
         <CodeBlock
           language="tsx"
           name="AssignmentItem"
@@ -1202,8 +1212,13 @@ export default function AssignmentItem({
 }) {
   return (
     <li className="wd-assignment-list-item">
-      {/* Link the title to /courses/\${cid}/assignments/\${aid}
-          (className wd-assignment-link), then show details underneath */}
+      <Link
+        href={\`/courses/\${cid}/assignments/\${aid}\`}
+        className="wd-assignment-link"
+      >
+        {title}
+      </Link>
+      <div>{details}</div>
     </li>
   );
 }`}</CodeBlock>
@@ -1224,11 +1239,24 @@ export default async function Assignments({
       {/* search input, + Group, + Assignment */}
       {/* h3 wd-assignments-title */}
       <ul id="wd-assignment-list">
-        {/* at least three AssignmentItems using cid */}
+        <AssignmentItem
+          cid={cid}
+          aid="123"
+          title="A1 - ENV + HTML"
+          details="Multiple Modules | Due May 13 at 11:59pm | 100 pts"
+        />
+        {/* Add more assignments here (three recommended, like A2, A3), each linking to its editor */}
       </ul>
     </div>
   );
 }`}</CodeBlock>
+        <p>The page as written renders one assignment:</p>
+        <LiveDemo
+          name="Assignments"
+          file="app/(kambaz)/courses/[cid]/assignments/page.tsx"
+        >
+          <AssignmentsStep params={Promise.resolve({ cid: "1234" })} />
+        </LiveDemo>
         <p>
           Expected result (plain HTML prototype — styling comes in{" "}
           <ChapterLink to={2} />):
@@ -1252,7 +1280,8 @@ export default async function Assignments({
           Faculty edit the assignment&apos;s details there. The polished target
           is below; this chapter only needs a plain HTML form. Start from the
           stub (name, description, points), then complete the rest on your own.
-          Use the ids listed so later chapters and graders can find the fields.
+          Use the ids listed: later chapters build on them, and the ids help
+          us test your work.
         </p>
         <BookFigure
           id="fig-1.4.8a"
@@ -1325,6 +1354,11 @@ export default async function Assignments({
             <code>wd-cancel</code>{" "}and <code>wd-save</code>
           </li>
         </ul>
+        <p>
+          For Display Grade as and Submission Type, the options shown in the
+          figure (for example Percentage and Online) are enough; add more if
+          you like.
+        </p>
         <p>
           Label behavior must work the way Lab 1 forms do:
         </p>
