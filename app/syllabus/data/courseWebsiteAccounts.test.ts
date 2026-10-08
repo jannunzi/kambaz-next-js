@@ -41,6 +41,15 @@ describe("syllabus course website accounts placement", () => {
   it("cross-links lecture recordings from the header how-to-use blurb", () => {
     assert.match(syllabusHeader, /href="#meetings"/);
     assert.match(syllabusHeader, /Lecture recordings/);
+    assert.match(
+      syllabusHeader,
+      /Canvas →\s+Zoom Meetings → Cloud Recordings/,
+    );
+    assert.match(syllabusHeader, /after each lecture finishes/);
+    assert.match(
+      syllabusHeader,
+      /empty list before or during the class day is/,
+    );
     assert.match(syllabusHeader, /legitimate absence/);
     assert.match(syllabusHeader, /not as a replacement for\s+class/);
   });

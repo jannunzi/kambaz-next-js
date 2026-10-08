@@ -43,9 +43,11 @@ export default function SyllabusHeader({
         <Link href="#accounts">Course website accounts</Link>
         {" (Sign up first with your Canvas email — this site is not Canvas). "}
         {formatSectionMeetsSentence(section.daysOfWeek, section.firstClass)}{" "}
-        <Link href="#meetings">Lecture recordings</Link> are available to
-        enrolled students for a legitimate absence — not as a replacement for
-        class.
+        <Link href="#meetings">Lecture recordings</Link> appear in Canvas →
+        Zoom Meetings → Cloud Recordings after each lecture finishes
+        processing (an empty list before or during the class day is
+        expected). They are available to enrolled students for a
+        legitimate absence — not as a replacement for class.
       </p>
     </header>
   );
