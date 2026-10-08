@@ -66,9 +66,7 @@ img.wd-float-right {
       "`STARSHIP` is the photo URL and `LOREM` is the wrapping paragraph. Float the photo right, then left",
       "The second block floats three colored boxes and one more image, then `wd-float-done`",
     ],
-    code: `import "./index.css";
-
-const STARSHIP =
+    code: `const STARSHIP =
   "https://www.staradvertiser.com/wp-content/uploads/2021/08/web1_Starship-gap2.jpg";
 const LOREM =
   "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eius hic reprehenderit doloremque adipisci iste deserunt. Inventore, hic. Esse nihil unde aut, dignissimos eos consequatur veniam distinctio?";

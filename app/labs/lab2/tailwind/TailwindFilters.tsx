@@ -3,7 +3,7 @@ export default function TailwindFilters() {
   const src = "/images/reactjs.jpg";
   return (
     <div>
-      <h2>Blurs</h2>
+      <h2 className="text-2xl font-bold">Blurs</h2>
       <div className="flex">
         <img className="blur-none w-1/4" src={src} alt="blur none" />
         <img className="blur-sm w-1/4" src={src} alt="blur sm" />

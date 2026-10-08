@@ -299,7 +299,7 @@ img.wd-float-right {
 .wd-flex-grow-1 {
   flex-grow: 1;
 }
-.wd-width-75px {
+.wd-width-110px {
   /* Room for "Column 1" + 10px padding under border-box */
   width: 110px;
   flex-shrink: 0;

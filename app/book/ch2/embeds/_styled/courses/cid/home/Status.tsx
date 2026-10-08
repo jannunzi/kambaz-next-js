@@ -5,7 +5,7 @@ export default function CourseStatus() {
   return (
     <div id="wd-course-status">
       <h2 className="mb-3 text-xl font-semibold">Course Status</h2>
-      <div className="flex gap-1">
+      <div className="mb-1 flex gap-1">
         <button
           type="button"
           className="inline-flex min-w-0 flex-1 items-center justify-center rounded border border-neutral-300 bg-white px-1.5 py-1.5 text-xs"

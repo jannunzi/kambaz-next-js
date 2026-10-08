@@ -41,7 +41,9 @@ export default function Modules() {
               Full Stack Developer - Chapter 1 - Introduction
             </li>
           </Lesson>
+          {/* ...keep the rest of your Chapter 1 lessons (SLIDES, ...) */}
         </Module>
+        {/* ...keep your other Chapter 1 modules (Week 2, ...) */}
       </ul>
     </div>
   );

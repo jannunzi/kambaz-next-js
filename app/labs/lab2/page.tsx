@@ -22,7 +22,6 @@ export default function Lab2() {
     <div id="wd-lab2">
       <h2>Lab 2 - Cascading Style Sheets</h2>
       <p>
-        {/* Full document load. A client-side Link would keep this route's Preflight CSS after Back. */}
         <a href="/labs/lab2/tailwind">Open Tailwind CSS lab →</a>
       </p>
 
@@ -65,7 +64,7 @@ export default function Lab2() {
             <p className="wd-selector-3">
               This paragraph&apos;s red background is referenced as
               <br />
-              .selector-2 .selector3
+              .wd-selector-1 .wd-selector-3
               <br />
               meaning the descendant of some ancestor.
               <br />
