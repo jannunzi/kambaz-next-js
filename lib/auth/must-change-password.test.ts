@@ -17,13 +17,15 @@ import {
 } from "./must-change-password";
 
 describe("password change allowlist", () => {
-  it("exempts the set-password page, privacy policy, sign-out, static files, and API routes", () => {
+  it("exempts the set-password page, privacy policy, terms of service, sign-out, static files, and API routes", () => {
     for (const path of [
       "/account/set-password",
       "/account/set-password/",
       "/account/set-password/extra",
       "/privacy",
       "/privacy/",
+      "/terms",
+      "/terms/",
       "/api",
       "/api/lab5/hello",
       "/trpc/quiz",

@@ -69,10 +69,24 @@ export default function JsBasics() {
         </LiveDemo>
         <p>
           Import the new component at the top of{" "}
-          <code>page.tsx</code>{" "}and render it under the Lab 3 heading — the
-          same import-and-place pattern you will repeat for every exercise
-          in this chapter.
+          <code>app/labs/lab3/page.tsx</code>{" "}and render it under the Lab 3
+          heading — the same import-and-place pattern you will repeat for
+          every exercise in this chapter. The Lab 3 page now reads:
         </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.2.1)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Still in{" "}
           <code>VariablesAndConstants.tsx</code>, declare one more{" "}
@@ -145,6 +159,27 @@ export default function JsBasics() {
         <LiveDemo name="VariableTypes" file="app/labs/lab3/VariableTypes.tsx">
           <VariableTypes />
         </LiveDemo>
+        <p>
+          Add the import under the first one and render{" "}
+          <code>{"<VariableTypes />"}</code>{" "}at the bottom of the Lab 3{" "}
+          <code>div</code>:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.2.2)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Add a second string and a second
           number, plus <code>typeof</code>{" "}for each, and display them in
@@ -225,6 +260,28 @@ export default function JsBasics() {
         >
           <BooleanVariables />
         </LiveDemo>
+        <p>
+          Import it into <code>app/labs/lab3/page.tsx</code>{" "}the same way,
+          after <code>VariableTypes</code>:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.2.3)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           Add one more comparison that uses{" "}
           <code>===</code>{" "}(for example a string compared to another
@@ -284,17 +341,44 @@ export default function JsBasics() {
         <LiveDemo name="IfElse" file="app/labs/lab3/IfElse.tsx">
           <IfElse />
         </LiveDemo>
+        <p>
+          Import <code>IfElse</code>{" "}into{" "}
+          <code>app/labs/lab3/page.tsx</code>{" "}and render it last:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.2.4)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
-          Flip <code>true1</code>{" "}to{" "}
-          <code>false</code>{" "}and confirm the first paragraph disappears,
-          then restore it.
+          Flip <code>true1</code>{" "}to <code>false</code>{" "}and confirm
+          the first paragraph disappears, then restore it. Then add a third
+          paragraph that is visible: <code>{`{!false1 && <p>not false1</p>}`}</code>
+          . The If Else section then shows three paragraphs:{" "}
+          <code>true1</code>, <code>!false1</code>, and{" "}
+          <code>not false1</code>.
         </OnYourOwn>
         <WithAI
           prompt={`In app/labs/lab3/IfElse.tsx, keep true1 as true (do not flip it for me). After the existing paragraphs, add {false1 && <p>false1</p>} so a third short-circuit example stays hidden. Do not change the ternary that is already there.`}
         >
-          Paste this prompt so the assistant adds one extra short-circuit
-          paragraph — then confirm it stays hidden while <code>false1</code>{" "}
-          is false:
+          Paste this prompt so the assistant adds a short-circuit paragraph
+          that stays hidden while <code>false1</code>{" "}is false. The page
+          still shows the same three paragraphs:
         </WithAI>
       </Section>
 
@@ -339,17 +423,48 @@ export default function JsBasics() {
         >
           <TernaryOperator />
         </LiveDemo>
+        <p>
+          Import <code>TernaryOperator</code>{" "}into{" "}
+          <code>app/labs/lab3/page.tsx</code>{" "}and render it last:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.2.5)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
-          Set <code>loggedIn</code>{" "}to{" "}
-          <code>false</code>{" "}and confirm the greeting switches to
-          &quot;Please login&quot;, then set it back.
+          Set <code>loggedIn</code>{" "}to <code>false</code>{" "}and confirm
+          the greeting switches to &quot;Please login&quot;, then set it
+          back. Then add a second ternary on a new{" "}
+          <code>const hour = 9</code>{" "}that renders{" "}
+          <code>&lt;p&gt;Good morning&lt;/p&gt;</code>{" "}when{" "}
+          <code>hour &lt; 12</code>{" "}and{" "}
+          <code>&lt;p&gt;Good afternoon&lt;/p&gt;</code>{" "}otherwise. The
+          section then shows Welcome and Good morning.
         </OnYourOwn>
         <WithAI
           prompt={`In app/labs/lab3/TernaryOperator.tsx, keep loggedIn as true. After the Welcome/Please login ternary, add const premium = false and a second ternary that renders <p>Premium</p> or <p>Free</p>. Do not change the existing greeting.`}
         >
-          Ask the assistant to add a second sample ternary for a{" "}
-          <code>premium</code>{" "}flag — leave the logged-in greeting for you
-          to flip:
+          Ask the assistant to add a third ternary for a{" "}
+          <code>premium</code>{" "}flag. The section then also shows{" "}
+          <code>Free</code>:
         </WithAI>
       </Section>
 
@@ -421,18 +536,48 @@ export default function JsBasics() {
         <p>
           Import both components into Lab 3. The if/else version returns
           early; the inline version always returns one wrapper and includes
-          whichever heading the flags allow.
+          whichever heading the flags allow. Render them in this order:
         </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.2.6)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
-          Swap the <code>loggedIn</code>{" "}
-          constants in both files and confirm each heading pair flips,
-          then restore the values shown above.
+          Swap the <code>loggedIn</code>{" "}constants in both files and
+          confirm each heading pair flips, then restore the values shown
+          above. Then add <code>const guest = true</code>{" "}to{" "}
+          <code>ConditionalOutputInline.tsx</code>{" "}and a heading{" "}
+          <code>{`{guest && <h2>Guest Inline</h2>}`}</code>{" "}inside the same
+          wrapper, so the page shows Welcome If Else, Please login Inline,
+          and Guest Inline.
         </OnYourOwn>
         <WithAI
           prompt={`In app/labs/lab3/ConditionalOutputInline.tsx, keep loggedIn as false. Add const admin = true and a third heading {admin && <h2>Admin Inline</h2>} inside the same wrapper. Do not change ConditionalOutputIfElse.tsx or the two existing headings.`}
         >
-          Paste this prompt so the assistant adds one extra inline heading —
-          then you still flip <code>loggedIn</code>{" "}in both files yourself:
+          Paste this prompt so the assistant adds an Admin Inline heading
+          after yours:
         </WithAI>
       </Section>
 
@@ -488,11 +633,53 @@ export default function JsBasics() {
         <LiveDemo name="NullUndefined" file="app/labs/lab3/NullUndefined.tsx">
           <NullUndefined />
         </LiveDemo>
+        <p>
+          Import <code>NullUndefined</code>{" "}into{" "}
+          <code>app/labs/lab3/page.tsx</code>{" "}and render it last. Every
+          later Lab 3 component follows the same two steps — one import at
+          the top, one tag at the bottom of the <code>wd-lab3</code>{" "}
+          <code>div</code>{" "}— and every later section shows the whole{" "}
+          <code>page.tsx</code>{" "}again right after its demo, so you can
+          check yours line by line. <SectionLink to="3.7.5" />{" "}shows the
+          finished file:
+        </p>
+        <CodeBlock
+          language="tsx"
+          name="Lab3 (after 3.2.7)"
+          file="app/labs/lab3/page.tsx"
+        >{`import VariablesAndConstants from "./VariablesAndConstants";
+import VariableTypes from "./VariableTypes";
+import BooleanVariables from "./BooleanVariables";
+import IfElse from "./IfElse";
+import TernaryOperator from "./TernaryOperator";
+import ConditionalOutputIfElse from "./ConditionalOutputIfElse";
+import ConditionalOutputInline from "./ConditionalOutputInline";
+import NullUndefined from "./NullUndefined";
+
+export default function Lab3() {
+  return (
+    <div id="wd-lab3">
+      <h2>Lab 3</h2>
+      <VariablesAndConstants />
+      <VariableTypes />
+      <BooleanVariables />
+      <IfElse />
+      <TernaryOperator />
+      <ConditionalOutputIfElse />
+      <ConditionalOutputInline />
+      <NullUndefined />
+    </div>
+  );
+}`}</CodeBlock>
         <OnYourOwn>
           In the browser console, compare{" "}
           <code>null == undefined</code>{" "}(true, because <code>==</code>{" "}
           coerces) with <code>null === undefined</code>{" "}(false). That is
-          another reason this chapter sticks to <code>===</code>.
+          another reason this chapter sticks to <code>===</code>. Then add
+          one line to the page,{" "}
+          <code>{`nullValue ?? "default" = {nullValue ?? "default"}`}</code>
+          , which reads <code>nullValue ?? &quot;default&quot; = default</code>
+          .
         </OnYourOwn>
         <WithAI
           prompt={`In app/labs/lab3/NullUndefined.tsx, keep the existing null/undefined displays. After them, add two more lines: null == undefined = {String(null == undefined)} and null === undefined = {String(null === undefined)}. Do not remove the String(...) lines already on the page.`}

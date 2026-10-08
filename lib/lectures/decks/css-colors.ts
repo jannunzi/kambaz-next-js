@@ -79,7 +79,7 @@ export const CSS_COLORS_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "`import \"./index.css\"` once, then one component import and one tag per exercise",
-      "Repeat the same two lines for BackgroundColors, Borders, and every later file",
+      "Every later demo component gets the same two lines: an `import` at the top and a tag inside `#wd-lab2`",
       "Edit the Lab 2 page. Do not replace the style, id, and class sections already there",
     ],
     code: `import "./index.css";

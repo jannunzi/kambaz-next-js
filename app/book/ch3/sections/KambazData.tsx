@@ -30,6 +30,25 @@ export default function KambazData() {
         the screens, not instead of wiring data as you read.
       </p>
       <p>
+        <strong>Keep your Chapter 2 styling.</strong>{" "}The listings below
+        show the data wiring on the book&apos;s reference markup. If your
+        Chapter 2 screen has more fields, icons, or classes than a listing,
+        keep your version and change only the lines that read{" "}
+        <code>params</code>, <code>usePathname</code>, or{" "}
+        <code>db</code>{" "}— the hardcoded titles, names, and ids become
+        lookups. Keep the <code>wd-*</code>{" "}ids from the listings too:
+        the ids help us test your work, but a missing id never costs points
+        on its own. The checks look at what each screen shows.
+      </p>
+      <p>
+        <strong>Data you need.</strong>{" "}<SectionLink to="3.9.2" />{" "}gives
+        you the reference JSON files, the same data the demos in this
+        section use. You can change names and add rows, but keep at least
+        three courses, and at least two courses that each have modules,
+        assignments, and enrolled users, so the screens visibly change from
+        one course to the next.
+      </p>
+      <p>
         Confirm the Kambaz landing route still redirects to Sign in:
       </p>
       <CodeBlock
@@ -54,7 +73,9 @@ export default function Kambaz() {
           TOC in <SectionLink to="3.7.2" />. Account stays a special case
           (red text on white when active). Courses intentionally points at{" "}
           <code>/dashboard</code>, because you only reach a course from a
-          dashboard card.
+          dashboard card. Only one item is highlighted at a time: Dashboard
+          on <code>/dashboard</code>, and Courses once you are inside a
+          course (<code>/courses/…</code>).
         </p>
         <p>
           The component is a Client Component: it reads the current path
@@ -125,8 +146,8 @@ export default function KambazNavigation() {
       </Link>
       {LINKS.map((link) => {
         const active =
-          link.label === "Dashboard" || link.label === "Courses"
-            ? pathname.includes("/dashboard") || pathname.includes("/courses")
+          link.label === "Courses"
+            ? pathname.includes("/courses")
             : pathname.includes(link.path);
         const Icon = link.icon;
         return (
@@ -148,16 +169,20 @@ export default function KambazNavigation() {
   );
 }`}</CodeBlock>
         <OnYourOwn>
-          If any sidebar item is still
-          hardcoded, move it into <code>LINKS</code>{" "}and confirm the
-          highlight still follows Dashboard, Courses, and Labs.
+          Make sure all five items after Account — Dashboard, Courses,
+          Calendar, Inbox, and Labs — come from <code>LINKS</code>, with no
+          hardcoded <code>Link</code>{" "}left for them. Then check the
+          highlight: on <code>/dashboard</code>{" "}only Dashboard is white,
+          on <code>/courses/RS101/home</code>{" "}only Courses is white, and
+          on <code>/labs</code>{" "}only Labs is white.
         </OnYourOwn>
         <WithAI
           prompt={`In app/(kambaz)/Navigation.tsx, keep the existing LINKS array and Account as a special case. After Labs, add { label: "History", path: "/history", icon: IoCalendarOutline } so map renders one extra sample item. Do not hardcode that item outside LINKS, and do not remove Dashboard, Courses, or Labs.`}
         >
-          Ask the assistant to add one extra sample sidebar item via{" "}
-          <code>LINKS</code>{" "}— you still fold any leftover hardcoded links
-          yourself:
+          Ask the assistant to add a sixth sidebar item, History, through{" "}
+          <code>LINKS</code>. When it is done the sidebar shows six items
+          after Account. <code>/history</code>{" "}has no page yet, so that
+          link shows a 404 for now, like Calendar and Inbox:
         </WithAI>
       </Section>
 
@@ -182,31 +207,61 @@ export default function KambazNavigation() {
         </p>
         <CodeBlock
           language="ts"
-          name="database"
           file="app/(kambaz)/database/index.ts"
         >{`import courses from "./courses.json";
-import modules from "./modules.json";
-import assignments from "./assignments.json";
-import users from "./users.json";
-import enrollments from "./enrollments.json";
-export { courses, modules, assignments, users, enrollments };`}</CodeBlock>
+export { courses };`}</CodeBlock>
         <p>
-          You will add <code>modules.json</code>,{" "}
-          <code>assignments.json</code>, <code>users.json</code>, and{" "}
-          <code>enrollments.json</code>{" "}as the later screens need them. Keep
-          at least three courses so the dashboard grid is obviously
-          data-driven.
+          That import needs the file itself. Download the reference{" "}
+          <a href="/downloads/kambaz-database/courses.json" download>
+            courses.json
+          </a>{" "}
+          (three courses: RS101, RS102, RS103) into{" "}
+          <code>app/(kambaz)/database/</code>. It is the same data the demos
+          in this section use. You can also open the link, copy the JSON,
+          and paste it into a new <code>courses.json</code>, or download it
+          from a terminal in your project folder (macOS, Linux, or Git
+          Bash):
+        </p>
+        <CodeBlock language="shell">{`curl -o "app/(kambaz)/database/courses.json" https://kambaz.dev/downloads/kambaz-database/courses.json`}</CodeBlock>
+        <p>
+          The other four files —{" "}
+          <a href="/downloads/kambaz-database/modules.json" download>
+            modules.json
+          </a>
+          ,{" "}
+          <a href="/downloads/kambaz-database/assignments.json" download>
+            assignments.json
+          </a>
+          ,{" "}
+          <a href="/downloads/kambaz-database/users.json" download>
+            users.json
+          </a>
+          , and{" "}
+          <a href="/downloads/kambaz-database/enrollments.json" download>
+            enrollments.json
+          </a>{" "}
+          — come from the same folder. Each later section downloads the file
+          it needs and adds one import line to <code>index.ts</code>, so
+          your project builds after every step: modules in{" "}
+          <SectionLink to="3.9.7" />, assignments in{" "}
+          <SectionLink to="3.9.8" />, and users and enrollments in{" "}
+          <SectionLink to="3.9.9" />. Don&apos;t import a file before it is
+          in the folder: <code>next build</code>{" "}fails with{" "}
+          <code>Module not found</code>.
         </p>
         <OnYourOwn>
-          Open <code>courses.json</code>{" "}and
-          confirm each object has a unique <code>_id</code>{" "}you can put in
-          a path such as <code>/courses/RS101/home</code>.
+          Open <code>courses.json</code>{" "}and confirm there are at least
+          three course objects and each has a different <code>_id</code>{" "}
+          with no spaces or slashes, so it works in a path such as{" "}
+          <code>/courses/RS101/home</code>. Keep at least three courses for
+          the rest of the chapter.
         </OnYourOwn>
         <WithAI
           prompt={`In app/(kambaz)/database/courses.json, keep every existing _id as it is. On each course object, add a "term" field set to "Spring 2023" if it is missing. Do not rename RS101, RS102, or RS103.`}
         >
-          Paste this prompt so the assistant adds one extra sample JSON field
-          — you still confirm each <code>_id</code>{" "}is unique:
+          Paste this prompt so the assistant adds a <code>term</code>{" "}
+          field to every course. Nothing on screen changes, and every{" "}
+          <code>_id</code>{" "}stays the same:
         </WithAI>
       </Section>
 
@@ -324,16 +379,20 @@ export default function CourseCard({
           <Dashboard />
         </LiveDemo>
         <OnYourOwn>
-          Add or rename one course in{" "}
-          <code>courses.json</code>{" "}and confirm the dashboard grid and the
-          published count update without editing{" "}
-          <code>CourseCard.tsx</code>.
+          In <code>courses.json</code>, change the <code>name</code>{" "}of one
+          course (keep its <code>_id</code>) or add a fourth course with a
+          new <code>_id</code>. Without editing{" "}
+          <code>CourseCard.tsx</code>, confirm the card title shows the new
+          name, the published count matches the number of courses, and the
+          card still links to <code>/courses/&lt;that _id&gt;/home</code>.
         </OnYourOwn>
         <WithAI
           prompt={`In app/(kambaz)/database/courses.json, keep any course I added or renamed. Append one more sample course with _id "RS104", name "Organic Chemistry", number "RS4580", the same date range as the others, department "D123", credits 4, a short description, and image "/images/reactjs.jpg". Do not edit app/(kambaz)/dashboard/CourseCard.tsx or overwrite my course.`}
         >
-          Ask the assistant to append one extra sample course — leave the
-          course you added or renamed as yours:
+          Ask the assistant to append a sample course, RS104 Organic
+          Chemistry. The dashboard then shows one more card, the published
+          count goes up by one, and the course you changed stays as you
+          left it:
         </WithAI>
       </Section>
 
@@ -396,16 +455,19 @@ export default async function CoursesLayout({
           caption="Figure 3.9.4 — Course Home breadcrumb"
         />
         <OnYourOwn>
-          Open two different dashboard cards
-          and confirm the red heading name changes with{" "}
-          <code>cid</code>.
+          Click the Rocket Propulsion card, then the Aerodynamics card. The
+          URL changes from <code>/courses/RS101/home</code>{" "}to{" "}
+          <code>/courses/RS102/home</code>, and the red heading shows the
+          name on the card you clicked.
         </OnYourOwn>
         <WithAI
           prompt={`In app/(kambaz)/courses/[cid]/layout.tsx, keep the Breadcrumb as it is. After <Breadcrumb course={course} />, add a small span that interpolates {course?._id} in parentheses so the heading shows the id next to the name. Do not change how cid is found.`}
         >
-          Paste this prompt so the assistant shows the sample{" "}
-          <code>_id</code>{" "}beside the heading — you still click two cards
-          to confirm the name follows <code>cid</code>:
+          Paste this prompt so the assistant shows the course{" "}
+          <code>_id</code>{" "}beside the heading, for example{" "}
+          <code>(RS101)</code>{" "}after the name on{" "}
+          <code>/courses/RS101/home</code>{" "}and <code>(RS102)</code>{" "}on{" "}
+          <code>/courses/RS102/home</code>:
         </WithAI>
       </Section>
 
@@ -426,8 +488,9 @@ export default async function CoursesLayout({
           <code>useParams</code>.
         </p>
         <p>
-          The course <code>Navigation.tsx</code>{" "}in the project already
-          follows that pattern:
+          Your Chapter 2 <code>Navigation.tsx</code>{" "}writes the links out
+          by hand. Try the array version yourself, then compare it with
+          this one, which keeps the Chapter 2 list-group classes:
         </p>
         <CodeBlock
           language="tsx"
@@ -481,17 +544,18 @@ export default function CourseNavigation({ cid }: { cid: string }) {
   );
 }`}</CodeBlock>
         <OnYourOwn>
-          If any course link is still written
-          out by hand, fold it into <code>LINKS</code>{" "}and confirm Home,
-          Modules, Assignments, and People still highlight on their
-          routes.
+          All eight course links come from <code>LINKS</code>, with none
+          written out by hand. Open <code>/courses/RS102/modules</code>: every
+          course link starts with <code>/courses/RS102/</code>, and only
+          Modules is highlighted. Repeat on Home, Assignments, and People.
         </OnYourOwn>
         <WithAI
           prompt={`In app/(kambaz)/courses/[cid]/Navigation.tsx, keep the existing LINKS entries. After People, add { segment: "announcements", id: "wd-course-announcements-link", label: "Announcements" } so map renders one extra sample item. Do not hardcode that link outside LINKS.`}
         >
-          Ask the assistant to add one extra sample course-nav item via{" "}
-          <code>LINKS</code>{" "}— you still fold any leftover handwritten
-          links yourself:
+          Ask the assistant to add a ninth course link, Announcements,
+          through <code>LINKS</code>. It links to{" "}
+          <code>/courses/&lt;cid&gt;/announcements</code>, which has no page
+          yet, so it shows a 404 for now:
         </WithAI>
       </Section>
 
@@ -548,7 +612,7 @@ export default function Breadcrumb({
   const label = section.charAt(0).toUpperCase() + section.slice(1);
   return (
     <span>
-      Course {course?.name} &gt; {label}
+      {course?.name} &gt; {label}
     </span>
   );
 }`}</CodeBlock>
@@ -558,15 +622,18 @@ export default function Breadcrumb({
           same <code>?.</code>{" "}from <SectionLink to="3.4.17" />.
         </p>
         <OnYourOwn>
-          Click Home, then Modules, then
-          Assignments and confirm the text after{" "}
-          <code>&gt;</code>{" "}tracks the last path segment.
+          Click Home, then Modules, then Assignments. The heading reads{" "}
+          <code>Rocket Propulsion &gt; Home</code>, then{" "}
+          <code>&gt; Modules</code>, then <code>&gt; Assignments</code>{" "}
+          — the course name stays and the part after <code>&gt;</code>{" "}
+          follows the last path segment.
         </OnYourOwn>
         <WithAI
           prompt={`In app/(kambaz)/courses/[cid]/Breadcrumb.tsx, keep the course name and last-segment label. If section === "table", show "People" instead of "Table"; otherwise keep the capitalized segment. Do not remove course?.name.`}
         >
-          Paste this prompt so the assistant maps the People table segment as
-          a sample extra — you still click Home, Modules, and Assignments:
+          Paste this prompt so the assistant maps the People table segment:
+          on <code>/courses/RS101/people/table</code>{" "}the heading ends in{" "}
+          <code>&gt; People</code>{" "}instead of <code>&gt; Table</code>:
         </WithAI>
       </Section>
 
@@ -590,6 +657,30 @@ export default function Breadcrumb({
           alt="Modules screen listing modules and lessons for the selected course"
           caption="Figure 3.9.7 — Data-driven Modules"
         />
+        <p>
+          First give the screen its data. Download{" "}
+          <a href="/downloads/kambaz-database/modules.json" download>
+            modules.json
+          </a>{" "}
+          into <code>app/(kambaz)/database/</code>{" "}(nine modules, three
+          per course, each with lessons), or from a terminal:
+        </p>
+        <CodeBlock language="shell">{`curl -o "app/(kambaz)/database/modules.json" https://kambaz.dev/downloads/kambaz-database/modules.json`}</CodeBlock>
+        <p>
+          Then add its import to <code>index.ts</code>:
+        </p>
+        <CodeBlock
+          language="ts"
+          file="app/(kambaz)/database/index.ts"
+        >{`import courses from "./courses.json";
+import modules from "./modules.json";
+export { courses, modules };`}</CodeBlock>
+        <p>
+          Now map the modules for the current course. Keep the toolbar and
+          the classes from your Chapter 2 Modules screen — only the
+          hardcoded <code>Module</code>{" "}and <code>Lesson</code>{" "}elements
+          become a <code>map</code>:
+        </p>
         <CodeBlock
           language="tsx"
           name="Modules"
@@ -652,15 +743,20 @@ export default function Modules() {
           Open two courses and confirm the module titles change.
         </p>
         <OnYourOwn>
-          Add one lesson to a module in{" "}
-          <code>modules.json</code>{" "}and confirm it appears only for that
-          module&apos;s course.
+          In <code>modules.json</code>, add one lesson with a new{" "}
+          <code>_id</code>{" "}and a title of your choice to the{" "}
+          <code>lessons</code>{" "}array of module M101 (course RS101).
+          Confirm it shows under that module on{" "}
+          <code>/courses/RS101/modules</code>{" "}and does not show on{" "}
+          <code>/courses/RS102/modules</code>.
         </OnYourOwn>
         <WithAI
           prompt={`In app/(kambaz)/database/modules.json, keep any lesson I added. On module M102 (Fuel and Combustion, course RS101), append one more sample lesson { "_id": "L204", "name": "Nozzle Design", "description": "How nozzle shape affects thrust.", "module": "M102" }. Do not change my personal lesson or move lessons to another course.`}
         >
-          Ask the assistant to append one extra sample lesson — leave the
-          lesson you added as yours, then confirm it stays on that course:
+          Ask the assistant to append a sample lesson, Nozzle Design, to
+          module M102. It shows under Fuel and Combustion on{" "}
+          <code>/courses/RS101/modules</code>{" "}only, and your own lesson
+          stays:
         </WithAI>
       </Section>
 
@@ -685,6 +781,29 @@ export default function Modules() {
           alt="Assignments screen listing assignments for the selected course"
           caption="Figure 3.9.8 — Data-driven Assignments"
         />
+        <p>
+          Download{" "}
+          <a href="/downloads/kambaz-database/assignments.json" download>
+            assignments.json
+          </a>{" "}
+          into <code>app/(kambaz)/database/</code>{" "}(three assignments per
+          course, A101–A303), or from a terminal:
+        </p>
+        <CodeBlock language="shell">{`curl -o "app/(kambaz)/database/assignments.json" https://kambaz.dev/downloads/kambaz-database/assignments.json`}</CodeBlock>
+        <p>
+          Add its import to <code>index.ts</code>:
+        </p>
+        <CodeBlock
+          language="ts"
+          file="app/(kambaz)/database/index.ts"
+        >{`import courses from "./courses.json";
+import modules from "./modules.json";
+import assignments from "./assignments.json";
+export { courses, modules, assignments };`}</CodeBlock>
+        <p>
+          Then compare your Assignments screen with this version. Keep your
+          Chapter 2 toolbar and classes; the list is the part that changes:
+        </p>
         <CodeBlock
           language="tsx"
           name="Assignments"
@@ -757,17 +876,21 @@ export default async function Assignments({
   );
 }`}</CodeBlock>
         <OnYourOwn>
-          Point each{" "}
-          <code>AssignmentItem</code>{" "}at{" "}
-          <code>{`/courses/\${cid}/assignments/\${aid}`}</code>{" "}and confirm
-          two courses show different assignment titles from{" "}
-          <code>assignments.json</code>.
+          Point each <code>AssignmentItem</code>{" "}link at{" "}
+          <code>{`/courses/\${cid}/assignments/\${aid}`}</code>. Then open{" "}
+          <code>/courses/RS101/assignments</code>{" "}and{" "}
+          <code>/courses/RS102/assignments</code>: each lists only that
+          course&apos;s assignments (A101–A103 and A201–A203), and each row
+          links to{" "}
+          <code>/courses/&lt;course _id&gt;/assignments/&lt;assignment _id&gt;</code>.
         </OnYourOwn>
         <WithAI
           prompt={`In app/(kambaz)/database/assignments.json, keep existing assignments. Append one more sample assignment for RS102 with _id "A204", title "A4", points 100, due "2024-06-03", available "2024-05-27", and a short aerodynamics description. Do not change AssignmentItem hrefs I already set to /courses/\${cid}/assignments/\${aid}.`}
         >
-          Paste this prompt so the assistant adds one extra sample assignment
-          row — you still wire each item to the editor URL:
+          Paste this prompt so the assistant adds a fourth RS102 assignment,
+          A4 (<code>A204</code>). <code>/courses/RS102/assignments</code>{" "}
+          then lists four rows, and the new row opens{" "}
+          <code>/courses/RS102/assignments/A204</code>:
         </WithAI>
       </Section>
 
@@ -792,12 +915,24 @@ export default async function Assignments({
           alt="Assignment editor filled from the selected assignment JSON"
           caption="Figure 3.9.8.1 — Data-driven Assignment Editor"
         />
+        <p>
+          The listing below is the reference wiring on a plain form. Your
+          Chapter 2 editor probably has more fields (Assignment Group,
+          Display Grade as, Submission Type, the Assign card). Keep them and
+          their classes: fill the fields that have data in{" "}
+          <code>assignments.json</code>{" "}— title, description, points, due,
+          and available — from <code>assignment</code>, and leave the rest
+          as they are. The page sits four folders below{" "}
+          <code>app/(kambaz)</code>{" "}(<code>courses/[cid]/assignments/[aid]</code>
+          ), so the import climbs four levels:{" "}
+          <code>../../../../database</code>.
+        </p>
         <CodeBlock
           language="tsx"
           name="AssignmentEditor"
           file="app/(kambaz)/courses/[cid]/assignments/[aid]/page.tsx"
         >{`import Link from "next/link";
-import * as db from "../../../database";
+import * as db from "../../../../database";
 
 export default async function AssignmentEditor({
   params,
@@ -866,16 +1001,18 @@ export default async function AssignmentEditor({
   );
 }`}</CodeBlock>
         <OnYourOwn>
-          Open two different assignments and
-          confirm the title, description, points, due date, and available
-          date follow <code>aid</code>, and that Cancel/Save return to that
-          course&apos;s list.
+          From <code>/courses/RS101/assignments</code>, open A1 and then A2.
+          The Assignment Name field shows the title of the row you clicked,
+          and the description, points, due date, and available date change
+          with it. Cancel and Save both go back to{" "}
+          <code>/courses/RS101/assignments</code>.
         </OnYourOwn>
         <WithAI
           prompt={`In app/(kambaz)/courses/[cid]/assignments/[aid]/page.tsx, keep the existing fields filled from assignment?.title and the other properties. After the name input, add a read-only line Assignment id: {aid} so the sample id is visible. Do not change Cancel/Save hrefs back to /courses/\${cid}/assignments.`}
         >
-          Ask the assistant to show the sample <code>aid</code>{" "}on the form
-          — you still open two assignments and check Cancel/Save:
+          Ask the assistant to show the assignment id on the form, for
+          example <code>Assignment id: A101</code>{" "}on{" "}
+          <code>/courses/RS101/assignments/A101</code>:
         </WithAI>
       </Section>
 
@@ -891,7 +1028,36 @@ export default async function AssignmentEditor({
           <code>course</code>{" "}id. Filter users with{" "}
           <code>enrollments.some</code>{" "}— the same <code>some</code>{" "}from{" "}
           <SectionLink to="3.4.8" /> — then map the enrolled users with{" "}
-          <code>key={"{user._id}"}</code>:
+          <code>key={"{user._id}"}</code>.
+        </p>
+        <p>
+          Download the last two files,{" "}
+          <a href="/downloads/kambaz-database/users.json" download>
+            users.json
+          </a>{" "}
+          and{" "}
+          <a href="/downloads/kambaz-database/enrollments.json" download>
+            enrollments.json
+          </a>
+          , into <code>app/(kambaz)/database/</code>, or from a terminal:
+        </p>
+        <CodeBlock language="shell">{`curl -o "app/(kambaz)/database/users.json" https://kambaz.dev/downloads/kambaz-database/users.json
+curl -o "app/(kambaz)/database/enrollments.json" https://kambaz.dev/downloads/kambaz-database/enrollments.json`}</CodeBlock>
+        <p>
+          <code>index.ts</code>{" "}now re-exports all five files:
+        </p>
+        <CodeBlock
+          language="ts"
+          name="database"
+          file="app/(kambaz)/database/index.ts"
+        >{`import courses from "./courses.json";
+import modules from "./modules.json";
+import assignments from "./assignments.json";
+import users from "./users.json";
+import enrollments from "./enrollments.json";
+export { courses, modules, assignments, users, enrollments };`}</CodeBlock>
+        <p>
+          Then the People table reads both:
         </p>
         <CodeBlock
           language="tsx"
@@ -953,15 +1119,19 @@ export default async function PeopleTable({
           <Link href="/courses/RS101/home">/courses/RS101/home</Link>.
         </p>
         <OnYourOwn>
-          Enroll an existing user in a second
-          course in <code>enrollments.json</code>{" "}and confirm that person
-          appears in both People tables.
+          In <code>enrollments.json</code>, add one enrollment with a new
+          unique <code>_id</code>{" "}(for example <code>&quot;20&quot;</code>)
+          that puts an existing user in a course they are not in yet — for
+          example user <code>345</code>{" "}(Steve Rogers, in RS101 and RS103)
+          in <code>RS102</code>. Confirm that person now appears in the
+          People table of both courses.
         </OnYourOwn>
         <WithAI
           prompt={`In app/(kambaz)/database/enrollments.json, keep any enrollment I added. Append one more sample object { "_id": "16", "user": "567", "course": "RS102" } so user 567 also appears in the RS102 People table. Do not remove my extra enrollment or change existing ids.`}
         >
-          Ask the assistant to add one extra sample enrollment — leave the
-          second-course enrollment you added as yours:
+          Ask the assistant to add a sample enrollment for user 567 (Thor
+          Odinson) in RS102. He then appears in the People table of both
+          RS101 and RS102, and your own enrollment stays:
         </WithAI>
       </Section>
 
@@ -972,10 +1142,14 @@ export default async function PeopleTable({
           back to the section where you wired the worked example. Build in
           order as you read — this list is for checking coverage, not a
           substitute for the walkthroughs. Course Navigation, Assignments,
-          and the Assignment Editor stay On your own: match the ids and
-          interactive demos in those sections. Each screen is listed once, with
-          Lab, <strong>On your own</strong>, and <strong>With AI</strong>{" "}
-          nested as a/b/c.
+          and the Assignment Editor are marked On your own: try them from
+          the description first, then compare with the listing. Each item
+          says what your deployed screen must show — the element, how many,
+          and what it contains. Keep the <code>wd-*</code>{" "}ids from the
+          listings; the ids help us test your work, but a missing id never
+          costs points on its own. Each screen is listed once, with Lab,{" "}
+          <strong>On your own</strong>, and <strong>With AI</strong>{" "}nested
+          as a/b/c.
         </p>
         <NestedExerciseList groups={CH3_KAMBAZ_EXERCISES} />
       </Section>

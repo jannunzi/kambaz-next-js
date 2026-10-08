@@ -242,7 +242,7 @@ export const CH2_KAMBAZ_EXERCISES: readonly BookExerciseParent[] = [
   },
 ];
 
-/** §3.7.5 Lab 3 recap. */
+/** §3.7.5 Lab 3 recap. Each item says what the deployed /labs/lab3 page shows. */
 export const CH3_LAB_EXERCISES: readonly BookExerciseParent[] = [
   {
     id: "3.2",
@@ -251,10 +251,16 @@ export const CH3_LAB_EXERCISES: readonly BookExerciseParent[] = [
     tasks: [
       lab(
         "3.2-lab",
-        "Create VariablesAndConstants, VariableTypes, BooleanVariables, IfElse, TernaryOperator, ConditionalOutputIfElse, ConditionalOutputInline, and NullUndefined.",
+        "Create VariablesAndConstants, VariableTypes, BooleanVariables, IfElse, TernaryOperator, ConditionalOutputIfElse, ConditionalOutputInline, and NullUndefined, and render each on /labs/lab3 under its own heading, in book order.",
       ),
-      oyo("3.2-oyo", rangeOwn("3.2.1", "3.2.7")),
-      ai("3.2-ai", rangeAi("3.2.1", "3.2.7")),
+      oyo(
+        "3.2-oyo",
+        "On /labs/lab3: one more let and one more const in Variables and Constants; a second string and number with their typeof in Variable Types; one more === comparison in Boolean Variables; a visible third paragraph (not false1) in If Else; a Good morning / Good afternoon ternary on hour; a Guest Inline heading; and nullValue ?? \"default\" = default in Null vs Undefined.",
+      ),
+      ai(
+        "3.2-ai",
+        "On /labs/lab3: sampleSum, sampleCount and sampleLabel with their typeof, true6, a hidden false1 paragraph, a Premium/Free ternary showing Free, an Admin Inline heading, and the two null == / === undefined lines — next to your own additions, not replacing them.",
+      ),
     ],
   },
   {
@@ -264,10 +270,16 @@ export const CH3_LAB_EXERCISES: readonly BookExerciseParent[] = [
     tasks: [
       lab(
         "3.3-lab",
-        "Create LegacyFunctions, ArrowFunctions, ImpliedReturn, and TemplateLiterals.",
+        "Create LegacyFunctions, ArrowFunctions, ImpliedReturn, and TemplateLiterals, and render each on /labs/lab3 under its own heading.",
       ),
-      oyo("3.3-oyo", rangeOwn("3.3", "3.3.3")),
-      ai("3.3-ai", rangeAi("3.3", "3.3.3")),
+      oyo(
+        "3.3-oyo",
+        "On /labs/lab3: a subtract result under the legacy sum, add(2, 4) = 6 in Arrow Functions, square(9) = 81 in Implied Return, and a template string that includes your name and a ternary in Template Literals.",
+      ),
+      ai(
+        "3.3-ai",
+        "On /labs/lab3: multiply(3, 7) = 21 (also logged to the console), multiply(3, 4) = 12, divide(20, 4) = 5, and the RS101 published: Yes string — next to your own additions.",
+      ),
     ],
   },
   {
@@ -276,9 +288,18 @@ export const CH3_LAB_EXERCISES: readonly BookExerciseParent[] = [
     section: "3.4.1",
     sectionEnd: "3.4.9",
     tasks: [
-      lab("3.4.1-lab", "Create the array samples through ReduceFunction."),
-      oyo("3.4.1-oyo", rangeOwn("3.4.1", "3.4.9")),
-      ai("3.4.1-ai", rangeAi("3.4.1", "3.4.9")),
+      lab(
+        "3.4.1-lab",
+        "Create the array samples from SimpleArrays through ReduceFunction, and render each on /labs/lab3 under its own heading.",
+      ),
+      oyo(
+        "3.4.1-oyo",
+        "On /labs/lab3: a third item in the SimpleArrays list, indexOf(9) = -1, one more pushed todo, a lowercased array from the loop, a third mapped todo, a missing find, findIndex for 3 = -1, a filter of numbers >= 5, every(n > 4) = false and some(n === 1), and a product reduce.",
+      ),
+      ai(
+        "3.4.1-ai",
+        "On /labs/lab3: Call the dentist, indexOf1 = 0, Buy stamps, stringLengths, Email the TA with doubles, two = 2, sixIndex = 4, numbersLessThan2, includes(5), and joined — next to your own additions.",
+      ),
     ],
   },
   {
@@ -289,10 +310,16 @@ export const CH3_LAB_EXERCISES: readonly BookExerciseParent[] = [
     tasks: [
       lab(
         "3.4.10-lab",
-        "Create JsonStringify, House, Spreader, Destructing, FunctionDestructing, Math.ts, DestructingImports, and OptionalChaining.",
+        "Create JsonStringify, House, Spreader, Destructing, FunctionDestructing, Math.ts, DestructingImports, and OptionalChaining and render them on /labs/lab3: the House section pretty-prints an object with a nested object and an array inside a <pre> (JSON.stringify(house, null, 2)), and Destructing Imports is a table with at least 4 rows of 3 cells (Math, Matematica, named functions).",
       ),
-      oyo("3.4.10-oyo", rangeOwn("3.4.10", "3.4.17")),
-      ai("3.4.10-ai", rangeAi("3.4.10", "3.4.17")),
+      oyo(
+        "3.4.10-oyo",
+        "On /labs/lab3: a stringified object of your own, yearBuilt and the owners (Alice, Bob) under House, obj4 stringified, a fourth array item or third property destructured, multiply and greet() with the default name, a fifth Destructing Imports row for add(10, 20) = 30, and house.garage?.cars ?? 0 = 0 — and npm run build still succeeds.",
+      ),
+      ai(
+        "3.4.10-ai",
+        "On /labs/lab3: sampleCourse, house.garage.cars, arr3, city = Boston, the divide quotient, a sixth Destructing Imports row for remainder(10, 3) = 1, and the zip line reading unknown — next to your own additions.",
+      ),
     ],
   },
   {
@@ -300,9 +327,18 @@ export const CH3_LAB_EXERCISES: readonly BookExerciseParent[] = [
     parentLabel: "Classes and styles",
     section: "3.5",
     tasks: [
-      lab("3.5-lab", "Create Classes.css, Classes.tsx, and Styles.tsx."),
-      oyo("3.5-oyo", rangeOwn("3.5.1", "3.5.2")),
-      ai("3.5-ai", rangeAi("3.5.1", "3.5.2")),
+      lab(
+        "3.5-lab",
+        "Create Classes.css, Classes.tsx, and Styles.tsx and render both on /labs/lab3: at least 4 boxes colored by classes defined in Classes.css (not inline styles), and at least 3 boxes colored with inline style={{ backgroundColor: … }} objects.",
+      ),
+      oyo(
+        "3.5-oyo",
+        "Classes shows a sixth box whose class comes from a ternary on a const of yours; Styles shows a fourth box, Green background, using a bgGreen object that spreads colorBlack and padding10px.",
+      ),
+      ai(
+        "3.5-ai",
+        "Classes also shows Dynamic Green background (seven boxes); Styles also shows Gray background (five boxes).",
+      ),
     ],
   },
   {
@@ -312,10 +348,16 @@ export const CH3_LAB_EXERCISES: readonly BookExerciseParent[] = [
     tasks: [
       lab(
         "3.6-lab",
-        'Create ClientComponentDemo with "use client" and ServerComponentDemo without it.',
+        'On /labs/lab3: a Client Component ("use client") that prints the current pathname (/labs/lab3), and a Server Component that prints the server information and a list of at least 3 file names read from app/labs/lab3 with fs.',
       ),
-      oyo("3.6-oyo", rangeOwn("3.6.1", "3.6.2")),
-      ai("3.6-ai", rangeAi("3.6.1", "3.6.2")),
+      oyo(
+        "3.6-oyo",
+        "The Client Component also shows Pathname length: 10 on /labs/lab3; the Server Information block also shows arch.",
+      ),
+      ai(
+        "3.6-ai",
+        "The Client Component also shows Last segment: lab3; the Server Information block also shows pid.",
+      ),
     ],
   },
   {
@@ -324,9 +366,18 @@ export const CH3_LAB_EXERCISES: readonly BookExerciseParent[] = [
     section: "3.7",
     sectionEnd: "3.7.1",
     tasks: [
-      lab("3.7-lab", "Create Add.tsx, Square.tsx, and Highlight.tsx."),
-      oyo("3.7-oyo", rangeOwn("3.7", "3.7.1")),
-      ai("3.7-ai", rangeAi("3.7", "3.7.1")),
+      lab(
+        "3.7-lab",
+        "Create Add.tsx, Square.tsx, and Highlight.tsx. /labs/lab3 shows a + b = 7 for <Add a={3} b={4} />, 16 for <Square>4</Square>, and a sentence wrapped in Highlight (yellow background, red text).",
+      ),
+      oyo(
+        "3.7-oyo",
+        "/labs/lab3 also shows a + b = 30 for <Add a={10} b={20} />, 81 for <Square>9</Square>, and a Highlight around a sentence you wrote.",
+      ),
+      ai(
+        "3.7-ai",
+        "/labs/lab3 also shows a + b = 15, Square of 5 = 25, and Children can be any JSX highlighted.",
+      ),
     ],
   },
   {
@@ -334,12 +385,18 @@ export const CH3_LAB_EXERCISES: readonly BookExerciseParent[] = [
     parentLabel: "Labs TOC highlight",
     section: "3.7.2",
     tasks: [
-      lab("3.7.2-lab", "Highlight the active lab in app/labs/TOC.tsx with usePathname."),
+      lab(
+        "3.7.2-lab",
+        "Replace app/labs/TOC.tsx with the client version that maps LINKS and uses usePathname. On each Lab page the TOC (from app/labs/layout.tsx) links Home, Lab 1, Lab 2, Lab 3, and Kambaz, and only the current lab's link is marked as active (the blue pill style and aria-current).",
+      ),
       oyo(
         "3.7.2-oyo",
-        "Complete the On your own in §3.7.2.",
+        "The marking moves with you: on /labs/lab1 only Lab 1 is the pill, and on /labs/lab3 only Lab 3 is.",
       ),
-      ai("3.7.2-ai", "Complete the With AI extra in §3.7.2."),
+      ai(
+        "3.7.2-ai",
+        "The TOC also has a Book Ch3 link to https://kambaz.dev/book/ch3 that is never highlighted.",
+      ),
     ],
   },
   {
@@ -347,9 +404,18 @@ export const CH3_LAB_EXERCISES: readonly BookExerciseParent[] = [
     parentLabel: "Path parameters",
     section: "3.7.3",
     tasks: [
-      lab("3.7.3-lab", "Create the add/[a]/[b] page and PathParameters.tsx."),
-      oyo("3.7.3-oyo", "Complete the On your own in §3.7.3."),
-      ai("3.7.3-ai", "Complete the With AI extra in §3.7.3."),
+      lab(
+        "3.7.3-lab",
+        "Create app/labs/lab3/add/[a]/[b]/page.tsx and PathParameters.tsx. /labs/lab3 links to at least two /labs/lab3/add/<a>/<b> URLs, and visiting /labs/lab3/add/<a>/<b> shows a + b for any two numbers (for example /labs/lab3/add/12/30 shows 42).",
+      ),
+      oyo(
+        "3.7.3-oyo",
+        "Path Parameters shows a third link with two numbers of your choice, and its page prints their sum.",
+      ),
+      ai(
+        "3.7.3-ai",
+        "Path Parameters also links 5 + 6, and its page prints 5 + 6 = 11.",
+      ),
     ],
   },
   {
@@ -359,24 +425,36 @@ export const CH3_LAB_EXERCISES: readonly BookExerciseParent[] = [
     tasks: [
       lab(
         "3.7.4-lab",
-        "Create todos/TodoItem.tsx, todos/todos.json, and todos/TodoList.tsx that maps with key={todo.title}.",
+        "Create todos/TodoItem.tsx, todos/todos.json, and todos/TodoList.tsx (map with key={todo.title}). /labs/lab3 shows a list of at least 3 todo checkboxes from todos.json, with at least one checked and one unchecked.",
       ),
-      oyo("3.7.4-oyo", "Complete the On your own in §3.7.4."),
-      ai("3.7.4-ai", "Complete the With AI extra in §3.7.4."),
+      oyo(
+        "3.7.4-oyo",
+        "The Todo List shows a fourth row from a todo you added to todos.json, and TodoList logs the todos array to the console.",
+      ),
+      ai(
+        "3.7.4-ai",
+        "The Todo List also shows Email the TA (COMPLETED), checked.",
+      ),
     ],
   },
 ];
 
-/** §3.9.10 Kambaz data recap. */
+/** §3.9.10 Kambaz data recap. Each item says what the deployed screen shows. */
 export const CH3_KAMBAZ_EXERCISES: readonly BookExerciseParent[] = [
   {
     id: "3.9.1",
     parentLabel: "Kambaz Navigation from data",
     section: "3.9.1",
     tasks: [
-      lab("3.9.1-lab", "Drive Kambaz Navigation from data."),
-      oyo("3.9.1-oyo", "Complete the On your own in §3.9.1."),
-      ai("3.9.1-ai", "Complete the With AI extra in §3.9.1."),
+      lab(
+        "3.9.1-lab",
+        "Kambaz Navigation renders Dashboard, Courses, Calendar, Inbox, and Labs by mapping a LINKS array (Account stays a special case), and only the item for the current screen is highlighted.",
+      ),
+      oyo(
+        "3.9.1-oyo",
+        "No sidebar item is hardcoded outside LINKS: on /dashboard only Dashboard is highlighted, on /courses/RS101/home only Courses, and on /labs only Labs.",
+      ),
+      ai("3.9.1-ai", "The sidebar also shows a sixth item, History, rendered from LINKS."),
     ],
   },
   {
@@ -384,9 +462,15 @@ export const CH3_KAMBAZ_EXERCISES: readonly BookExerciseParent[] = [
     parentLabel: "JSON database",
     section: "3.9.2",
     tasks: [
-      lab("3.9.2-lab", "Add the JSON database under app/(kambaz)/database/."),
-      oyo("3.9.2-oyo", "Complete the On your own in §3.9.2."),
-      ai("3.9.2-ai", "Complete the With AI extra in §3.9.2."),
+      lab(
+        "3.9.2-lab",
+        "app/(kambaz)/database/ holds the reference JSON files (download them from §3.9.2) and index.ts re-exports each one as its section needs it. Keep at least 3 courses, and at least 2 courses that each have modules, assignments, and enrolled users.",
+      ),
+      oyo(
+        "3.9.2-oyo",
+        "courses.json has at least 3 courses, each with a unique _id that works in a URL such as /courses/RS101/home.",
+      ),
+      ai("3.9.2-ai", "Every course in courses.json also has a term field; no _id changed."),
     ],
   },
   {
@@ -394,9 +478,15 @@ export const CH3_KAMBAZ_EXERCISES: readonly BookExerciseParent[] = [
     parentLabel: "Dashboard from JSON",
     section: "3.9.3",
     tasks: [
-      lab("3.9.3-lab", "Render the Dashboard from courses JSON."),
-      oyo("3.9.3-oyo", "Complete the On your own in §3.9.3."),
-      ai("3.9.3-ai", "Complete the With AI extra in §3.9.3."),
+      lab(
+        "3.9.3-lab",
+        "The Dashboard shows one card per course in courses.json (at least 3), the published count matches, and each card links to /courses/<course _id>/home.",
+      ),
+      oyo(
+        "3.9.3-oyo",
+        "A course you renamed or added in courses.json shows on its card without changes to CourseCard.tsx.",
+      ),
+      ai("3.9.3-ai", "The Dashboard also shows the RS104 Organic Chemistry card."),
     ],
   },
   {
@@ -404,9 +494,15 @@ export const CH3_KAMBAZ_EXERCISES: readonly BookExerciseParent[] = [
     parentLabel: "Courses from the URL",
     section: "3.9.4",
     tasks: [
-      lab("3.9.4-lab", "Drive the Courses screen from the URL course id."),
-      oyo("3.9.4-oyo", "Complete the On your own in §3.9.4."),
-      ai("3.9.4-ai", "Complete the With AI extra in §3.9.4."),
+      lab(
+        "3.9.4-lab",
+        "Clicking a Dashboard card opens /courses/<_id>/home, and the course heading shows that card's course name. A different card shows a different name.",
+      ),
+      oyo(
+        "3.9.4-oyo",
+        "/courses/RS101/home shows Rocket Propulsion and /courses/RS102/home shows Aerodynamics (or your renamed courses).",
+      ),
+      ai("3.9.4-ai", "The course heading also shows the course _id in parentheses, for example (RS101)."),
     ],
   },
   {
@@ -414,9 +510,15 @@ export const CH3_KAMBAZ_EXERCISES: readonly BookExerciseParent[] = [
     parentLabel: "Course Navigation from data",
     section: "3.9.5",
     tasks: [
-      lab("3.9.5-lab", "Drive Course Navigation from data."),
-      oyo("3.9.5-oyo", "Complete the On your own in §3.9.5."),
-      ai("3.9.5-ai", "Complete the With AI extra in §3.9.5."),
+      lab(
+        "3.9.5-lab",
+        "Course Navigation maps a LINKS array, and its links (Home, Modules, Assignments, People, …) keep the current course's _id in the URL.",
+      ),
+      oyo(
+        "3.9.5-oyo",
+        "On /courses/RS102/modules every course link starts with /courses/RS102/ and only Modules is highlighted; the same holds on Home, Assignments, and People.",
+      ),
+      ai("3.9.5-ai", "Course Navigation also shows Announcements, rendered from LINKS."),
     ],
   },
   {
@@ -424,9 +526,15 @@ export const CH3_KAMBAZ_EXERCISES: readonly BookExerciseParent[] = [
     parentLabel: "Breadcrumb",
     section: "3.9.6",
     tasks: [
-      lab("3.9.6-lab", "Implement the breadcrumb."),
-      oyo("3.9.6-oyo", "Complete the On your own in §3.9.6."),
-      ai("3.9.6-ai", "Complete the With AI extra in §3.9.6."),
+      lab(
+        "3.9.6-lab",
+        "The course heading shows the course name and the current section, and the section changes when you switch between Home, Modules, and Assignments.",
+      ),
+      oyo(
+        "3.9.6-oyo",
+        "The heading reads <course name> > Home, > Modules, and > Assignments on those three screens.",
+      ),
+      ai("3.9.6-ai", "On /courses/<_id>/people/table the heading ends in > People instead of > Table."),
     ],
   },
   {
@@ -434,9 +542,15 @@ export const CH3_KAMBAZ_EXERCISES: readonly BookExerciseParent[] = [
     parentLabel: "Modules from JSON",
     section: "3.9.7",
     tasks: [
-      lab("3.9.7-lab", "Drive Modules from JSON."),
-      oyo("3.9.7-oyo", "Complete the On your own in §3.9.7."),
-      ai("3.9.7-ai", "Complete the With AI extra in §3.9.7."),
+      lab(
+        "3.9.7-lab",
+        "/courses/<_id>/modules lists only that course's modules from modules.json, each with its lessons. Two courses show different module lists.",
+      ),
+      oyo(
+        "3.9.7-oyo",
+        "A lesson you added to module M101 shows on /courses/RS101/modules and not on /courses/RS102/modules.",
+      ),
+      ai("3.9.7-ai", "Nozzle Design also shows under Fuel and Combustion on /courses/RS101/modules only."),
     ],
   },
   {
@@ -444,9 +558,15 @@ export const CH3_KAMBAZ_EXERCISES: readonly BookExerciseParent[] = [
     parentLabel: "Assignments from JSON",
     section: "3.9.8",
     tasks: [
-      lab("3.9.8-lab", "Drive Assignments from JSON (On your own)."),
-      oyo("3.9.8-oyo", "Complete the On your own in §3.9.8."),
-      ai("3.9.8-ai", "Complete the With AI extra in §3.9.8."),
+      lab(
+        "3.9.8-lab",
+        "/courses/<_id>/assignments lists only that course's assignments from assignments.json, each linking to /courses/<_id>/assignments/<assignment _id>. Two courses show different lists (On your own).",
+      ),
+      oyo(
+        "3.9.8-oyo",
+        "/courses/RS101/assignments lists A101–A103 and /courses/RS102/assignments lists A201–A203, each row linking to its editor URL.",
+      ),
+      ai("3.9.8-ai", "/courses/RS102/assignments also lists A4 (A204), which opens /courses/RS102/assignments/A204."),
     ],
   },
   {
@@ -456,10 +576,13 @@ export const CH3_KAMBAZ_EXERCISES: readonly BookExerciseParent[] = [
     tasks: [
       lab(
         "3.9.8.1-lab",
-        "Drive the Assignment Editor from JSON (On your own).",
+        "The Assignment Editor's name field shows the title of the assignment you clicked, and its description, points, due, and available fields come from the same row (On your own).",
       ),
-      oyo("3.9.8.1-oyo", "Complete the On your own in §3.9.8.1."),
-      ai("3.9.8.1-ai", "Complete the With AI extra in §3.9.8.1."),
+      oyo(
+        "3.9.8.1-oyo",
+        "Opening A1 and then A2 from /courses/RS101/assignments changes the fields, and Cancel and Save both return to /courses/RS101/assignments.",
+      ),
+      ai("3.9.8.1-ai", "The editor also shows Assignment id: <aid>, for example Assignment id: A101."),
     ],
   },
   {
@@ -467,9 +590,15 @@ export const CH3_KAMBAZ_EXERCISES: readonly BookExerciseParent[] = [
     parentLabel: "People from enrollments",
     section: "3.9.9",
     tasks: [
-      lab("3.9.9-lab", "Drive the People table from users and enrollments."),
-      oyo("3.9.9-oyo", "Complete the On your own in §3.9.9."),
-      ai("3.9.9-ai", "Complete the With AI extra in §3.9.9."),
+      lab(
+        "3.9.9-lab",
+        "/courses/<_id>/people/table lists only the users enrolled in that course (from users.json and enrollments.json). Two courses show different rosters.",
+      ),
+      oyo(
+        "3.9.9-oyo",
+        "A user you enrolled in a second course (new unique enrollment _id) shows in the People table of both courses.",
+      ),
+      ai("3.9.9-ai", "Thor Odinson (user 567) also shows in the RS102 People table."),
     ],
   },
 ];

@@ -5,6 +5,8 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import LinksNavigation from "./ch3/embeds/_styled/Navigation";
 import AsDashboardPath from "../slides/_components/embeds/AsDashboardPath";
+import AssignmentsScreen from "../slides/_components/embeds/ch3/AssignmentsScreen";
+import PeopleTableScreen from "../slides/_components/embeds/ch3/PeopleTableScreen";
 
 function read(path: string): string {
   return readFileSync(new URL(`../../${path}`, import.meta.url), "utf8");
@@ -220,11 +222,24 @@ describe("Kambaz book demos match the code block they show", () => {
     assert.doesNotMatch(data, /from "@\/app\/\(kambaz\)\//);
   });
 
-  it("renders the Modules toolbar and Sign in steps, not a later full page", () => {
+  it("renders the full §2.4.4 Modules page (toolbar + tree) and the Sign in step", () => {
     const styling = "app/book/ch2/sections/KambazStyling.tsx";
-    assert.equal(
-      demoBodyAfter(styling, "Modules toolbar"),
-      codeBlock(styling, "Modules toolbar").trim(),
+    // §2.4.4 shows the toolbar, then the whole page with the module tree;
+    // the demo renders that page, so it shows the styled tree too.
+    assert.equal(demoBodyAfter(styling, "Modules page"), "<Modules />");
+    const page = codeBlock(styling, "Modules page");
+    const toolbar = codeBlock(styling, "Modules toolbar")
+      .replace(/\n\{\/\* \.\.\.Module \/ Lesson tree\.\.\. \*\/\}$/, "")
+      .trim();
+    assert.ok(
+      page.replace(/\s+/g, " ").includes(toolbar.replace(/\s+/g, " ")),
+      "toolbar step is part of the Modules page listing",
+    );
+    assert.match(page, /<ul id="wd-modules" className="m-0 list-none p-0">/);
+    const src = read(styling);
+    assert.ok(
+      src.indexOf('name="Modules page"') < src.indexOf('id="sec-2-4-5"'),
+      "Modules page listing lives in §2.4.4",
     );
     assert.equal(demoBodyAfter(styling, "Signin"), codeBlock(styling, "Signin").trim());
     const toolbarSlide = slideCode(
@@ -376,7 +391,7 @@ describe("Kambaz book demos match the code block they show", () => {
       createElement(AsDashboardPath, null, createElement(LinksNavigation)),
     );
     assert.match(linksHtml, /id="wd-dashboard-link"[^>]*bg-white text-red-600/);
-    assert.match(linksHtml, /id="wd-courses-link"[^>]*bg-white text-red-600/);
+    assert.match(linksHtml, /id="wd-courses-link"[^>]*bg-black text-white/);
     assert.match(linksHtml, /id="wd-account-link"[^>]*bg-black text-white/);
     assert.match(linksHtml, /id="wd-calendar-link"[^>]*bg-black text-white/);
     assert.match(styling, /<PeopleTable\s*\/>/);
@@ -389,6 +404,88 @@ describe("Kambaz book demos match the code block they show", () => {
       styling.replace(/\s+/g, " ").includes(signin.replace(/\s+/g, " ").trim()),
       "signin embed JSX drifted from the Signin code block",
     );
+  });
+
+  it("mounts chapter 3 slide embeds on sync ch3 screens", () => {
+    const styling = read("app/slides/_components/embeds/KambazStylingEmbeds.tsx");
+    const book = "app/book/ch3/sections/KambazData.tsx";
+    assert.equal(
+      exportLine(styling, "KambazCh3AssignmentsEmbed"),
+      "export function KambazCh3AssignmentsEmbed",
+    );
+    assert.equal(
+      exportLine(styling, "KambazCh3PeopleEmbed"),
+      "export function KambazCh3PeopleEmbed",
+    );
+    assert.equal(
+      exportLine(styling, "KambazCh3ModulesEmbed"),
+      "export function KambazCh3ModulesEmbed",
+    );
+    assert.equal(
+      exportLine(styling, "KambazCh3DashboardEmbed"),
+      "export function KambazCh3DashboardEmbed",
+    );
+    // Async §3.9.8 / §3.9.9 pages stay the book listings. Slides mount sync twins.
+    assert.deepEqual(mountedImports(styling, "KambazCh3DashboardEmbed"), [
+      "@/app/book/ch3/embeds/_styled/dashboard/Dashboard",
+    ]);
+    assert.deepEqual(mountedImports(styling, "KambazCh3ModulesEmbed"), [
+      "@/app/book/ch3/embeds/_styled/courses/cid/modules/page",
+    ]);
+    assert.deepEqual(mountedImports(styling, "KambazCh3AssignmentsEmbed"), [
+      "./ch3/AssignmentsScreen",
+    ]);
+    assert.deepEqual(mountedImports(styling, "KambazCh3PeopleEmbed"), [
+      "./ch3/PeopleTableScreen",
+    ]);
+    assert.doesNotMatch(fnBody(styling, "KambazCh3AssignmentsEmbed"), /params=/);
+    assert.doesNotMatch(fnBody(styling, "KambazCh3PeopleEmbed"), /params=/);
+    assert.doesNotMatch(
+      styling,
+      /embeds\/_styled\/courses\/cid\/assignments\/page|embeds\/_styled\/courses\/cid\/people\/table\/page/,
+    );
+
+    const assignmentsPage = "app/book/ch3/embeds/_styled/courses/cid/assignments/page.tsx";
+    const peoplePage = "app/book/ch3/embeds/_styled/courses/cid/people/table/page.tsx";
+    const assignmentsTwin = "app/slides/_components/embeds/ch3/AssignmentsScreen.tsx";
+    const peopleTwin = "app/slides/_components/embeds/ch3/PeopleTableScreen.tsx";
+    assert.match(read(assignmentsPage), /export default async function Assignments/);
+    assert.match(read(peoplePage), /export default async function PeopleTable/);
+    assert.match(codeBlock(book, "Assignments"), /await params/);
+    assert.match(codeBlock(book, "PeopleTable"), /await params/);
+    assert.equal(read(assignmentsPage).trim(), codeBlock(book, "Assignments").trim());
+    assert.equal(read(peoplePage).trim(), codeBlock(book, "PeopleTable").trim());
+    assert.equal(jsxReturn(read(assignmentsTwin)), jsxReturn(read(assignmentsPage)));
+    assert.equal(jsxReturn(read(peopleTwin)), jsxReturn(read(peoplePage)));
+    assert.equal(
+      sliceBetween(read(assignmentsTwin), "const assignments", "return ("),
+      sliceBetween(read(assignmentsPage), "const assignments", "return ("),
+    );
+    assert.equal(
+      sliceBetween(read(peopleTwin), "const { users, enrollments }", "return ("),
+      sliceBetween(read(peoplePage), "const { users, enrollments }", "return ("),
+    );
+    assert.match(read(assignmentsTwin), /export default function AssignmentsScreen/);
+    assert.match(read(peopleTwin), /export default function PeopleTableScreen/);
+    assert.doesNotMatch(read(assignmentsTwin), /export default async function/);
+    assert.doesNotMatch(read(peopleTwin), /export default async function/);
+
+    const assignmentsResult = AssignmentsScreen({ cid: "RS101" });
+    const peopleResult = PeopleTableScreen({ cid: "RS101" });
+    assert.equal("then" in Object(assignmentsResult), false);
+    assert.equal("then" in Object(peopleResult), false);
+    const assignmentsHtml = renderToStaticMarkup(assignmentsResult);
+    const peopleHtml = renderToStaticMarkup(peopleResult);
+    assert.match(assignmentsHtml, /\/courses\/RS101\/assignments\/A101/);
+    assert.match(assignmentsHtml, /\/courses\/RS101\/assignments\/A102/);
+    assert.match(assignmentsHtml, /\/courses\/RS101\/assignments\/A103/);
+    assert.match(assignmentsHtml, /Not available until 2024-05-06/);
+    assert.doesNotMatch(assignmentsHtml, /A201|ENV \+ HTML|CS1234/);
+    assert.match(peopleHtml, /wd-first-name[^<]*>Tony</);
+    assert.match(peopleHtml, /Thor/);
+    assert.match(peopleHtml, /FACULTY/);
+    assert.doesNotMatch(peopleHtml, /Pepper/);
+    assert.equal((peopleHtml.match(/odd:bg-neutral-50/g) ?? []).length, 6);
   });
 
   it("keeps the chapter 3 navigation listing identical to the app", () => {
@@ -446,6 +543,37 @@ function walk(rel: string): string[] {
     else if (/\.(tsx|ts|css|js|jsx|json)$/.test(name)) out.push(child);
   }
   return out;
+}
+
+function exportLine(src: string, name: string): string {
+  const match = src.match(new RegExp(`export (?:async )?function ${name}\\b`));
+  assert.ok(match, name);
+  return match[0];
+}
+
+/** Import paths of screen components rendered inside one embed function. */
+function mountedImports(src: string, fnName: string): string[] {
+  const body = fnBody(src, fnName);
+  const names: string[] = [];
+  for (const match of body.matchAll(/<([A-Z][A-Za-z0-9]*)\b/g)) {
+    const name = match[1];
+    if (name === "LectureDemoFrame" || name === "AsCourseParams") continue;
+    if (!names.includes(name)) names.push(name);
+  }
+  assert.ok(names.length > 0, `${fnName} mounts a screen`);
+  return names.map((name) => {
+    const imported = src.match(new RegExp(`import ${name} from "([^"]+)"`));
+    assert.ok(imported, `${fnName} mounts ${name} without an import`);
+    return imported[1];
+  });
+}
+
+function sliceBetween(source: string, start: string, end: string): string {
+  const at = source.indexOf(start);
+  assert.ok(at >= 0, start);
+  const stop = source.indexOf(end, at);
+  assert.ok(stop > at, end);
+  return source.slice(at, stop);
 }
 
 function fnBody(src: string, name: string): string {
@@ -544,3 +672,37 @@ function slideCode(deckPath: string, id: string): string {
   }
   throw new Error(`unterminated slide code ${id}`);
 }
+
+describe("§2.4 Kambaz listings (A2 walkthrough fixes)", () => {
+  const book = "app/book/ch2/sections/KambazStyling.tsx";
+  it("lists every sidebar tile with an icon, keeps wd-neu-link, and makes Account white", () => {
+    const nav = codeBlock(book, "KambazNavigation");
+    assert.equal(read("app/book/ch2/embeds/_styled/Navigation.tsx").trim(), nav.trim());
+    assert.match(nav, /id="wd-neu-link"/);
+    assert.match(nav, /<FaRegCircleUser className="inline-block text-3xl text-white" \/>/);
+    assert.doesNotMatch(nav, /text-red-500/);
+    let last = -1;
+    for (const id of ["wd-neu-link", "wd-account-link", "wd-dashboard-link", "wd-course-link", "wd-calendar-link", "wd-inbox-link", "wd-labs-link"]) {
+      const at = nav.indexOf(`id="${id}"`);
+      assert.ok(at > last, id);
+      last = at;
+    }
+    assert.doesNotMatch(nav, /\.\.\.Courses, Calendar/);
+    assert.match(read(book), /Dashboard stays highlighted on every/);
+  });
+
+  it("keeps Course Navigation in Chapter 1 order (Modules before Assignments) and explains use client", () => {
+    const nav = codeBlock(book, "CourseNavigation");
+    assert.ok(nav.indexOf("wd-course-modules-link") > nav.indexOf("wd-course-home-link"));
+    assert.ok(nav.indexOf("wd-course-assignments-link") > nav.indexOf("wd-course-modules-link"));
+    assert.match(read(book), /<code>&quot;use client&quot;<\/code>, is new/);
+  });
+
+  it("keeps Chapter 1 Sign in classes and the /dashboard target", () => {
+    const signin = codeBlock(book, "Signin");
+    assert.match(signin, /className="wd-username /);
+    assert.match(signin, /className="wd-password /);
+    assert.match(signin, /href="\/dashboard"/);
+    assert.doesNotMatch(signin, /id="wd-username"|href="\/account\/profile"/);
+  });
+});
