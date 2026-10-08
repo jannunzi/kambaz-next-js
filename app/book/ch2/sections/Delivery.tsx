@@ -11,7 +11,7 @@ export default function Delivery() {
         Submit this chapter&apos;s work as a new branch on the same{" "}
         <code>webdev-client</code>{" "}repository and deployment from Chapter
         1, so graders can compare <ChapterLink to={1} />&apos;s HTML-only prototype against
-        this chapter&apos;s CSS, Tailwind, and Tailwind version side by
+        this chapter&apos;s version styled with CSS and Tailwind, side by
         side.
       </p>
       <ol>
@@ -30,13 +30,21 @@ git commit -am "a2 CSS and Tailwind"
 git push -u origin a2`}</CodeBlock>
       <ol start={3}>
         <li>
-          In Vercel, configure the project to deploy every branch to its own
-          URL: open the project&apos;s <strong>Settings → Git</strong>{" "}and
-          enable deployments for all branches (some Vercel plans expose this
-          under <strong>Build & Deployment → Branches</strong>). From then on,
-          each push to <code>a2</code>{" "}gets its own preview URL that
-          contains the branch name, separate from your <ChapterLink to={1} />{" "}
-          <code>main</code>{" "}deployment.
+          Vercel builds every branch you push as a <strong>Preview</strong>{" "}
+          deployment, separate from your <ChapterLink to={1} />{" "}
+          <code>main</code>{" "}(Production) deployment; you don&apos;t need to
+          change any setting. Open your project on Vercel, go to{" "}
+          <strong>Deployments</strong>, and click the newest deployment of the{" "}
+          <code>a2</code>{" "}branch. Its <strong>Domains</strong>{" "}list shows a{" "}
+          <strong>branch URL</strong>{" "}like{" "}
+          <code>webdev-client-git-a2-&lt;your-vercel-team&gt;.vercel.app</code>
+          , with <code>-git-a2-</code>{" "}in the name. <strong>That branch URL
+          is the one to submit for A2.</strong>{" "}It always shows the latest
+          push to <code>a2</code>. Don&apos;t submit your production URL (that
+          is your A1 site from <code>main</code>) or a per-deployment URL with
+          a random code, such as{" "}
+          <code>webdev-client-8f3k2j1x9-&lt;your-vercel-team&gt;.vercel.app</code>
+          ; neither one contains <code>-git-a2-</code>.
         </li>
         <li>
           Confirm <code>app/labs/TOC.tsx</code>{" "}and{" "}

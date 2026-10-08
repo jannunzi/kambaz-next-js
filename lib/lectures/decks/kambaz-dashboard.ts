@@ -128,7 +128,7 @@ export default function Dashboard() {
     kind: "content",
     bullets: [
       "Point the Sign in button at `/dashboard`",
-      "Keep id `wd-signin-btn` so the grader still finds it",
+      "Keep id `wd-signin-btn`; the ids help us test your work",
     ],
     code: `<Link href="/dashboard" id="wd-signin-btn">
   Sign in

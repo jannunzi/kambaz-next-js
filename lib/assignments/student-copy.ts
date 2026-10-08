@@ -22,6 +22,8 @@ export const ASSIGNMENT_STUDENT_COPY = {
   signInHint: COURSE_WEBSITE_ACCOUNT_COPY.assignmentSignInHint,
   syncProgress:
     "Sign up if you don’t have a course-website account yet, then Sign in with the same Northeastern email you use on Canvas to sync progress.",
+  gradingInProgress:
+    "Grading in progress. Staff still grade the manual items; your grade and percentage show here when grading is done, the same score that goes to Canvas.",
   checksNotSaved:
     "Run checks updates this page only. Checkmarks stay on this page only. Sign up if you don’t have a course-website account yet, then Sign in with the same Northeastern email you use on Canvas to submit your GitHub and Vercel URLs.",
   urlSubmitWhen:
@@ -40,7 +42,7 @@ export const ASSIGNMENT_STUDENT_COPY = {
   saved: "Submitted. You can run checks again after you update your Vercel URL.",
   savedButNotPersisted: "Checks finished. This preview was not submitted.",
   checkInstructions:
-    "Paste a public Vercel URL. Checks normalize the deploy origin, fetch Labs and Lab pages, crawl Kambaz screens, and look for wd-* ids and required content markers. A GitHub URL is optional for Run checks.",
+    "Paste a public Vercel URL. Checks normalize the deploy origin, fetch Labs and Lab pages, crawl Kambaz screens, and look for the pieces each step asks for. Keep the wd-* ids from the book; they help the checks find your work. A GitHub URL is optional for Run checks.",
   proposedGradeLabel: "Proposed grade",
   staffGradeLabel: "Staff grade",
   acceptProposed: "Accept proposed grade",
@@ -81,23 +83,23 @@ export const ASSIGNMENT_STUDENT_COPY = {
     "Your Vercel URL returned HTTP 404 (this page cannot be loaded). Open it in a private window and submit the production https://….vercel.app URL that actually opens — not a deleted preview or a path that 404s.",
   vercelHttpError:
     "Your Vercel URL did not load. Open that same URL in a private/incognito window. If the browser cannot load the page, Run checks cannot either.",
-  labsOk: "Found Labs navigation or wd- hooks used in A1.",
+  labsOk: "Found the Labs navigation (links to your lab pages).",
   labsMissing:
-    "The page opened, but Labs navigation / wd- ids were not found. Open /labs on your deploy and follow Chapter 1.",
+    "The page opened, but we couldn't find links to your lab pages (Lab 1, Lab 2, Lab 3) on /labs. Open /labs on your deploy and follow Chapter 1.",
   labsUnread: "Could not read the page to check Labs markers.",
   nameOk: "Found your full Canvas name on Labs.",
   nameCheckNeedsRoster:
-    "Sign in with your roster (Northeastern) account to check your name on Labs",
+    "Sign in with your Canvas email so Run checks can compare your name on Labs with the course roster. Staff check your name again when grading.",
   nameMissing:
     "Your name was not found on Labs. Put your full Canvas name there (first then last, matching the roster). There is no Name and section checkbox in Run checks.",
   nameAndSection:
-    "Show your full Canvas name on Labs (first then last, matching the roster). There is no Name and section checkbox or control in Run checks.",
+    "Show your full Canvas name on Labs as visible text (first then last, matching the roster), for example in the Labs TOC or on /labs. Run checks looks for it automatically: it compares the name on your deployed Labs pages with the roster name of the account you are signed in with, so sign in with your Canvas email first. Signed out, this row stays unticked because there is no roster name to compare. There is no Name and section checkbox or control in Run checks, and your section is not checked.",
   nameAndSectionDeliveryNote:
-    "Name and section is your full Canvas name on Labs (first then last, matching the roster), not a checkbox or control in Run checks.",
+    "Name on Labs (also called Name and section) is checked automatically: Run checks looks for your full Canvas name on Labs (first then last, matching the roster) and compares it with the account you are signed in with. It is not a checkbox or control in Run checks, and your section is not checked.",
   manualCheckHint:
-    "Checked by staff at grading. Staff grade this row on your deploy URL. Run checks does not mark it pass or fail. Manual check is not a failed auto check.",
+    "Checked by staff at grading. Staff grade this row on your deploy URL after you submit. Run checks does not mark it pass or fail, so an unticked Manual check row does not mean you lost points. Manual check is not a failed auto check.",
   manualCheckLabNote:
-    "A Manual check badge means checked by staff at grading. Staff grade that row on your deploy URL. Run checks never marks it pass or fail, and it is not a failed auto check.",
+    "A Manual check badge means checked by staff at grading. Staff grade that row on your deploy URL after you submit. Run checks never marks it pass or fail, so an unticked Manual check row does not mean you lost points, and it is not a failed auto check.",
 } as const;
 
 export type AssignmentStudentCopyKey = keyof typeof ASSIGNMENT_STUDENT_COPY;

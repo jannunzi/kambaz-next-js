@@ -142,10 +142,11 @@ export default function TOC() {
           attribute is named <code>class</code>; in JSX it must be{" "}
           <code>className</code>{" "}because <code>class</code>{" "}is a reserved word
           in JavaScript — the same reason labels use <code>htmlFor</code>{" "}
-          instead of <code>for</code>. Keep these names exactly as written:
-          automated tests (and graders) look for them to verify your markup. They
-          can also hook up CSS later in <ChapterLink to={2} />; with Tailwind commented out
-          they may not change how the page looks yet.
+          instead of <code>for</code>. Keep these names as written, especially
+          when you copy the code: the <code>wd-*</code>{" "}ids and class names
+          help us test your work, and they also hook up CSS later in{" "}
+          <ChapterLink to={2} />; with Tailwind commented out they may not
+          change how the page looks yet.
         </p>
         <p>
           Create the Sign in screen as follows:
@@ -405,7 +406,10 @@ export default function AccountLayout({
 }`}</CodeBlock>
         <p>
           Three absolute account links — Signin, Signup, and Profile — ready to
-          sit in the layout&apos;s left column:
+          sit in the layout&apos;s left column. Build all three for this
+          chapter. (The finished Kambaz on the course site shows only the links
+          that fit whether you are signed in, for example Signin and Signup
+          when signed out. You add that behavior in a later chapter.)
         </p>
         <LiveDemo
           name="AccountNavigation"
@@ -1126,8 +1130,8 @@ export default function Home() {
           time. From the Dashboard, open a course, then choose Assignments in
           Course Navigation. The polished target is below; match the plain
           HTML demo for this chapter. Exact due dates may differ. Keep the
-          given <code>id</code>{" "}and <code>className</code>{" "}values so later
-          chapters and graders can find them.{" "}
+          given <code>id</code>{" "}and <code>className</code>{" "}values: later
+          chapters build on them, and the ids help us test your work.{" "}
           <ChapterLink to={2} />{" "}will style this screen with Tailwind.
         </p>
         <BookFigure
@@ -1276,7 +1280,8 @@ export default async function Assignments({
           Faculty edit the assignment&apos;s details there. The polished target
           is below; this chapter only needs a plain HTML form. Start from the
           stub (name, description, points), then complete the rest on your own.
-          Use the ids listed so later chapters and graders can find the fields.
+          Use the ids listed: later chapters build on them, and the ids help
+          us test your work.
         </p>
         <BookFigure
           id="fig-1.4.8a"
@@ -1349,6 +1354,11 @@ export default async function Assignments({
             <code>wd-cancel</code>{" "}and <code>wd-save</code>
           </li>
         </ul>
+        <p>
+          For Display Grade as and Submission Type, the options shown in the
+          figure (for example Percentage and Online) are enough; add more if
+          you like.
+        </p>
         <p>
           Label behavior must work the way Lab 1 forms do:
         </p>

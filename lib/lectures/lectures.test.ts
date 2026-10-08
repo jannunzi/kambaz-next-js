@@ -2280,7 +2280,7 @@ describe("lecture decks", () => {
     const flex = slideText("css-flex");
     assert.match(flex, /wd-flex-row-container/);
     assert.match(flex, /wd-flex-grow-1/);
-    assert.match(flex, /wd-width-75px/);
+    assert.match(flex, /wd-width-110px/);
     assert.match(flex, /Flex\.tsx/);
 
     const rotation = slideText("css-rotation");

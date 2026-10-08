@@ -1,0 +1,35 @@
+[
+  {
+    "_id": "RS101",
+    "name": "Rocket Propulsion",
+    "number": "RS4550",
+    "startDate": "2023-01-10",
+    "endDate": "2023-05-15",
+    "department": "D123",
+    "credits": 4,
+    "description": "This course provides an in-depth study of the fundamentals of rocket propulsion, including thermodynamics of the combustion chamber and nozzle. Students analyze solid, liquid, and hybrid rocket motors and apply propulsion theory to engine performance.",
+    "image": "/images/reactjs.jpg"
+  },
+  {
+    "_id": "RS102",
+    "name": "Aerodynamics",
+    "number": "RS4560",
+    "startDate": "2023-01-10",
+    "endDate": "2023-05-15",
+    "department": "D123",
+    "credits": 3,
+    "description": "This course explores the principles of aerodynamics and how airflow interacts with wings, airfoils, and other flying bodies. Students study lift, drag, compressible flow, and the aerodynamic considerations used in aircraft and spacecraft design.",
+    "image": "/images/nodejs.jpg"
+  },
+  {
+    "_id": "RS103",
+    "name": "Spacecraft Design",
+    "number": "RS4570",
+    "startDate": "2023-01-10",
+    "endDate": "2023-05-15",
+    "department": "D123",
+    "credits": 4,
+    "description": "This course covers the principles of spacecraft design, including structures, propulsion, thermal control, and power systems. Students apply systems engineering methods to mission design, orbital mechanics, and payload integration for current and future space missions.",
+    "image": "/images/mongodb.jpg"
+  }
+]

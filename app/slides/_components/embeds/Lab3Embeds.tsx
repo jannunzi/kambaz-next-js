@@ -362,9 +362,9 @@ export function JsAddEmbed() {
 export function JsSquareEmbed() {
   return (
     <Lab3Demo label="Square.tsx">
-      <p>
-        Square of 4 = <Square>4</Square>
-      </p>
+      <h4>Square of 4</h4>
+      <Square>4</Square>
+      <hr />
     </Lab3Demo>
   );
 }

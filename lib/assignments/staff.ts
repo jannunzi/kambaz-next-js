@@ -93,6 +93,10 @@ export type StaffStudentRow = {
   vercelUrl?: string;
   lastCheckedAt?: string;
   checkResults?: AssignmentCheckResult[];
+  /** Checker version that produced checkResults. */
+  checkerVersion?: string;
+  /** Submission time (`updatedAt`, else `createdAt`) as ISO. */
+  submittedAt?: string;
   staffGrade?: AssignmentStaffGrade;
   /** Older submissions for the same student. The row itself is the newest. */
   priorSubmissions?: PriorSubmissionNote[];
@@ -312,6 +316,8 @@ function rowFromSubmission(
         : new Date(doc.lastCheckedAt).toISOString()
       : undefined,
     checkResults: doc.checkResults,
+    checkerVersion: doc.checkerVersion,
+    submittedAt: submissionStamp(doc) || undefined,
     staffGrade: doc.staffGrade,
     priorSubmissions: undefined,
   };
@@ -449,6 +455,25 @@ export function filterStaffQueueBySection(
     }
     return staffRowSectionLabel(row) === selected;
   });
+}
+
+/**
+ * Roster flags for one submission (the doc a student sees), computed exactly
+ * as the staff queue and the Canvas export compute them. A submission that
+ * isn't a current queue row (not on file as anyone's newest submission)
+ * never counts as ready.
+ */
+export function rosterFlagsForSubmission(
+  roster: readonly CanvasRosterEntry[],
+  submissions: readonly AssignmentSubmissionDoc[],
+  clerkUserId: string,
+  options?: StaffQueueOptions,
+): { unmatched?: boolean; duplicates?: number } {
+  const row = buildStaffStudentQueue(roster, submissions, options).find(
+    (entry) => entry.hasSubmission && entry.clerkUserId === clerkUserId,
+  );
+  if (!row) return { unmatched: true };
+  return { unmatched: row.unmatched, duplicates: row.priorSubmissions?.length ?? 0 };
 }
 
 export function staffQueueForSection(

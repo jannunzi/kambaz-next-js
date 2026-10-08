@@ -72,6 +72,10 @@ export function latestResultByCriterion(
     }
     if (row.skipped) continue;
     if (existing.passed && !row.passed) map.set(row.criterionId, row);
+    // A flagged row (Needs TA review / re-check) outranks a plain pass.
+    else if (existing.passed && !existing.needsReview && row.passed && row.needsReview) {
+      map.set(row.criterionId, row);
+    }
   }
   return map;
 }
