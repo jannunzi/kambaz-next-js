@@ -1,5 +1,7 @@
 import { A2_RUBRIC } from "./a2";
 import type { A1RubricAutoSpec } from "./a1-rubric-types";
+import { judgeA2Labs } from "./a2-judge";
+import { a2GithubLinkPassed, a2LabsNavPassed } from "./a2-structure";
 import type { AssignmentChecker } from "./checker-types";
 import { A2_CHECKER_RULES_VERSION } from "./checker-version";
 /**
@@ -44,6 +46,10 @@ export const A2_VERIFY_PATHS: Record<string, string> = {
   "a2-kambaz-account": "/account/signin",
 };
 
+/**
+ * Jump links for staff opening a row on the deploy (the browser simply
+ * stays at the top when an id is missing). Never used for grading.
+ */
 export const A2_VERIFY_HASHES: Record<string, string> = {
   "a2-delivery-name-github": "wd-github",
   "a2-lab-page": "wd-lab2",
@@ -63,103 +69,70 @@ export const A2_VERIFY_HASHES: Record<string, string> = {
   "a2-kambaz-account": "wd-signin-screen",
 };
 
+/**
+ * A2 lab rows. Ids are never read: `judgeA2Labs` grades what the CSS does
+ * on /labs/lab2 and /labs/lab2/tailwind (see a2-structure.ts). These specs
+ * only name the rows; the messages are the fallbacks staff see if a row was
+ * not judged.
+ */
 const A2_LAB_SPECS: A1RubricAutoSpec[] = [
   {
     criterionId: "a2-lab-page",
     groupId: "lab",
     label: "Lab 2 page and CSS file",
-    kind: "ids",
-    htmlScope: "labs",
-    requireAllIds: ["wd-lab2"],
-    requireAnchorPaths: ["/labs/lab2"],
-    passMessage: "Found the Lab 2 page (wd-lab2) and a link to /labs/lab2.",
-    failMessage:
-      "Lab 2 needs id wd-lab2 on /labs/lab2 and a Labs index or TOC link to /labs/lab2.",
+    kind: "structure",
+    pagePath: "/labs/lab2",
+    passMessage: "Found your Lab 2 page at /labs/lab2, styled by your Lab 2 stylesheet.",
+    failMessage: "Create the Lab 2 page at /labs/lab2 and import its CSS file (§2.1).",
   },
   {
     criterionId: "a2-lab-selectors",
     groupId: "lab",
     label: "Selectors",
-    kind: "ids",
-    htmlScope: "labs",
-    requireAllIds: [
-      "wd-css-id-selectors",
-      "wd-id-selector-1",
-      "wd-id-selector-2",
-      "wd-css-class-selectors",
-      "wd-css-document-structure",
-    ],
-    requireHtmlIncludes: ["wd-class-selector", "wd-selector-1"],
-    passMessage: "Found the id, class, and document-structure selector samples.",
+    kind: "structure",
+    pagePath: "/labs/lab2",
+    passMessage: "Found the ID, class, and document-structure selector samples.",
     failMessage:
-      "Lab 2 should include the id, class, and document-structure selector samples from §2.1.1–§2.1.5.",
+      "Lab 2 should include the ID, class, and document-structure selector samples from §2.1.3–§2.1.5.",
   },
   {
     criterionId: "a2-lab-box-model",
     groupId: "lab",
     label: "Color, border, and box model",
-    kind: "ids",
-    htmlScope: "labs",
-    requireAllIds: [
-      "wd-css-colors",
-      "wd-css-background-colors",
-      "wd-css-borders",
-      "wd-css-paddings",
-      "wd-css-margins",
-      "wd-css-box-model",
-      "wd-css-corners",
-      "wd-css-dimensions",
-      "wd-css-display",
-    ],
+    kind: "structure",
+    pagePath: "/labs/lab2",
     passMessage: "Found the color, border, spacing, and box-model samples.",
     failMessage:
-      "Lab 2 should include the color, background, border, padding, margin, box model, corner, dimension, and display samples.",
+      "Lab 2 should include the color, background, border, padding, margin, box model, corner, dimension, and display samples (§2.1.7–§2.1.12).",
   },
   {
     criterionId: "a2-lab-layout",
     groupId: "lab",
     label: "Position, float, flex, and media queries",
-    kind: "ids",
-    htmlScope: "labs",
-    requireAllIds: [
-      "wd-css-positions",
-      "wd-css-position-relative",
-      "wd-css-position-absolute",
-      "wd-css-position-fixed",
-      "wd-z-index",
-      "wd-float-divs",
-      "wd-css-grid-layout",
-      "wd-css-flex",
-    ],
-    requireHtmlIncludes: ["wd-media-queries-demo"],
-    passMessage: "Found the position, float, grid, flex, and media-query samples.",
+    kind: "structure",
+    pagePath: "/labs/lab2",
+    passMessage: "Found the position, z-index, float, grid, flex, and media-query samples.",
     failMessage:
-      "Lab 2 should include the position, z-index, float, grid, flex, and media-query samples (class wd-media-queries-demo).",
+      "Lab 2 should include the position, z-index, float, grid, flex, and media-query samples (§2.1.13–§2.1.20).",
   },
   {
     criterionId: "a2-lab-icons",
     groupId: "lab",
     label: "React Icons",
-    kind: "ids",
-    htmlScope: "labs",
-    requireAllIds: ["wd-react-icons-sampler"],
-    requireDescendantTag: { id: "wd-react-icons-sampler", tag: "svg" },
-    passMessage: "Found wd-react-icons-sampler with an icon svg.",
-    failMessage:
-      "Import ReactIconsSampler on Lab 2 with id wd-react-icons-sampler and at least one icon svg inside it.",
+    kind: "structure",
+    pagePath: "/labs/lab2",
+    passMessage: "Found React icons on Lab 2.",
+    failMessage: "Import ReactIconsSampler on Lab 2 so at least one React icon shows (§2.2).",
   },
   {
     criterionId: "a2-lab-tailwind",
     groupId: "lab",
     label: "Tailwind samples",
-    kind: "ids",
+    kind: "structure",
     pagePath: "/labs/lab2/tailwind",
-    requireAllIds: ["wd-tailwind-grid-system"],
-    requireClassTokens: ["ms-4", "font-thin", "bg-red-500", "md:flex", "blur-lg", "grid"],
-    requireClassTokenPatterns: [{ label: "grid-cols-*", pattern: "^grid-cols-.+$" }],
     passMessage: "Found the Tailwind spacing, type, color, responsive, filter, and grid samples.",
     failMessage:
-      "Add the Tailwind samples on /labs/lab2/tailwind, including wd-tailwind-grid-system and the spacing, type, color, responsive, filter, and grid classes from §2.3.",
+      "Add the Tailwind samples on /labs/lab2/tailwind: spacing, typography, background colors, responsive prefixes, filters, and grids (§2.3).",
   },
 ];
 
@@ -179,6 +152,20 @@ const autoIds = new Set<string>([
 export const A2_CHECKER: AssignmentChecker = {
   assignmentId: "a2",
   rulesVersion: A2_CHECKER_RULES_VERSION,
+  // Jose's rule: students still add wd-* ids, but a missing id never costs
+  // points. A2 reads no ids at all: lab rows are judged from the compiled
+  // CSS and page structure (judgeA2Labs), delivery rows from links.
+  idsOptional: true,
+  idHasContent: () => false,
+  judgeAutoSpecs: judgeA2Labs,
+  reviewGates: {
+    // A sample built differently from the book (or the ID-selector sample
+    // when no element carries the ids) keeps its points for a TA only when
+    // the Lab 2 page itself is real: content styled by a Lab 2 stylesheet.
+    "a2-lab-selectors": { requires: ["a2-lab-page"], minPassed: 1 },
+    "a2-lab-box-model": { requires: ["a2-lab-page"], minPassed: 1 },
+    "a2-lab-layout": { requires: ["a2-lab-page"], minPassed: 1 },
+  },
   seedPaths: A2_SEED_PATHS,
   followupCap: A2_CHECKER_FOLLOWUP_CAP,
   extraCourseScreens: ["people/table"],
@@ -197,22 +184,28 @@ export const A2_CHECKER: AssignmentChecker = {
     previewBranch: "a2",
     previewHostMessage:
       "Submit the a2 branch preview on Vercel. The first hostname label must include -git-a2- or end in -git-a2 (Vercel cuts labels after 63 characters), and the host must end in .vercel.app. Staff can override this at grading.",
+    labsContent: {
+      label: "Deployment shows your Labs",
+      passMessage: "The deployment shows your own Labs pages.",
+      failMessage:
+        "The deployment doesn't show your Labs pages (only the create-next-app starter or \"not found\" pages). Push your a2 work and submit that branch's Vercel URL.",
+    },
     labsNav: {
       criterionId: "a2-delivery-labs-nav",
       groupId: "delivery",
       label: "Labs still listed",
-      allIds: ["wd-kambaz-link"],
-      allHrefs: ["/labs/lab1", "/labs/lab2"],
+      test: a2LabsNavPassed,
       passMessage: "Found links to Lab 1, Lab 2, and Kambaz on Labs.",
       failMessage:
-        "Labs should still link /labs/lab1, /labs/lab2, and Kambaz (wd-kambaz-link).",
+        "Labs (the TOC or the Labs page) should still link Lab 1 (/labs/lab1), Lab 2 (/labs/lab2), and Kambaz (a page outside /labs, such as /account/signin).",
     },
     github: {
       criterionId: "a2-delivery-name-github",
       groupId: "delivery",
       linkLabel: "GitHub link on Labs",
-      linkPassMessage: "Found a wd-github link on Labs.",
-      linkFailMessage: "Add a public repo link with id wd-github on Labs.",
+      linkPassMessage: "Found a link to your GitHub repository on Labs.",
+      linkFailMessage: "Add a link to your public GitHub repository (https://github.com/you/webdev-client) on Labs.",
+      linkStructurePassed: a2GithubLinkPassed,
     },
     name: {
       criterionId: "a2-delivery-name-github",

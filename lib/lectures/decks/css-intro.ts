@@ -16,7 +16,7 @@ export const CSS_INTRO_SLIDES: LectureSlide[] = [
     kind: "content",
     bullets: [
       "**CSS** = Cascading Style Sheets — a declarative language for color, space, borders, and layout",
-      "HTML says what a node *is*. CSS says how it *looks*",
+      "HTML says what a node **is**. CSS says how it **looks**",
       "Chapter 1 Kambaz screens were unstyled on purpose. Lab 2 teaches the rules before Tailwind utilities",
       "The files are `app/labs/lab2/page.tsx` and `index.css`",
     ],
@@ -132,6 +132,7 @@ export const CSS_INTRO_SLIDES: LectureSlide[] = [
     bullets: [
       "Blue background, white text — no CSS file yet",
       "The paragraph is the warning. Do not leave styles scattered on tags",
+      "Your own Lab 2 most likely renders in a serif font such as Times. That's expected: `globals.css` is commented out, and Lab 2 never sets a font",
     ],
     embed: "css-style-attr",
   },
@@ -168,7 +169,7 @@ export const CSS_INTRO_SLIDES: LectureSlide[] = [
     bullets: [
       "Create `app/labs/lab2/index.css` next to `page.tsx`",
       "`import \"./index.css\"` — same as importing a component",
-      "A tag selector restyles **every** `p` in the file. Powerful, blunt",
+      "A tag selector restyles **every** `p` on the page. Powerful, blunt",
       "JSX still uses `className`, not `class`",
     ],
     code: `import "./index.css";
@@ -206,7 +207,7 @@ export default function Lab2() {
     kind: "content",
     bullets: [
       "Write `p#wd-id-selector-1` — tag + `#` + the unique `id`",
-      "Comment out the blanket `p` rule so it stops winning",
+      "Comment out the blanket `p` rule — it was only a temporary sample",
       "Each paragraph keeps its own colors. Other `p` tags stay untouched",
     ],
     code: `/* p {
@@ -360,6 +361,16 @@ p#wd-id-selector-2 {
       "The span is yellow-on-blue — a direct child chain, not just a descendant",
     ],
     embed: "css-structure-selectors",
+  },
+  {
+    id: "scope-lab2",
+    title: "Keep practice rules inside Lab 2",
+    kind: "content",
+    bullets: [
+      "Next.js treats every CSS file you import as global",
+      "Once Lab 2 loads, its rules stay in the browser after you click a `next/link` link, so a bare `h3` rule would also restyle Lab 1 and Kambaz until you reload",
+      "Write your own practice rules after `#wd-lab2`, the id of the Lab 2 wrapper `div`, as in `#wd-lab2 h3`: an id selector, a space, then the tag",
+    ],
   },
   {
     id: "cascade",
