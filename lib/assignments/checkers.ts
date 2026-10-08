@@ -1,8 +1,9 @@
 import { A1_CHECKER } from "./a1-checker";
 import { A2_CHECKER } from "./a2-checker";
+import { A3_CHECKER } from "./a3-checker";
 import type { AssignmentChecker } from "./checker-types";
 
-const CHECKERS: readonly AssignmentChecker[] = [A1_CHECKER, A2_CHECKER];
+const CHECKERS: readonly AssignmentChecker[] = [A1_CHECKER, A2_CHECKER, A3_CHECKER];
 
 export function getChecker(assignmentId: string): AssignmentChecker | undefined {
   return CHECKERS.find((checker) => checker.assignmentId === assignmentId);

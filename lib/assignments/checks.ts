@@ -1,5 +1,6 @@
 import { A1_CHECKER } from "./a1-checker";
 import { A2_CHECKER } from "./a2-checker";
+import { A3_CHECKER } from "./a3-checker";
 import { getChecker } from "./checkers";
 import type {
   AssignmentCheckProbes,
@@ -39,6 +40,15 @@ export async function runA2Checks(input: {
   probes: AssignmentCheckProbes;
 }): Promise<AssignmentCheckResult[]> {
   return runChecker(A2_CHECKER, input);
+}
+
+export async function runA3Checks(input: {
+  githubUrl?: string;
+  vercelUrl: string;
+  nameQuery?: NameQuery;
+  probes: AssignmentCheckProbes;
+}): Promise<AssignmentCheckResult[]> {
+  return runChecker(A3_CHECKER, input);
 }
 
 export async function runConfiguredChecks(
