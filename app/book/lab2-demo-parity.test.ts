@@ -398,9 +398,9 @@ function walk(dir: string, acc: string[] = []): string[] {
   return acc;
 }
 
-/** Pair each `codeFile` with the `code` template that belongs to that slide. */
-function slideCodeFiles(src: string): Array<{ code: string; file: string }> {
-  const out: Array<{ code: string; file: string }> = [];
+/** Pair each `codeFile` with the slide id and `code` template it belongs to. */
+function slideCodeFiles(src: string): Array<{ id: string; code: string; file: string }> {
+  const out: Array<{ id: string; code: string; file: string }> = [];
   const fileRe = /\n[ \t]*codeFile:\s*"([^"]+)"/g;
   let match: RegExpExecArray | null;
   while ((match = fileRe.exec(src))) {
@@ -409,10 +409,23 @@ function slideCodeFiles(src: string): Array<{ code: string; file: string }> {
     const close = head.lastIndexOf("`", langAt);
     const open = head.lastIndexOf("code: `", close);
     if (langAt < 0 || close < 0 || open < 0) continue;
-    out.push({ code: head.slice(open + "code: `".length, close), file: match[1] });
+    const beforeCode = head.slice(0, open);
+    const ids = [...beforeCode.matchAll(/\bid:\s*"([^"]+)"/g)];
+    out.push({
+      id: ids.at(-1)?.[1] ?? "",
+      code: head.slice(open + "code: `".length, close),
+      file: match[1],
+    });
   }
   return out;
 }
+
+/** Only these card fragments may be a partial listing. Key is `deckSlug:slideId`. */
+const PARTIAL_EXCERPT_SLIDES = new Set([
+  "tailwind-responsive:card-frame",
+  "tailwind-responsive:card-image",
+  "tailwind-responsive:card-text",
+]);
 
 describe("Lab 2 lecture listings of a whole component", () => {
   it("matches the lab file, or the same book step, when the slide function name is that file", () => {
@@ -423,27 +436,31 @@ describe("Lab 2 lecture listings of a whole component", () => {
       bookStepsFor.set(step.file, codes);
     }
     const mismatches: string[] = [];
+    const seenExcerpts = new Set<string>();
     for (const deck of walk("lib/lectures/decks")) {
+      const slug = deck.split("/").pop()?.replace(/\.ts$/, "") ?? "";
       for (const listing of slideCodeFiles(read(deck))) {
-        const { code, file } = listing;
+        const { id, code, file } = listing;
         if (!file.startsWith("app/labs/lab2/") || !file.endsWith(".tsx")) continue;
+        const trimmed = code.trim();
+        const onDisk = read(file).trim();
+        const key = `${slug}:${id}`;
+        if (PARTIAL_EXCERPT_SLIDES.has(key)) {
+          seenExcerpts.add(key);
+          if (!trimmed || !onDisk.includes(trimmed)) mismatches.push(`${key} is not an excerpt`);
+          continue;
+        }
         const fn = code.match(/export default function (\w+)/)?.[1];
         const base = file.split("/").pop()?.replace(/\.tsx$/, "");
         if (!fn || fn !== base) continue;
-        const trimmed = code.trim();
-        const onDisk = read(file).trim();
         if (trimmed === onDisk) continue;
         // A slide may copy one book step that starts with `export default function`
         // instead of the finished lab file.
         if (bookStepsFor.get(file)?.has(trimmed)) continue;
-        // A deck may split one listing across slides. Each fragment stays a
-        // contiguous excerpt of the lab file, or of the same book step.
-        if (onDisk.includes(trimmed)) continue;
-        const bookSteps = bookStepsFor.get(file);
-        if (bookSteps && [...bookSteps].some((step) => step.includes(trimmed))) continue;
         mismatches.push(`${deck} ${file}`);
       }
     }
+    assert.deepEqual([...seenExcerpts].sort(), [...PARTIAL_EXCERPT_SLIDES].sort());
     assert.deepEqual(mismatches, []);
   });
 });

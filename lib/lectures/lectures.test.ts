@@ -2413,7 +2413,8 @@ describe("lecture decks", () => {
     assert.match(responsive, /md:shrink-0/);
     assert.match(responsive, /flex-direction/);
     assert.match(responsive, /CSS Grid/);
-    assert.match(responsive, /usually 16px, so 48rem is 768px/);
+    assert.match(responsive, /relative to the root font size, usually 16px/);
+    assert.match(responsive, /48rem \(768px\)/);
     assert.match(responsive, /As in §2\.1\.20/);
     assert.match(responsive, /viewport width at which styles change/);
     assert.doesNotMatch(responsive, /for example through a media query/);
@@ -2423,10 +2424,22 @@ describe("lecture decks", () => {
     assert.equal(responsiveIds[responsiveIds.indexOf("prefixes") + 1], "prefix-ruler");
     assert.ok(responsiveIds.indexOf("prefix-ruler") < responsiveIds.indexOf("breakpoint-tsx"));
     assert.equal(findSlide("tailwind-responsive", "prefix-ruler").diagram, "tailwind-breakpoints");
-    assert.doesNotMatch(
-      findSlide("tailwind-responsive", "intro").bullets?.join("\n") ?? "",
-      /md:/,
+    const introBullets = findSlide("tailwind-responsive", "intro").bullets?.join("\n") ?? "";
+    assert.match(introBullets, /prefix goes before a class name with a colon/);
+    assert.match(introBullets, /md:bg-green-500/);
+    assert.match(introBullets, /green background at 768px and up/);
+    assert.match(introBullets, /\*{0,2}[Mm]in-width\*{0,2}: applies when the viewport is at least that wide/);
+    const prefixSlide = findSlide("tailwind-responsive", "prefixes");
+    assert.ok(isBlockSlide(prefixSlide));
+    const prefixBullets = authoredSlideBullets(prefixSlide).join("\n");
+    assert.match(prefixBullets, /mobile-first/i);
+    assert.match(prefixBullets, /relative to the root font size, usually 16px/);
+    assert.doesNotMatch(prefixBullets, /before a class name with a colon/);
+    assert.equal(
+      prefixSlide.blocks.find((block) => block.type === "bullets" && block.columns === 2)?.items.length,
+      5,
     );
+    assert.ok(responsiveIds.indexOf("intro") < responsiveIds.indexOf("breakpoint-tsx"));
     assert.doesNotMatch(
       findSlide("tailwind-responsive", "widths").bullets?.join("\n") ?? "",
       /40rem \(640px\)/,

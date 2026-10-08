@@ -65,7 +65,9 @@ function BulletView({
         </p>
       ) : null}
       {block.items.length > 0 ? (
-        <ul className={`lecture-slide-bullets ${color}`}>
+        <ul
+          className={`lecture-slide-bullets${block.columns === 2 ? " lecture-slide-bullets-cols" : ""} ${color}`}
+        >
           {block.items.map((item, index) => (
             <li key={`${block.id}-${index}`}>
               <SlideText text={item} density={density} />
@@ -300,7 +302,7 @@ function BlockEditor({
             }
           />
           <ul
-            className={`lecture-slide-bullets ${
+            className={`lecture-slide-bullets${block.columns === 2 ? " lecture-slide-bullets-cols" : ""} ${
               kind === "title" ? "text-neutral-100" : "text-neutral-900"
             }`}
           >
