@@ -2588,6 +2588,11 @@ describe("lecture decks", () => {
     assert.match(passing, /lifeIs\("Life is Good!"\)/);
     assert.match(passing, /theFunction/);
     assert.match(passing, /Hello from Lab 4/);
+    const lab4Embeds = readFileSync(
+      join(process.cwd(), "app/slides/_components/embeds/Lab4Embeds.tsx"),
+      "utf8",
+    );
+    assert.match(lab4Embeds, /label="PassingFunctionsDemo\.tsx"/);
 
     const counter = slideText("usestate-counter");
     assert.match(counter, /useState\(7\)/);
@@ -2623,6 +2628,7 @@ describe("lecture decks", () => {
     assert.match(zustand, /from "zustand"/);
     assert.match(zustand, /useCounterStore/);
     assert.match(zustand, /wd-zustand-up-click/);
+    assert.match(zustand, /joke about bears/);
     assert.doesNotMatch(zustand, /Lecture \d+/);
 
     const todos = slideText("zustand-todos");

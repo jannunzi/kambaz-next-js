@@ -65,7 +65,7 @@ export function PassingDataEmbed() {
 
 export function PassingFunctionsEmbed() {
   return (
-    <Lab4Demo label="PassingFunctions.tsx">
+    <Lab4Demo label="PassingFunctionsDemo.tsx">
       <PassingFunctionsDemo />
     </Lab4Demo>
   );

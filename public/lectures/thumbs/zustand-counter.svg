@@ -6,8 +6,8 @@
   <text x="72" y="64" fill="#CBD5E1" font-family="ui-sans-serif, system-ui, sans-serif" font-size="28" font-weight="700" letter-spacing="4">WEB DEV · CHAPTER 4</text>
   
   <g transform="translate(90 80)">
-    <rect width="360" height="360" rx="48" fill="#111827"/>
-    <text x="180" y="250" text-anchor="middle" fill="#F8FAFC" font-family="ui-sans-serif, system-ui, sans-serif" font-size="96" font-weight="800">Z</text>
+    <rect width="360" height="360" rx="48" fill="#F59E0B" stroke="#FDE68A" stroke-width="10"/>
+    <text x="180" y="250" text-anchor="middle" fill="#111827" font-family="ui-sans-serif, system-ui, sans-serif" font-size="96" font-weight="800">Z</text>
   </g>
   <text x="72" y="640" fill="#F8FAFC" font-family="ui-sans-serif, system-ui, sans-serif" font-size="56" font-weight="800">Zustand Counter</text>
 </svg>

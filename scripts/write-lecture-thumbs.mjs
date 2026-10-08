@@ -140,8 +140,8 @@ const STATE = `
 
 const STORE = `
   <g transform="translate(90 80)">
-    <rect width="360" height="360" rx="48" fill="#111827"/>
-    <text x="180" y="250" text-anchor="middle" fill="#F8FAFC" font-family="ui-sans-serif, system-ui, sans-serif" font-size="96" font-weight="800">Z</text>
+    <rect width="360" height="360" rx="48" fill="#F59E0B" stroke="#FDE68A" stroke-width="10"/>
+    <text x="180" y="250" text-anchor="middle" fill="#111827" font-family="ui-sans-serif, system-ui, sans-serif" font-size="96" font-weight="800">Z</text>
   </g>`;
 
 const SPA = `

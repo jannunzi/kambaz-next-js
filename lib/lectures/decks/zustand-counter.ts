@@ -15,7 +15,8 @@ export const ZUSTAND_COUNTER_SLIDES: LectureSlide[] = [
     title: "Bear-bones shared state",
     kind: "content",
     bullets: [
-      "Zustand — German for state — is the store Kambaz will keep",
+      "Zustand’s own joke about bears — not a misspelling of bare",
+      "German for state. This is the store Kambaz will keep",
       "`create` returns a hook. No Provider around the tree",
       "Select each field so a todo title does not re-render a counter",
       "Install once from §4.2: `npm install zustand`",
