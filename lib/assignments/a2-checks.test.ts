@@ -408,7 +408,7 @@ describe("runA2Checks", () => {
     assert.equal(graded.by.get("a2-lab-page")?.passed, false);
   });
 
-  it("asks to retry when GitHub returns 403 or 429", async () => {
+  it("asks to retry, without a deduction, when GitHub returns 403 or 429", async () => {
     for (const status of [403, 429]) {
       const graded = await grade({
         githubUrl: TREE,
@@ -420,6 +420,9 @@ describe("runA2Checks", () => {
         "GitHub didn't respond, try again",
       );
       assert.equal(graded.by.get("a2-delivery-name-github")?.passed, true);
+      // GitHub being busy never costs the branch points.
+      assert.equal(graded.by.get("a2-delivery-branch")?.passed, true);
+      assert.equal(graded.by.get("a2-delivery-branch")?.needsReview, true);
     }
   });
 

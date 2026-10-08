@@ -16,7 +16,13 @@ import {
   type CriterionGradeRow,
   type GradeAudience,
 } from "@/lib/assignments/grade-rows";
-import { formatPointsPercent } from "@/lib/assignments/grade";
+import { gradingInProgressText, type FinalGrade } from "@/lib/assignments/final-grade";
+import {
+  checkRunStatus,
+  needsRecheckReason,
+  needsReviewCriterionIds,
+  NEEDS_RECHECK_SUMMARY,
+} from "@/lib/assignments/check-status";
 import { ASSIGNMENT_STUDENT_COPY } from "@/lib/assignments/student-copy";
 import type { AssignmentHubItem, RubricCriterion } from "@/lib/assignments/types";
 import { criterionVerifyUrl } from "@/lib/assignments/verify-urls";
@@ -37,6 +43,14 @@ function DeployTitle({
   );
 }
 
+/**
+ * Item and group totals show points only. The only percentage on this page
+ * is the final grade from finalGrade(), so it always matches Canvas.
+ */
+function pointsLabel(earned: number, total: number): string {
+  return `${earned} / ${total} pts`;
+}
+
 function isManualCriterion(assignmentId: string, criterionId: string): boolean {
   return criterionCoverage(assignmentId, criterionId) !== "auto";
 }
@@ -44,9 +58,13 @@ function isManualCriterion(assignmentId: string, criterionId: string): boolean {
 function Legend({
   audience,
   showChanged,
+  showReview,
+  showUnset,
 }: {
   audience: GradeAudience;
   showChanged: boolean;
+  showReview: boolean;
+  showUnset: boolean;
 }) {
   return (
     <ul className="mb-0 mt-3 flex list-none flex-wrap gap-x-4 gap-y-2 p-0 font-sans text-sm text-neutral-900">
@@ -58,10 +76,22 @@ function Legend({
         <span className="inline-block size-3 border border-red-700 bg-red-50" aria-hidden />
         <span>✗ {GRADE_ROW_COPY.noCredit}</span>
       </li>
+      {showReview ? (
+        <li className="inline-flex items-center gap-2">
+          <span className="inline-block size-3 border border-dashed border-amber-600 bg-amber-50" aria-hidden />
+          <span>{GRADE_ROW_COPY.needsReviewLegend}</span>
+        </li>
+      ) : null}
       {audience === "staff" ? (
         <li className="inline-flex items-center gap-2">
           <span className="inline-block size-3 border border-amber-700 bg-amber-100" aria-hidden />
           <span>{GRADE_ROW_COPY.override}</span>
+        </li>
+      ) : null}
+      {showUnset ? (
+        <li className="inline-flex items-center gap-2">
+          <span className="inline-block size-3 border border-dashed border-amber-600 bg-amber-50" aria-hidden />
+          <span>{GRADE_ROW_COPY.unsetLegend}</span>
         </li>
       ) : null}
       {showChanged ? (
@@ -84,6 +114,7 @@ function CriterionRow({
   scored,
   changed,
   manual,
+  unset,
   result,
   vercelUrl,
   onOverride,
@@ -95,6 +126,8 @@ function CriterionRow({
   scored: boolean;
   changed: boolean;
   manual: boolean;
+  /** Staff view: needs an explicit staff decision that hasn't been made. */
+  unset: boolean;
   result?: AssignmentCheckResult;
   vercelUrl?: string;
   onOverride?: (criterionId: string, checked: boolean) => void;
@@ -107,6 +140,8 @@ function CriterionRow({
     audience,
     manual,
     skipped: Boolean(result?.skipped),
+    needsReview: Boolean(result?.needsReview),
+    unset: audience === "staff" && unset,
   });
   const checkMessage = visibleCheckMessage({
     message: result?.message,
@@ -118,13 +153,16 @@ function CriterionRow({
   const pointsId = `points-${criterion.id}`;
   const verifyHref = criterionVerifyUrl(vercelUrl, criterion.id);
   const staff = audience === "staff";
-  const showAuto = scored && (staff || !manual);
+  const showAuto = scored && (staff || !manual) && !result?.needsRecheck;
+  const staffUnset = staff && unset;
   const scoreLabel =
-    !scored || (audience === "student" && manual)
-      ? `${criterion.points} pts`
-      : staff
-        ? formatPointsPercent(row.points, row.maxPoints)
-        : formatPointsPercent(row.autoPassed ? row.maxPoints : 0, row.maxPoints);
+    staffUnset && manual
+      ? `${criterion.points} pts · not graded yet`
+      : !scored || (audience === "student" && manual) || result?.needsRecheck
+        ? `${criterion.points} pts`
+        : staff
+          ? pointsLabel(row.points, row.maxPoints)
+          : pointsLabel(row.autoPassed ? row.maxPoints : 0, row.maxPoints);
   return (
     <div
       className={`rounded-md border px-3 py-3 ${presentation.className}`}
@@ -169,7 +207,8 @@ function CriterionRow({
               step={1}
               inputMode="numeric"
               className="w-16 rounded border border-neutral-500 bg-white px-2 py-1 text-neutral-950"
-              value={row.points}
+              value={staffUnset && manual ? "" : row.points}
+              placeholder={staffUnset ? "–" : undefined}
               onChange={(event) => {
                 const next = event.target.value === "" ? 0 : Number(event.target.value);
                 onPoints?.(criterion.id, next);
@@ -177,6 +216,24 @@ function CriterionRow({
             />
             <span>/ {row.maxPoints}</span>
           </label>
+        ) : null}
+        {staffUnset && scored && onPoints ? (
+          <span className="inline-flex items-center gap-2 font-sans text-sm">
+            <button
+              type="button"
+              className="rounded border border-emerald-700 bg-white px-2 py-0.5 font-semibold text-emerald-900"
+              onClick={() => onPoints(criterion.id, row.maxPoints)}
+            >
+              {GRADE_ROW_COPY.fullCredit} ({row.maxPoints})
+            </button>
+            <button
+              type="button"
+              className="rounded border border-red-700 bg-white px-2 py-0.5 font-semibold text-red-900"
+              onClick={() => onPoints(criterion.id, 0)}
+            >
+              {GRADE_ROW_COPY.noCredit} (0)
+            </button>
+          </span>
         ) : null}
         {presentation.label ? (
           <span className="font-sans text-sm font-semibold">
@@ -240,6 +297,8 @@ export default function AssignmentChecklist({
   results = [],
   audience,
   savedPoints = null,
+  final = null,
+  draftFinal = null,
   vercelUrl,
   onOverride,
   onPoints,
@@ -252,6 +311,13 @@ export default function AssignmentChecklist({
   results?: AssignmentCheckResult[];
   audience: GradeAudience;
   savedPoints?: { earnedPoints: number; totalPoints: number; savedAt?: string; gradedByEmail?: string } | null;
+  /**
+   * The saved grade from finalGrade (stored data + roster flags), computed
+   * once in A1WorkArea; the only percentage on this page.
+   */
+  final?: FinalGrade | null;
+  /** Staff: what a Save of the current draft would record. */
+  draftFinal?: FinalGrade | null;
   vercelUrl?: string;
   onOverride?: (criterionId: string, checked: boolean) => void;
   onPoints?: (criterionId: string, points: number) => void;
@@ -281,6 +347,23 @@ export default function AssignmentChecklist({
   const staffPoints = gradePoints(rows);
   const studentPoints = studentAutoPoints(rows, manualIds);
   const headerPoints = audience === "staff" ? staffPoints : studentPoints;
+  const runStatus = checkRunStatus(results);
+  const recheck = scored && runStatus === "needs_recheck";
+  const recheckReason = recheck ? needsRecheckReason(results) : null;
+  const reviewIds = recheck ? [] : needsReviewCriterionIds(results);
+  const reviewPoints = criteria
+    .filter((criterion) => reviewIds.includes(criterion.id))
+    .reduce((sum, criterion) => sum + criterion.points, 0);
+
+  // Staff: rows that still need an explicit decision in what's on screen
+  // (the draft when there is one, else the saved grade).
+  const shownFinal = audience === "staff" ? (draftFinal ?? (savedPoints ? final : null)) : null;
+  const unsetIds = new Set(
+    shownFinal ? [...shownFinal.ungradedManual, ...shownFinal.openItems] : [],
+  );
+  const unsetLabels = criteria
+    .filter((criterion) => unsetIds.has(criterion.id))
+    .map((criterion) => criterion.label);
 
   if (!rubric) return null;
 
@@ -305,30 +388,83 @@ export default function AssignmentChecklist({
       ) : null}
       <div className="mb-4 rounded-lg border border-neutral-300 bg-white px-4 py-3 font-sans text-neutral-950 shadow-sm">
         <p className="m-0 text-base font-semibold tracking-tight">
-          {scored
+          {recheck
+            ? NEEDS_RECHECK_SUMMARY
+            : scored
             ? audience === "staff"
-              ? formatPointsPercent(headerPoints.earnedPoints, headerPoints.totalPoints)
-              : `Auto checks ${formatPointsPercent(headerPoints.earnedPoints, headerPoints.totalPoints)}`
+              ? `This grade: ${headerPoints.earnedPoints} / ${headerPoints.totalPoints} points`
+              : final?.ready
+                ? `Grade ${final.canvasScore}`
+                : live || !final
+                  ? `Auto checks ${headerPoints.earnedPoints} / ${headerPoints.totalPoints} points · grading in progress`
+                  : gradingInProgressText(final)
             : supportsUrlSubmission(assignment.id)
               ? "No checks yet. Run to score this page. Checkmarks stay on this page only."
               : "Checked by staff at grading. This page does not save checkmarks or award points."}
         </p>
-        {savedPoints ? (
+        {recheckReason ? (
+          <p className="mb-0 mt-1 text-sm" data-check-status="needs-recheck">
+            {recheckReason}
+          </p>
+        ) : null}
+        {reviewIds.length > 0 ? (
+          <p
+            className="mb-0 mt-1 rounded border border-dashed border-amber-600 bg-amber-50 px-2 py-1 text-sm text-amber-950"
+            data-check-status="needs-review"
+          >
+            {audience === "staff"
+              ? `${reviewIds.length} item${reviewIds.length === 1 ? "" : "s"} (${reviewPoints} pts) need TA review. They keep their points until you look at them on the deploy.`
+              : `${reviewIds.length} item${reviewIds.length === 1 ? "" : "s"} will be checked by staff. They are not marked wrong and no points are taken off.`}
+          </p>
+        ) : null}
+        {final && audience === "staff" && supportsUrlSubmission(assignment.id) ? (
+          <p className="mb-0 mt-1 text-sm" data-canvas-ready={final.ready ? "yes" : "no"}>
+            {final.ready
+              ? `Canvas: ready · ${final.canvasScore}`
+              : `Canvas: not ready (${final.reasons.join("; ") || "not checked yet"})`}
+          </p>
+        ) : null}
+        {draftFinal && audience === "staff" && !recheck ? (
+          <p className="mb-0 mt-1 text-sm" data-draft-ready={draftFinal.ready ? "yes" : "no"}>
+            {draftFinal.ready
+              ? `If you save now: ready for Canvas · ${draftFinal.canvasScore}`
+              : `If you save now: not ready for Canvas (${draftFinal.reasons.join("; ")}). Saving keeps what you set.`}
+          </p>
+        ) : null}
+        {audience === "staff" && unsetLabels.length > 0 ? (
+          <p
+            className="mb-0 mt-1 rounded border border-dashed border-amber-600 bg-amber-50 px-2 py-1 text-sm text-amber-950"
+            data-unset-count={unsetLabels.length}
+          >
+            Still to set ({unsetLabels.length}): {unsetLabels.join(", ")}. Use Full credit, No credit, Override or Points on each.
+          </p>
+        ) : null}
+        {final && audience === "student" && scored && !recheck && !final.ready ? (
+          <p className="mb-0 mt-1 text-sm">{ASSIGNMENT_STUDENT_COPY.gradingInProgress}</p>
+        ) : null}
+        {savedPoints && audience === "staff" ? (
           <p className="mb-0 mt-1 text-sm">
-            Staff grade {formatPointsPercent(savedPoints.earnedPoints, savedPoints.totalPoints)}
+            Staff grade {savedPoints.earnedPoints} / {savedPoints.totalPoints} points
             {savedPoints.gradedByEmail ? ` · saved by ${savedPoints.gradedByEmail}` : ""}
             {savedPoints.savedAt
               ? ` · ${new Date(savedPoints.savedAt).toLocaleString()}`
               : ""}
           </p>
         ) : null}
-        {live && savedPoints && audience === "staff" ? (
+        {live && savedPoints && audience === "staff" && !recheck ? (
           <p className="mb-0 mt-1 text-sm font-semibold">
-            Saved {formatPointsPercent(savedPoints.earnedPoints, savedPoints.totalPoints)} · This run{" "}
-            {formatPointsPercent(staffPoints.earnedPoints, staffPoints.totalPoints)}
+            Saved {savedPoints.earnedPoints} / {savedPoints.totalPoints} · This run{" "}
+            {staffPoints.earnedPoints} / {staffPoints.totalPoints} points
           </p>
         ) : null}
-        {scored ? <Legend audience={audience} showChanged={Boolean(savedPoints)} /> : null}
+        {scored && !recheck ? (
+          <Legend
+            audience={audience}
+            showChanged={Boolean(savedPoints)}
+            showReview={reviewIds.length > 0}
+            showUnset={unsetIds.size > 0}
+          />
+        ) : null}
         <p className="mb-0 mt-2 text-sm text-neutral-800">
           {audience === "staff"
             ? "Auto is the checker result and cannot be edited. Override and points are saved only when you click Save. Run does not change a saved grade."
@@ -350,9 +486,9 @@ export default function AssignmentChecklist({
             <h2 className="mt-0 mb-1 font-sans text-xl font-semibold tracking-tight">
               {group.title}
             </h2>
-            {scored ? (
+            {scored && !recheck ? (
               <p className="mt-0 mb-3 font-sans text-sm text-neutral-700">
-                {formatPointsPercent(groupPoints.earnedPoints, groupPoints.totalPoints)}
+                {pointsLabel(groupPoints.earnedPoints, groupPoints.totalPoints)}
               </p>
             ) : null}
             {group.intro ? <p className="mt-0 text-neutral-800">{group.intro}</p> : null}
@@ -362,6 +498,7 @@ export default function AssignmentChecklist({
               scored={scored}
               changed={changed}
               manualIds={manualIds}
+              unsetIds={unsetIds}
               autoByCriterion={autoByCriterion}
               vercelUrl={vercelUrl}
               rowFor={rowFor}
@@ -381,6 +518,7 @@ function GroupList({
   scored,
   changed,
   manualIds,
+  unsetIds,
   autoByCriterion,
   vercelUrl,
   rowFor,
@@ -392,6 +530,7 @@ function GroupList({
   scored: boolean;
   changed: Set<string>;
   manualIds: Set<string>;
+  unsetIds: Set<string>;
   autoByCriterion: Map<string, AssignmentCheckResult>;
   vercelUrl?: string;
   rowFor: (criterion: RubricCriterion) => CriterionGradeRow;
@@ -410,6 +549,7 @@ function GroupList({
         scored={scored}
         changed={changed.has(criterion.id)}
         manual={manualIds.has(criterion.id)}
+        unset={unsetIds.has(criterion.id)}
         result={autoByCriterion.get(criterion.id)}
         vercelUrl={vercelUrl}
         onOverride={onOverride}

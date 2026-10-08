@@ -118,7 +118,7 @@ export const A1_RUBRIC: AssignmentRubric = {
           id: "a1-kambaz-assignments",
           label: "Assignments screen",
           description:
-            "Assignments list matching the book demo and required ids (On your own).",
+            "The Assignments screen lists at least one assignment whose title links to its editor (/courses/[cid]/assignments/[aid]). Three are recommended, like A1, A2, A3 (On your own).",
           points: 5,
           bookHref: "/book/ch1#sec-1-4-7",
           bookLabel: "§1.4.7",

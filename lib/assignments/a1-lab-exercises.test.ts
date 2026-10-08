@@ -110,10 +110,8 @@ describe("A1 Lab catalog / §1.3.12 parity", () => {
     assert.match(ai.description, /After the practice h1–h6 headings you added/);
     assert.doesNotMatch(ai.description, /sample h1/);
     assert.match(ai.description, /Keep the book sample text/);
-    assert.equal(
-      core.auto?.failMessage,
-      "Lab 1 should include wd-h-tag and the h1–h6 headings you add as practice.",
-    );
+    assert.match(core.auto?.failMessage ?? "", /h1–h6 headings you add as practice/);
+    assert.doesNotMatch(core.auto?.failMessage ?? "", /wd-/);
   });
 
   it("walks 1.3.1–1.3.11 as create, On your own, With AI per section", () => {

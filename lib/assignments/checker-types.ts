@@ -1,4 +1,6 @@
 import type { A1RubricAutoSpec } from "./a1-rubric-types";
+import type { StructureFallback } from "./a1-structure";
+import type { IdElement } from "./html";
 import type { AssignmentId, RubricGroupId } from "./types";
 
 export type CheckerManualRow = {
@@ -17,6 +19,8 @@ export type CheckerLabsNav = {
   anyIds?: readonly string[];
   /** Anchor href pathnames that must all be present. */
   allHrefs?: readonly string[];
+  /** Passes on page structure when the ids are missing. */
+  structurePassed?: (labsHtml: string, siteHost?: string) => boolean;
   passMessage: string;
   failMessage: string;
 };
@@ -26,6 +30,30 @@ export type CheckerLabsNav = {
  */
 export type AssignmentChecker = {
   assignmentId: AssignmentId;
+  /**
+   * Version of the grading rules. Bump it whenever a check changes what it
+   * passes or fails, so stored results and exports show which rules ran.
+   */
+  rulesVersion: string;
+  /**
+   * When true, a missing wd-* id never fails a row by itself: the row falls
+   * back to `structureFallbacks` on the page that should hold it, and a row
+   * with no fallback becomes "Needs TA review" (points kept) when its
+   * `reviewGates` entry allows it.
+   */
+  idsOptional?: boolean;
+  structureFallbacks?: Readonly<Record<string, StructureFallback>>;
+  /**
+   * Ids-optional checkers: an element found by its wd-* id counts only when
+   * this returns true (it holds real content, not an empty div).
+   */
+  idHasContent?: (id: string, element: IdElement) => boolean;
+  /**
+   * A "Needs TA review" candidate keeps its points only when at least
+   * `minPassed` of `requires` (criterion ids) passed; otherwise it fails.
+   * Missing entry: review is always allowed.
+   */
+  reviewGates?: Readonly<Record<string, { requires: readonly string[]; minPassed: number }>>;
   seedPaths: readonly string[];
   followupCap: number;
   /**
@@ -55,6 +83,8 @@ export type AssignmentChecker = {
       linkLabel: string;
       linkPassMessage: string;
       linkFailMessage: string;
+      /** Passes on page structure when the wd-github id is missing. */
+      linkStructurePassed?: (labsHtml: string) => boolean;
     };
     name?: {
       criterionId: string;

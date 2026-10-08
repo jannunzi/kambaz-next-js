@@ -39,6 +39,8 @@ export type AssignmentSubmissionDoc = AssignmentSubmissionIdentity & {
   updatedAt: Date;
   lastCheckedAt?: Date;
   checkResults?: AssignmentCheckResult[];
+  /** Checker rules version (and deploy commit) that produced checkResults. */
+  checkerVersion?: string;
   staffGrade?: AssignmentStaffGrade;
 };
 
@@ -48,6 +50,7 @@ export type AssignmentSubmissionView = AssignmentSubmissionIdentity & {
   updatedAt: string;
   lastCheckedAt?: string;
   checkResults?: AssignmentCheckResult[];
+  checkerVersion?: string;
   staffGrade?: AssignmentStaffGrade;
 };
 
@@ -57,6 +60,17 @@ export type SubmissionStore = {
     assignmentId: AssignmentId,
   ): Promise<AssignmentSubmissionDoc | null>;
   upsert(doc: AssignmentSubmissionDoc): Promise<void>;
+  /**
+   * Write only the check-run fields of an existing submission ($set on
+   * checkResults, lastCheckedAt, checkerVersion). Never touches the staff
+   * grade, comments, URLs, or submission time, so a staff Save landing at
+   * the same moment is not overwritten. Returns false when no doc matched.
+   */
+  setCheckRun?(
+    clerkUserId: string,
+    assignmentId: AssignmentId,
+    fields: Pick<AssignmentSubmissionDoc, "checkResults" | "lastCheckedAt" | "checkerVersion">,
+  ): Promise<boolean>;
   listByAssignment?(
     assignmentId: AssignmentId,
   ): Promise<AssignmentSubmissionDoc[]>;
@@ -85,6 +99,7 @@ export function toSubmissionView(
     updatedAt: toIso(doc.updatedAt),
     lastCheckedAt: doc.lastCheckedAt ? toIso(doc.lastCheckedAt) : undefined,
     checkResults: doc.checkResults,
+    checkerVersion: doc.checkerVersion,
     email: doc.email,
     rosterEmail: doc.rosterEmail,
     name: doc.name,
@@ -119,8 +134,14 @@ export async function upsertAssignmentSubmission(
     vercelUrl: string;
     checkResults?: AssignmentCheckResult[];
     checked?: boolean;
+    checkerVersion?: string;
     identity?: AssignmentSubmissionIdentity;
     staffGrade?: AssignmentStaffGrade | null;
+    /**
+     * Keep `updatedAt` (the submission time). Re-checking a submission is
+     * not a new submission.
+     */
+    preserveUpdatedAt?: boolean;
   },
   now: Date = new Date(),
 ): Promise<AssignmentSubmissionDoc> {
@@ -136,9 +157,12 @@ export async function upsertAssignmentSubmission(
     githubUrl: input.githubUrl,
     vercelUrl: input.vercelUrl,
     createdAt: existing?.createdAt ?? now,
-    updatedAt: now,
+    updatedAt: input.preserveUpdatedAt && existing ? existing.updatedAt : now,
     lastCheckedAt: input.checked ? now : existing?.lastCheckedAt,
     checkResults: input.checkResults ?? existing?.checkResults,
+    checkerVersion: input.checkResults
+      ? (input.checkerVersion ?? existing?.checkerVersion)
+      : existing?.checkerVersion,
     email: identity.email ?? existing?.email,
     rosterEmail: identity.rosterEmail ?? existing?.rosterEmail,
     name: identity.name ?? existing?.name,
@@ -148,4 +172,46 @@ export async function upsertAssignmentSubmission(
   };
   await store.upsert(doc);
   return doc;
+}
+
+/**
+ * Store a fresh check run on an existing submission without touching the
+ * submitted URLs, the submission time, or any staff grade. Stores that
+ * support it write only the check fields ($set), so a staff Save in flight
+ * cannot be overwritten by the re-run.
+ */
+export async function recordAssignmentCheckRun(
+  store: SubmissionStore,
+  input: {
+    clerkUserId: string;
+    assignmentId: AssignmentId;
+    checkResults: AssignmentCheckResult[];
+    checkerVersion: string;
+  },
+  now: Date = new Date(),
+): Promise<AssignmentSubmissionDoc | null> {
+  if (store.setCheckRun) {
+    const matched = await store.setCheckRun(input.clerkUserId, input.assignmentId, {
+      checkResults: input.checkResults,
+      lastCheckedAt: now,
+      checkerVersion: input.checkerVersion,
+    });
+    return matched ? store.find(input.clerkUserId, input.assignmentId) : null;
+  }
+  const existing = await store.find(input.clerkUserId, input.assignmentId);
+  if (!existing) return null;
+  return upsertAssignmentSubmission(
+    store,
+    {
+      clerkUserId: existing.clerkUserId,
+      assignmentId: existing.assignmentId,
+      githubUrl: existing.githubUrl,
+      vercelUrl: existing.vercelUrl,
+      checkResults: input.checkResults,
+      checked: true,
+      checkerVersion: input.checkerVersion,
+      preserveUpdatedAt: true,
+    },
+    now,
+  );
 }
